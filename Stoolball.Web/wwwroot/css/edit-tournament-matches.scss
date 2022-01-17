@@ -1,0 +1,54 @@
+﻿@import "_theme.scss";
+@import "_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+
+// The 'vs' in Team A vs Team B
+.select-teams-in-match__versus {
+    font-weight: bold;
+    padding: $spacer/2 $spacer;
+}
+
+// Align the delete button to the top so that it doesn't move when the error message appears
+.related-items .related-item__delete {
+    vertical-align: top;
+}
+.select_teams_in_match__create .related-item__delete {
+    padding-top: $spacer;
+}
+// The button to add a match with the selected teams
+.select-teams-in-match__add {
+    display: inline-block;
+    margin: 0 0 $spacer $table-cell-padding;
+}
+
+// The validation message has to go after the fieldset rather than after each field
+.field-validation-error {
+    margin: $table-cell-padding 0 0 $minimum-clickable-size;
+}
+
+// Align drag & drop handle with the left edge
+.select-teams-in-match__matches .related-item__selected td:first-child {
+    padding-left: 0;
+}
+.select-teams-in-match__sort {
+    display: inline-block;
+    text-align: center;
+    cursor: move;
+    background: transparent;
+    border: none;
+    width: $minimum-clickable-size;
+}
+
+// When there's more space, arrange the teams side-by-side rather than stacked
+@include media-breakpoint-up(sm) {
+    .select-teams-in-match {
+        display: flex;
+        align-items: center;
+    }
+
+    .select-teams-in-match__team {
+        flex-grow: 1;
+    }
+}

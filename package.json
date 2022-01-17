@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "bootstrap": "^4.6.1",
     "cypress": "^8.6.0"
   },
   "devDependencies": {

@@ -1,0 +1,59 @@
+﻿@import "_theme.scss";
+@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+
+
+.results-table tbody th { 
+    font-weight: normal; 
+    width: 10em;
+}
+
+// Remove the flex-grow from .table-as-cards. It preserves the right-align of .numeric, but we do that with .results-table__numeric-value
+// which doesn't send the data so far off to the right away from its label.
+.results-table [data-stackable].numeric::before {
+    flex-grow: initial;
+}
+
+.results-table__numeric-value {
+    display: inline-block;
+    width: 2em;
+    text-align: right;
+}
+
+@include media-breakpoint-up(sm) {
+    .results-table tbody th {
+        width: 12em;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .results-table tbody th {
+        width: auto;
+    }
+}
+
+// Edit results table settings page
+.edit-results-table tbody th {
+    width: 8em;
+}
+
+.edit-results-table .table-as-cards__label {
+    font-weight: normal;
+}
+
+@include media-breakpoint-up(sm) {
+    .edit-results-table tbody th {
+        width: 40%;
+    }
+}
+
+.edit-results-table .field-validation-error,
+.edit-season-teams-table .field-validation-error {
+    display: block;
+}
+
+// Edit teams in season - prevent column size changing as teams added/removed
+.edit-season-teams-table__date-withdrew {
+    width: 14em;
+}

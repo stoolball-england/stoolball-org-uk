@@ -1,0 +1,46 @@
+﻿@import "_theme.scss";
+@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+
+$account-image-size: 70px;
+
+// Add space above so as to not crowd the details of the item being commented upon
+.comments {
+    margin-top: $spacer*1.5;
+}
+
+// Each comment has styling consistent with tables, but is a positioning context and has left padding which allows for the account image
+.comment {
+    border-bottom: $table-border-width solid $table-border-color;
+    padding: $table-cell-padding $table-cell-padding $table-cell-padding $account-image-size;
+    position: relative;
+    min-height: $account-image-size;
+    margin-bottom: $spacer/2;
+}
+
+// Place the account image in the gap created by the padding, aligned to the positioning context
+.comment__account-image {
+    position: absolute;
+    left: 0;
+    top: $table-cell-padding;
+    border-radius: 50%;
+}
+
+// Each comment starts with the member and time - bold to separate it from the comment itself
+.comment__credit {
+    font-size: $font-size-base;
+    margin: 0 0 $spacer;
+    font-weight: bold;
+    font-family: $font-family-sans-serif;
+}
+
+// Remove any padding at the end of the comment (probably a p element) which might compete with/add to the padding on .comment
+.comment:last-child {
+    border-bottom: none;
+}
+
+// Remove the border on the last comment, so that borders only appear between comments
+.comment > :last-child { 
+    margin-bottom: 0;
+}
+

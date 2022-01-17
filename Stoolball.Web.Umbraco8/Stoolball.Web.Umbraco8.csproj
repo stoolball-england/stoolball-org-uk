@@ -423,12 +423,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Account\account.css">
-      <DependentUpon>account.scss</DependentUpon>
-    </Content>
-    <Content Include="Account\account.min.css">
-      <DependentUpon>account.css</DependentUpon>
-    </Content>
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Lang\da-DK.xml" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Lang\en-GB.xml" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Lang\en-US.xml" />
@@ -451,7 +445,6 @@
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Outbound.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\RadioGroup.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Site.html" />
-    <Content Include="Account\account.scss" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\package.manifest" />
     <Content Include="ApplicationInsights.template.config" />
     <Content Include="App_Plugins\UmbracoForms\Assets\aspnet-validation\dist\aspnet-validation.min.js" />
@@ -602,12 +595,6 @@
     <Content Include="App_Plugins\uSync8\uSyncService.js" />
     <Content Include="App_Plugins\uSync8\usync_883.css" />
     <Content Include="App_Plugins\uSync8\uSync_883.js" />
-    <Content Include="Competitions\competitions.css">
-      <DependentUpon>competitions.scss</DependentUpon>
-    </Content>
-    <Content Include="Competitions\competitions.min.css">
-      <DependentUpon>competitions.css</DependentUpon>
-    </Content>
     <Content Include="config\grid.editors.config.js" />
     <Content Include="config\Lang\cs-CZ.user.xml" />
     <Content Include="config\Lang\da-DK.user.xml" />
@@ -628,68 +615,13 @@
     <Content Include="config\Lang\sv-SE.user.xml" />
     <Content Include="config\Lang\zh-CN.user.xml" />
     <Content Include="config\logviewer.searches.config.js" />
-    <Content Include="css\autocomplete.css">
-      <DependentUpon>autocomplete.scss</DependentUpon>
-    </Content>
-    <Content Include="css\autocomplete.min.css">
-      <DependentUpon>autocomplete.css</DependentUpon>
-    </Content>
-    <Content Include="css\base.css">
-      <DependentUpon>base.scss</DependentUpon>
-    </Content>
-    <Content Include="css\base.min.css">
-      <DependentUpon>base.css</DependentUpon>
-    </Content>
-    <Content Include="css\comments.css">
-      <DependentUpon>comments.scss</DependentUpon>
-    </Content>
-    <Content Include="css\comments.min.css">
-      <DependentUpon>comments.css</DependentUpon>
-    </Content>
-    <Content Include="css\cookies.page.css">
-      <DependentUpon>cookies.page.scss</DependentUpon>
-    </Content>
-    <Content Include="css\cookies.page.min.css">
-      <DependentUpon>cookies.page.css</DependentUpon>
-    </Content>
-    <Content Include="css\filter.css">
-      <DependentUpon>filter.scss</DependentUpon>
-    </Content>
-    <Content Include="css\filter.min.css">
-      <DependentUpon>filter.css</DependentUpon>
-    </Content>
-    <Content Include="css\who-are-stoolball-england.page.css">
-      <DependentUpon>who-are-stoolball-england.page.scss</DependentUpon>
-    </Content>
-    <Content Include="css\who-are-stoolball-england.page.min.css">
-      <DependentUpon>who-are-stoolball-england.page.css</DependentUpon>
-    </Content>
     <Content Include="Forms\RecreateUmbracoForms.sql" />
     <Content Include="Global.asax" />
-    <Content Include="HomePage\home.css">
-      <DependentUpon>home.scss</DependentUpon>
-    </Content>
-    <Content Include="HomePage\home.min.css">
-      <DependentUpon>home.css</DependentUpon>
-    </Content>
-    <Content Include="css\news.css">
-      <DependentUpon>news.scss</DependentUpon>
-    </Content>
-    <Content Include="css\news.min.css">
-      <DependentUpon>news.css</DependentUpon>
-    </Content>
-    <Content Include="css\related-items.css">
-      <DependentUpon>related-items.scss</DependentUpon>
-    </Content>
-    <Content Include="css\related-items.min.css">
-      <DependentUpon>related-items.css</DependentUpon>
-    </Content>
     <Content Include="config\umbracoSettings.local.xdt.config" />
     <Content Include="config\umbracoSettings.live.xdt.config" />
     <Content Include="config\tinyMceConfig.local.xdt.config" />
     <Content Include="config\tinyMceConfig.live.xdt.config" />
     <Content Include="App_Plugins\UmbracoForms\UmbracoForms.config" />
-    <Content Include="Competitions\competitions.scss" />
     <Content Include="App_Plugins\uSync8\package.manifest" />
     <Content Include="App_Plugins\uSync8\addons.json" />
     <Content Include="App_Plugins\UmbracoForms\RazorTemplates\HtmlTable.cshtml" />
@@ -704,217 +636,18 @@
     <Content Include="config\tinyMceConfig.development.xdt.config" />
     <Content Include="config\umbracoSettings.development.xdt.config" />
     <None Include="config\uSync8.local.xdt.config" />
-    <Content Include="css\rules.page.css">
-      <DependentUpon>rules.page.scss</DependentUpon>
-    </Content>
-    <Content Include="css\rules.page.min.css">
-      <DependentUpon>rules.page.css</DependentUpon>
-    </Content>
     <Content Include="js\tests\related-items.test.js" />
-    <Content Include="Matches\edit-tournament-matches.css">
-      <DependentUpon>edit-tournament-matches.scss</DependentUpon>
-    </Content>
-    <Content Include="Matches\edit-tournament-matches.min.css">
-      <DependentUpon>edit-tournament-matches.css</DependentUpon>
-    </Content>
-    <Content Include="Matches\matches.css">
-      <DependentUpon>matches.scss</DependentUpon>
-    </Content>
-    <Content Include="Matches\matches.min.css">
-      <DependentUpon>matches.css</DependentUpon>
-    </Content>
-    <Content Include="Matches\scorecards.css">
-      <DependentUpon>scorecards.scss</DependentUpon>
-    </Content>
-    <Content Include="Matches\scorecards.min.css">
-      <DependentUpon>scorecards.css</DependentUpon>
-    </Content>
-    <Content Include="css\shop.page.css">
-      <DependentUpon>shop.page.scss</DependentUpon>
-    </Content>
-    <Content Include="css\shop.page.min.css">
-      <DependentUpon>shop.page.css</DependentUpon>
-    </Content>
-    <Content Include="css\steps.css">
-      <DependentUpon>steps.scss</DependentUpon>
-    </Content>
-    <Content Include="css\steps.min.css">
-      <DependentUpon>steps.css</DependentUpon>
-    </Content>
-    <Content Include="css\steps.scss" />
-    <Content Include="Matches\scorecards.scss" />
-    <Content Include="css\rules.page.scss" />
-    <Content Include="css\cookies.page.scss" />
-    <Content Include="css\news.scss" />
-    <Content Include="css\shop.page.scss" />
-    <Content Include="HomePage\home.scss" />
-    <Content Include="Matches\match.css">
-      <DependentUpon>match.scss</DependentUpon>
-    </Content>
-    <Content Include="Matches\match.min.css">
-      <DependentUpon>match.css</DependentUpon>
-    </Content>
-    <Content Include="Content\bootstrap\_variables.scss" />
-    <Content Include="Content\bootstrap\_utilities.scss" />
-    <Content Include="Content\bootstrap\_type.scss" />
-    <Content Include="Content\bootstrap\_transitions.scss" />
-    <Content Include="Content\bootstrap\_tooltip.scss" />
-    <Content Include="Content\bootstrap\_toasts.scss" />
-    <Content Include="Content\bootstrap\_tables.scss" />
-    <Content Include="Content\bootstrap\_spinners.scss" />
-    <Content Include="Content\bootstrap\_root.scss" />
-    <Content Include="Content\bootstrap\_reboot.scss" />
-    <Content Include="Content\bootstrap\_progress.scss" />
-    <Content Include="Content\bootstrap\_print.scss" />
-    <Content Include="Content\bootstrap\_popover.scss" />
-    <Content Include="Content\bootstrap\_pagination.scss" />
-    <Content Include="Content\bootstrap\_navbar.scss" />
-    <Content Include="Content\bootstrap\_nav.scss" />
-    <Content Include="Content\bootstrap\_modal.scss" />
-    <Content Include="Content\bootstrap\_mixins.scss" />
-    <Content Include="Content\bootstrap\_media.scss" />
-    <Content Include="Content\bootstrap\_list-group.scss" />
-    <Content Include="Content\bootstrap\_jumbotron.scss" />
-    <Content Include="Content\bootstrap\_input-group.scss" />
-    <Content Include="Content\bootstrap\_images.scss" />
-    <Content Include="Content\bootstrap\_grid.scss" />
-    <Content Include="Content\bootstrap\_functions.scss" />
-    <Content Include="Content\bootstrap\_forms.scss" />
-    <Content Include="Content\bootstrap\_dropdown.scss" />
-    <Content Include="Content\bootstrap\_custom-forms.scss" />
-    <Content Include="Content\bootstrap\_code.scss" />
-    <Content Include="Content\bootstrap\_close.scss" />
-    <Content Include="Content\bootstrap\_carousel.scss" />
-    <Content Include="Content\bootstrap\_card.scss" />
-    <Content Include="Content\bootstrap\_buttons.scss" />
-    <Content Include="Content\bootstrap\_button-group.scss" />
-    <Content Include="Content\bootstrap\_breadcrumb.scss" />
-    <Content Include="Content\bootstrap\_badge.scss" />
-    <Content Include="Content\bootstrap\_alert.scss" />
-    <Content Include="Content\bootstrap\vendor\_rfs.scss" />
-    <Content Include="Content\bootstrap\utilities\_visibility.scss" />
-    <Content Include="Content\bootstrap\utilities\_text.scss" />
-    <Content Include="Content\bootstrap\utilities\_stretched-link.scss" />
-    <Content Include="Content\bootstrap\utilities\_spacing.scss" />
-    <Content Include="Content\bootstrap\utilities\_sizing.scss" />
-    <Content Include="Content\bootstrap\utilities\_shadows.scss" />
-    <Content Include="Content\bootstrap\utilities\_screenreaders.scss" />
-    <Content Include="Content\bootstrap\utilities\_position.scss" />
-    <Content Include="Content\bootstrap\utilities\_overflow.scss" />
-    <Content Include="Content\bootstrap\utilities\_interactions.scss" />
-    <Content Include="Content\bootstrap\utilities\_float.scss" />
-    <Content Include="Content\bootstrap\utilities\_flex.scss" />
-    <Content Include="Content\bootstrap\utilities\_embed.scss" />
-    <Content Include="Content\bootstrap\utilities\_display.scss" />
-    <Content Include="Content\bootstrap\utilities\_clearfix.scss" />
-    <Content Include="Content\bootstrap\utilities\_borders.scss" />
-    <Content Include="Content\bootstrap\utilities\_background.scss" />
-    <Content Include="Content\bootstrap\utilities\_align.scss" />
-    <Content Include="Content\bootstrap\mixins\_visibility.scss" />
-    <Content Include="Content\bootstrap\mixins\_transition.scss" />
-    <Content Include="Content\bootstrap\mixins\_text-truncate.scss" />
-    <Content Include="Content\bootstrap\mixins\_text-hide.scss" />
-    <Content Include="Content\bootstrap\mixins\_text-emphasis.scss" />
-    <Content Include="Content\bootstrap\mixins\_table-row.scss" />
-    <Content Include="Content\bootstrap\mixins\_size.scss" />
-    <Content Include="Content\bootstrap\mixins\_screen-reader.scss" />
-    <Content Include="Content\bootstrap\mixins\_resize.scss" />
-    <Content Include="Content\bootstrap\mixins\_reset-text.scss" />
-    <Content Include="Content\bootstrap\mixins\_pagination.scss" />
-    <Content Include="Content\bootstrap\mixins\_nav-divider.scss" />
-    <Content Include="Content\bootstrap\mixins\_lists.scss" />
-    <Content Include="Content\bootstrap\mixins\_list-group.scss" />
-    <Content Include="Content\bootstrap\mixins\_image.scss" />
-    <Content Include="Content\bootstrap\mixins\_hover.scss" />
-    <Content Include="Content\bootstrap\mixins\_grid.scss" />
-    <Content Include="Content\bootstrap\mixins\_grid-framework.scss" />
-    <Content Include="Content\bootstrap\mixins\_gradients.scss" />
-    <Content Include="Content\bootstrap\mixins\_forms.scss" />
-    <Content Include="Content\bootstrap\mixins\_float.scss" />
-    <Content Include="Content\bootstrap\mixins\_deprecate.scss" />
-    <Content Include="Content\bootstrap\mixins\_clearfix.scss" />
-    <Content Include="Content\bootstrap\mixins\_caret.scss" />
-    <Content Include="Content\bootstrap\mixins\_buttons.scss" />
-    <Content Include="Content\bootstrap\mixins\_breakpoints.scss" />
-    <Content Include="Content\bootstrap\mixins\_box-shadow.scss" />
-    <Content Include="Content\bootstrap\mixins\_border-radius.scss" />
-    <Content Include="Content\bootstrap\mixins\_badge.scss" />
-    <Content Include="Content\bootstrap\mixins\_background-variant.scss" />
-    <Content Include="Content\bootstrap\mixins\_alert.scss" />
-    <Content Include="Content\bootstrap\bootstrap.scss" />
-    <Content Include="Content\bootstrap\bootstrap-reboot.scss" />
-    <Content Include="Content\bootstrap\bootstrap-grid.scss" />
-    <Content Include="css\comments.scss" />
-    <Content Include="css\filter.scss" />
-    <None Include="css\tinymce.scss" />
-    <Content Include="css\tinymce.css">
-      <DependentUpon>tinymce.scss</DependentUpon>
-    </Content>
-    <Content Include="css\tinymce.min.css">
-      <DependentUpon>tinymce.css</DependentUpon>
-    </Content>
-    <Content Include="Scripts\bootstrap.bundle.js" />
-    <Content Include="Scripts\bootstrap.bundle.min.js" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Statistics\statistics.css">
-      <DependentUpon>statistics.scss</DependentUpon>
-    </Content>
-    <Content Include="Statistics\statistics.min.css">
-      <DependentUpon>statistics.css</DependentUpon>
-    </Content>
-    <Content Include="css\base.scss" />
     <Content Include="..\.editorconfig">
       <Link>.editorconfig</Link>
     </Content>
-    <None Include="compilerconfig.json" />
-    <None Include="compilerconfig.json.defaults">
-      <DependentUpon>compilerconfig.json</DependentUpon>
-    </None>
-    <Content Include="css\_forms.scss" />
     <Content Include="Email\EmailTemplate.html" />
     <Content Include="Directory.Build.targets" />
     <Content Include="config\uSync8.config" />
-    <Content Include="css\_header.scss" />
-    <Content Include="css\_tables.scss" />
-    <Content Include="css\related-items.scss" />
-    <Content Include="css\autocomplete.scss" />
-    <Content Include="css\_theme.scss" />
-    <Content Include="css\_footer.scss" />
-    <Content Include="Scripts\esm\popper-utils.js" />
-    <Content Include="Scripts\esm\popper-utils.min.js" />
-    <Content Include="Scripts\esm\popper.js" />
-    <Content Include="Scripts\esm\popper.min.js" />
-    <Content Include="Scripts\index.js.flow" />
-    <Content Include="Scripts\esm\popper.min.js.map" />
-    <Content Include="Scripts\esm\popper.js.map" />
-    <Content Include="Scripts\esm\popper-utils.min.js.map" />
-    <Content Include="Scripts\esm\popper-utils.js.map" />
     <Content Include="Forms\UmbracoForms.local.xdt.config" />
-    <Content Include="css\_blocks.scss" />
-    <Content Include="css\_consent.scss" />
-    <Content Include="css\_breadcrumb.scss" />
-    <Content Include="css\_mixins.scss" />
-    <Content Include="css\_tabs.scss" />
-    <Content Include="css\_dropdown.scss" />
-    <Content Include="css\_print.scss" />
-    <Content Include="css\_alerts.scss" />
-    <Content Include="css\_tiles.scss" />
-    <Content Include="css\_text.scss" />
-    <Content Include="Matches\match.scss" />
     <Content Include="fonts\Web.config" />
     <Content Include="images\Web.config" />
-    <Content Include="css\_maps.scss" />
-    <Content Include="css\who-are-stoolball-england.page.scss" />
-    <Content Include="Scripts\bootstrap.min.js.map" />
-    <Content Include="Scripts\bootstrap.js.map" />
-    <Content Include="Scripts\bootstrap.bundle.min.js.map" />
-    <Content Include="Scripts\bootstrap.bundle.js.map" />
-    <Content Include="Statistics\statistics.scss" />
     <Content Include="ApplicationInsights.xdt.template.config" />
     <Content Include="Secret-InstrumentationKey.ApplicationInsights.live.xdt.config" />
-    <Content Include="Matches\edit-tournament-matches.scss" />
-    <Content Include="Matches\matches.scss" />
     <None Include="Secret-Email.Web.development.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
@@ -930,77 +663,6 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\popper-utils.js" />
-    <Content Include="Scripts\popper-utils.min.js" />
-    <Content Include="Scripts\popper.js" />
-    <Content Include="Scripts\popper.min.js" />
-    <Content Include="Scripts\src\index.js" />
-    <Content Include="Scripts\src\methods\defaults.js" />
-    <Content Include="Scripts\src\methods\destroy.js" />
-    <Content Include="Scripts\src\methods\disableEventListeners.js" />
-    <Content Include="Scripts\src\methods\enableEventListeners.js" />
-    <Content Include="Scripts\src\methods\placements.js" />
-    <Content Include="Scripts\src\methods\update.js" />
-    <Content Include="Scripts\src\modifiers\applyStyle.js" />
-    <Content Include="Scripts\src\modifiers\arrow.js" />
-    <Content Include="Scripts\src\modifiers\computeStyle.js" />
-    <Content Include="Scripts\src\modifiers\flip.js" />
-    <Content Include="Scripts\src\modifiers\hide.js" />
-    <Content Include="Scripts\src\modifiers\index.js" />
-    <Content Include="Scripts\src\modifiers\inner.js" />
-    <Content Include="Scripts\src\modifiers\keepTogether.js" />
-    <Content Include="Scripts\src\modifiers\offset.js" />
-    <Content Include="Scripts\src\modifiers\preventOverflow.js" />
-    <Content Include="Scripts\src\modifiers\shift.js" />
-    <Content Include="Scripts\src\utils\clockwise.js" />
-    <Content Include="Scripts\src\utils\computeAutoPlacement.js" />
-    <Content Include="Scripts\src\utils\debounce.js" />
-    <Content Include="Scripts\src\utils\find.js" />
-    <Content Include="Scripts\src\utils\findCommonOffsetParent.js" />
-    <Content Include="Scripts\src\utils\findIndex.js" />
-    <Content Include="Scripts\src\utils\getBordersSize.js" />
-    <Content Include="Scripts\src\utils\getBoundaries.js" />
-    <Content Include="Scripts\src\utils\getBoundingClientRect.js" />
-    <Content Include="Scripts\src\utils\getClientRect.js" />
-    <Content Include="Scripts\src\utils\getFixedPositionOffsetParent.js" />
-    <Content Include="Scripts\src\utils\getOffsetParent.js" />
-    <Content Include="Scripts\src\utils\getOffsetRect.js" />
-    <Content Include="Scripts\src\utils\getOffsetRectRelativeToArbitraryNode.js" />
-    <Content Include="Scripts\src\utils\getOppositePlacement.js" />
-    <Content Include="Scripts\src\utils\getOppositeVariation.js" />
-    <Content Include="Scripts\src\utils\getOuterSizes.js" />
-    <Content Include="Scripts\src\utils\getParentNode.js" />
-    <Content Include="Scripts\src\utils\getPopperOffsets.js" />
-    <Content Include="Scripts\src\utils\getReferenceNode.js" />
-    <Content Include="Scripts\src\utils\getReferenceOffsets.js" />
-    <Content Include="Scripts\src\utils\getRoot.js" />
-    <Content Include="Scripts\src\utils\getRoundedOffsets.js" />
-    <Content Include="Scripts\src\utils\getScroll.js" />
-    <Content Include="Scripts\src\utils\getScrollParent.js" />
-    <Content Include="Scripts\src\utils\getStyleComputedProperty.js" />
-    <Content Include="Scripts\src\utils\getSupportedPropertyName.js" />
-    <Content Include="Scripts\src\utils\getViewportOffsetRectRelativeToArtbitraryNode.js" />
-    <Content Include="Scripts\src\utils\getWindow.js" />
-    <Content Include="Scripts\src\utils\getWindowSizes.js" />
-    <Content Include="Scripts\src\utils\includeScroll.js" />
-    <Content Include="Scripts\src\utils\index.js" />
-    <Content Include="Scripts\src\utils\isBrowser.js" />
-    <Content Include="Scripts\src\utils\isFixed.js" />
-    <Content Include="Scripts\src\utils\isFunction.js" />
-    <Content Include="Scripts\src\utils\isIE.js" />
-    <Content Include="Scripts\src\utils\isModifierEnabled.js" />
-    <Content Include="Scripts\src\utils\isModifierRequired.js" />
-    <Content Include="Scripts\src\utils\isNumeric.js" />
-    <Content Include="Scripts\src\utils\isOffsetContainer.js" />
-    <Content Include="Scripts\src\utils\removeEventListeners.js" />
-    <Content Include="Scripts\src\utils\runModifiers.js" />
-    <Content Include="Scripts\src\utils\setAttributes.js" />
-    <Content Include="Scripts\src\utils\setStyles.js" />
-    <Content Include="Scripts\src\utils\setupEventListeners.js" />
-    <Content Include="Scripts\umd\popper-utils.js" />
-    <Content Include="Scripts\umd\popper-utils.min.js" />
-    <Content Include="Scripts\umd\popper.js" />
-    <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="Views\Partials\BlockList\Components\FormattedText.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>FormattedText.generated.cs</LastGenOutput>
@@ -2470,16 +2132,6 @@
     <Content Include="config\imageprocessor\cache.config" />
     <None Include="packages.config" />
     <Content Include="Views\Web.config" />
-    <Content Include="Scripts\umd\popper.min.js.map" />
-    <Content Include="Scripts\umd\popper.js.map" />
-    <Content Include="Scripts\umd\popper.js.flow" />
-    <Content Include="Scripts\umd\popper-utils.min.js.map" />
-    <Content Include="Scripts\umd\popper-utils.js.map" />
-    <Content Include="Scripts\README.md" />
-    <Content Include="Scripts\popper.min.js.map" />
-    <Content Include="Scripts\popper.js.map" />
-    <Content Include="Scripts\popper-utils.min.js.map" />
-    <Content Include="Scripts\popper-utils.js.map" />
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
@@ -3190,7 +2842,6 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
     <Error Condition="!Exists('..\packages\Umbraco.SqlServerCE.4.0.0.1\build\Umbraco.SqlServerCE.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Umbraco.SqlServerCE.4.0.0.1\build\Umbraco.SqlServerCE.targets'))" />
-    <Error Condition="!Exists('..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets'))" />
     <Error Condition="!Exists('..\packages\uSync.8.8.3\build\uSync.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\uSync.8.8.3\build\uSync.props'))" />
     <Error Condition="!Exists('..\packages\uSync.8.8.3\build\uSync.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\uSync.8.8.3\build\uSync.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.17.0\build\Microsoft.ApplicationInsights.DependencyCollector.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.17.0\build\Microsoft.ApplicationInsights.DependencyCollector.targets'))" />
@@ -3211,7 +2862,6 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets" Condition="Exists('..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets')" />
   <Import Project="..\packages\uSync.8.8.3\build\uSync.targets" Condition="Exists('..\packages\uSync.8.8.3\build\uSync.targets')" />
   <Import Project="..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.17.0\build\Microsoft.ApplicationInsights.DependencyCollector.targets" Condition="Exists('..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.17.0\build\Microsoft.ApplicationInsights.DependencyCollector.targets')" />
   <Import Project="..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.17.0\build\Microsoft.ApplicationInsights.PerfCounterCollector.targets" Condition="Exists('..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.17.0\build\Microsoft.ApplicationInsights.PerfCounterCollector.targets')" />

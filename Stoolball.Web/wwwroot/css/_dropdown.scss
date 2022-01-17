@@ -1,0 +1,51 @@
+﻿@import "../../../node_modules/bootstrap/scss/_variables.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "_mixins.scss";
+
+$dropdown-border-radius: 0 0 $border-radius*2 $border-radius*2;
+
+// Round the bottom of the dropdown menu and set a z-index below the focus ring of the trigger button
+.dropdown-menu {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: $dropdown-border-radius;
+}
+
+.dropdown-item:last-child {
+    border-radius: $dropdown-border-radius;
+}
+
+.dropdown-item:first-child > * {
+    padding-top: $spacer/2;
+}
+
+.dropdown-item:last-child > * {
+    padding-bottom: $spacer/2;
+    border-radius: $dropdown-border-radius;
+}
+
+// .last-child-md class is used on the last visible child when there are following siblings are hidden at and above the md breakpoint
+@include media-breakpoint-up(md) {
+    .dropdown-item.last-child-md {
+        border-radius: $dropdown-border-radius;
+    }
+
+    .dropdown-item.last-child-md > * {
+        padding-bottom: $spacer/2;
+        border-radius: $dropdown-border-radius;
+    }
+}
+
+// Move the padding from the menu item li to its child element so that links clickable across the
+// whole width of a menu without dead areas on the edges
+.dropdown-item {
+    padding: 0;
+}
+
+.dropdown-item > * {
+    @include remove-link-underline;
+    display: block;
+    padding: $spacer/4 $spacer*1.5;
+    font-style: normal;
+}

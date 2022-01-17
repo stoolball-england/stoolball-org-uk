@@ -1,0 +1,66 @@
+﻿@import "_theme.scss";
+@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+@import "_mixins.scss";
+
+.tiles {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-bottom: $spacer*2;
+    padding: 0;
+}
+
+.tile {
+    list-style: none;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.tile__link {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 5px solid transparent;
+    display: flex;
+    overflow: hidden;
+}
+
+.tile__link:hover, .tile__link:focus, .tile__link:active {
+    @include remove-link-focus;
+    border-color: $black;
+    z-index: 1;
+    transform: scale(1.01);
+    transition: all .1s;
+}
+
+.tile__header {
+    color: $white;
+    padding: $spacer/2 $spacer $spacer/2;
+}
+
+.tile__footer {
+    position: absolute;
+    margin: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}
+
+@include media-breakpoint-up(md) {
+    .tiles {
+        flex-wrap: nowrap;
+    }
+
+    .tile {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .tile__header {
+        padding: $spacer/2 $spacer $spacer/2;
+    }
+}

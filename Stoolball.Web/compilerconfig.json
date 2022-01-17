@@ -1,0 +1,82 @@
+﻿[
+  {
+    "outputFile": "wwwroot/css/autocomplete.css",
+    "inputFile": "wwwroot/css/autocomplete.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/who-are-stoolball-england.page.css",
+    "inputFile": "wwwroot/css/who-are-stoolball-england.page.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/tinymce.css",
+    "inputFile": "wwwroot/css/tinymce.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/base.css",
+    "inputFile": "wwwroot/css/base.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/comments.css",
+    "inputFile": "wwwroot/css/comments.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/cookies.page.css",
+    "inputFile": "wwwroot/css/cookies.page.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/filter.css",
+    "inputFile": "wwwroot/css/filter.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/news.css",
+    "inputFile": "wwwroot/css/news.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/related-items.css",
+    "inputFile": "wwwroot/css/related-items.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/rules.page.css",
+    "inputFile": "wwwroot/css/rules.page.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/shop.page.css",
+    "inputFile": "wwwroot/css/shop.page.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/steps.css",
+    "inputFile": "wwwroot/css/steps.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/account.css",
+    "inputFile": "wwwroot/css/account.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/competitions.css",
+    "inputFile": "wwwroot/css/competitions.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/home.css",
+    "inputFile": "wwwroot/css/home.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/edit-tournament-matches.css",
+    "inputFile": "wwwroot/css/edit-tournament-matches.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/match.css",
+    "inputFile": "wwwroot/css/match.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/matches.css",
+    "inputFile": "wwwroot/css/matches.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/scorecards.css",
+    "inputFile": "wwwroot/css/scorecards.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/statistics.css",
+    "inputFile": "wwwroot/css/statistics.scss"
+  }
+]

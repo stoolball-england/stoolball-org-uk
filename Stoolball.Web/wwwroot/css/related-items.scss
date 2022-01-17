@@ -1,0 +1,216 @@
+﻿@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+
+/* For Bootstrap tables used to manage lists of related items. Note that .related-item__animate is used because the <tr />
+   can't have its height animated - it will not collapse beyond the height of its children. .related-item__animate also
+   doesn't work when applied to the <button />.
+
+   <table class="table related-items">
+        <tbody>
+        <tr class="(|related-item__deleted)">
+            <td class="related-item__selected__section">
+                <div class="related-item__animate">value</div>
+            </td>
+            <td class="related-item__delete related-item__selected__section">
+                <div class="related-item__animate">
+                    <input type="hidden" class="related-item__data related-item__id" data-item="{{item-id}}" />
+                    <button type="button" class="text-danger><svg /></button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="search" class="related-item__search" data-url="/path/to/autocomplete" data-template="template-id" /></td>
+        </tr>
+        </tbody>
+    </table>
+    <script id="template-id" type="text/x-template">
+        <table>
+        <tr>... any HTML, with {{value}} and {{data}} replaced with the selected item from autocomplete</tr>
+        </table>
+    </script>
+
+    Also for a single-item version where the display is similar but there's only ever one row so it's not a table.
+    
+    <div class="form-group related-item">
+        <label for="search">Search</label>
+        <input type="search" class="related-item__search" data-url="/path/to/autocomplete" data-template="template-id" id="search" />
+    </div>
+    <script type="text/x-template" id="location-template">
+        <div class="related-item__selected">
+            <div class="related-item__selected__section">
+                <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="search" />
+            </div>
+            <div class="related-item__delete related-item__selected__section">
+                <input name="xxx" type="hidden" class="related-item__data related-item__id" value="{{data}}" />
+                <button type="button" class="text-danger><svg /></button>
+            </div>
+        </div>
+    </script>
+*/
+
+
+.related-items-as-cards thead {
+    @include sr-only();
+}
+
+.related-items__empty thead {
+    position: static; // undo .sr-only
+}
+
+.related-items-as-cards [data-stackable] {
+    display: flex;
+}
+.related-items-as-cards__label {
+    display: block;
+    font-weight: bold;
+}
+// Make space in the first field for the absolutely-positioned delete button
+.related-items-as-cards .related-item__selected__section:first-child {
+    background: $table-dark-bg;
+    color: $table-dark-color;
+    padding-right: 80px;
+}
+
+.related-items-as-cards .related-item__delete {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: $white;
+    border-radius: $border-radius;
+    margin: $spacer/2;
+    text-align: center;
+}
+
+@include media-breakpoint-up(md) {
+    .related-items-as-cards-reset-md thead {
+        position: static; // undo .sr-only
+    }
+
+    .related-items-as-cards-reset-md .related-items-as-cards__label {
+        display: none;
+    }
+
+    .related-items-as-cards-reset-md .related-item__selected__section:first-child {
+        background: none;
+        color: $table-color;
+    }
+
+    .related-items-as-cards-reset-md [data-stackable] {
+        display: table-cell;
+    }
+
+    .related-items-as-cards-reset-md .related-item__delete {
+        position: static;
+        text-align: right;
+        margin: 0;
+        background: none;
+    }
+}
+
+
+/* .related-item the single item version, which is not in a table */
+.related-item {
+    width: 100%;
+}
+
+.single-related-item__selected {
+    display: flex;
+    align-items: center;
+}
+
+// A single item in .related-items. Set as a positioning context to position the delete button when using .related-items-as-cards.
+.related-item__selected {
+    position: relative;
+}
+
+.related-item__selected__section:first-child {
+    flex-grow: 1;
+}
+
+.related-item__selected__section {
+    transition: padding .5s;
+}
+
+// When there's an extra input, everything needs to line up. Specificity required to override Bootstrap.
+.related-items .related-item__selected__section {
+    vertical-align: middle;
+}
+
+
+.related-item__deleted > .related-item__selected__section {
+    padding: 0;
+}
+
+// padding/margin trick allows the focus border on an input to show, without being cut off by overflow: hidden or changing the position
+.related-item__animate {
+    transition: height .5s;
+    overflow: hidden;
+    width: 100%;
+    padding: 3px;
+    margin: -3px;
+}
+
+.related-item__deleted .related-item__animate {
+    height: 0;
+}
+
+// Used in both versions - box-sizing ensures the width is consistent in both contexts
+.related-item__delete {
+    width: 35px;
+    text-align: right;
+    box-sizing: content-box;
+}
+
+// Centres the icon
+.related-item__delete .related-item__animate {
+    width: auto;
+}
+
+.related-item__delete button {
+    border: none;
+    background: none;
+}
+
+.related-item__search:disabled {
+    display: none;
+}
+
+.autocomplete-group {
+    font-weight: bold;
+    color: $table-dark-color;
+    background-color: $table-dark-bg;
+    border-color: $table-dark-border-color;
+}
+
+.related-items__empty .related-items__if-not-empty {
+    visibility: hidden;
+}
+
+/* A separate table row can contain a message saying no items are selected, simply by adding .related-items__if-empty to the tr */
+.related-items .related-items__if-empty {
+    display: none;
+}
+.related-items__empty .related-items__if-empty {
+    display: table-row;
+}
+
+/* For reduced motion, instead of animating the row strike out the text and remove the delete button */
+@media (prefers-reduced-motion: reduce) {
+    .related-items .related-item__selected__section, .related-item__animate {
+        transition: none;
+    }
+
+    .related-item__deleted > .related-item__selected__section {
+        padding: ($spacer/4)*3;
+    }
+
+    .related-item__deleted .related-item__animate {
+        height: auto;
+        text-decoration: line-through;
+    }
+
+    .related-item__deleted > .related-item__delete > * {
+        visibility: hidden;
+    }
+}

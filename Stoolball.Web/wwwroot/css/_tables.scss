@@ -1,0 +1,192 @@
+﻿@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+@import "../../../node_modules/bootstrap/scss/_tables.scss";
+@import "_mixins.scss";
+
+/* Bootstrap removes all styling from tables because they're used in calendars etc. 
+   Bootstrap tables have .table applied but you can't do that in TinyMCE for Umbraco as configured by default.
+   @extend .table so that tables have Bootstrap table styles by default.
+*/
+table {
+  @extend .table;
+  border-bottom: $table-border-width solid $table-border-color;
+}
+
+// Display the caption as a heading for the table, not a footnote like in academic text,
+// and give it some breathing space above
+caption {
+    caption-side: top;
+    margin: $spacer 0 0;
+    background: theme-color("primary");
+    color: $white;
+    padding: $spacer*.75;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border-radius: $border-radius $border-radius 0 0;
+}
+
+// Table header rows are reversed by default
+table thead th, table thead td {
+    background: $table-dark-bg;
+    color: $table-dark-color;
+    border-bottom: none;
+}
+
+// Where a table has ordered rows, use a consistent width for the column giving the order
+.table-order {
+    width: 2em;
+}
+
+// Numeric values should be right-aligned so that figure columns line up
+td.numeric,
+th.numeric {
+    @include numeric-value;
+}
+
+/* Apply .table-as-cards to a <table> to enable transformation of each row to a card format, with a .table-as-cards-reset-* class to return to standard table formatting.
+
+   .table-as-cards expects the each cell in a body row to have a data-stackable="true" attribute if it should stack at small sizes, and an element with .table-as-cards__label 
+    and aria-hidden="true" repeating the column heading, because the column headings are visually hidden (but still in the accessibility tree). Omit the data-stackable attribute from the first 
+    cell in a row to have it act like a rowspan introducing all the other cells.
+
+   Typical example:
+   
+    <table class="table-as-cards table-as-cards-reset-sm">
+    <thead>
+        <tr>
+            <th scope="col">Heading 1</th>
+            <th scope="col">Heading 2</th>
+            <th scope="col">Heading 3</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">Row heading</th>
+            <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Heading 2</span><div>Data</div></td>
+            <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Heading 3</span><div>Data</div></td>
+        </tr>
+    </tbody>
+    </table>
+*/
+.table-as-cards thead {
+  @extend .sr-only; // Needs to remain in the accessibility tree for headers to be announced by screen readers
+}
+
+// Each cell which has data-stackable applied gets transformed into a flex container, where the flex items are its .table-as-cards__label and another element.
+// This creates a miniature table row appearance, with the .table-as-cards__label as the row heading and the other element as the data.
+.table-as-cards [data-stackable] {
+    display: flex;
+}
+
+// The .table-as-cards__label is acting like a row heading cell, so style it like a heading.
+// padding-right adds space between it and the original cell contents.
+.table-as-cards__label {
+    display: inline-block;
+    font-weight: bold;
+    width: 50%;
+    text-align: left;
+    margin: 0 $table-cell-padding 0 0;
+}
+
+// Preserve the text-align: right of .numeric when it is applied. Otherwise it's just left-aligned after the width of .table-as-cards__label above
+.numeric .table-as-cards__label {
+    flex-grow: 1;
+}
+
+// Selected cells can be reversed for clarity
+.table-as-cards__header-sm, .table-as-cards__header-md {
+    background: $table-dark-bg;
+    color: $table-dark-color;
+}
+
+.table-as-cards__header-sm a:link, .table-as-cards__header-sm a:visited,
+.table-as-cards__header-md a:link, .table-as-cards__header-md a:visited {
+    color: $white;
+    border-bottom-color: $white;
+}
+
+// Where the first column has rowspan > 1, the first cell in the extra rows should have this class to make the grouping clear when stacked
+.table-as-cards__rowspan-header-sm,
+.table-as-cards__rowspan-header-md {
+    border-top: 4px solid #dee2e6;
+}
+
+// When stacked, there's no point showing missing data (represented by a –).
+// .table-as-cards__reset-* makes it reappear when unstacked
+.table-as-cards__missing-data[data-stackable] {
+    display: none;
+}
+
+// Explanatory paragraph immediately following a table
+.table-small-print {
+    margin-top: -.5em;
+}
+
+@include media-breakpoint-up(sm) {
+    // When .table-as-cards is in use, it might only be appropriate to apply .numeric when the table returns to a standard display
+    td.numeric-sm,
+    th.numeric-sm {
+        @include numeric-value;
+    }
+    // Reset everything that .table-as-cards did, so that the table is now displayed normally
+    .table-as-cards.table-as-cards-reset-sm thead {
+        @include table-as-cards-reset-thead;
+    }
+
+    .table-as-cards.table-as-cards-reset-sm [data-stackable] {
+        @include table-as-cards-reset-stackable;
+    }
+
+    .table-as-cards.table-as-cards-reset-sm .table-as-cards__label {
+        @include table-as-cards-reset-label;
+    }
+
+    .table-as-cards__header-sm {
+        background: none;
+        color: $table-color;
+    }
+
+    .table-as-cards__header-sm a:link, .table-as-cards__header-sm a:visited {
+        color: $link-color;
+        border-bottom-color: $link-color;
+    }
+
+    .table-as-cards__rowspan-header-sm {
+        border-top: $table-border-width solid $table-border-color;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    // When .table-as-cards is in use, it might only be appropriate to apply .numeric when the table returns to a standard display
+    td.numeric-md,
+    th.numeric-md {
+        @include numeric-value;
+    }
+    // Reset everything that .table-as-cards did, so that the table is now displayed normally
+    .table-as-cards.table-as-cards-reset-md thead {
+        @include table-as-cards-reset-thead;
+    }
+
+    .table-as-cards.table-as-cards-reset-md [data-stackable] {
+        @include table-as-cards-reset-stackable;
+    }
+
+    .table-as-cards.table-as-cards-reset-md .table-as-cards__label {
+        @include table-as-cards-reset-label;
+    }
+
+    .table-as-cards__header-md {
+        background: none;
+        color: $table-color;
+    }
+
+    .table-as-cards__header-md a:link, .table-as-cards__header-md a:visited {
+        color: $link-color;
+        border-bottom-color: $link-color;
+    }
+
+    .table-as-cards__rowspan-header-md {
+        border-top: $table-border-width solid $table-border-color;
+    }
+}

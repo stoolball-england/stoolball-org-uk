@@ -1,0 +1,36 @@
+﻿@import "../../../node_modules/bootstrap/scss/_variables.scss";
+@import "../../../node_modules/bootstrap/scss/_alert.scss";
+
+/* An alert has even padding, so remove any bottom margin on the last child which would make that look extra large. */
+.alert > :last-child {
+    margin-bottom: 0;
+}
+
+.alert-tip {
+    background-image: url(/images/icons/iconmonstr-light-bulb-12.svg);
+    background-repeat: no-repeat;
+    background-size: 18px;
+    background-position: 10px center;
+    padding-left: 35px;
+}
+
+.alert-tip a:link, .alert-tip a:visited {
+    color: #007A00; // slightly darker to meet WCAG AA
+    border-bottom-color: #007A00;
+}
+
+.alert-tip a:hover {
+    color: #004d00; // still use the standard hover colour
+}
+
+@media print {
+    .alert-tip {
+        padding-left: $spacer*1.25;
+    }
+}
+
+// Don't use green links on a red background!
+.alert-danger a:link, .alert-danger a:visited {
+    color: inherit;
+    border-color: inherit;
+}

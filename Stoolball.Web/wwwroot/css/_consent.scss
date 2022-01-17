@@ -1,0 +1,58 @@
+﻿@import "_theme.scss";
+@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+
+.consent { 
+    background: $black;
+    color: $white;
+    padding: 0 0 $spacer;
+    margin: 0;
+}
+.consent__request {
+    display: inline-block;
+    margin: 0 $spacer 0 0;
+    padding: $spacer 0 0;
+}
+.consent__checkboxes {
+    margin-top: $spacer/2;
+}
+.consent .custom-control-input[disabled] ~ .custom-control-label {
+    color: $white;
+}
+
+.consent .custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
+    border: 0;
+    outline: 1px solid;
+    outline-offset: 2px;
+}
+
+.consent__buttons {
+    display: inline-block;
+    padding: $spacer 0 0;
+}
+.consent__choices .consent__buttons { 
+    display: block;
+}
+.consent button {
+    display: inline-block;
+    margin: 0 $spacer/2 $spacer/2 0;
+}
+
+.consent button:focus {
+    border-color: $white;
+}
+
+/* Change the background of disabled checkboxes back to grey, but not the standard disabled grey because here the tick is white, not black */
+.consent .custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
+    background-color: #666;
+    border-color: #444;
+}
+
+.consent__policy {
+    margin: 0;
+}
+.consent__policy a:link, .consent__policy a:visited, .consent__policy a:hover {
+    color: $white;
+    border-bottom-color: $white;
+}

@@ -1,0 +1,61 @@
+﻿@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+
+.statistics .table-as-cards__label {
+    width: 5em;
+}
+
+.statistics .runs-scored { 
+    font-weight: bold;
+}
+
+.statistics .player-was-out {
+    padding-right: 1.1em;
+}
+
+.statistic {
+    width: 8em;
+}
+
+// When a table is stacked and the first column is the match name, it should not be too wide and the fixed width makes multiple tables line up
+.match__stacked {
+    width: 200px;
+}
+
+@include media-breakpoint-up(md) {
+    .statistics .runs-scored {
+        font-weight: normal;
+    }
+
+    .statistics .balls-faced:before {
+        content: "(";
+    }
+
+    .statistics .balls-faced {
+        font-size: 0.8rem;
+    }
+
+    .statistics .balls-faced:after {
+        content: ")";
+    }
+}
+
+@include media-breakpoint-up(md) {
+    // Display the three tables summing up best & worst innings totals as if they were one table
+    .innings-statistics {
+        display: flex;
+    }
+
+    .innings-statistics > table > caption {
+        border-radius: 0;
+    }
+
+    .innings-statistics > table:first-child > caption {
+        border-radius: $border-radius 0 0 0;
+    }
+
+    .innings-statistics > table:last-child > caption {
+        border-radius: 0 $border-radius 0 0;
+    }
+}

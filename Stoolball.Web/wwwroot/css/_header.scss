@@ -1,0 +1,238 @@
+﻿@import "_theme.scss";
+@import "_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+
+/*******************
+  Sitewide header 
+*******************/
+
+// Show a focus ring when navigating with the keyboard - using box-shadow supports rounding the corners
+@mixin header-focus-ring {
+    @include remove-link-focus;
+    box-shadow: 0 0 0 0.2rem $white;
+    position: relative; // displays box-shadow on top of its siblings
+}
+
+$zindex-header: 900;
+$header_background: $black;
+$header_selected_background: #555;
+$space-for-header-focus-ring: 3px;
+$offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring); // Applied to the the final icon, offset the padding of .container-xl, but allow space for the focus ring to show
+
+// Skip to content link appears only when focussed, for keyboard users
+.skip-to-content:focus {
+    display: block;
+    text-align: center;
+    background: theme-color("primary");
+    color: $white;
+    padding: $spacer;
+}
+.skip-to-content:focus > span {
+    @include header-focus-ring;
+    padding: $spacer/2;
+    border-radius: $spacer/4;
+}
+.skip-to-content:focus > span:after{
+    content: '❯';
+    margin-left: $spacer/2;
+}
+
+// When skip-to-content is followed, by default the page is scrolled with the h1 partly off-screen, so push the scroll position up a bit.
+main {
+    padding-top: 60px;
+    margin-top: -60px;
+}
+
+
+// Create some space between the header and the following content
+.header {
+    margin-bottom: $spacer;
+}
+
+// This is outside .container-xl, therefore spans the viewport
+.header__bar {
+    background: $header_background;
+    color: $white;
+    position: relative;
+    z-index: $zindex-header + 1; // Raise this above .header-photo
+    min-height: $minimum-clickable-size;
+}
+
+// Distribute the logo, large menu, account menu trigger button and small menu trigger button across .header_bar with vertical centering.
+// This is within .container-xl, therefore is contained by it.
+.header__inner {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+// align-self to the top, overriding vertical-centering. Set a fixed width, which will grow with media queries.
+.header__logo {
+    min-width: 150px;
+    width: 150px;
+    background: $white;
+    margin: 0 $spacer/2 -100px 0; // -100px is just "plenty" to avoid it having an effect on surrounding elements. $spacer creates space between this and the next visible item within .header_inner.
+    border-radius: 0 0 $border-radius*2 $border-radius*2;
+    align-self: start;
+    box-shadow: rgba(0,0,0,.3) 3px 3px 6px 2px
+}
+
+@include media-breakpoint-up(sm) {
+    .header {
+        margin-bottom: $spacer*2;
+    }
+    
+    .header__logo {
+        width: 200px;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .header__logo {
+        width: 250px;
+    }
+}
+
+// White space around the logo, which only works with display: block applied
+.header__logo-inner {
+    @include remove-link-underline;
+    display: block;
+    padding: 10px 15px;
+}
+
+// Show a focus ring on the home link when navigating with the keyboard
+.header__logo-inner:focus, .header__logo-inner:active {
+    outline: 5px solid $white;
+    outline-offset: 5px;
+}
+
+// The logo and dropdown menus have a fixed size. This allows .header__menu-large to consume the rest
+// and push the dropdown menus to the right, even if the menu inside it is hidden.
+.header__menu-large {
+    flex-grow: 1;
+}
+
+.header__menu-large [role=menubar] {
+    display: none;
+}
+
+.header__menu-large li {
+    padding: 0;
+}
+
+@include media-breakpoint-up(md) {
+    // Use flexbox to display the main menu horizontally
+    .header__menu-large [role=menubar] {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    // Pad the clickable area of a menu item, and add spacing so that the backgrounds of a selected item and a hovered item do not touch
+    .header__menu-large [role=menuitem] {
+        @include remove-link-underline;
+        display: inline-block;
+        color: $white;
+        padding: $spacer/2 ($spacer*.9);
+        margin-right: 2px;
+        font-style: normal;
+        border-radius: $border-radius;
+    }
+    // Change the menu button background on hover or when selected
+    .header__menu-large a:hover, .header__menu-large [role=menuitem][aria-selected] {
+        background: $header_selected_background;
+        color: $white;
+    }
+    // Show a focus ring when navigating with the keyboard
+    .header__menu-large a:focus, .header__menu-large a:active {
+        @include header-focus-ring;
+    }
+}
+
+// Round off the account image when signed-in
+.header__account__account-image {
+    border-radius: 50%;
+}
+
+// Dropdown 'Hamburger' menu for small screens, and offset the padding of .container-xl
+.header__menu-small {
+    margin-right: $offset-container-padding;
+}
+
+// Hide the 'Hamburger' menu when the main menu appears, and move padding offset to 'Account' menu
+@include media-breakpoint-up(md) {
+    .header__menu-small {
+        display: none;
+    }
+
+    .header__account {
+        margin-right: $offset-container-padding; // When this is the final icon, offset the padding of .container-xl
+    }
+}
+
+// Properties common to all top-right dropdown menus
+
+// The button should have the minimum recommended touch size of 44px x 44px
+// The button should be positioned above the menu so that its focus ring is visible when navigating with the keyboard
+.header .dropdown > button {
+    min-width: $minimum-clickable-size;
+    min-height: $minimum-clickable-size;
+    padding: 0;
+    position: relative;
+    z-index: $zindex-header+1;
+}
+
+// Change the background on a menu or menu item when hovering or when selected
+.header .dropdown > button:hover, .header .dropdown-item > *:hover, .header .dropdown-item [aria-selected] 
+{
+    background: $header_selected_background;
+    color: $white;
+}
+
+
+.header .dropdown-item > a:active {
+    background: theme-color("primary");
+}
+
+// Show a focus ring when navigating with the keyboard
+.header .dropdown > button:focus, .header .dropdown > button:active {
+    @include header-focus-ring;
+}
+
+// Override the usual max-width: 100% on images, so that the button cannot shrink below $minimum-clickable-size
+.header .dropdown img {
+    max-width: none;
+}
+
+// Round the bottom of the dropdown menu and set a z-index below the focus ring of the trigger button
+.header .dropdown-menu {
+    background: $header_background;
+    color: $white;
+    z-index: $zindex-header;
+}
+
+.header .dropdown-item > * {
+    color: $white;
+}
+
+// Show a focus ring when navigating with the keyboard
+.header .dropdown-item > a:focus, .header .dropdown-item > a:active {
+    @include header-focus-ring;
+}
+
+
+// Hero image z-index puts it below the .header_bar.
+// Skew it to appear more "active", and include a border-top with offset margin to fill in the resulting triangle at the top left with the header background colour.
+// Similarly the box-shadow fills in the rough edges of the skewed image and border in Blink (Gecko is fine)
+.header__photo {
+    position: relative;
+    z-index: $zindex-header;
+    display: block;
+    transform: skewY($skew);
+    border-top: 30px solid $header_background;
+    margin-top: -30px;
+    border-bottom: theme-color("primary") solid 5px;
+    box-shadow: inset 0 -1px 0 theme-color("primary"); // smooths out rough edges from the skew
+}

@@ -1,0 +1,196 @@
+﻿@import "_theme.scss";
+@import "_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+
+@import "../../../node_modules/bootstrap/scss/_type.scss";
+@import "../../../node_modules/bootstrap/scss/utilities/_text.scss"; // TODO: review usage - probably unused
+
+h1 {
+    margin-bottom: $spacer;
+    font-weight: $font-weight-bold;
+    letter-spacing: -.02em;
+}
+
+a {
+    @include link-underline;
+}
+
+a:visited {
+    color: theme-color("secondary");
+    border-bottom-color: theme-color("secondary");
+}
+
+a.btn-primary:visited, a.btn-secondary:visited {
+    color: $white;
+}
+
+a:hover {
+    text-decoration: none;
+    color: darken($link-color, 10%);
+}
+
+a:focus, a:active {
+    @include remove-link-underline;
+    @include link-focus;
+}
+
+a[type='application/rss+xml'] {
+    padding-left: 22px;
+    background: left center / 16px url(/images/icons/iconmonstr-rss-feed-3.svg) no-repeat;
+    border: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-skip-ink: auto;
+}
+
+a[type='text/calendar'] {
+    padding-left: 22px;
+    background: left center / 16px url(/images/icons/iconmonstr-calendar-5.svg) no-repeat;
+    border: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-skip-ink: auto;
+}
+
+a[type='text/calendar'].calendar__inline {
+    margin-left: $spacer;
+}
+
+blockquote {
+    font-style: italic;
+}
+
+ul {
+    padding-left: 1rem;
+}
+
+ol {
+    padding-left: 1.3rem; // enough for two digits
+}
+
+li {
+    padding: 0 0 $spacer/4;
+}
+
+// .list-columns is intended for lists of short links, eg player, team or season names.
+// It arranges the list first vertically, then horizontally for three or more columns.
+@media screen {
+    .list-columns {
+        columns: 2;
+    }
+
+    @include media-breakpoint-up(sm) {
+        .list-columns {
+            columns: auto;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .list-columns > * {
+            width: 33%;
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+        .list-columns > * {
+            width: 25%;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        .list-columns > * {
+            width: (100%/6);
+        }
+    }
+}
+
+// .list-columns-wide is similar to .list-columns, but for items which need a bit more space
+@media screen {
+    .list-columns-wide > li { 
+        margin-bottom: $spacer/4;
+    }
+
+    @include media-breakpoint-up(sm) {
+        .list-columns-wide {
+            columns: 2;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        .list-columns-wide {
+            columns: 3;
+        }
+    }
+}
+
+
+// Title and detail styles for listings - competitions, teams, matches and locations.
+.list-results__title {
+    font-weight: bold;
+    margin: 0;
+}
+
+.list-results__detail {
+    margin-bottom: $spacer/2;
+}
+
+// Lists of matches and tournaments appear in several places around the site.
+// .match-list-minimal takes the ordered list and displays it as a standard unordered list.
+.match-list-minimal {
+    padding-left: $spacer;
+    list-style: disc;
+}
+
+.match-list-minimal p {
+    margin-bottom: 0;
+}
+
+// .match-list__match identifies each match in a list (not using .match-list-minimal) 
+// and resets it to an inert container for .list-results__title and .list-results__detail
+.match-list__match {
+    padding: 0;
+    margin: 0;
+}
+
+// Highlight an unusual match, eg a friendly in a set of league matches
+.match-list__match-type {
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+// Highlight the next match with a style based on .alert-info, that spans the entire width including the gutters of .container-xl
+.match-list__next {
+    padding: $spacer $grid-gutter-width/2;
+    margin: 0 (-$grid-gutter-width/2) ($spacer/2);
+    background: theme-color-level("info", $alert-bg-level);
+    border-radius: $border-radius;
+}
+
+.match-list__next .list-results__detail {
+    margin: 0;
+}
+
+@media print {
+    // Change the highlighting to a left border for print, because the background colour probably won't be printed
+    .match-list__next {
+        border-left: 5px solid theme-color("primary");
+        border-radius: 0;
+        padding: 0 10px;
+        margin-left: -15px;
+    }
+}
+
+// Remove the underline from social media icons,
+// and expand the clickable area to (almost) 44px
+.social-media a {
+    @include remove-link-underline;
+    display: inline-block;
+    padding: 8px;
+}
+
+// Add the default link focus indicator as a hover effect too
+.social-media a:hover {
+    @include link-focus;
+}
