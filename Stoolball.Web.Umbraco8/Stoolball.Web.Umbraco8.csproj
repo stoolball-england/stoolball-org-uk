@@ -453,20 +453,9 @@
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Outbound.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\RadioGroup.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Site.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\TipElementType.controller.js" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\Tip.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\YouTubeVideo.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\GettyImage.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\IFrameElementType.controller.js" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.controller.js" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedTextWithImage.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\package.manifest" />
     <Content Include="Account\account.scss" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\package.manifest" />
     <Content Include="ApplicationInsights.template.config" />
-    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js" />
-    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html" />
     <Content Include="App_Plugins\UmbracoForms\Assets\aspnet-validation\dist\aspnet-validation.min.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\BaremetricsCalendar\public\css\application.css" />
     <Content Include="App_Plugins\UmbracoForms\Assets\BaremetricsCalendar\public\js\Calendar.js" />
@@ -703,7 +692,6 @@
     <Content Include="config\umbracoSettings.live.xdt.config" />
     <Content Include="config\tinyMceConfig.local.xdt.config" />
     <Content Include="config\tinyMceConfig.live.xdt.config" />
-    <Content Include="App_Plugins\Stoolball.PropertyEditors\package.manifest" />
     <Content Include="App_Plugins\UmbracoForms\UmbracoForms.config" />
     <Content Include="Competitions\competitions.scss" />
     <Content Include="App_Plugins\uSync8\package.manifest" />
@@ -1126,7 +1114,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Content.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedText.html" />
     <Content Include="Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>FormattedTextWithImage.generated.cs</LastGenOutput>
@@ -1351,7 +1338,6 @@
     <Compile Include="App_Data\Models\StyleGuide.generated.cs" />
     <Compile Include="App_Data\Models\Tip.generated.cs" />
     <Compile Include="App_Data\Models\YouTubeVideo.generated.cs" />
-    <Compile Include="App_Plugins\Stoolball.PropertyEditors\StylesheetPickerPropertyValueConverter.cs" />
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="Caching\CacheOverride.cs" />
     <Compile Include="Caching\ClearableCacheWrapper.cs" />

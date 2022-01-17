@@ -1,6 +1,6 @@
 ﻿using System;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Core.PropertyEditors;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.PropertyEditors;
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
 namespace Stoolball.Web.App_Plugins.Stoolball.PropertyEditors

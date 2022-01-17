@@ -14,6 +14,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="App_Plugins\Stoolball.PropertyEditors\StylesheetPickerPropertyValueConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedText.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedTextWithImage.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\GettyImage.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\IFrameElementType.controller.js" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.controller.js" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\package.manifest" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\Tip.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\TipElementType.controller.js" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\YouTubeVideo.html" />
+    <Content Include="App_Plugins\Stoolball.PropertyEditors\package.manifest" />
+    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js" />
+    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.12" />
     <PackageReference Include="Umbraco.Cloud.Identity.Cms" Version="4.0.51" />
     <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="4.0.0" />
