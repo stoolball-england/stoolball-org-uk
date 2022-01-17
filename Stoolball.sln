@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Web.UnitTests", "Stoolball.Web.UnitTests\Stoolball.Web.UnitTests.csproj", "{39945245-3B64-4248-9106-12E0007B1B3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Web.Umbraco8.UnitTests", "Stoolball.Web.Umbraco8.UnitTests\Stoolball.Web.Umbraco8.UnitTests.csproj", "{39945245-3B64-4248-9106-12E0007B1B3D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A267BDF-FFAB-44C3-BC17-2457CD63DD4A}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball", "Stoolball\Stoo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.UnitTests", "Stoolball.UnitTests\Stoolball.UnitTests.csproj", "{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Web", "Stoolball.Web\Stoolball.Web.csproj", "{F66102A7-55A0-423A-AAD3-19D89147B5C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Web.Umbraco8", "Stoolball.Web.Umbraco8\Stoolball.Web.Umbraco8.csproj", "{F66102A7-55A0-423A-AAD3-19D89147B5C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Data.UmbracoMigrations", "Stoolball.Data.UmbracoMigrations\Stoolball.Data.UmbracoMigrations.csproj", "{B34B6E72-27E7-4440-BE0D-A627ABE6CA17}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Data.UmbracoMigrations.Umbraco8", "Stoolball.Data.UmbracoMigrations.Umbraco8\Stoolball.Data.UmbracoMigrations.Umbraco8.csproj", "{B34B6E72-27E7-4440-BE0D-A627ABE6CA17}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.SqlServer", "Stoolball.Data.SqlServer\Stoolball.Data.SqlServer.csproj", "{99803072-9098-430A-A2F5-20EFAC92134D}"
 EndProject
@@ -26,6 +26,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.Cache", "Stoolball.Data.Cache\Stoolball.Data.Cache.csproj", "{1C2F2523-9D88-4289-BB2B-22611AC50D81}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Testing", "Stoolball.Testing\Stoolball.Testing.csproj", "{B230B6CF-4FD3-4C44-8894-5ED789BFF191}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Web", "Stoolball.Web\Stoolball.Web.csproj", "{E6913903-4FC1-4071-B508-A6A1634BCF8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{B230B6CF-4FD3-4C44-8894-5ED789BFF191}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B230B6CF-4FD3-4C44-8894-5ED789BFF191}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B230B6CF-4FD3-4C44-8894-5ED789BFF191}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6913903-4FC1-4071-B508-A6A1634BCF8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6913903-4FC1-4071-B508-A6A1634BCF8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6913903-4FC1-4071-B508-A6A1634BCF8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6913903-4FC1-4071-B508-A6A1634BCF8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -358,8 +358,8 @@ MigrationBackup/
 # Serilog
 *.user.config
 
-# Umbraco
-Umbraco
+# Umbraco CMS .NET Framework
+Stoolball.Web.Umbraco8/Umbraco
 splashes
 **/App_Data/*
 !**/App_Data/packages
@@ -384,7 +384,6 @@ splashes
 !**/Views/Partials/Forms/Themes/stoolball
 **/Views/Partials/Grid
 **/Views/MacroPartials
-.UmbracoCloud
 **/data/deploy*
 **/data/Revision/documents/*
 **/data/Revision/media/*
@@ -392,22 +391,67 @@ splashes
 **/data/Revision/properties/*
 member-group__*.uda
 
+##
+## Umbraco CMS .NETCore
+##
+
+# Dont commit Umbraco TEMP folder containing Examine Indexes, NuCache etc
+**/umbraco/Data/TEMP/
+
+# Dont commit files that are generated and cached from the default ImageSharp location
+**/umbraco/mediacache/
+
+# Umbraco backoffice language files
+# Nuget package Umbraco.Cms.StaticAssets will copy them in during dotnet build
+# Customize langguage files in /config/lang/{language}.user.xml
+**/umbraco/config/lang/
+
+# JSON Schema file for appsettings
+# This is auto generated from the build
+**/umbraco/config/appsettings-schema.json
+
+# This is the no-nodes, installer & upgrader pages from Umbraco
+# Nuget package Umbraco.Cms.StaticAssets will copy them in during dotnet build
+**/umbraco/UmbracoWebsite/
+**/umbraco/UmbracoInstall/
+**/umbraco/UmbracoBackOffice/
+
+# Comment out the line below if you wish to change or add any new templates to PartialView Macros
+**/umbraco/PartialViewMacros/
+
+# Umbraco Static Assets of Backoffice
+# Nuget package Umbraco.Cms.StaticAssets will copy them in during dotnet build
+**/wwwroot/umbraco/
+
+# Umbraco deploy marker files
+**/Deploy/deploy*
+
 # Other Nuget packages
-Stoolball.Web/Content
-Stoolball.Web/Scripts
+Stoolball.Web.Umbraco8/Content
+Stoolball.Web.Umbraco8/Scripts
 
 # CSS files are built from scss
 *.css
 
 # Exclude files containing secrets
 UmbracoDeploy*.config
-Stoolball.Web/Web.config
+Stoolball.Web.Umbraco8/Web.config
 Secret-*
 *.courier
 
 # Exclude generated files
-Stoolball.Web/Web.development.xdt.config
-Stoolball.Web/Web.live.xdt.config
+Stoolball.Web.Umbraco8/Web.development.xdt.config
+Stoolball.Web.Umbraco8/Web.live.xdt.config
 umbracoSettings.config
 tinyMceConfig.config
 ApplicationInsights.config
+Smidge
+
+# Work with Umbraco Cloud in a separate repo
+.UmbracoCloud
+*.lic
+appsettings.*.json
+umbraco-cloud.json
+
+# Cypress 
+**/cypress/videos
