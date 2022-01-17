@@ -22,6 +22,7 @@
     <PackageReference Include="Umbraco.Deploy.Contrib" Version="9.0.0" />
     <PackageReference Include="Umbraco.Deploy.Forms" Version="9.2.1" />
     <PackageReference Include="Umbraco.Forms" Version="9.2.0" />
+    <PackageReference Include="uSync" Version="9.0.6" />
   </ItemGroup>
 
   <ItemGroup>

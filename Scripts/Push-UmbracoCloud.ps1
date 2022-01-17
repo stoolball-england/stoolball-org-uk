@@ -20,11 +20,11 @@ if ($configLine -match 'base = "(?<UmbracoRoot>src/[\w.-]+)"') {
     
     # Copy changes from $umbracoRoot to the .UmbracoCloud deployment repository
     robocopy $umbracoRoot $cloudRoot\$umbracoProjectPath `
-        /IF *.cs *.csproj *.cshtml *.uda *.config *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 appsettings.json `
+        /IF *.cs *.csproj *.cshtml *.uda *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 appsettings.json `
         /XF Umbraco.*.dll uSync*.dll member-group__*.uda *.test.js `
         /S `
         /XD .git $umbracoRoot\obj $umbracoRoot\bin $umbracoRoot\node_modules $umbracoRoot\sass $umbracoRoot\App_Data $umbracoRoot\wwwroot\media $umbracoRoot\wwwroot\umbraco `
-        $umbracoRoot\App_Plugins\Deploy $umbracoRoot\App_Plugins\UmbracoForms $umbracoRoot\App_Plugins\UmbracoId $umbracoRoot\App_Plugins\uSync8 `
+        $umbracoRoot\App_Plugins\Deploy $umbracoRoot\App_Plugins\UmbracoForms $umbracoRoot\App_Plugins\UmbracoId $umbracoRoot\App_Plugins\uSync `
         $umbracoRoot\umbraco\config $umbracoRoot\umbraco\Data $umbracoRoot\umbraco\config\Logs $umbracoRoot\umbraco\PartialViewMacros $umbracoRoot\umbraco\UmbracoBackOffice `
         $umbracoRoot\umbraco\UmbracoInstall $umbracoRoot\umbraco\UmbracoWebsite
     
