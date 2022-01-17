@@ -1028,7 +1028,6 @@
     <Content Include="Secret-InstrumentationKey.ApplicationInsights.live.xdt.config" />
     <Content Include="Matches\edit-tournament-matches.scss" />
     <Content Include="Matches\matches.scss" />
-    <Content Include="Media\Web.config" />
     <None Include="Secret-Email.Web.development.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
