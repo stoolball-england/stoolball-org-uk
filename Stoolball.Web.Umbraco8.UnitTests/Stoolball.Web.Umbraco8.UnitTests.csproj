@@ -234,7 +234,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Stoolball.Web.Umbraco8\Stoolball.Web.Umbraco8.csproj">
       <Project>{f66102a7-55a0-423a-aad3-19d89147b5c7}</Project>
-      <Name>Stoolball.Web</Name>
+      <Name>Stoolball.Web.Umbraco8</Name>
     </ProjectReference>
     <ProjectReference Include="..\Stoolball\Stoolball.csproj">
       <Project>{4F0709D1-9E82-4016-8003-0E67D6F8CB60}</Project>

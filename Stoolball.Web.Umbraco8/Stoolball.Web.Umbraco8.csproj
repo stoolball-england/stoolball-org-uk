@@ -2,7 +2,6 @@
   <Import Project="..\packages\UmbracoCms.8.17.0\build\UmbracoCms.props" Condition="Exists('..\packages\UmbracoCms.8.17.0\build\UmbracoCms.props')" />
   <Import Project="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\build\Microsoft.CodeAnalysis.NetAnalyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\build\Microsoft.CodeAnalysis.NetAnalyzers.props')" />
   <Import Project="..\packages\uSync.8.8.3\build\uSync.props" Condition="Exists('..\packages\uSync.8.8.3\build\uSync.props')" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -28,7 +27,6 @@
     </UseGlobalApplicationHostFile>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -3144,9 +3142,9 @@
       <Project>{99803072-9098-430a-a2f5-20efac92134d}</Project>
       <Name>Stoolball.Data.SqlServer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Stoolball.Data.UmbracoMigrations\Stoolball.Data.UmbracoMigrations.csproj">
+    <ProjectReference Include="..\Stoolball.Data.UmbracoMigrations.Umbraco8\Stoolball.Data.UmbracoMigrations.Umbraco8.csproj">
       <Project>{b34b6e72-27e7-4440-be0d-a627abe6ca17}</Project>
-      <Name>Stoolball.Data.UmbracoMigrations</Name>
+      <Name>Stoolball.Data.UmbracoMigrations.Umbraco8</Name>
     </ProjectReference>
     <ProjectReference Include="..\Stoolball\Stoolball.csproj">
       <Project>{4f0709d1-9e82-4016-8003-0e67d6f8cb60}</Project>
@@ -3166,7 +3164,6 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <ProjectExtensions>
