@@ -27,6 +27,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Forms\EmailField.html" />
+    <None Remove="Forms\RecreateUmbracoForms.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="App_Plugins\Stoolball.UmbracoForms\DependencyComposer.cs" />
+    <Compile Include="App_Plugins\Stoolball.UmbracoForms\EmailField.cs" />
     <Compile Include="App_Plugins\Stoolball.PropertyEditors\StylesheetPickerPropertyValueConverter.cs" />
   </ItemGroup>
 
@@ -44,6 +51,8 @@
     <Content Include="App_Plugins\Stoolball.PropertyEditors\package.manifest" />
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js" />
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html" />
+    <Content Include="App_Plugins\Stoolball.UmbracoForms\EmailField.html" />
+    <Content Include="App_Plugins\Stoolball.UmbracoForms\RecreateUmbracoForms.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +69,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Forms\" />
     <Folder Include="umbraco\Deploy\Revision\" />
   </ItemGroup>
 

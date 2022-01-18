@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using Umbraco.Forms.Core;
-using Umbraco.Forms.Core.Data.Storage;
 using Umbraco.Forms.Core.Enums;
 using Umbraco.Forms.Core.Models;
+using Umbraco.Forms.Core.Services;
 
-namespace Stoolball.Web.Forms
+namespace Stoolball.Web.App_Plugins.Stoolball.UmbracoForms
 {
     /// <summary>
     /// An Umbraco Forms field type that validates an email address
@@ -33,17 +33,12 @@ namespace Stoolball.Web.Forms
             SortOrder = 25;
         }
 
-        /// <summary>
-        /// Validates the field.
-        /// </summary>
-        /// <param name="form">The form.</param>
-        /// <param name="field">The field.</param>
-        /// <param name="postedValues">The posted values.</param>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public override IEnumerable<string> ValidateField(Form form, Field field, IEnumerable<object> postedValues, HttpContextBase context, IFormStorage formStorage)
+        public override string GetDesignView() => "~/App_Plugins/Stoolball.UmbracoForms/EmailField.html";
+
+        /// <inheritdoc />
+        public override IEnumerable<string> ValidateField(Form form, Field field, IEnumerable<object> postedValues, HttpContext context, IPlaceholderParsingService placeholderParsingService)
         {
-            var errorMessages = new List<string>(base.ValidateField(form, field, postedValues, context, formStorage));
+            var errorMessages = new List<string>(base.ValidateField(form, field, postedValues, context, placeholderParsingService));
 
             if (postedValues != null)
             {

@@ -468,7 +468,6 @@
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\FieldTypes\dataconsent.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\FieldTypes\datepicker.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\FieldTypes\dropdownlist.html" />
-    <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\FieldTypes\EmailField.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\FieldTypes\fileupload.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\FieldTypes\hiddenfield.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\FieldTypes\password.html" />
@@ -615,7 +614,6 @@
     <Content Include="config\Lang\sv-SE.user.xml" />
     <Content Include="config\Lang\zh-CN.user.xml" />
     <Content Include="config\logviewer.searches.config.js" />
-    <Content Include="Forms\RecreateUmbracoForms.sql" />
     <Content Include="Global.asax" />
     <Content Include="config\umbracoSettings.local.xdt.config" />
     <Content Include="config\umbracoSettings.live.xdt.config" />
@@ -643,11 +641,11 @@
     <Content Include="Email\EmailTemplate.html" />
     <Content Include="Directory.Build.targets" />
     <Content Include="config\uSync8.config" />
-    <Content Include="Forms\UmbracoForms.local.xdt.config" />
     <Content Include="fonts\Web.config" />
     <Content Include="images\Web.config" />
     <Content Include="ApplicationInsights.xdt.template.config" />
     <Content Include="Secret-InstrumentationKey.ApplicationInsights.live.xdt.config" />
+    <Content Include="Forms\UmbracoForms.local.xdt.config" />
     <None Include="Secret-Email.Web.development.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
@@ -1258,7 +1256,6 @@
     <Compile Include="Products\ProductList.cs" />
     <Compile Include="Products\ProductListController.cs" />
     <Compile Include="ContentPage\Content.cs" />
-    <Compile Include="Forms\EmailField.cs" />
     <Compile Include="ContentPage\ContentController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchController.cs" />
     <Compile Include="Matches\CreateKnockoutMatchController.cs" />
