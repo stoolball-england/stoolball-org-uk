@@ -8,7 +8,7 @@
                 <li><a href="/privacy">Privacy</a></li>
                 <li><a href="/contact">Contact us</a></li>
             </ul>
-            @Html.Partial("_SocialMedia", new SocialMedia {
+            @await Html.PartialAsync("_SocialMedia", new SocialMedia {
                DisplayName = "Stoolball England",
                Facebook = "https://facebook.com/stoolball",
                Twitter = "@stoolball",

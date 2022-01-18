@@ -28,6 +28,12 @@ namespace ASP
     using System.Web.WebPages;
     using Examine;
     
+    #line 3 "..\..\Views\Partials\_Comments.cshtml"
+    using Stoolball.Account;
+    
+    #line default
+    #line hidden
+    
     #line 2 "..\..\Views\Partials\_Comments.cshtml"
     using Stoolball.Comments;
     
@@ -36,12 +42,6 @@ namespace ASP
     
     #line 5 "..\..\Views\Partials\_Comments.cshtml"
     using Stoolball.Dates;
-    
-    #line default
-    #line hidden
-    
-    #line 3 "..\..\Views\Partials\_Comments.cshtml"
-    using Stoolball.Web.Account;
     
     #line default
     #line hidden
@@ -138,36 +138,36 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("                        <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 662), Tuple.Create("\"", 681)
+WriteAttribute("src", Tuple.Create(" src=\"", 658), Tuple.Create("\"", 677)
             
             #line 20 "..\..\Views\Partials\_Comments.cshtml"
-, Tuple.Create(Tuple.Create("", 668), Tuple.Create<System.Object, System.Int32>(gravatar.Url
+, Tuple.Create(Tuple.Create("", 664), Tuple.Create<System.Object, System.Int32>(gravatar.Url
             
             #line default
             #line hidden
-, 668), false)
+, 664), false)
 );
 
 WriteLiteral(" alt=\"\"");
 
-WriteAttribute("width", Tuple.Create(" width=\"", 689), Tuple.Create("\"", 711)
+WriteAttribute("width", Tuple.Create(" width=\"", 685), Tuple.Create("\"", 707)
             
             #line 20 "..\..\Views\Partials\_Comments.cshtml"
-, Tuple.Create(Tuple.Create("", 697), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+, Tuple.Create(Tuple.Create("", 693), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 697), false)
+, 693), false)
 );
 
-WriteAttribute("height", Tuple.Create(" height=\"", 712), Tuple.Create("\"", 735)
+WriteAttribute("height", Tuple.Create(" height=\"", 708), Tuple.Create("\"", 731)
             
             #line 20 "..\..\Views\Partials\_Comments.cshtml"
-        , Tuple.Create(Tuple.Create("", 721), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+        , Tuple.Create(Tuple.Create("", 717), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 721), false)
+, 717), false)
 );
 
 WriteLiteral(" class=\"comment__account-image\"");

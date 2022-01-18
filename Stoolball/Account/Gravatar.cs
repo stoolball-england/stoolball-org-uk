@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Stoolball.Web.Account
+namespace Stoolball.Account
 {
     /// <summary>
     /// A Gravatar representing an email address
@@ -25,7 +25,6 @@ namespace Stoolball.Web.Account
         /// </summary>
         public int Size { get { return _size; } }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = "<Pending>")]
         private Uri BuildGravatarUrl(string emailAddress)
         {

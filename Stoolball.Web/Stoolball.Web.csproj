@@ -27,6 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Directory.Build.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="App_Plugins\Stoolball.UmbracoForms\DependencyComposer.cs" />
     <Compile Include="App_Plugins\Stoolball.UmbracoForms\EmailField.cs" />
     <Compile Include="App_Plugins\Stoolball.PropertyEditors\StylesheetPickerPropertyValueConverter.cs" />
@@ -48,6 +52,7 @@
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html" />
     <Content Include="App_Plugins\Stoolball.UmbracoForms\EmailField.html" />
     <Content Include="App_Plugins\Stoolball.UmbracoForms\RecreateUmbracoForms.sql" />
+    <Content Include="Directory.Build.targets" />
   </ItemGroup>
 
   <ItemGroup>
@@ -74,6 +79,31 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Stoolball\Stoolball.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Master.cshtml">
+      <Generator></Generator>
+    </Content>
+    <Content Update="Views\Partials\_Breadcrumb.cshtml">
+      <Generator></Generator>
+    </Content>
+    <Content Update="Views\Partials\_CanonicalUrl.cshtml">
+      <Generator></Generator>
+    </Content>
+    <Content Update="Views\Partials\_Footer.cshtml">
+      <Generator></Generator>
+    </Content>
+    <Content Update="Views\Partials\_Header.cshtml">
+      <Generator></Generator>
+    </Content>
+    <Content Update="Views\Partials\_SocialMedia.cshtml">
+      <Generator></Generator>
+    </Content>
+    <Content Update="Views\_ViewStart.cshtml">
+      <Generator></Generator>
+    </Content>
     <Content Update="wwwroot\js\lib\jquery.validate.unobtrusive.min.js">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

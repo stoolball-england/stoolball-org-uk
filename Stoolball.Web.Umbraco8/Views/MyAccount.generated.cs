@@ -41,7 +41,7 @@ namespace ASP
     using Examine;
     
     #line 4 "..\..\Views\MyAccount.cshtml"
-    using Stoolball.Web.Account;
+    using Stoolball.Account;
     
     #line default
     #line hidden
@@ -145,36 +145,36 @@ WriteLiteral(" class=\"gravatar\"");
 
 WriteLiteral(">\r\n            <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 827), Tuple.Create("\"", 846)
+WriteAttribute("src", Tuple.Create(" src=\"", 823), Tuple.Create("\"", 842)
             
             #line 23 "..\..\Views\MyAccount.cshtml"
-, Tuple.Create(Tuple.Create("", 833), Tuple.Create<System.Object, System.Int32>(gravatar.Url
+, Tuple.Create(Tuple.Create("", 829), Tuple.Create<System.Object, System.Int32>(gravatar.Url
             
             #line default
             #line hidden
-, 833), false)
+, 829), false)
 );
 
 WriteLiteral(" alt=\"Your account picture from gravatar.com\"");
 
-WriteAttribute("width", Tuple.Create(" width=\"", 892), Tuple.Create("\"", 914)
+WriteAttribute("width", Tuple.Create(" width=\"", 888), Tuple.Create("\"", 910)
             
             #line 23 "..\..\Views\MyAccount.cshtml"
-          , Tuple.Create(Tuple.Create("", 900), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+          , Tuple.Create(Tuple.Create("", 896), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 900), false)
+, 896), false)
 );
 
-WriteAttribute("height", Tuple.Create(" height=\"", 915), Tuple.Create("\"", 938)
+WriteAttribute("height", Tuple.Create(" height=\"", 911), Tuple.Create("\"", 934)
             
             #line 23 "..\..\Views\MyAccount.cshtml"
-                                  , Tuple.Create(Tuple.Create("", 924), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+                                  , Tuple.Create(Tuple.Create("", 920), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 924), false)
+, 920), false)
 );
 
 WriteLiteral(" />\r\n            <div>");

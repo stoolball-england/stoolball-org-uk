@@ -1,0 +1,12 @@
+﻿@model IEnumerable<string>
+@using Microsoft.AspNetCore.WebUtilities
+@{
+    var trimmedQueryString = QueryHelpers.ParseQuery(string.Empty);
+    foreach (var key in Model)
+    {
+        if (key != "page" || int.TryParse(Context.Request.Query["page"], out var page) && page > 1)
+        {
+            trimmedQueryString.Add(key, Context.Request.Query[key]);
+        }
+    }
+}<link rel="canonical" href="@QueryHelpers.AddQueryString("https://www.stoolball.org.uk" + Context.Request.Path.Value.TrimEnd('/'), trimmedQueryString)" />

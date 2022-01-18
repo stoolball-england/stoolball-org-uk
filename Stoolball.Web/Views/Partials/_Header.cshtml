@@ -1,6 +1,7 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Metadata.IHasViewMetadata>
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Stoolball.Web.Metadata.IHasViewMetadata>
 @using System.Text.RegularExpressions
-@using Stoolball.Web.Account
+@using Stoolball.Account
+@using System.Net
 @{ 
     var headerPhoto = Model.HeaderPhotoWithInheritance();
     var rootUrlsForPlaySection = new List<string>(6) { "PLAY", "TEAMS", "COMPETITIONS", "MATCHES", "TOURNAMENTS", "LOCATIONS" };
@@ -32,7 +33,7 @@
         <div class="container-xl">
             <div class="header__inner">
                 <div class="header__logo">
-                    @if (Request.RawUrl == "/")
+                    @if (Context.Request.Path.Value == "/")
                     {
                         <div class="header__logo-inner"><img src="~/images/logos/stoolball-england.svg" alt="Stoolball England" /></div>
                     }
@@ -51,12 +52,12 @@
                             {
                                 var childUrl = child.Url();
                                 <li role="none">
-                                    @if (currentPage == null && currentSection == null && IsCurrentPage(Request.RawUrl, childUrl))
+                                    @if (currentPage == null && currentSection == null && IsCurrentPage(Context.Request.Path.Value, childUrl))
                                     {
                                         currentPage = childUrl;
                                         <em role="menuitem" aria-selected="true">@child.Name</em>
                                     }
-                                    else if (currentPage == null && currentSection == null && IsCurrentSection(Request.RawUrl, childUrl, rootUrlsForPlaySection))
+                                    else if (currentPage == null && currentSection == null && IsCurrentSection(Context.Request.Path.Value, childUrl, rootUrlsForPlaySection))
                                     {
                                         currentSection = childUrl;
                                         <a role="menuitem" aria-selected="true" href="@childUrl">@child.Name</a>
@@ -86,7 +87,7 @@
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="header__account__button">
                             @if (User.Identity.IsAuthenticated)
                             {
-                                if (Request.RawUrl == "/account")
+                                if (Context.Request.Path.Value == "/account")
                                 {
                                     <li class="dropdown-item"><em aria-selected="true">My account</em></li>
                                 }
@@ -94,7 +95,7 @@
                                 {
                                     <li class="dropdown-item"><a href="/account">My account</a></li>
                                 }
-                                if (Request.RawUrl.StartsWith("/account/sign-out"))
+                                if (Context.Request.Path.Value.StartsWith("/account/sign-out"))
                                 {
                                     <li class="dropdown-item"><em aria-selected="true">Sign out</em></li>
                                 }
@@ -105,7 +106,7 @@
                             }
                             else
                             {
-                                if (Request.RawUrl.StartsWith("/account/create"))
+                                if (Context.Request.Path.Value.StartsWith("/account/create"))
                                 {
                                     <li class="dropdown-item"><em aria-selected="true">Create an account</em></li>
                                 }
@@ -113,13 +114,13 @@
                                 {
                                     <li class="dropdown-item"><a href="/account/create">Create an account</a></li>
                                 }
-                                if (Request.RawUrl.StartsWith("/account/sign-in"))
+                                if (Context.Request.Path.Value.StartsWith("/account/sign-in"))
                                 {
                                     <li class="dropdown-item"><em aria-selected="true">Sign in</em></li>
                                 }
                                 else
                                 {
-                                    <li class="dropdown-item"><a href="/account/sign-in?ReturnUrl=@HttpUtility.UrlEncode(Request.Url.PathAndQuery)">Sign in</a></li>
+                                    <li class="dropdown-item"><a href="/account/sign-in?ReturnUrl=@WebUtility.UrlEncode(Context.Request.Path.Value + Context.Request.QueryString)">Sign in</a></li>
                                 }
                             }
                         </ul>

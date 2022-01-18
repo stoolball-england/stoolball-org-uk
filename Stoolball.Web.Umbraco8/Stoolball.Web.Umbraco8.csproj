@@ -845,7 +845,6 @@
     <Compile Include="Account\EmailAddressFormData.cs" />
     <Compile Include="Account\EmailAddressSurfaceController.cs" />
     <Compile Include="Account\PersonalDetailsSurfaceController.cs" />
-    <Compile Include="Account\GravatarUrl.cs" />
     <Compile Include="Account\LogoutMemberSurfaceController.cs" />
     <Compile Include="Account\PersonalDetailsFormData.cs" />
     <Compile Include="Account\ResetPassword.cs" />
@@ -1110,11 +1109,6 @@
       <DependentUpon>_BowlingAverage.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_CanonicalUrl.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_CanonicalUrl.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_Comments.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1599,11 +1593,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>LogoutMember.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Master.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Master.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Match.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1794,11 +1783,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>_BowlingScorecard.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\_Breadcrumb.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_Breadcrumb.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\_ClubMark.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1884,16 +1868,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>_EditMatchResultTypeFuture.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\_Footer.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_Footer.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\_Header.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_Header.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\_IndividualScores.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1928,11 +1902,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>_SeasonListExpandable.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\_SocialMedia.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_SocialMedia.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_StatisticsBasis.generated.cs">
       <AutoGen>True</AutoGen>
@@ -2049,11 +2018,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TransientTeam.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\_ViewStart.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_ViewStart.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="WebApi\TeamResult.cs" />
     <Compile Include="WebApi\MatchLocationResult.cs" />
     <Compile Include="WebApi\ProgressResult.cs" />
@@ -2118,14 +2082,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\Master.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Master.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\_ViewStart.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_ViewStart.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Home.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Home.generated.cs</LastGenOutput>
@@ -2510,18 +2466,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ProductList.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Partials\_Header.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_Header.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_Breadcrumb.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_Breadcrumb.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_Footer.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_Footer.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Partials\_AddMatchMenu.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_AddMatchMenu.generated.cs</LastGenOutput>
@@ -2537,10 +2481,6 @@
     <Content Include="Views\ResetPasswordRequest.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ResetPasswordRequest.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_SocialMedia.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_SocialMedia.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Partials\_CompetitionContactDetails.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -2601,10 +2541,6 @@
     <Content Include="Views\TournamentTweets.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>TournamentTweets.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_CanonicalUrl.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_CanonicalUrl.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Partials\_CreateOrEditTrainingSession.cshtml">
       <Generator>RazorGenerator</Generator>

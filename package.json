@@ -10,7 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "bootstrap": "^4.6.1",
-    "cypress": "^8.6.0"
+    "cypress": "^8.6.0",
+    "popper.js": "^1.16.1-lts"
   },
   "devDependencies": {
     "@types/cypress": "^1.1.3",

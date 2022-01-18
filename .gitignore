@@ -417,9 +417,8 @@ member-group__*.uda
 # Umbraco deploy marker files
 **/Deploy/deploy*
 
-# Other Nuget packages
-Stoolball.Web.Umbraco8/Content
-Stoolball.Web.Umbraco8/Scripts
+# Files copied from npm packages
+**/wwwroot/js/lib/bootstrap
 
 # CSS files are built from scss
 *.css
