@@ -69,4 +69,11 @@
     <None Include="wwwroot\status\offline.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\js\lib\jquery.validate.unobtrusive.min.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
