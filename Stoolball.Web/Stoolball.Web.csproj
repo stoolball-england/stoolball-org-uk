@@ -27,11 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Forms\EmailField.html" />
-    <None Remove="Forms\RecreateUmbracoForms.sql" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Include="App_Plugins\Stoolball.UmbracoForms\DependencyComposer.cs" />
     <Compile Include="App_Plugins\Stoolball.UmbracoForms\EmailField.cs" />
     <Compile Include="App_Plugins\Stoolball.PropertyEditors\StylesheetPickerPropertyValueConverter.cs" />
@@ -69,7 +64,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Forms\" />
     <Folder Include="umbraco\Deploy\Revision\" />
   </ItemGroup>
 

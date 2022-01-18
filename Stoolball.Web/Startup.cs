@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Stoolball.Web.Security;
 using Umbraco.Cms.Core.DependencyInjection;
+using Umbraco.Cms.Core.Notifications;
 using Umbraco.Extensions;
 
 namespace Stoolball.Web
@@ -43,6 +45,7 @@ namespace Stoolball.Web
                 .AddBackOffice()
                 .AddWebsite()
                 .AddComposers()
+                .AddNotificationHandler<MemberDeletingNotification, DisableMemberDeleteNotificationHandler>()
                 .Build();
 #pragma warning restore IDE0022 // Use expression body for methods
 
