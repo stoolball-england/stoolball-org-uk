@@ -645,7 +645,6 @@
     <Content Include="images\Web.config" />
     <Content Include="ApplicationInsights.xdt.template.config" />
     <Content Include="Secret-InstrumentationKey.ApplicationInsights.live.xdt.config" />
-    <Content Include="Forms\UmbracoForms.local.xdt.config" />
     <None Include="Secret-Email.Web.development.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
