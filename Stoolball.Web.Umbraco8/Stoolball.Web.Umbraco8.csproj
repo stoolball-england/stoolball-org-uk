@@ -1573,11 +1573,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EditTransientTeam.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Home.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Home.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\IndividualScores.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2057,8 +2052,6 @@
     <Compile Include="App_Data\Models\Metadata.generated.cs" />
     <Compile Include="App_Data\Models\MyAccount.generated.cs" />
     <Compile Include="DependencyInjectionComposer.cs" />
-    <Compile Include="HomePage\Home.cs" />
-    <Compile Include="HomePage\HomeController.cs" />
     <Compile Include="MatchLocations\MatchLocationController.cs" />
     <Compile Include="MatchLocations\MatchLocationViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -2082,10 +2075,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\Home.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Home.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\ApproveMember.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ApproveMember.generated.cs</LastGenOutput>

@@ -69,6 +69,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Smidge\" />
     <Folder Include="umbraco\Deploy\Revision\" />
   </ItemGroup>
 
@@ -83,6 +84,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\Home.cshtml">
+      <Generator></Generator>
+    </Content>
     <Content Update="Views\Master.cshtml">
       <Generator></Generator>
     </Content>

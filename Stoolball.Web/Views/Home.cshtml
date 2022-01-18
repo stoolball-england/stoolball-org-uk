@@ -1,8 +1,7 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Home>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using ClientDependency.Core.Mvc
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Home>
+@using Stoolball.Web.Models;
 @{
-    Html.RequiresCss("~/homepage/home.min.css");
+    SmidgeHelper.RequiresCss(new Smidge.Models.CssFile("~/css/home.min.css") { Order = 100 });
 }
 <h1 class="sr-only">@Model.Name</h1>
 

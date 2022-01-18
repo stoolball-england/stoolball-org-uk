@@ -11,7 +11,7 @@
 
     <ItemGroup>
       <FilesFromBootstrapPackage Include="$(SolutionDir)node_modules\bootstrap\js\dist\*.js" />
-      <FilesFromPopperPackage Include="$(SolutionDir)node_modules\popper.js\dist\popper.min.js" />
+      <FilesFromPopperPackage Include="$(SolutionDir)node_modules\popper.js\dist\umd\popper.min.js" />
     </ItemGroup>
 
     <!-- Copy files that are missing -->

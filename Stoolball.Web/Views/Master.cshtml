@@ -8,7 +8,7 @@
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/trusted-types-policy.js") { Order = 2 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/register-service-worker.js") { Order = 2 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/umbraco/lib/jquery/jquery.min.js") { Order = 3 }); // full jQuery rather than slim is required for jQuery autocomplete
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/bootstrap/popper.min.js") { Order = 4 });
+    SmidgeHelper.CreateJsBundle("popper").RequiresJs(new JavaScriptFile("~/js/lib/bootstrap/popper.min.js") { Order = 4 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/bootstrap/util.js") { Order = 5 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/bootstrap/dropdown.js") { Order = 6 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/consent.js"){ Order = 20 });
@@ -62,6 +62,7 @@
         @RenderBody()
     </main>
     @await Html.PartialAsync("_Footer")
+    @await SmidgeHelper.JsHereAsync("popper")
     @await SmidgeHelper.JsHereAsync()
     @RenderSection("umbracoforms", false)
     @if (Context.Request.Host.Host != "localhost")
