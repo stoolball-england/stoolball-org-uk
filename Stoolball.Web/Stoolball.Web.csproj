@@ -22,7 +22,42 @@
 
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
+    <Content Remove="wwwroot\css\account.scss" />
+    <Content Remove="wwwroot\css\autocomplete.scss" />
+    <Content Remove="wwwroot\css\base.scss" />
+    <Content Remove="wwwroot\css\comments.scss" />
+    <Content Remove="wwwroot\css\competitions.scss" />
+    <Content Remove="wwwroot\css\cookies.page.scss" />
+    <Content Remove="wwwroot\css\edit-tournament-matches.scss" />
+    <Content Remove="wwwroot\css\filter.scss" />
+    <Content Remove="wwwroot\css\home.scss" />
+    <Content Remove="wwwroot\css\match.scss" />
+    <Content Remove="wwwroot\css\matches.scss" />
+    <Content Remove="wwwroot\css\news.scss" />
+    <Content Remove="wwwroot\css\related-items.scss" />
+    <Content Remove="wwwroot\css\rules.page.scss" />
+    <Content Remove="wwwroot\css\scorecards.scss" />
+    <Content Remove="wwwroot\css\shop.page.scss" />
+    <Content Remove="wwwroot\css\statistics.scss" />
+    <Content Remove="wwwroot\css\steps.scss" />
     <Content Remove="wwwroot\css\tinymce.scss" />
+    <Content Remove="wwwroot\css\who-are-stoolball-england.page.scss" />
+    <Content Remove="wwwroot\css\_alerts.scss" />
+    <Content Remove="wwwroot\css\_blocks.scss" />
+    <Content Remove="wwwroot\css\_breadcrumb.scss" />
+    <Content Remove="wwwroot\css\_consent.scss" />
+    <Content Remove="wwwroot\css\_dropdown.scss" />
+    <Content Remove="wwwroot\css\_footer.scss" />
+    <Content Remove="wwwroot\css\_forms.scss" />
+    <Content Remove="wwwroot\css\_header.scss" />
+    <Content Remove="wwwroot\css\_maps.scss" />
+    <Content Remove="wwwroot\css\_mixins.scss" />
+    <Content Remove="wwwroot\css\_print.scss" />
+    <Content Remove="wwwroot\css\_tables.scss" />
+    <Content Remove="wwwroot\css\_tabs.scss" />
+    <Content Remove="wwwroot\css\_text.scss" />
+    <Content Remove="wwwroot\css\_theme.scss" />
+    <Content Remove="wwwroot\css\_tiles.scss" />
     <Content Remove="wwwroot\status\offline.json" />
   </ItemGroup>
 
@@ -74,7 +109,42 @@
 
   <ItemGroup>
     <None Include="compilerconfig.json" />
+    <None Include="wwwroot\css\account.scss" />
+    <None Include="wwwroot\css\autocomplete.scss" />
+    <None Include="wwwroot\css\base.scss" />
+    <None Include="wwwroot\css\comments.scss" />
+    <None Include="wwwroot\css\competitions.scss" />
+    <None Include="wwwroot\css\cookies.page.scss" />
+    <None Include="wwwroot\css\edit-tournament-matches.scss" />
+    <None Include="wwwroot\css\filter.scss" />
+    <None Include="wwwroot\css\home.scss" />
+    <None Include="wwwroot\css\match.scss" />
+    <None Include="wwwroot\css\matches.scss" />
+    <None Include="wwwroot\css\news.scss" />
+    <None Include="wwwroot\css\related-items.scss" />
+    <None Include="wwwroot\css\rules.page.scss" />
+    <None Include="wwwroot\css\scorecards.scss" />
+    <None Include="wwwroot\css\shop.page.scss" />
+    <None Include="wwwroot\css\statistics.scss" />
+    <None Include="wwwroot\css\steps.scss" />
     <None Include="wwwroot\css\tinymce.scss" />
+    <None Include="wwwroot\css\who-are-stoolball-england.page.scss" />
+    <None Include="wwwroot\css\_alerts.scss" />
+    <None Include="wwwroot\css\_blocks.scss" />
+    <None Include="wwwroot\css\_breadcrumb.scss" />
+    <None Include="wwwroot\css\_consent.scss" />
+    <None Include="wwwroot\css\_dropdown.scss" />
+    <None Include="wwwroot\css\_footer.scss" />
+    <None Include="wwwroot\css\_forms.scss" />
+    <None Include="wwwroot\css\_header.scss" />
+    <None Include="wwwroot\css\_maps.scss" />
+    <None Include="wwwroot\css\_mixins.scss" />
+    <None Include="wwwroot\css\_print.scss" />
+    <None Include="wwwroot\css\_tables.scss" />
+    <None Include="wwwroot\css\_tabs.scss" />
+    <None Include="wwwroot\css\_text.scss" />
+    <None Include="wwwroot\css\_theme.scss" />
+    <None Include="wwwroot\css\_tiles.scss" />
     <None Include="wwwroot\status\offline.json" />
   </ItemGroup>
 
@@ -83,30 +153,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\Home.cshtml">
-      <Generator></Generator>
-    </Content>
-    <Content Update="Views\Master.cshtml">
-      <Generator></Generator>
-    </Content>
-    <Content Update="Views\Partials\_Breadcrumb.cshtml">
-      <Generator></Generator>
-    </Content>
-    <Content Update="Views\Partials\_CanonicalUrl.cshtml">
-      <Generator></Generator>
-    </Content>
-    <Content Update="Views\Partials\_Footer.cshtml">
-      <Generator></Generator>
-    </Content>
-    <Content Update="Views\Partials\_Header.cshtml">
-      <Generator></Generator>
-    </Content>
-    <Content Update="Views\Partials\_SocialMedia.cshtml">
-      <Generator></Generator>
-    </Content>
-    <Content Update="Views\_ViewStart.cshtml">
-      <Generator></Generator>
-    </Content>
     <Content Update="wwwroot\js\lib\jquery.validate.unobtrusive.min.js">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
