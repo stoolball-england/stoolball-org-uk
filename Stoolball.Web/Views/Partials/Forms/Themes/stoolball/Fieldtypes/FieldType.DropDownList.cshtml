@@ -1,0 +1,20 @@
+@model Umbraco.Forms.Web.Models.FieldViewModel
+@using Umbraco.Forms.Web
+@inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
+<select class="form-control @Html.GetFormFieldClass(Model.FieldTypeName)" name="@Model.Name" id="@Model.Id" aria-describedby="@labeller.DescribedBy(Model)"
+        @if (Model.Mandatory) {
+ <text> data-val="true" data-val-required="@Model.RequiredErrorMessage" </text>
+ }>
+    <option value=""></option>
+    @foreach (var pv in Model.PreValues)
+    {
+        @if (Model.ContainsValue(pv.Value))
+        {
+            <option value="@pv.Value" selected="selected">@pv.Value</option>
+        }
+        else
+        {
+            <option value="@pv.Value">@pv.Value</option>
+        }
+    }
+</select>

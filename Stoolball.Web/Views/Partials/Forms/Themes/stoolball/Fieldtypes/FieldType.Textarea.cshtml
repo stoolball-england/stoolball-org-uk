@@ -1,10 +1,6 @@
-@model Umbraco.Forms.Mvc.Models.FieldViewModel
-@using Umbraco.Forms.Mvc
-@using Umbraco.Core.Composing
-@using Stoolball.Web.Forms
-@{
-    var labeller = Current.Factory.GetInstance<IUmbracoFormsLabeller>();
-}
+@model Umbraco.Forms.Web.Models.FieldViewModel
+@using Umbraco.Forms.Web
+@inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
 <textarea class="@Html.GetFormFieldClass(Model.FieldTypeName)"
           name="@Model.Name"
           id="@Model.Id"

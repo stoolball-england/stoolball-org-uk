@@ -875,8 +875,6 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="Filtering\FilterViewModel.cs" />
-    <Compile Include="Forms\IUmbracoFormsLabeller.cs" />
-    <Compile Include="Forms\UmbracoFormsLabeller.cs" />
     <Compile Include="Html\HtmlSanitizer.cs" />
     <Compile Include="Matches\EditMatchFormatFormData.cs" />
     <Compile Include="Matches\EditMatchFormatViewModel.cs" />
@@ -1189,8 +1187,6 @@
     <Compile Include="Matches\MatchInningsViewModel.cs" />
     <Compile Include="Matches\OverViewModel.cs" />
     <Compile Include="Matches\PlayerInningsViewModel.cs" />
-    <Compile Include="Products\ProductList.cs" />
-    <Compile Include="Products\ProductListController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchController.cs" />
     <Compile Include="Matches\CreateKnockoutMatchController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchSurfaceController.cs" />
@@ -1584,46 +1580,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Stoolball-England-Email.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\Forms\Themes\stoolball\DatePicker.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DatePicker.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FieldType.Email.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FieldType.Textfield.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\Forms\Themes\stoolball\Form.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Form.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\Forms\Themes\stoolball\Render.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Render.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\Forms\Themes\stoolball\Script.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Script.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\Forms\Themes\stoolball\ScrollToFormScript.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ScrollToFormScript.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\Forms\Themes\stoolball\Submitted.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Submitted.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\_AddMatchMenu.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1793,11 +1749,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Player.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ProductList.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ProductList.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\ResetPassword.generated.cs">
       <AutoGen>True</AutoGen>
@@ -2294,42 +2245,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_EditBowlingScorecard.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>DatePicker.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Form.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Form.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Render.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Render.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Script.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Script.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\Forms\Themes\stoolball\ScrollToFormScript.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ScrollToFormScript.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Submitted.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Submitted.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>FieldType.Textfield.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>FieldType.Email.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\ProductList.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ProductList.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Partials\_AddMatchMenu.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_AddMatchMenu.generated.cs</LastGenOutput>
@@ -2502,15 +2417,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_Filters.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.PasswordField.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.DatePicker.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.DropDownList.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.RadioButtonList.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.CheckBoxList.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.DataConsent.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.FileUpload.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.CheckBox.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textfield.cshtml" />
@@ -2594,7 +2500,6 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ContentPage\" />
     <Folder Include="Views\Partials\BlockList\" />
   </ItemGroup>
   <PropertyGroup>

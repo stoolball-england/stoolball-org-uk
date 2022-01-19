@@ -1,9 +1,12 @@
-@inherits WebViewPage<Umbraco.Forms.Web.Models.FormViewModel>
 @using Umbraco.Forms.Core.Enums
-@using Umbraco.Forms.Mvc
-@using Umbraco.Forms.Mvc.Models
-@using Umbraco.Forms.Mvc.BusinessLogic
+@using Umbraco.Forms.Web
+@using Umbraco.Forms.Web.Models
+@using Umbraco.Forms.Web.Services
 @using Umbraco.Forms.Core.Providers.FieldTypes
+
+@model Umbraco.Forms.Web.Models.FormViewModel
+
+@inject IFormThemeResolver FormThemeResolver
 
 <div class="umbraco-forms-page">
 
@@ -85,7 +88,7 @@
                             }
                             <div class="umbraco-forms-field-wrapper">
 
-                                @Html.Partial(FormThemeResolver.GetFieldView(Model, f), f)
+                                @await Html.PartialAsync(FormThemeResolver.GetFieldView(Model, f), f)
 
                                 @if (Model.ShowFieldValidaton)
                                 {
@@ -148,4 +151,4 @@
     </div>
 </div>
 
-@Html.Partial("Forms/Themes/default/ScrollToFormScript")
+@await Html.PartialAsync("Forms/Themes/stoolball/ScrollToFormScript")

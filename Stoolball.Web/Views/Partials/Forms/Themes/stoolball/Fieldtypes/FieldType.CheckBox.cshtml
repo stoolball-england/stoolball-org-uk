@@ -1,9 +1,5 @@
-@model Umbraco.Forms.Mvc.Models.FieldViewModel
-@using Umbraco.Core.Composing;
-@using Stoolball.Web.Forms;
-@{
-    var labeller = Current.Factory.GetInstance<IUmbracoFormsLabeller>();
-}
+@model Umbraco.Forms.Web.Models.FieldViewModel
+@inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
 <div class="custom-control custom-checkbox">
     <input type="checkbox" name="@Model.Name" id="@Model.Id" value="true" class="custom-control-input" aria-describedby="@labeller.DescribedBy(Model)"
            @if (Model.Mandatory) { <text> data-val="true" data-val-requiredcb="@Model.RequiredErrorMessage" </text> }

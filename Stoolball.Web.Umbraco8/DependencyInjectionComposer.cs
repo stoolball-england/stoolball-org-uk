@@ -27,7 +27,6 @@ using Stoolball.Web.Caching;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Configuration;
-using Stoolball.Web.Forms;
 using Stoolball.Web.Logging;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
@@ -103,7 +102,6 @@ namespace Stoolball.Web
             composition.Register<IMatchFilterHumanizer, MatchFilterHumanizer>();
             composition.Register<IStatisticsFilterHumanizer, StatisticsFilterHumanizer>();
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
-            composition.Register<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
             composition.Register<ICreateMemberExecuter, CreateMemberExecuter>();
             composition.Register<ILoginMemberWrapper, LoginMemberWrapper>();
             composition.Register<ILogoutMemberWrapper, LogoutMemberWrapper>();

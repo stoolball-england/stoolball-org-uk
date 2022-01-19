@@ -1,16 +1,12 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.ProductList>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using ClientDependency.Core.Mvc;
-@using Umbraco.Core.Composing;
-@using Stoolball.Email;
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ProductList>
+@inject Stoolball.Email.IEmailProtector emailProtector
+@using Umbraco.Forms.Web.Extensions
 @{
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.min.js") { Order = 90 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.unobtrusive.min.js") { Order = 100 });
 
-    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
-    Html.RequiresJs("/js/tinymce.js");
-
-    var emailProtector = (IEmailProtector)Current.Factory.GetInstance(typeof(IEmailProtector));
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/umbraco/lib/tinymce/tinymce.min.js") { Order = 90 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/tinymce.js") { Order = 100 });
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>
@@ -33,16 +29,16 @@
     @Html.Raw(emailProtector.ProtectEmailAddresses(Model.FurtherDetails.ToHtmlString(), User.Identity.IsAuthenticated))
     @if (Model.EnquiryForm != null)
     {
-        @Umbraco.RenderMacro("renderUmbracoForm", new { FormGuid = Model.EnquiryForm, FormTheme = "stoolball", ExcludeScripts = "1" })
+        @await Umbraco.RenderMacroAsync("renderUmbracoForm", new { FormGuid = Model.EnquiryForm, FormTheme = "stoolball", ExcludeScripts = "1" })
     }
 </div>
 
 @section umbracoforms {
     @if (TempData["UmbracoForms"] != null)
     {
-        foreach (var form in (List<Guid>)TempData["UmbracoForms"])
+        foreach (var form in TempData.Get<List<Guid>>("UmbracoForms"))
         {
-            Html.RenderAction("RenderFormScripts", "UmbracoForms", new { formid = form, theme = "stoolball" });
+            @await Component.InvokeAsync("RenderFormScripts", new {formId = form, theme = "stoolball"})
         }
     }
 }

@@ -86,7 +86,7 @@
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js" />
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html" />
     <Content Include="App_Plugins\Stoolball.UmbracoForms\EmailField.html" />
-    <Content Include="App_Plugins\Stoolball.UmbracoForms\RecreateUmbracoForms.sql" />
+    <Content Include="Forms\RecreateUmbracoForms.sql" />
     <Content Include="Directory.Build.targets" />
   </ItemGroup>
 

@@ -1,10 +1,10 @@
-@model Umbraco.Forms.Mvc.Models.FieldViewModel  
-@using Umbraco.Forms.Mvc
+@model Umbraco.Forms.Web.Models.FieldViewModel  
+@using Umbraco.Forms.Web
   
 @{ var i = 0; }
    
 <div class="@Html.GetFormFieldClass(Model.FieldTypeName) radiobuttonlist" id="@Model.Id">
-@foreach (Umbraco.Forms.Mvc.Models.PrevalueViewModel pv in Model.PreValues)  
+@foreach (Umbraco.Forms.Web.Models.PrevalueViewModel pv in Model.PreValues)  
 {
     <div class="custom-control custom-radio">
         <input type="radio" name="@Model.Id" id="@string.Concat(Model.Id,"_",i)" value="@pv.Value" class="custom-control-input"

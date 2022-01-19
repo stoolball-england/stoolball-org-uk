@@ -8,6 +8,7 @@ using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Html;
 using Stoolball.SocialMedia;
+using Stoolball.Web.Forms;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
@@ -57,8 +58,9 @@ namespace Stoolball.Web
             services.AddTransient<IDateTimeFormatter, DateTimeFormatter>();
             services.AddTransient<IEmailProtector, EmailProtector>();
             services.AddTransient<IHtmlFormatter, Stoolball.Html.HtmlFormatter>();
-            services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
             services.AddTransient<Ganss.XSS.IHtmlSanitizer, Ganss.XSS.HtmlSanitizer>();
+            services.AddTransient<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
+            services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
         }
 
         /// <summary>

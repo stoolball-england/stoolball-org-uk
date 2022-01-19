@@ -1,19 +1,20 @@
-@inherits WebViewPage<Umbraco.Forms.Web.Models.FormViewModel>
-@using ClientDependency.Core.Mvc
-@using Umbraco.Forms.Mvc.BusinessLogic
-@using Umbraco.Forms.Mvc
+@using Umbraco.Extensions
+@using Umbraco.Forms.Web.Services
+
+@model Umbraco.Forms.Web.Models.FormViewModel
+
+@inject IFormThemeResolver FormThemeResolver
+
+@using Umbraco.Forms.Web
 
 @*
     This view is used as the default render view for all forms, unless a theme
     is chosen, which contains a override of render.cshtm
-    Normally, you would not need to override this view, as you would have to 
+    Normally, you would not need to override this view, as you would have to
     replicate all functionality of this view seperately
 *@
 
 @{
-    Html.EnableClientValidation(true);
-    Html.EnableUnobtrusiveJavaScript(true);
-
     //Get the actual view to render the form html
     var formThemedView = FormThemeResolver.GetFormView(Model);
 
@@ -27,14 +28,14 @@
 *@
 @if (Model.SubmitHandled)
 {
-    @Html.Partial(formThemedView);
+    @await Html.PartialAsync(formThemedView);
 
 } else {
 
     @*Standard form and wrapper *@
     <div id="umbraco_form_@Model.FormClientId" class="umbraco-forms-form @Model.CssClass umbraco-forms-@Model.Theme">
 
-        @using (Html.BeginUmbracoForm<Umbraco.Forms.Web.Controllers.UmbracoFormsController>("HandleForm"))
+        @using (Html.BeginUmbracoForm<Umbraco.Forms.Web.Controllers.UmbracoFormsController>("HandleForm", null, Model.HtmlAttributes ))
         {
             @* Standard form meta data *@
 
@@ -51,7 +52,7 @@
             <input type="hidden" name="RecordState" value="@Model.RecordState" />
             
             @* Render the form html *@
-            @Html.Partial(formThemedView)
+            @await Html.PartialAsync(formThemedView)
         }
 
 
@@ -59,7 +60,7 @@
         @if (Model.RenderScriptFiles)
         {
             @* Render the scripts.cshtml file to included standard conditionals and validation logic *@
-            Html.RenderPartial(formScriptView);
+            await Html.RenderPartialAsync(formScriptView);
         }
     </div>
 }

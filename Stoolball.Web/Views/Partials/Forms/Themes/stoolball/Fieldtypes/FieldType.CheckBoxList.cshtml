@@ -1,10 +1,10 @@
-@model Umbraco.Forms.Mvc.Models.FieldViewModel
-@using Umbraco.Forms.Mvc
+@model Umbraco.Forms.Web.Models.FieldViewModel
+@using Umbraco.Forms.Web
 
 @{ var i = 0; }
           
 <span class="checkboxlist" id="@Model.Id">
-@foreach (Umbraco.Forms.Mvc.Models.PrevalueViewModel pv in Model.PreValues)  
+@foreach (Umbraco.Forms.Web.Models.PrevalueViewModel pv in Model.PreValues)  
 {
     <div class="custom-control custom-checkbox">
         <input type="checkbox"

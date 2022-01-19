@@ -1,4 +1,4 @@
-﻿using Umbraco.Forms.Mvc.Models;
+﻿using Umbraco.Forms.Web.Models;
 
 namespace Stoolball.Web.Forms
 {
