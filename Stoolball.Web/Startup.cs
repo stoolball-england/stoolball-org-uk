@@ -7,7 +7,10 @@ using Microsoft.Extensions.Hosting;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Html;
+using Stoolball.Matches;
 using Stoolball.SocialMedia;
+using Stoolball.Statistics;
+using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.DependencyInjection;
@@ -55,10 +58,13 @@ namespace Stoolball.Web
 #pragma warning restore IDE0022 // Use expression body for methods
 
             // Utility classes
+            services.AddTransient<IApiKeyProvider, ConfigApiKeyProvider>();
+            services.AddTransient<IBowlingFiguresCalculator, BowlingFiguresCalculator>();
             services.AddTransient<IDateTimeFormatter, DateTimeFormatter>();
             services.AddTransient<IEmailProtector, EmailProtector>();
             services.AddTransient<IHtmlFormatter, Stoolball.Html.HtmlFormatter>();
             services.AddTransient<Ganss.XSS.IHtmlSanitizer, Ganss.XSS.HtmlSanitizer>();
+            services.AddTransient<IOversHelper, OversHelper>();
             services.AddTransient<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
             services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
         }

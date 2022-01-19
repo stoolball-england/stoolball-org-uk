@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using Stoolball.Metadata;
 using Stoolball.Navigation;
-using Stoolball.Web.Metadata;
-using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Extensions;
 
-namespace Umbraco.Web.PublishedModels
+namespace Stoolball.Web.Models
 {
     public partial class StyleGuide : IHasViewMetadata
     {

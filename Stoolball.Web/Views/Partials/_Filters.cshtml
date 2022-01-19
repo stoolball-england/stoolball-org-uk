@@ -6,7 +6,7 @@
     {
         <p class="filter__applied">Showing @Model.FilterDescription.ToFirstLower(CultureInfo.CurrentCulture).</p>
     }
-    <form method="get" action="@Request.Url.AbsolutePath" class="filter__edit d-none">
+    <form method="get" action="@Context.Request.Path.Value" class="filter__edit d-none">
         <div class="form-group">
             @Html.LabelFor(m => Model.from, Model.FilteredItemTypePlural + " from", new { aria_label = Model.FilteredItemTypeSingular + " date is on or after" })
             @Html.TextBox(nameof(Model.from), Model.from.HasValue ? Model.from.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", aria_describedby = "from-date", data_val_date = "Enter a date in YYYY-MM-DD format." })

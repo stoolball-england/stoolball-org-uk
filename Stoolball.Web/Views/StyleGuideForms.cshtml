@@ -1,21 +1,20 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.StyleGuide>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using ClientDependency.Core.Mvc;
+﻿@using Umbraco.Forms.Web.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<StyleGuide>
 @{
-    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
-    Html.RequiresCss("~/css/autocomplete.min.css");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.autocomplete.min.js") { Order = 50 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/autocomplete.min.css") { Order = 100 });
 
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.min.js") { Order = 90 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.unobtrusive.min.js") { Order = 100 });
 
-    Html.RequiresCss("~/css/related-items.min.css");
-    Html.RequiresJs("~/js/related-item.js");
-    Html.RequiresJs("~/js/related-items.js");
+    SmidgeHelper.RequiresCss(new CssFile("~/css/related-items.min.css") { Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/related-item.js") { Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/related-items.js") { Order = 100 });
 
-    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
-    Html.RequiresJs("/js/tinymce.js");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/umbraco/lib/tinymce/tinymce.min.js") { Order = 90 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/tinymce.js") { Order = 100 });
 
-    Html.RequiresCss("~/account/account.min.css");
+    SmidgeHelper.RequiresCss(new CssFile("~/css/account.min.css") { Order = 100 });
 }
 <div class="container-xl">
     <h1 data-show-consent="true">@Model.Name</h1>
@@ -154,7 +153,7 @@
                     <td class="related-item__selected__section"><div class="related-item__animate">Selected item</div></td>
                     <td class="related-item__delete related-item__selected__section">
                         <div class="related-item__animate">
-                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove item")</button>
+                            <button class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove item")</button>
                         </div>
                     </td>
                 </tr>
@@ -185,7 +184,7 @@
                     <td class="related-item__selected__section"><div class="related-item__animate"><input type="text" placeholder="Extra input to show layout, not wired up" class="form-control" /></div></td>
                     <td class="related-item__delete related-item__selected__section">
                         <div class="related-item__animate">
-                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove item")</button>
+                            <button class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove item")</button>
                         </div>
                     </td>
                 </tr>
@@ -213,7 +212,7 @@
                     <td class="related-item__selected__section"><div class="related-item__animate">Extra column</div></td>
                     <td class="related-item__delete related-item__selected__section">
                         <div class="related-item__animate">
-                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}}")</button>
+                            <button class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}}")</button>
                         </div>
                     </td>
                 </tr>
@@ -238,7 +237,7 @@
                     <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="Match_MatchLocation_PrimaryAddressableObjectName" />
                 </div>
                 <div class="related-item__delete related-item__selected__section">
-                    <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}}")</button>
+                    <button class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}}")</button>
                 </div>
             </div>
         </script>
@@ -266,9 +265,9 @@
 @section umbracoforms {
     @if (TempData["UmbracoForms"] != null)
     {
-        foreach (var form in (List<Guid>)TempData["UmbracoForms"])
+        foreach (var form in TempData.Get<List<Guid>>("UmbracoForms"))
         {
-            Html.RenderAction("RenderFormScripts", "UmbracoForms", new { formid = form, theme = "stoolball" });
+            @await Component.InvokeAsync("RenderFormScripts", new {formId = form, theme = "stoolball"})
         }
     }
 }

@@ -3,7 +3,7 @@ using Stoolball.Metadata;
 using Stoolball.Navigation;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
-namespace Stoolball.Web.Metadata
+namespace Stoolball.Web.Models
 {
     public interface IHasViewMetadata
     {

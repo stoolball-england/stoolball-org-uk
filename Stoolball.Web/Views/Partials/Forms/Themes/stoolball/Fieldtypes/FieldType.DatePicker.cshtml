@@ -1,7 +1,7 @@
 @model Umbraco.Forms.Web.Models.FieldViewModel
 @inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
 @{
-    string val = Model.Values.LastOrDefault()?.ToString() ?? string.Empty;
+    string val = Model.Values?.LastOrDefault()?.ToString() ?? string.Empty;
     if (Model.ValueAsObject != null && !Equals(Model.ValueAsObject, string.Empty))
     {
         try

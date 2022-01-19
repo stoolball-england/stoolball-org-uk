@@ -1,12 +1,10 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.StyleGuide>
-@using ContentModels = Umbraco.Web.PublishedModels;
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<StyleGuide>
 @using Stoolball.Web.Matches
-@using ClientDependency.Core.Mvc;
 @{
-    Html.RequiresCss("~/css/news.min.css");
-    Html.RequiresCss("~/css/shop.page.min.css");
-    Html.RequiresJs("/js/filter.js");
-    Html.RequiresCss("/css/filter.min.css");
+    SmidgeHelper.RequiresCss(new CssFile("~/css/news.min.css"){ Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/shop.page.min.css"){ Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/filter.js"){ Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/filter.min.css"){ Order = 100 });
 }
 <div class="container-xl">
     <h1 data-show-consent="true">@Model.Name</h1>
@@ -56,7 +54,7 @@
             <a class="nav-link nav-link-add" href="https://example.org">Add a thing</a>
         </li>
     </ul>
-    @Html.Partial("_Filters", new MatchFilterViewModel
+    @await Html.PartialAsync("_Filters", new MatchFilterViewModel
     {
         FilterDescription = "a description of the applied filter"
     })
@@ -106,7 +104,7 @@
     <dl>
         <dt><a href="https://example.org">Definition list title</a></dt>
         <dd>Definition list detail.</dd>
-        <dt><a href="https://example.org">Definition list title</a> @Html.Partial("_AdminOnly")</dt>
+        <dt><a href="https://example.org">Definition list title</a> @await Html.PartialAsync("_AdminOnly")</dt>
         <dd>Definition list detail.</dd>
     </dl>
     <article>

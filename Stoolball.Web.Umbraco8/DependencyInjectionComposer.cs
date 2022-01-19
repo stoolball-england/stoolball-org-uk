@@ -26,7 +26,6 @@ using Stoolball.Web.Account;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
-using Stoolball.Web.Configuration;
 using Stoolball.Web.Logging;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
@@ -57,7 +56,6 @@ namespace Stoolball.Web
             composition.Register<IAuditRepository, SqlServerAuditRepository>();
             composition.Register<IRouteGenerator, RouteGenerator>();
             composition.Register<IRouteNormaliser, RouteNormaliser>();
-            composition.Register<IApiKeyProvider, ConfigApiKeyProvider>();
             composition.Register<ISeasonEstimator, SeasonEstimator>();
             composition.Register<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>();
             composition.Register<IMatchNameBuilder, MatchNameBuilder>();
@@ -72,12 +70,10 @@ namespace Stoolball.Web
             composition.Register<IBattingScorecardComparer, BattingScorecardComparer>();
             composition.Register<IDataRedactor, DataRedactor>();
             composition.Register<IPostSaveRedirector, PostSaveRedirector>();
-            composition.Register<IBowlingFiguresCalculator, BowlingFiguresCalculator>();
             composition.Register<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>();
             composition.Register<IOverSetScaffolder, OverSetScaffolder>();
             composition.Register<IPlayerInMatchStatisticsBuilder, PlayerInMatchStatisticsBuilder>();
             composition.Register<IPlayerIdentityFinder, PlayerIdentityFinder>();
-            composition.Register<IOversHelper, OversHelper>();
             composition.Register<IStatisticsFilterFactory, StatisticsFilterFactory>();
             composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();

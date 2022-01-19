@@ -1,11 +1,7 @@
 ﻿@model ScorecardViewModel
+@inject Stoolball.Statistics.IBowlingFiguresCalculator calculator
 @using Stoolball.Web.Matches
-@using Stoolball.Statistics
-@using Umbraco.Core.Composing
 @using Humanizer
-@{
-    var calculator = Current.Factory.GetInstance<IBowlingFiguresCalculator>();
-}
 @if (Model.MatchInnings.BowlingFigures.Count > 0)
 {
     <table class="bowling-scorecard bowling-figures table-hover table-as-cards table-as-cards-reset-sm">

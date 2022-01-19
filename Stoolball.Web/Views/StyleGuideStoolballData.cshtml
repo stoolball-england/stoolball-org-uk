@@ -1,6 +1,4 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.StyleGuide>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using ClientDependency.Core.Mvc;
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<StyleGuide>
 @using Stoolball.Comments
 @using Stoolball.Teams
 @using Stoolball.Competitions
@@ -8,25 +6,26 @@
 @using Stoolball.Web.Matches
 @using Stoolball.Web.Competitions
 @using Stoolball.Statistics
+@inject Umbraco.Cms.Core.Services.IUserService userService
 @{
-    Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
-    Html.RequiresJs("/js/maps.js", 90);
-    Html.RequiresJs("/matchlocations/match-location.js");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey) { Order = 50 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/maps.js") { Order = 90 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/match-location.js"){ Order = 100 });
 
-    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
-    Html.RequiresCss("~/css/autocomplete.min.css");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.autocomplete.min.js") { Order = 50 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/autocomplete.min.css"){ Order = 100 });
 
-    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
-    Html.RequiresJs("/js/tinymce.js");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/umbraco/lib/tinymce/tinymce.min.js") { Order = 90 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/tinymce.js") { Order = 100 });
 
-    Html.RequiresCss("~/matches/scorecards.min.css");
-    Html.RequiresCss("~/css/steps.min.css");
+    SmidgeHelper.RequiresCss(new CssFile("~/css/scorecards.min.css"){ Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/steps.min.css"){ Order = 100 });
 
-    Html.RequiresJs("~/matches/player-autocomplete.js", 70);
-    Html.RequiresJs("~/matches/edit-batting-scorecard.js");
-    Html.RequiresJs("~/matches/edit-bowling-scorecard.js");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/player-autocomplete.js") { Order = 70 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/edit-batting-scorecard.js"){ Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/edit-bowling-scorecard.js"){ Order = 100 });
 
-    Html.RequiresCss("~/css/comments.min.css");
+    SmidgeHelper.RequiresCss(new CssFile("~/css/comments.min.css"){ Order = 100 });
 }
 <div class="container-xl">
     <h1 data-show-consent="true">@Model.Name</h1>
@@ -133,13 +132,13 @@
     </div>
     <h2>Stoolball listings</h2>
     <p>This is a list of teams.</p>
-    @Html.Partial("_TeamList", new List<Team> {
+    @await Html.PartialAsync("_TeamList", new List<Team> {
         new Team { TeamName = "Team A", TeamRoute = "/teams/team-a" },
         new Team { TeamName = "Team B", TeamRoute = "/teams/team-b" }
     })
     <p>This is a list of matches.</p>
     @{
-        var matchListing = new MatchListingViewModel(Umbraco.AssignedContentItem, Services.UserService)
+        var matchListing = new MatchListingViewModel(Umbraco.AssignedContentItem, userService)
         {
             DateTimeFormatter = new Stoolball.Dates.DateTimeFormatter()
         };
@@ -166,7 +165,7 @@
     }
     });
     }
-    @Html.Partial("_MatchList", matchListing)
+    @await Html.PartialAsync("_MatchList", matchListing)
 
     <p>This is a list of seasons.</p>
     @{
@@ -180,13 +179,13 @@
 
         seasonList.Competitions.Add(competition);
     }
-    @Html.Partial("_SeasonList", seasonList)
+    @await Html.PartialAsync("_SeasonList", seasonList)
     <div id="location-map" data-latitude="50.995715487915" data-longitude="0.088866949081421" data-precision="exact" data-title="Maresfield Recreation Ground, Maresfield">
         <p><a href="https://maps.google.co.uk/?z=16&amp;q=Maresfield+Recreation+Ground%2c+Maresfield@50.995715487915,0.088866949081421&amp;ll=50.995715487915,0.088866949081421">Map of Maresfield Recreation Ground, Maresfield on Google Maps</a></p>
     </div>
     <h2>Scorecards</h2>
     @{
-        var innings = new EditScorecardViewModel(Model, Services.UserService)
+        var innings = new EditScorecardViewModel(Model, userService)
         {
             Match = new Match
             {
@@ -261,10 +260,10 @@
         }
 
 
-    @Html.Partial("_BattingScorecard", scorecardViewModel)
-    @Html.Partial("_BowlingScorecard", scorecardViewModel)
-    @Html.Partial("_EditBattingScorecard", innings)
-    @Html.Partial("_EditBowlingScorecard", innings)
+    @await Html.PartialAsync("_BattingScorecard", scorecardViewModel)
+    @await Html.PartialAsync("_BowlingScorecard", scorecardViewModel)
+    @await Html.PartialAsync("_EditBattingScorecard", innings)
+    @await Html.PartialAsync("_EditBowlingScorecard", innings)
     @{ 
         var comments = new List<HtmlComment> {
             new HtmlComment
@@ -291,5 +290,5 @@
             }
         };
     }
-    @Html.Partial("_Comments", comments)
+    @await Html.PartialAsync("_Comments", comments)
 </div>

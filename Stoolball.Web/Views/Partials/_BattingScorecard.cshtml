@@ -80,27 +80,27 @@
                 @{
                     if (Model.MatchInnings.Byes.HasValue || !minimalScorecard)
                     {
-                        @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Byes", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.Byes?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                        @await Html.PartialAsync("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Byes", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.Byes?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
                     }
                     if (Model.MatchInnings.Wides.HasValue || !minimalScorecard)
                     {
-                        @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wides", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.Wides?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                        @await Html.PartialAsync("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wides", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.Wides?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
                     }
                     if (Model.MatchInnings.NoBalls.HasValue || !minimalScorecard)
                     {
-                        @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "No balls", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.NoBalls?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                        @await Html.PartialAsync("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "No balls", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.NoBalls?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
                     }
                     // don't show a 0 here, only if actual runs awarded or taken away
                     if (Model.MatchInnings.BonusOrPenaltyRuns.HasValue && Model.MatchInnings.BonusOrPenaltyRuns < 0)
                     {
-                        @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Penalty runs", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.BonusOrPenaltyRuns.Value.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                        @await Html.PartialAsync("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Penalty runs", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.BonusOrPenaltyRuns.Value.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
                     }
                     else if (Model.MatchInnings.BonusOrPenaltyRuns.HasValue && Model.MatchInnings.BonusOrPenaltyRuns > 0)
                     {
-                        @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Bonus runs", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.BonusOrPenaltyRuns.Value.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                        @await Html.PartialAsync("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Bonus runs", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.BonusOrPenaltyRuns.Value.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
                     }
-                    @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Total", CssClass = "scorecard__totals" + (Model.MatchInnings.Runs.HasValue ? string.Empty : " d-none d-sm-table-row"), RowValue = Model.MatchInnings.Runs?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
-                    @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wickets", CssClass = "scorecard__totals" + (Model.MatchInnings.Wickets.HasValue ? string.Empty : " d-none d-sm-table-row"), RowValue = (Model.MatchInnings.Wickets == -1) ? "all out" : Model.MatchInnings.Wickets?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                    @await Html.PartialAsync("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Total", CssClass = "scorecard__totals" + (Model.MatchInnings.Runs.HasValue ? string.Empty : " d-none d-sm-table-row"), RowValue = Model.MatchInnings.Runs?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                    @await Html.PartialAsync("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wickets", CssClass = "scorecard__totals" + (Model.MatchInnings.Wickets.HasValue ? string.Empty : " d-none d-sm-table-row"), RowValue = (Model.MatchInnings.Wickets == -1) ? "all out" : Model.MatchInnings.Wickets?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
                 }
             </tbody>
         </table>

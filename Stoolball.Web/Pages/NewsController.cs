@@ -21,8 +21,8 @@ namespace Stoolball.Web.Pages
         public NewsController(ILogger<NewsController> logger, ICompositeViewEngine compositeViewEngine, IUmbracoContextAccessor umbracoContextAccessor, IVariationContextAccessor variationContextAccessor, ServiceContext context)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
-            _variationContextAccessor = variationContextAccessor;
-            _serviceContext = context;
+            _variationContextAccessor = variationContextAccessor ?? throw new System.ArgumentNullException(nameof(variationContextAccessor));
+            _serviceContext = context ?? throw new System.ArgumentNullException(nameof(context));
         }
 
         [HttpGet]

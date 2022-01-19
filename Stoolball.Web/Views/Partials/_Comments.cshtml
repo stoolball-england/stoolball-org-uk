@@ -1,11 +1,7 @@
 ﻿@model List<HtmlComment>
 @using Stoolball.Comments
 @using Stoolball.Account
-@using Umbraco.Core.Composing
-@using Stoolball.Dates
-@{ 
-    var dateFormatter = (IDateTimeFormatter)Current.Factory.GetInstance(typeof(IDateTimeFormatter));
-}
+@inject Stoolball.Dates.IDateTimeFormatter dateFormatter
 @if (Model.Any())
 {
     <h2 class="comments">Comments</h2>
