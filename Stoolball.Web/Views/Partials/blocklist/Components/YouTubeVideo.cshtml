@@ -1,10 +1,9 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using Umbraco.Core.Composing;
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<BlockListItem>
+@using Umbraco.Cms.Core.Models.Blocks
 @using Stoolball.SocialMedia;
+@inject IYouTubeUrlNormaliser normaliser
 @{
-    var content = (ContentModels.YouTubeVideo)Model.Content;
-    var normaliser = (IYouTubeUrlNormaliser)Current.Factory.GetInstance(typeof(IYouTubeUrlNormaliser));
+    var content = (YouTubeVideo)Model.Content;
 }
 @if (content != null && normaliser.TryNormaliseUrl(content.VideoUrl, out var normalisedUrl))
 {

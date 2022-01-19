@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Stoolball.Dates;
+using Stoolball.Email;
+using Stoolball.Html;
+using Stoolball.SocialMedia;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
@@ -49,6 +53,12 @@ namespace Stoolball.Web
                 .Build();
 #pragma warning restore IDE0022 // Use expression body for methods
 
+            // Utility classes
+            services.AddTransient<IDateTimeFormatter, DateTimeFormatter>();
+            services.AddTransient<IEmailProtector, EmailProtector>();
+            services.AddTransient<IHtmlFormatter, Stoolball.Html.HtmlFormatter>();
+            services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
+            services.AddTransient<Ganss.XSS.IHtmlSanitizer, Ganss.XSS.HtmlSanitizer>();
         }
 
         /// <summary>

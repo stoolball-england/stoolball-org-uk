@@ -1,10 +1,8 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using Umbraco.Core.Composing
-@using Ganss.XSS
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<BlockListItem>
+@using Umbraco.Cms.Core.Models.Blocks
+@inject Ganss.XSS.IHtmlSanitizer htmlSanitiser
 @{
-    var content = (ContentModels.Tip)Model.Content;
-    var htmlSanitiser = Current.Factory.GetInstance<IHtmlSanitizer>();
+    var content = (Tip)Model.Content;
     htmlSanitiser.KeepChildNodes = true;
     htmlSanitiser.AllowedTags.Clear();
     htmlSanitiser.AllowedTags.Add("strong");

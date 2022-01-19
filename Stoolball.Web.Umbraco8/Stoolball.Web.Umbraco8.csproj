@@ -648,57 +648,9 @@
     <None Include="Secret-Email.Web.development.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
-    <Content Include="Views\Partials\BlockList\Components\FormattedText.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>FormattedText.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Content.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Content.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>FormattedTextWithImage.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\BlockList\Components\ImageElementType.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ImageElementType.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\BlockList\Components\FormElementType.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>FormElementType.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\BlockList\Components\GettyImage.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>GettyImage.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\BlockList\Components\YouTubeVideo.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>YouTubeVideo.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\BlockList\Components\Tip.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Tip.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\BlockList\Components\ProductPreview.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ProductPreview.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\BlockList\Components\Consent.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Consent.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\News.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>News.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\NewsStory.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>NewsStory.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\BlockList\BlockList.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>BlockList.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\EditSeasonResultsTable.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -1242,10 +1194,6 @@
     <Compile Include="Matches\MatchInningsViewModel.cs" />
     <Compile Include="Matches\OverViewModel.cs" />
     <Compile Include="Matches\PlayerInningsViewModel.cs" />
-    <Compile Include="News\News.cs" />
-    <Compile Include="News\NewsStory.cs" />
-    <Compile Include="News\NewsController.cs" />
-    <Compile Include="News\NewsStoryController.cs" />
     <Compile Include="Products\ProductList.cs" />
     <Compile Include="Products\ProductListController.cs" />
     <Compile Include="ContentPage\Content.cs" />
@@ -1643,66 +1591,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MyAccount.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\News.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>News.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\NewsStory.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NewsStory.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\BlockList\BlockList.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BlockList.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\BlockList\Components\Consent.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Consent.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\BlockList\Components\FormattedText.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FormattedText.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\BlockList\Components\FormattedTextWithImage.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FormattedTextWithImage.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\BlockList\Components\FormElementType.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FormElementType.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\BlockList\Components\GettyImage.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GettyImage.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\BlockList\Components\ImageElementType.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ImageElementType.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\BlockList\Components\ProductPreview.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ProductPreview.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\BlockList\Components\Tip.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Tip.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\BlockList\Components\YouTubeVideo.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>YouTubeVideo.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\Forms\Emails\Stoolball-England-Email.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2019,7 +1907,6 @@
     <Compile Include="WebApi\AutocompleteResult.cs" />
     <Compile Include="WebApi\AutocompleteResultSet.cs" />
     <Compile Include="WebApi\WebApiComposer.cs" />
-    <Compile Include="HumanizerComposer.cs" />
     <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
     <Compile Include="Matches\TournamentController.cs" />
     <Compile Include="Matches\MatchController.cs" />
@@ -2718,7 +2605,9 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\Partials\BlockList\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

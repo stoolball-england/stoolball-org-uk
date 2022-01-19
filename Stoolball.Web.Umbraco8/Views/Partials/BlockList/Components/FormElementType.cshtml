@@ -1,9 +1,0 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@{
-    var content = (ContentModels.FormElementType)Model.Content;
-}
-@if (content != null && content.Form != null)
-{
-    @Umbraco.RenderMacro("renderUmbracoForm", new { FormGuid = content.Form, FormTheme = "stoolball", ExcludeScripts = "1" })
-}

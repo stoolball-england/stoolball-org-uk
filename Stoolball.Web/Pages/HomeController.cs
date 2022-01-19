@@ -9,12 +9,13 @@ using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Web.Common.Controllers;
 
-namespace Stoolball.Web.HomePage
+namespace Stoolball.Web.Pages
 {
     public class HomeController : RenderController
     {
         private readonly IVariationContextAccessor _variationContextAccessor;
         private readonly ServiceContext _serviceContext;
+
         public HomeController(ILogger<HomeController> logger, ICompositeViewEngine compositeViewEngine, IUmbracoContextAccessor umbracoContextAccessor, IVariationContextAccessor variationContextAccessor, ServiceContext context)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {

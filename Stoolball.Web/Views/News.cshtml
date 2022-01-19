@@ -1,13 +1,11 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.News>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using ClientDependency.Core.Mvc;
-@using Umbraco.Core.Models.Blocks;
-@using Umbraco.Core.Composing;
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<News>
+@using Microsoft.AspNetCore.WebUtilities
 @using Stoolball.Dates;
 @using Humanizer;
+@using Umbraco.Cms.Core.Models.Blocks
+@inject IDateTimeFormatter formatter
 @{
-    var formatter = Current.Factory.GetInstance<IDateTimeFormatter>();
-    Html.RequiresCss("~/css/news.min.css");
+    SmidgeHelper.RequiresCss(new CssFile("~/css/news.min.css") { Order = 100 });
 }
 @functions {
     public BlockListModel FilterBlockList(BlockListModel blockList)
@@ -15,7 +13,7 @@
         return new BlockListModel(blockList.Where(x => x.Settings != null && x.Settings.Value<bool>("includeInSummary")).ToList());
     }
 }
-@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
+@section canonical {@await Html.PartialAsync("_CanonicalUrl", new[] { "page" })}
 <div class="container-xl">
     <h1>@Model.Name</h1>
 
@@ -30,8 +28,8 @@
 
     @if (Model.TotalStories > (Model.PageNumber * Model.PageSize))
     {
-        var query = HttpUtility.ParseQueryString(Request.Url.Query);
+        var query = QueryHelpers.ParseQuery(Context.Request.QueryString.Value);
         query["page"] = (Model.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-        <p><a href="@Model.Url()?@query" class="btn btn-secondary">Next page</a></p>
+        <p><a href="@QueryHelpers.AddQueryString(Model.Url(), @query)" class="btn btn-secondary">Next page</a></p>
     }
 </div>

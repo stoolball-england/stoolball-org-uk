@@ -1,8 +1,7 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using Umbraco.Core.Composing
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<BlockListItem>
+@using Umbraco.Cms.Core.Models.Blocks;
 @{
-    var content = (ContentModels.Consent)Model.Content;
+    var content = (Consent)Model.Content;
 }
 @if (!string.IsNullOrWhiteSpace(content.ConsentLevel) && !string.IsNullOrWhiteSpace(content.Label))
 {

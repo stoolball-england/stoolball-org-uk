@@ -1,15 +1,11 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using Umbraco.Core.Composing;
-@using Stoolball.Html;
-@using Stoolball.Email;
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<BlockListItem>
+@using Umbraco.Cms.Core.Models.Blocks;
+@inject Stoolball.Html.IHtmlFormatter formatter
+@inject Stoolball.Email.IEmailProtector emailProtector
 @{
-    var content = (ContentModels.ProductPreview)Model.Content;
+    var content = (ProductPreview)Model.Content;
 
-    var formatter = (IHtmlFormatter)Current.Factory.GetInstance(typeof(IHtmlFormatter));
     var html = formatter.FormatHtml(content.Description.ToHtmlString());
-
-    var emailProtector = (IEmailProtector)Current.Factory.GetInstance(typeof(IEmailProtector));
     html = emailProtector.ProtectEmailAddresses(html, User.Identity.IsAuthenticated);
 }
 <li class="tile product-preview@((content.ProductPage != null) ? " product-preview__linked" : string.Empty)">

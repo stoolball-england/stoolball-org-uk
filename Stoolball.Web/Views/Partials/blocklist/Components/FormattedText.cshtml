@@ -1,0 +1,10 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<BlockListItem>
+@using Umbraco.Cms.Core.Models.Blocks;
+@inject Stoolball.Html.IHtmlFormatter formatter
+@inject Stoolball.Email.IEmailProtector emailProtector
+@{
+    var content = (FormattedText)Model.Content;
+    var html = formatter.FormatHtml(content.Text.ToHtmlString());
+    html = emailProtector.ProtectEmailAddresses(html, User.Identity.IsAuthenticated);
+}
+@Html.Raw(html)
