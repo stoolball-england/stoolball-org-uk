@@ -648,10 +648,6 @@
     <None Include="Secret-Email.Web.development.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
-    <Content Include="Views\Content.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Content.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\EditSeasonResultsTable.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>EditSeasonResultsTable.generated.cs</LastGenOutput>
@@ -878,7 +874,6 @@
     <Compile Include="Competitions\CompetitionsController.cs" />
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
-    <Compile Include="ContentPage\CookiesController.cs" />
     <Compile Include="Filtering\FilterViewModel.cs" />
     <Compile Include="Forms\IUmbracoFormsLabeller.cs" />
     <Compile Include="Forms\UmbracoFormsLabeller.cs" />
@@ -1196,8 +1191,6 @@
     <Compile Include="Matches\PlayerInningsViewModel.cs" />
     <Compile Include="Products\ProductList.cs" />
     <Compile Include="Products\ProductListController.cs" />
-    <Compile Include="ContentPage\Content.cs" />
-    <Compile Include="ContentPage\ContentController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchController.cs" />
     <Compile Include="Matches\CreateKnockoutMatchController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchSurfaceController.cs" />
@@ -1340,11 +1333,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CompetitionStatistics.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Content.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Content.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\CreateClub.generated.cs">
       <AutoGen>True</AutoGen>
@@ -2606,6 +2594,7 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ContentPage\" />
     <Folder Include="Views\Partials\BlockList\" />
   </ItemGroup>
   <PropertyGroup>

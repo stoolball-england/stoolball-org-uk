@@ -1,0 +1,26 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Content>
+@using Umbraco.Forms.Web.Extensions
+@{
+    if (Model.BlockList.Any(x => x.Content is FormElementType))
+    {
+        SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.min.js") { Order = 90 });
+        SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.unobtrusive.min.js") { Order = 100 });
+
+        SmidgeHelper.RequiresJs(new JavaScriptFile("~/umbraco/lib/tinymce/tinymce.min.js") { Order = 90 });
+        SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/tinymce.js") { Order = 100 });
+    }
+}
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+    @Html.GetBlockListHtml(Model, "blockList")
+</div>
+
+@section umbracoforms {
+    @if (TempData["UmbracoForms"] != null)
+    {
+        foreach (var form in TempData.Get<List<Guid>>("UmbracoForms"))
+        {
+            @await Component.InvokeAsync("RenderFormScripts", new {formId = form, theme = "stoolball"})
+        }
+    }
+}
