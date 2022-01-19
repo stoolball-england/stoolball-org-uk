@@ -1,7 +1,7 @@
 $projectRoot = Resolve-Path "$PSScriptRoot\.."
 $cloudRoot = Resolve-Path "$projectRoot\.UmbracoCloud"
 
-$foldersToCopy = "Stoolball", "Stoolball.Web"
+$foldersToCopy = "Stoolball", "Stoolball.Data.SqlServer", "Stoolball.Data.UmbracoMigrations", "Stoolball.Web"
 
 # Get the path to the Umbraco project from the .umbraco Umbraco Cloud config file
 $projectConfig = Get-Content $projectRoot/.umbraco
@@ -39,7 +39,7 @@ foreach ($folder in $foldersToCopy) {
         /XD $folderPath\obj $folderPath\bin $folderPath\node_modules $folderPath\sass $folderPath\App_Data $folderPath\wwwroot\media $folderPath\wwwroot\umbraco `
         $folderPath\App_Plugins\Deploy $folderPath\App_Plugins\UmbracoForms $folderPath\App_Plugins\UmbracoId $folderPath\App_Plugins\uSync `
         $folderPath\umbraco\config $folderPath\umbraco\Data $folderPath\umbraco\config\Logs $folderPath\umbraco\PartialViewMacros $folderPath\umbraco\UmbracoBackOffice `
-        $folderPath\umbraco\UmbracoInstall $folderPath\umbraco\UmbracoWebsite
+        $folderPath\umbraco\UmbracoInstall $folderPath\umbraco\UmbracoWebsite $folderPath\Smidge
 
     # Update versions for each deploy where needed
     $version = (Get-Random).ToString();

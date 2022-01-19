@@ -2483,10 +2483,6 @@
       <Project>{99803072-9098-430a-a2f5-20efac92134d}</Project>
       <Name>Stoolball.Data.SqlServer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Stoolball.Data.UmbracoMigrations.Umbraco8\Stoolball.Data.UmbracoMigrations.Umbraco8.csproj">
-      <Project>{b34b6e72-27e7-4440-be0d-a627abe6ca17}</Project>
-      <Name>Stoolball.Data.UmbracoMigrations.Umbraco8</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Stoolball\Stoolball.csproj">
       <Project>{4f0709d1-9e82-4016-8003-0e67d6f8cb60}</Project>
       <Name>Stoolball</Name>
