@@ -36,19 +36,5 @@ namespace Stoolball.Web.Pages
 
             return CurrentTemplate(model);
         }
-
-        ///* This action is triggered when an Umbraco Forms form is submitted without a separate 'thank you' page */
-        //[HttpPost]
-        //public IActionResult Content()
-        //{
-        //    var model = new Content(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor));
-        //    model.Metadata = new ViewMetadata
-        //    {
-        //        PageTitle = model.Name,
-        //        Description = model.Description
-        //    };
-
-        //    return CurrentTemplate(model);
-        //}
     }
 }

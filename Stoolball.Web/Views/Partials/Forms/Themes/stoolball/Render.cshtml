@@ -39,8 +39,6 @@
         {
             @* Standard form meta data *@
 
-            @Html.AntiForgeryToken()
-
             @Html.HiddenFor(x => Model.FormId, new {id = (string?)null})
             @Html.HiddenFor(x => Model.FormName, new {id = (string?)null})
             @Html.HiddenFor(x => Model.RecordId, new {id = (string?)null})
