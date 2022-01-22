@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Polly;
 using Polly.Caching;
 using Polly.Registry;
 using Stoolball.Caching;
-using Umbraco.Web.Security;
+using Umbraco.Cms.Core.Security;
 
 namespace Stoolball.Web.Caching
 {
@@ -11,18 +12,18 @@ namespace Stoolball.Web.Caching
     {
         private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
         private readonly ISyncCacheProvider _cacheProvider;
-        private readonly MembershipHelper _membershipHelper;
+        private readonly IMemberManager _memberManager;
 
-        public CacheOverride(IReadOnlyPolicyRegistry<string> policyRegistry, ISyncCacheProvider cacheProvider, MembershipHelper membershipHelper)
+        public CacheOverride(IReadOnlyPolicyRegistry<string> policyRegistry, ISyncCacheProvider cacheProvider, IMemberManager memberManager)
         {
             _policyRegistry = policyRegistry ?? throw new ArgumentNullException(nameof(policyRegistry));
             _cacheProvider = cacheProvider ?? throw new System.ArgumentNullException(nameof(cacheProvider));
-            _membershipHelper = membershipHelper ?? throw new System.ArgumentNullException(nameof(membershipHelper));
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
         }
 
-        public void OverrideCacheForCurrentMember(string cacheKeyPrefix)
+        public async Task OverrideCacheForCurrentMember(string cacheKeyPrefix)
         {
-            var currentMember = _membershipHelper.GetCurrentMember();
+            var currentMember = await _memberManager.GetCurrentMemberAsync().ConfigureAwait(false);
             if (currentMember == null) { throw new InvalidOperationException("No member is logged in."); }
 
             var cachePolicy = _policyRegistry.Get<ISyncPolicy>(CacheConstants.MemberOverridePolicy);
@@ -30,9 +31,9 @@ namespace Stoolball.Web.Caching
 
         }
 
-        public bool IsCacheOverriddenForCurrentMember(string cacheKeyPrefix)
+        public async Task<bool> IsCacheOverriddenForCurrentMember(string cacheKeyPrefix)
         {
-            var currentMember = _membershipHelper.GetCurrentMember();
+            var currentMember = await _memberManager.GetCurrentMemberAsync().ConfigureAwait(false);
             if (currentMember == null) { return false; }
 
             return _cacheProvider.TryGet(CacheConstants.MemberOverridePolicy + cacheKeyPrefix + currentMember.Key).Item1;

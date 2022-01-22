@@ -1,10 +1,4 @@
 ﻿using System;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-using Polly;
-using Polly.Caching;
-using Polly.Caching.Memory;
-using Polly.Registry;
 using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Comments;
@@ -55,7 +49,6 @@ namespace Stoolball.Web
             composition.Register<IVerificationToken, VerificationToken>();
             composition.Register<IAuditRepository, SqlServerAuditRepository>();
             composition.Register<IRouteGenerator, RouteGenerator>();
-            composition.Register<IRouteNormaliser, RouteNormaliser>();
             composition.Register<ISeasonEstimator, SeasonEstimator>();
             composition.Register<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>();
             composition.Register<IMatchNameBuilder, MatchNameBuilder>();
@@ -81,10 +74,7 @@ namespace Stoolball.Web
             composition.Register<IMatchFilterQueryStringSerializer, MatchFilterQueryStringSerializer>();
             composition.Register<IStatisticsFilterQueryStringSerializer, StatisticsFilterQueryStringSerializer>();
             composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
-            composition.Register<IMatchLocationFilterSerializer, MatchLocationFilterQueryStringSerializer>();
             composition.Register<ICompetitionFilterSerializer, CompetitionFilterQueryStringSerializer>();
-            composition.Register<IPlayerFilterSerializer, PlayerFilterQueryStringSerializer>();
-            composition.Register<ICacheOverride, CacheOverride>();
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
             composition.Register<IStatisticsQueryBuilder, StatisticsQueryBuilder>();
             composition.Register<IStoolballEntityCopier, StoolballEntityCopier>();
@@ -114,59 +104,22 @@ namespace Stoolball.Web
             composition.Register<IStoolballRouterController, StoolballRouterController>();
 
             // Caching with Polly
-            composition.Register<IMemoryCache, MemoryCache>(Lifetime.Singleton);
-            composition.Register<IOptions<MemoryCacheOptions>, MemoryCacheOptions>(Lifetime.Singleton);
-            composition.Register<IAsyncCacheProvider, MemoryCacheProvider>(Lifetime.Singleton);
-            composition.Register<ISyncCacheProvider, MemoryCacheProvider>(Lifetime.Singleton);
-            composition.Register<IReadOnlyPolicyRegistry<string>>((serviceProvider) =>
-            {
-                var registry = new PolicyRegistry();
-                var asyncMemoryCacheProvider = serviceProvider.GetInstance<IAsyncCacheProvider>();
-                var logger = serviceProvider.GetInstance<ILogger>();
-                var cachePolicy = Policy.CacheAsync(asyncMemoryCacheProvider, TimeSpan.FromMinutes(120), (context, key, ex) =>
-                {
-                    logger.Error(typeof(IAsyncCacheProvider), ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
-                });
-
-                var syncMemoryCacheProvider = serviceProvider.GetInstance<ISyncCacheProvider>();
-                var slidingPolicy = Policy.Cache(syncMemoryCacheProvider, new SlidingTtl(TimeSpan.FromMinutes(120)), (context, key, ex) =>
-                {
-                    logger.Error(typeof(ISyncCacheProvider), ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
-                });
-
-                registry.Add(CacheConstants.StatisticsPolicy, cachePolicy);
-                registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
-                registry.Add(CacheConstants.CommentsPolicy, cachePolicy);
-                registry.Add(CacheConstants.TeamsPolicy, cachePolicy);
-                registry.Add(CacheConstants.CompetitionsPolicy, cachePolicy);
-                registry.Add(CacheConstants.MatchLocationsPolicy, cachePolicy);
-                registry.Add(CacheConstants.MemberOverridePolicy, slidingPolicy);
-                return registry;
-
-            }, Lifetime.Singleton);
             composition.Register<IClearableCache, ClearableCacheWrapper>();
             composition.Register<ICacheClearer<Tournament>, TournamentCacheClearer>();
             composition.Register<ICacheClearer<Match>, MatchCacheClearer>();
 
             // Data sources for stoolball data.
-            composition.Register<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();
             composition.Register<IRedirectsRepository, SkybrudRedirectsRepository>();
             composition.Register<IClubDataSource, SqlServerClubDataSource>();
             composition.Register<IClubRepository, SqlServerClubRepository>();
-            composition.Register<ITeamDataSource, SqlServerTeamDataSource>();
             composition.Register<ITeamListingDataSource, CachedTeamListingDataSource>();
             composition.Register<ICacheableTeamListingDataSource, SqlServerTeamListingDataSource>();
             composition.Register<ITeamRepository, SqlServerTeamRepository>();
-            composition.Register<IPlayerDataSource, CachedPlayerDataSource>();
-            composition.Register<ICacheablePlayerDataSource, SqlServerPlayerDataSource>();
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();
-            composition.Register<IMatchLocationDataSource, CachedMatchLocationDataSource>();
-            composition.Register<ICacheableMatchLocationDataSource, SqlServerMatchLocationDataSource>();
             composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>();
             composition.Register<ICompetitionDataSource, CachedCompetitionDataSource>();
             composition.Register<ICacheableCompetitionDataSource, SqlServerCompetitionDataSource>();
             composition.Register<ICompetitionRepository, SqlServerCompetitionRepository>();
-            composition.Register<ISeasonDataSource, SqlServerSeasonDataSource>();
             composition.Register<ISeasonRepository, SqlServerSeasonRepository>();
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>();
             composition.Register<IMatchListingDataSource, CachedMatchListingDataSource>();

@@ -89,7 +89,7 @@ namespace Stoolball.Web.Competitions
 
                 // Create the competition
                 var createdCompetition = await _competitionRepository.CreateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix);
+                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix).ConfigureAwait(false);
 
                 // Redirect to the competition
                 return Redirect(createdCompetition.CompetitionRoute);

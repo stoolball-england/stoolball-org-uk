@@ -92,7 +92,7 @@ namespace Stoolball.Web.Clubs
                 // Create the club
                 var createdClub = await _clubRepository.CreateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
+                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);
 
                 // Redirect to the club
                 return Redirect(createdClub.ClubRoute);

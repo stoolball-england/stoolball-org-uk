@@ -2,37 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
-using Stoolball.Web.WebApi;
-using Umbraco.Core;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Mapping;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.WebApi;
+using Umbraco.Cms.Web.Common.Controllers;
 
-namespace Stoolball.Web.MatchLocations
+namespace Stoolball.Web.WebApi
 {
     public class MatchLocationsApiController : UmbracoApiController
     {
         private readonly IMatchLocationDataSource _locationDataSource;
 
-        public MatchLocationsApiController(IGlobalSettings globalSettings, IUmbracoContextAccessor umbracoContextAccessor, ISqlContext sqlContext, ServiceContext serviceContext,
-            AppCaches appCaches, IProfilingLogger profilingLogger, IRuntimeState runtimeState, UmbracoHelper umbracoHelper, UmbracoMapper umbracoMapper,
-            IMatchLocationDataSource locationDataSource) :
-            base(globalSettings, umbracoContextAccessor, sqlContext, serviceContext, appCaches, profilingLogger, runtimeState, umbracoHelper, umbracoMapper)
+        public MatchLocationsApiController(IMatchLocationDataSource locationDataSource) : base()
         {
             _locationDataSource = locationDataSource ?? throw new ArgumentNullException(nameof(locationDataSource));
         }
 
         [HttpGet]
         [Route("api/locations/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query = null, [FromUri] string[] not = null, [FromUri] string[] teamType = null, [FromUri] bool? hasActiveTeams = null, [FromUri] Guid? season = null)
+        public async Task<AutocompleteResultSet> Autocomplete([FromQuery] string? query = null, [FromQuery] string[]? not = null, [FromQuery] string[]? teamType = null, [FromQuery] bool? hasActiveTeams = null, [FromQuery] Guid? season = null)
         {
             var locations = await QueryMatchLocations(query, not, hasActiveTeams, teamType, season).ConfigureAwait(false);
 
@@ -48,7 +36,7 @@ namespace Stoolball.Web.MatchLocations
 
         [HttpGet]
         [Route("api/locations/map")]
-        public async Task<IEnumerable<MatchLocationResult>> Map([FromUri] string query = null, [FromUri] string[] not = null, [FromUri] string[] teamType = null, [FromUri] bool? hasActiveTeams = null, [FromUri] Guid? season = null)
+        public async Task<IEnumerable<MatchLocationResult>> Map([FromQuery] string? query = null, [FromQuery] string[]? not = null, [FromQuery] string[]? teamType = null, [FromQuery] bool? hasActiveTeams = null, [FromQuery] Guid? season = null)
         {
             var locations = await QueryMatchLocations(query, not, hasActiveTeams, teamType, season).ConfigureAwait(false);
 
@@ -66,7 +54,7 @@ namespace Stoolball.Web.MatchLocations
             });
         }
 
-        private async Task<List<MatchLocation>> QueryMatchLocations(string query, string[] not, bool? hasActiveTeams, string[] teamTypes, Guid? seasonId)
+        private async Task<List<MatchLocation>> QueryMatchLocations(string? query, string[]? not, bool? hasActiveTeams, string[]? teamTypes, Guid? seasonId)
         {
             var filter = new MatchLocationFilter { Query = query, HasActiveTeams = hasActiveTeams };
             if (not != null)

@@ -24,11 +24,11 @@ namespace Stoolball.Data.Cache
             _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
-        private bool CacheDisabled()
+        private async Task<bool> CacheDisabled()
         {
             if (!_cacheDisabled.HasValue)
             {
-                _cacheDisabled = _cacheOverride.IsCacheOverriddenForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix);
+                _cacheDisabled = await _cacheOverride.IsCacheOverriddenForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix).ConfigureAwait(false);
             }
             return _cacheDisabled.Value;
         }
@@ -38,7 +38,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new CompetitionFilter();
 
-            if (CacheDisabled())
+            if (await CacheDisabled().ConfigureAwait(false))
             {
                 return await _competitionDataSource.ReadTotalCompetitions(filter).ConfigureAwait(false);
             }
@@ -55,7 +55,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new CompetitionFilter();
 
-            if (CacheDisabled())
+            if (await CacheDisabled().ConfigureAwait(false))
             {
                 return await _competitionDataSource.ReadCompetitions(filter).ConfigureAwait(false);
             }

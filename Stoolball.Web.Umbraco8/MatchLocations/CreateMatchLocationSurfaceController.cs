@@ -87,7 +87,7 @@ namespace Stoolball.Web.MatchLocations
 
                 // Create the location
                 var createdMatchLocation = await _matchLocationRepository.CreateMatchLocation(location, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix);
+                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix).ConfigureAwait(false);
 
                 // Redirect to the location
                 return Redirect(createdMatchLocation.MatchLocationRoute);

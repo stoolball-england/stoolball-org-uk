@@ -74,7 +74,7 @@ namespace Stoolball.Web.Teams
                 var currentMember = Members.GetCurrentMember();
                 var createdTeam = await _teamRepository.CreateTeam(team, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
 
-                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
+                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);
 
                 // Redirect to the team
                 return Redirect(createdTeam.TeamRoute);

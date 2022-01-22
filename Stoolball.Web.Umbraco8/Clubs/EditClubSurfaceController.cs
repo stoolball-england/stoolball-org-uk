@@ -62,7 +62,7 @@ namespace Stoolball.Web.Clubs
                 var currentMember = Members.GetCurrentMember();
                 var updatedClub = await _clubRepository.UpdateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
+                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);
 
                 // redirect back to the club actions page that led here
                 return Redirect(updatedClub.ClubRoute + "/edit");

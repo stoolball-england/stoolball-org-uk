@@ -65,7 +65,7 @@ namespace Stoolball.Web.MatchLocations
 
                 var currentMember = Members.GetCurrentMember();
                 await _matchLocationRepository.DeleteMatchLocation(viewModel.MatchLocation, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix);
+                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix).ConfigureAwait(false);
                 viewModel.Deleted = true;
             }
             else

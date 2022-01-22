@@ -57,7 +57,7 @@ namespace Stoolball.Web.MatchLocations
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedMatchLocation = await _matchLocationRepository.UpdateMatchLocation(location, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix);
+                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix).ConfigureAwait(false);
 
                 return Redirect(updatedMatchLocation.MatchLocationRoute + "/edit");
             }

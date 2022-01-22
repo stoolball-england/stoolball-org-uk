@@ -1,35 +1,25 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Teams;
-using Stoolball.Web.WebApi;
-using Umbraco.Core;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Mapping;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.WebApi;
+using Umbraco.Cms.Web.Common.Controllers;
 
-namespace Stoolball.Web.Teams
+namespace Stoolball.Web.WebApi
 {
     public class TeamsApiController : UmbracoApiController
     {
         private readonly ITeamDataSource _teamDataSource;
 
-        public TeamsApiController(IGlobalSettings globalSettings, IUmbracoContextAccessor umbracoContextAccessor, ISqlContext sqlContext, ServiceContext serviceContext,
-            AppCaches appCaches, IProfilingLogger profilingLogger, IRuntimeState runtimeState, UmbracoHelper umbracoHelper, UmbracoMapper umbracoMapper, ITeamDataSource teamDataSource) :
-            base(globalSettings, umbracoContextAccessor, sqlContext, serviceContext, appCaches, profilingLogger, runtimeState, umbracoHelper, umbracoMapper)
+        public TeamsApiController(ITeamDataSource teamDataSource) :
+            base()
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
         }
 
         [HttpGet]
         [Route("api/teams/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query, [FromUri] string[] not, [FromUri] string[] teamType, [FromUri] bool includeClubTeams = true)
+        public async Task<AutocompleteResultSet> Autocomplete([FromQuery] string query, [FromQuery] string[] not, [FromQuery] string[] teamType, [FromQuery] bool includeClubTeams = true)
         {
             if (not is null)
             {
@@ -71,7 +61,7 @@ namespace Stoolball.Web.Teams
             {
                 suggestions = teams.Select(x => new AutocompleteResult
                 {
-                    value = (x.UntilYear.HasValue ? x.TeamName + " (no longer active)" : x.TeamName),
+                    value = x.UntilYear.HasValue ? x.TeamName + " (no longer active)" : x.TeamName,
                     data = x.TeamId.ToString()
                 })
             };

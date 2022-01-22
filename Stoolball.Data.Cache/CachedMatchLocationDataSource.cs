@@ -24,11 +24,11 @@ namespace Stoolball.Data.Cache
             _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
-        private bool CacheDisabled()
+        private async Task<bool> CacheDisabled()
         {
             if (!_cacheDisabled.HasValue)
             {
-                _cacheDisabled = _cacheOverride.IsCacheOverriddenForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix);
+                _cacheDisabled = await _cacheOverride.IsCacheOverriddenForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix).ConfigureAwait(false);
             }
             return _cacheDisabled.Value;
         }
@@ -38,7 +38,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new MatchLocationFilter();
 
-            if (CacheDisabled())
+            if (await CacheDisabled().ConfigureAwait(false))
             {
                 return await _matchLocationDataSource.ReadTotalMatchLocations(filter).ConfigureAwait(false);
             }
@@ -55,7 +55,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new MatchLocationFilter();
 
-            if (CacheDisabled())
+            if (await CacheDisabled().ConfigureAwait(false))
             {
                 return await _matchLocationDataSource.ReadMatchLocations(filter).ConfigureAwait(false);
             }

@@ -2,7 +2,7 @@
 {
     public class AutocompleteResult
     {
-        public string value { get; set; }
-        public object data { get; set; }
+        public string? value { get; set; }
+        public object? data { get; set; }
     }
 }

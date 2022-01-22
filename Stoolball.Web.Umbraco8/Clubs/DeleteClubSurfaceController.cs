@@ -60,7 +60,7 @@ namespace Stoolball.Web.Clubs
 
                 var currentMember = Members.GetCurrentMember();
                 await _clubRepository.DeleteClub(viewModel.Club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
+                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);
                 viewModel.Deleted = true;
             }
 

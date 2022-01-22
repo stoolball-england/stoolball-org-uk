@@ -3,37 +3,25 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Humanizer;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Statistics;
-using Stoolball.Web.WebApi;
-using Umbraco.Core;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Mapping;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.WebApi;
+using Umbraco.Cms.Web.Common.Controllers;
 
-namespace Stoolball.Web.Statistics
+namespace Stoolball.Web.WebApi
 {
     public class PlayersApiController : UmbracoApiController
     {
         private readonly IPlayerDataSource _playerDataSource;
 
-        public PlayersApiController(IGlobalSettings globalSettings, IUmbracoContextAccessor umbracoContextAccessor, ISqlContext sqlContext, ServiceContext serviceContext,
-            AppCaches appCaches, IProfilingLogger profilingLogger, IRuntimeState runtimeState, UmbracoHelper umbracoHelper, UmbracoMapper umbracoMapper, IPlayerDataSource playerDataSource) :
-
-            base(globalSettings, umbracoContextAccessor, sqlContext, serviceContext, appCaches, profilingLogger, runtimeState, umbracoHelper, umbracoMapper)
+        public PlayersApiController(IPlayerDataSource playerDataSource) : base()
         {
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
         }
 
         [HttpGet]
         [Route("api/players/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query, [FromUri] string[] teams)
+        public async Task<AutocompleteResultSet> Autocomplete([FromQuery] string query, [FromQuery] string[] teams)
         {
             if (teams is null)
             {
@@ -83,11 +71,11 @@ namespace Stoolball.Web.Statistics
             if (playerIdentity.FirstPlayed.HasValue)
             {
                 var firstYear = playerIdentity.FirstPlayed.Value.Year;
-                var lastYear = playerIdentity.LastPlayed.Value.Year;
+                var lastYear = playerIdentity.LastPlayed.HasValue ? playerIdentity.LastPlayed.Value.Year : (int?)null;
                 value.Append(' ').Append(firstYear);
                 if (firstYear != lastYear)
                 {
-                    value.Append('–').Append(lastYear.ToString(CultureInfo.InvariantCulture).Substring(2));
+                    value.Append('–').Append(lastYear?.ToString(CultureInfo.InvariantCulture).Substring(2));
                 }
             }
             return value.ToString();

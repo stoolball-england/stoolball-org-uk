@@ -79,7 +79,7 @@ namespace Stoolball.Web.Teams
                 var currentMember = Members.GetCurrentMember();
                 var updatedTeam = await _teamRepository.UpdateTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
+                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);
 
                 // redirect back to the team actions
                 return Redirect(updatedTeam.TeamRoute + "/edit");

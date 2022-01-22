@@ -1,15 +1,30 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Caching;
+using Polly.Caching.Memory;
+using Polly.Registry;
+using Stoolball.Caching;
+using Stoolball.Competitions;
+using Stoolball.Data.Cache;
+using Stoolball.Data.SqlServer;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Html;
 using Stoolball.Matches;
+using Stoolball.MatchLocations;
+using Stoolball.Routing;
 using Stoolball.SocialMedia;
 using Stoolball.Statistics;
+using Stoolball.Teams;
+using Stoolball.Web.Caching;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
 using Stoolball.Web.Security;
@@ -67,6 +82,52 @@ namespace Stoolball.Web
             services.AddTransient<IOversHelper, OversHelper>();
             services.AddTransient<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
             services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
+
+            // Data sources
+            services.AddTransient<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();
+            services.AddTransient<IRouteNormaliser, RouteNormaliser>();
+            services.AddTransient<ICacheOverride, CacheOverride>();
+            services.AddTransient<IMatchLocationFilterSerializer, MatchLocationFilterQueryStringSerializer>();
+            services.AddTransient<IMatchLocationDataSource, CachedMatchLocationDataSource>();
+            services.AddTransient<ICacheableMatchLocationDataSource, SqlServerMatchLocationDataSource>();
+            services.AddTransient<IPlayerFilterSerializer, PlayerFilterQueryStringSerializer>();
+            services.AddTransient<IPlayerDataSource, CachedPlayerDataSource>();
+            services.AddTransient<ICacheablePlayerDataSource, SqlServerPlayerDataSource>();
+            services.AddTransient<ISeasonDataSource, SqlServerSeasonDataSource>();
+            services.AddTransient<ITeamDataSource, SqlServerTeamDataSource>();
+
+            // Caching with Polly
+            services.AddSingleton<IMemoryCache, MemoryCache>();
+            services.AddSingleton<IOptions<MemoryCacheOptions>, MemoryCacheOptions>();
+            services.AddSingleton<IAsyncCacheProvider, MemoryCacheProvider>();
+            services.AddSingleton<ISyncCacheProvider, MemoryCacheProvider>();
+            services.AddSingleton<IReadOnlyPolicyRegistry<string>>((serviceProvider) =>
+            {
+                var registry = new PolicyRegistry();
+                var asyncMemoryCacheProvider = serviceProvider.GetService<IAsyncCacheProvider>();
+                var logger = serviceProvider.GetService<ILogger>();
+                var cachePolicy = Policy.CacheAsync(asyncMemoryCacheProvider, TimeSpan.FromMinutes(120), (context, key, ex) =>
+                {
+                    logger.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
+                });
+
+                var syncMemoryCacheProvider = serviceProvider.GetService<ISyncCacheProvider>();
+                var slidingPolicy = Policy.Cache(syncMemoryCacheProvider, new SlidingTtl(TimeSpan.FromMinutes(120)), (context, key, ex) =>
+                {
+                    logger.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
+                });
+
+                registry.Add(CacheConstants.StatisticsPolicy, cachePolicy);
+                registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
+                registry.Add(CacheConstants.CommentsPolicy, cachePolicy);
+                registry.Add(CacheConstants.TeamsPolicy, cachePolicy);
+                registry.Add(CacheConstants.CompetitionsPolicy, cachePolicy);
+                registry.Add(CacheConstants.MatchLocationsPolicy, cachePolicy);
+                registry.Add(CacheConstants.MemberOverridePolicy, slidingPolicy);
+                return registry;
+
+            });
+
         }
 
         /// <summary>

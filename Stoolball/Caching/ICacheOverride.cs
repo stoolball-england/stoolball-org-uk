@@ -1,8 +1,10 @@
-﻿namespace Stoolball.Caching
+﻿using System.Threading.Tasks;
+
+namespace Stoolball.Caching
 {
     public interface ICacheOverride
     {
-        void OverrideCacheForCurrentMember(string cacheKeyPrefix);
-        bool IsCacheOverriddenForCurrentMember(string cacheKeyPrefix);
+        Task OverrideCacheForCurrentMember(string cacheKeyPrefix);
+        Task<bool> IsCacheOverriddenForCurrentMember(string cacheKeyPrefix);
     }
 }
