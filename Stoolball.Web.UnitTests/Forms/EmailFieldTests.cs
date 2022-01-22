@@ -1,4 +1,4 @@
-﻿using Stoolball.Web.Forms;
+﻿using Stoolball.Web.App_Plugins.Stoolball.UmbracoForms;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Forms

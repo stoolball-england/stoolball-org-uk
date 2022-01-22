@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Web", "Stoolball.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Data.UmbracoMigrations", "Stoolball.Data.UmbracoMigrations\Stoolball.Data.UmbracoMigrations.csproj", "{78B2290B-9B90-402C-8287-C8885C272735}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Web.UnitTests", "Stoolball.Web.UnitTests\Stoolball.Web.UnitTests.csproj", "{AAE780D1-79EE-4324-90E4-22DFACAF3037}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{78B2290B-9B90-402C-8287-C8885C272735}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78B2290B-9B90-402C-8287-C8885C272735}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78B2290B-9B90-402C-8287-C8885C272735}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAE780D1-79EE-4324-90E4-22DFACAF3037}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAE780D1-79EE-4324-90E4-22DFACAF3037}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAE780D1-79EE-4324-90E4-22DFACAF3037}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAE780D1-79EE-4324-90E4-22DFACAF3037}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

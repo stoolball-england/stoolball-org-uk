@@ -2,60 +2,46 @@ name: "Run tests"
 
 on:
   push:
-    branches: [ master ]
+    branches:
+    - master
+    - feature/v9
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ master ]
+    branches: 
+    - master
+    - feature/v9
 
 jobs:
   stoolball-web-unit-tests:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
 
-    - name: Restore NuGet Packages
-      run: nuget restore Stoolball.sln
+    - name: Restore dependencies
+      run: dotnet restore ./Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj
 
-    - name: Build Solution
-      run: msbuild Stoolball.sln /p:Configuration=Release
+    - name: Build unit tests
+      run: dotnet build --no-restore ./Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj
       env:
           REQUIRE_CLOUD_REPO: false
 
     - name: Run Stoolball.Web.UnitTests 
-      run: |
-        regsvr32 $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\x86\OpenCover.Profiler.dll 
-        regsvr32 $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\x64\OpenCover.Profiler.dll 
-        & $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\OpenCover.Console.exe -target:"$env:userprofile\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.x86.exe" -targetargs:"Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll -noshadow" -output:opencover.xml -filter:"+[Stoolball.Web]* -[Stoolball.Web.UnitTests]*"
-    
-    - name: Setup .NET Core 
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.100
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings ./Stoolball.Web.UnitTests/coverlet.runsettings ./Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj
 
-    - name: ReportGenerator
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.0.0
-      with:
-        reports: 'opencover.xml' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
-        sourcedirs: '' # Optional directories which contain the corresponding source code (separated by semicolon). The source directories are used if coverage report contains classes without path information.
-        targetdir: 'coveragereport' # REQUIRED # The directory where the generated report should be saved.
-        reporttypes: 'Cobertura' # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, Xml, XmlSummary
-        verbosity: 'Info' # The verbosity level of the log messages. Values: Verbose, Info, Warning, Error, Off
-
-    - name: Fix paths
-      run: |
-        (Get-Content .\coveragereport\Cobertura.xml).Replace("D:\a\stoolball-org-uk\stoolball-org-uk","Stoolball.Web") | Set-Content .\coveragereport\Cobertura.xml
-        (Get-Content .\coveragereport\Cobertura.xml).Replace("\","/") | Set-Content .\coveragereport\Cobertura.xml
-        (Get-Content .\coveragereport\Cobertura.xml).Replace("Stoolball.Web/Stoolball.Web","Stoolball.Web") | Set-Content .\coveragereport\Cobertura.xml
+    - name: Move coverage to root
+      shell: pwsh
+      run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./web-unit-tests.cobertura.xml }
 
     - name: Upload test results
       uses: actions/upload-artifact@v2
       with:
         name: stoolball-web-unit-tests
-        path: coveragereport/Cobertura.xml
+        path: web-unit-tests.cobertura.xml
 
   stoolball-unit-tests:
     runs-on: ubuntu-latest
@@ -65,7 +51,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.x
+        dotnet-version: 5.0.x
 
     - name: Restore dependencies
       run: dotnet restore ./Stoolball.UnitTests/Stoolball.UnitTests.csproj
@@ -97,6 +83,11 @@ jobs:
       run: |
         docker run --name "integration-tests-sql" -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ env.SA_PASSWORD }}" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
   
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
     - name: Restore dependencies
       run: dotnet restore ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj
 
@@ -151,7 +142,7 @@ jobs:
         chmod +x codecov
         ./codecov -f unit-tests.cobertura.xml -t ${CODECOV_TOKEN}
         ./codecov -f integration-tests.cobertura.xml -t ${CODECOV_TOKEN}
-        ./codecov -f Cobertura.xml -t ${CODECOV_TOKEN}
+        ./codecov -f web-unit-tests.cobertura.xml -t ${CODECOV_TOKEN}
 
   publish-to-codacy:
     runs-on: ubuntu-latest
@@ -178,4 +169,4 @@ jobs:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       with:
         project-token: ${{ env.CODACY_PROJECT_TOKEN }}
-        coverage-reports: unit-tests.cobertura.xml,integration-tests.cobertura.xml,Cobertura.xml
+        coverage-reports: unit-tests.cobertura.xml,integration-tests.cobertura.xml,web-unit-tests.cobertura.xml
