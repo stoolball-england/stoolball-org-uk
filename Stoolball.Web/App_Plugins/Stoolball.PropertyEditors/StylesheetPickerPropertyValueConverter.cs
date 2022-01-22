@@ -14,7 +14,7 @@ namespace Stoolball.Web.App_Plugins.Stoolball.PropertyEditors
         public override Type GetPropertyValueType(IPublishedPropertyType propertyType) => typeof(string);
 
         /// <inheritdoc />
-        public override object ConvertSourceToIntermediate(
+        public override object? ConvertSourceToIntermediate(
             IPublishedElement owner,
             IPublishedPropertyType propertyType,
             object source,

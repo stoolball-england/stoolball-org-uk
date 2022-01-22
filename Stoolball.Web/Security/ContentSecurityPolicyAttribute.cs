@@ -6,7 +6,21 @@ namespace Stoolball.Web.Security
 {
     public class ContentSecurityPolicyAttribute : ActionFilterAttribute, IActionFilter
     {
-        private Dictionary<string, IList<string>> _directives;
+        private Dictionary<string, IList<string>> _directives = new()
+        {
+            { DEFAULT_SRC, new List<string>() },
+            { STYLE_SRC, new List<string>() },
+            { SCRIPT_SRC, new List<string>() },
+            { IMG_SRC, new List<string>() },
+            { FONT_SRC, new List<string>() },
+            { CONNECT_SRC, new List<string>() },
+            { TRUSTED_TYPES, new List<string>() },
+            { MANIFEST_SRC, new List<string>() },
+            { FRAME_SRC, new List<string>() },
+            { WORKER_SRC, new List<string>() },
+            { REPORT_URI, new List<string>() },
+            { REPORT_TO, new List<string>() }
+        };
 #pragma warning disable IDE1006 // Naming Styles, intended for private fields rather than constants.
         private const string DEFAULT_SRC = "default-src";
         private const string STYLE_SRC = "style-src";
@@ -43,7 +57,6 @@ namespace Stoolball.Web.Security
                 throw new System.ArgumentNullException(nameof(filterContext));
             }
 
-            SetupDirectives();
             SetupDefaultPolicy();
             SetupCloudFlareAnalytics();
 
@@ -180,24 +193,6 @@ namespace Stoolball.Web.Security
             AddSource(WORKER_SRC, "'self'");
             AddSource(REPORT_URI, "https://stoolball.report-uri.com/r/d/csp/enforce");
             AddSource(REPORT_TO, "default");
-        }
-
-        private void SetupDirectives()
-        {
-            _directives = new Dictionary<string, IList<string>> {
-                { DEFAULT_SRC, new List<string>() },
-                { STYLE_SRC, new List<string>() },
-                { SCRIPT_SRC, new List<string>() },
-                { IMG_SRC, new List<string>() },
-                { FONT_SRC, new List<string>() },
-                { CONNECT_SRC, new List<string>() },
-                { TRUSTED_TYPES, new List<string>() },
-                { MANIFEST_SRC, new List<string>() },
-                { FRAME_SRC, new List<string>() },
-                { WORKER_SRC, new List<string>() },
-                { REPORT_URI, new List<string>() },
-                { REPORT_TO, new List<string>() }
-            };
         }
     }
 }

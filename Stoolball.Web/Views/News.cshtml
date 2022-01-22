@@ -22,13 +22,13 @@
         <article>
             <h2><a href="@story.Url()">@story.Name</a></h2>
             <p class="news__date">@(formatter.FormatDate(story.DisplayDate == DateTime.MinValue ? story.CreateDate : story.DisplayDate).Humanize(LetterCasing.Title))</p>
-            @Html.GetBlockListHtml(FilterBlockList(story.BlockList))
+            @Html.GetBlockListHtml(FilterBlockList(story.BlockList!))
         </article>
     }
 
     @if (Model.TotalStories > (Model.PageNumber * Model.PageSize))
     {
-        var query = QueryHelpers.ParseQuery(Context.Request.QueryString.Value);
+        var query = QueryHelpers.ParseQuery(Context.Request.QueryString.Value!);
         query["page"] = (Model.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
         <p><a href="@QueryHelpers.AddQueryString(Model.Url(), @query)" class="btn btn-secondary">Next page</a></p>
     }

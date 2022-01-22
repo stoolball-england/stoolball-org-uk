@@ -5,15 +5,15 @@ namespace Stoolball.Web.Matches
 {
     public class PlayerInningsViewModel
     {
-        public string Batter { get; set; }
+        public string? Batter { get; set; }
 
         [Display(Name = "How out")]
         public DismissalType? DismissalType { get; set; }
 
         [Display(Name = "Caught/run-out by")]
-        public string DismissedBy { get; set; }
+        public string? DismissedBy { get; set; }
 
-        public string Bowler { get; set; }
+        public string? Bowler { get; set; }
 
         [Display(Name = "Runs")]
         public int? RunsScored { get; set; }

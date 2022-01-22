@@ -5,8 +5,8 @@
 @{
     var content = (ProductPreview)Model.Content;
 
-    var html = formatter.FormatHtml(content.Description.ToHtmlString());
-    html = emailProtector.ProtectEmailAddresses(html, User.Identity.IsAuthenticated);
+    var html = formatter.FormatHtml(content.Description?.ToHtmlString());
+    html = emailProtector.ProtectEmailAddresses(html, User.Identity?.IsAuthenticated ?? false);
 }
 <li class="tile product-preview@((content.ProductPage != null) ? " product-preview__linked" : string.Empty)">
     @if (content.ProductPage != null)

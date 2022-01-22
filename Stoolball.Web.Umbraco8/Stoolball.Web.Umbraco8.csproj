@@ -2361,7 +2361,6 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="StyleGuidePage\" />
     <Folder Include="Views\Partials\BlockList\" />
   </ItemGroup>
   <PropertyGroup>

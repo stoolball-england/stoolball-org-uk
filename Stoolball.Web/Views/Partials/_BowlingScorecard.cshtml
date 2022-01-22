@@ -2,7 +2,7 @@
 @inject Stoolball.Statistics.IBowlingFiguresCalculator calculator
 @using Stoolball.Web.Matches
 @using Humanizer
-@if (Model.MatchInnings.BowlingFigures.Count > 0)
+@if (Model.MatchInnings?.BowlingFigures.Count > 0)
 {
     <table class="bowling-scorecard bowling-figures table-hover table-as-cards table-as-cards-reset-sm">
         <caption>@Model.MatchInnings.BowlingTeam.Team.TeamName's bowling@(Model.TotalInningsInMatch > 2 ? $" ({(Model.MatchInnings.InningsOrderInMatch/2+Model.MatchInnings.InningsOrderInMatch%2).Ordinalize()} innings)" : null)</caption>
@@ -35,7 +35,7 @@
         </tbody>
     </table>
 }
-@if (Model.MatchInnings.OversBowled.Count > 0)
+@if (Model.MatchInnings?.OversBowled.Count > 0)
 {
     <table class="bowling-scorecard overs table-hover table-as-cards table-as-cards-reset-sm">
         <caption>@Model.MatchInnings.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>

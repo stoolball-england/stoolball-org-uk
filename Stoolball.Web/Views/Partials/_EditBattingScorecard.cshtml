@@ -21,7 +21,7 @@
         new SelectListItem { Text = "not known", Value = string.Empty },
                             };
     var wicketsItems = new List<SelectListItem>();
-    var totalWickets = Model.Match.LastPlayerBatsOn ? Model.Match.PlayersPerTeam : Model.Match.PlayersPerTeam - 1;
+    var totalWickets = (Model.Match!.LastPlayerBatsOn) ? Model.Match!.PlayersPerTeam : Model.Match!.PlayersPerTeam - 1;
     for (var i = 0; i <= totalWickets; i++)
     {
         wicketsItems.Add(new SelectListItem { Text = i == totalWickets ? "all out" : i.ToInvariantString(), Value = i.ToInvariantString() });

@@ -18,7 +18,7 @@ namespace Stoolball.Web.Models
         /// <summary>
         /// Gets the photo that appears in the header of the site
         /// </summary>
-        public IPublishedContent HeaderPhotoWithInheritance() => this.Value("headerPhoto", fallback: Fallback.ToAncestors) as IPublishedContent;
+        public IPublishedContent HeaderPhotoWithInheritance() => (IPublishedContent)this.Value("headerPhoto", fallback: Fallback.ToAncestors);
 
         /// <inheritdoc/>
         public List<Breadcrumb> Breadcrumbs { get; } = new List<Breadcrumb>();

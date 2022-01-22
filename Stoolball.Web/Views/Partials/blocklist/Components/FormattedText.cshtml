@@ -4,7 +4,7 @@
 @inject Stoolball.Email.IEmailProtector emailProtector
 @{
     var content = (FormattedText)Model.Content;
-    var html = formatter.FormatHtml(content.Text.ToHtmlString());
-    html = emailProtector.ProtectEmailAddresses(html, User.Identity.IsAuthenticated);
+    var html = formatter.FormatHtml(content.Text?.ToHtmlString());
+    html = emailProtector.ProtectEmailAddresses(html, User.Identity?.IsAuthenticated ?? false);
 }
 @Html.Raw(html)

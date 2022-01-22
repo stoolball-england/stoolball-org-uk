@@ -3,6 +3,7 @@
 @using Stoolball.Matches
 @using Stoolball.Web.Matches
 @using System.Text
+@inject Stoolball.Dates.IDateTimeFormatter dateFormatter
 
 @if (Model.Matches.Any())
 {
@@ -19,7 +20,7 @@
             }
 
             var fullstop = false;
-            var tournamentDetail = new StringBuilder(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime) : Model.DateTimeFormatter.FormatDate(match.StartTime));
+            var tournamentDetail = new StringBuilder(match.StartTimeIsKnown ? dateFormatter.FormatDateTime(match.StartTime) : dateFormatter.FormatDate(match.StartTime));
             if (match.TournamentQualificationType == TournamentQualificationType.OpenTournament)
             {
                 tournamentDetail.Append(". ");
@@ -44,7 +45,7 @@
                 showSpaces = true;
             }
 
-            string matchClass = null;
+            string? matchClass = null;
             if (Model.ShowMatchDate)
             {
                 matchClass = "match-list__match ";
@@ -65,7 +66,7 @@
         }
         else
         {
-            string matchClass = null;
+            string? matchClass = null;
             if (Model.ShowMatchDate)
             {
                 matchClass = "match-list__match ";
@@ -74,7 +75,7 @@
                 if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch && Model.AppliedMatchFilter.Paging.PageNumber == 1) { matchClass += " match-list__next"; }
             }
 
-            string matchType = null;
+            string? matchType = null;
             if (Model.MatchTypesToLabel.Count > 0 && Model.MatchTypesToLabel.Contains(match.MatchType.Value) && !match.MatchName.Replace("'", string.Empty).ToUpperInvariant().Contains(match.MatchType.Humanize(LetterCasing.AllCaps)))
             {
                 matchType = $"({match.MatchType.Humanize(LetterCasing.LowerCase)})";
@@ -86,7 +87,7 @@
                 </p>
                 @if (Model.ShowMatchDate)
                 {
-                    <p class="list-results__detail">@(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime) : Model.DateTimeFormatter.FormatDate(match.StartTime))</p>
+                    <p class="list-results__detail">@(match.StartTimeIsKnown ? dateFormatter.FormatDateTime(match.StartTime) : dateFormatter.FormatDate(match.StartTime))</p>
                 }
             </li>
         }

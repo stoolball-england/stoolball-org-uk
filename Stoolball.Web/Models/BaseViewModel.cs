@@ -102,12 +102,12 @@ namespace Stoolball.Web.Models
             return _contentModel.GetProperty(alias);
         }
 
-        public bool IsDraft(string culture = null)
+        public bool IsDraft(string? culture = null)
         {
             return _contentModel.IsDraft(culture);
         }
 
-        public bool IsPublished(string culture = null)
+        public bool IsPublished(string? culture = null)
         {
             return _contentModel.IsPublished(culture);
         }

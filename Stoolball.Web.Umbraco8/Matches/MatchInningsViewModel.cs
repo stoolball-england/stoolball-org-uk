@@ -9,7 +9,7 @@ namespace Stoolball.Web.Matches
     /// </remarks>
     public class MatchInningsViewModel
     {
-        public MatchInnings MatchInnings { get; set; }
+        public MatchInnings MatchInnings { get; set; } = new MatchInnings();
         public List<PlayerInningsViewModel> PlayerInningsSearch { get; internal set; } = new List<PlayerInningsViewModel>();
         public List<OverViewModel> OversBowledSearch { get; internal set; } = new List<OverViewModel>();
 

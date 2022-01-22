@@ -9,4 +9,4 @@
             trimmedQueryString.Add(key, Context.Request.Query[key]);
         }
     }
-}<link rel="canonical" href="@QueryHelpers.AddQueryString("https://www.stoolball.org.uk" + Context.Request.Path.Value.TrimEnd('/'), trimmedQueryString)" />
+}<link rel="canonical" href="@QueryHelpers.AddQueryString("https://www.stoolball.org.uk" + Context.Request.Path.Value?.TrimEnd('/'), trimmedQueryString)" />

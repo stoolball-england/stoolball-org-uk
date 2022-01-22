@@ -4,8 +4,8 @@
 @inject Stoolball.Email.IEmailProtector emailProtector
 @{
     var content = (FormattedTextWithImage)Model.Content;
-    var html = formatter.FormatHtml(content.Text.ToHtmlString());
-    html = emailProtector.ProtectEmailAddresses(html, User.Identity.IsAuthenticated);
+    var html = formatter.FormatHtml(content.Text?.ToHtmlString());
+    html = emailProtector.ProtectEmailAddresses(html, User.Identity?.IsAuthenticated ?? false);
 
     var imagePosition = content.ImagePosition?.ToLowerInvariant() ?? "left";
 

@@ -138,10 +138,7 @@
     })
     <p>This is a list of matches.</p>
     @{
-        var matchListing = new MatchListingViewModel(Umbraco.AssignedContentItem, userService)
-        {
-            DateTimeFormatter = new Stoolball.Dates.DateTimeFormatter()
-        };
+        var matchListing = new MatchListingViewModel(Umbraco.AssignedContentItem, userService);
         matchListing.MatchTypesToLabel.Add(MatchType.FriendlyMatch);
         matchListing.Matches.AddRange(new[] {
     new MatchListing {

@@ -13,20 +13,20 @@
 
 
     <div class="product-list__intro">
-        <div>@Html.Raw(emailProtector.ProtectEmailAddresses(Model.Introduction.ToHtmlString(), User.Identity.IsAuthenticated))</div>
+        <div>@Html.Raw(emailProtector.ProtectEmailAddresses(Model.Introduction?.ToHtmlString(), User.Identity?.IsAuthenticated ?? false))</div>
         <a href="https://shop.spreadshirt.co.uk/stoolball">
             <img src="~/images/shop/spreadshirt.png" alt="Products from our gift shop" width="600" />
             <p class="btn btn-primary btn-lg">Visit our gift shop</p>
         </a>
     </div>
 
-    @if (Model.Products.Any())
+    @if (Model.Products?.Any() ?? false)
     {
         <ul class="tiles product-list">
             @Html.GetBlockListHtml(Model, "products", "BlockList")
         </ul>
     }
-    @Html.Raw(emailProtector.ProtectEmailAddresses(Model.FurtherDetails.ToHtmlString(), User.Identity.IsAuthenticated))
+    @Html.Raw(emailProtector.ProtectEmailAddresses(Model.FurtherDetails?.ToHtmlString(), User.Identity?.IsAuthenticated ?? false))
     @if (Model.EnquiryForm != null)
     {
         @await Umbraco.RenderMacroAsync("renderUmbracoForm", new { FormGuid = Model.EnquiryForm, FormTheme = "stoolball", ExcludeScripts = "1" })

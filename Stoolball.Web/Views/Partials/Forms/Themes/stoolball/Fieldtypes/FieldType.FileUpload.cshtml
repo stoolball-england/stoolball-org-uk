@@ -19,7 +19,7 @@
     <div id="@Model.Id-files" class="umbraco-forms-files">
         <strong>Current files</strong>
         <ul>
-        @foreach (string filePath in Model.Values)
+        @foreach (string filePath in Model.Values!)
         {
             var fileName = filePath.Split('/').Last().Split('|').Last().TrimStart('*');
 

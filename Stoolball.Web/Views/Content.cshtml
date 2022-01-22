@@ -1,7 +1,7 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Content>
 @using Umbraco.Forms.Web.Extensions
 @{
-    if (Model.BlockList.Any(x => x.Content is FormElementType))
+    if (Model.BlockList?.Any(x => x.Content is FormElementType) ?? false)
     {
         SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.min.js") { Order = 90 });
         SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.unobtrusive.min.js") { Order = 100 });

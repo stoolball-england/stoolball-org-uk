@@ -169,6 +169,7 @@
   <PropertyGroup>
     <RazorCompileOnBuild>true</RazorCompileOnBuild>
     <RazorCompileOnPublish>true</RazorCompileOnPublish>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
 </Project>
