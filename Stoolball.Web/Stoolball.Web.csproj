@@ -86,6 +86,7 @@
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js" />
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html" />
     <Content Include="App_Plugins\Stoolball.UmbracoForms\EmailField.html" />
+    <Content Include="C:\Users\rickm\Documents\Stoolball\stoolball-v9\.editorconfig" />
     <Content Include="Forms\RecreateUmbracoForms.sql" />
     <Content Include="Directory.Build.targets" />
   </ItemGroup>
@@ -172,5 +173,8 @@
     <RazorCompileOnPublish>true</RazorCompileOnPublish>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\rickm\Documents\Stoolball\stoolball-v9\.editorconfig" />
+  </ItemGroup>
 
 </Project>

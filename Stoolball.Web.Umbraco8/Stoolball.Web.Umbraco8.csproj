@@ -635,9 +635,6 @@
     <Content Include="config\umbracoSettings.development.xdt.config" />
     <None Include="config\uSync8.local.xdt.config" />
     <Content Include="js\tests\related-items.test.js" />
-    <Content Include="..\.editorconfig">
-      <Link>.editorconfig</Link>
-    </Content>
     <Content Include="Email\EmailTemplate.html" />
     <Content Include="Directory.Build.targets" />
     <Content Include="config\uSync8.config" />
