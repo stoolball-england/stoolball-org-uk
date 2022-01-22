@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
@@ -143,6 +144,22 @@ namespace Stoolball.Web
             }
 
             app.UseHttpsRedirection();
+
+            // Add Cache-Control header to cache static files for 1 year
+            app.Use(async (context, next) =>
+            {
+                string path = context.Request.Path;
+
+                if (path.StartsWith("/umbraco/") == false)
+                {
+                    if (new List<string> { ".css", ".js", ".svg", ".gif", ".png", ".jpg", ".ico", ".woff", ".woff2" }.Contains(path.GetFileExtension().ToLowerInvariant()))
+                    {
+                        context.Response.Headers.Add("Cache-Control", "public, max-age=31536000");
+                    }
+                }
+
+                await next();
+            });
 
             app.UseUmbraco()
                 .WithMiddleware(u =>
