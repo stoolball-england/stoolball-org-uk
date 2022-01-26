@@ -46,7 +46,7 @@ namespace Stoolball.Web.Account
         {
             if (!ModelState.IsValid)
             {
-                return BlockedLoginResult();
+                return CurrentUmbracoPage();
             }
 
             // Check whether login is blocked for any reason. If so, don't even try.

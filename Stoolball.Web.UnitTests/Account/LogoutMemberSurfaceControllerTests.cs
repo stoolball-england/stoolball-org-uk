@@ -1,18 +1,15 @@
 ﻿using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Stoolball.Web.Account;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Models;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.ActionResults;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Account
@@ -21,49 +18,26 @@ namespace Stoolball.Web.UnitTests.Account
     {
         private readonly Mock<ILogoutMemberWrapper> _logoutMemberWrapper = new Mock<ILogoutMemberWrapper>();
 
-        private class TestLogoutMemberSurfaceController : LogoutMemberSurfaceController
-        {
-            private readonly Mock<IPublishedContent> _currentPage = new Mock<IPublishedContent>();
-
-            public TestLogoutMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
-                IUmbracoDatabaseFactory databaseFactory,
-                ServiceContext services,
-                AppCaches appCaches,
-                ILogger logger,
-                IProfilingLogger profilingLogger,
-                UmbracoHelper umbracoHelper,
-                HttpContextBase httpContext,
-                ILogoutMemberWrapper logoutMemberWrapper)
-            : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper, logoutMemberWrapper)
-            {
-                ControllerContext = new ControllerContext(httpContext, new RouteData(), this);
-            }
-
-            protected override IPublishedContent CurrentPage => _currentPage.Object;
-
-            protected override RedirectToUmbracoPageResult RedirectToCurrentUmbracoPage()
-            {
-                return new RedirectToUmbracoPageResult(0, UmbracoContextAccessor);
-            }
-        }
-
         public LogoutMemberSurfaceControllerTests()
         {
             base.Setup();
         }
 
-
-        private TestLogoutMemberSurfaceController CreateController()
+        private LogoutMemberSurfaceController CreateController()
         {
-            return new TestLogoutMemberSurfaceController(Mock.Of<IUmbracoContextAccessor>(),
+            return new LogoutMemberSurfaceController(UmbracoContextAccessor.Object,
                             Mock.Of<IUmbracoDatabaseFactory>(),
-                            base.ServiceContext,
+                            ServiceContext,
                             AppCaches.NoCache,
-                            Mock.Of<ILogger>(),
                             Mock.Of<IProfilingLogger>(),
-                            base.UmbracoHelper,
-                            base.HttpContext.Object,
-                            _logoutMemberWrapper.Object);
+                            Mock.Of<IPublishedUrlProvider>(),
+                            _logoutMemberWrapper.Object)
+            {
+                ControllerContext = new ControllerContext
+                {
+                    HttpContext = HttpContext.Object
+                }
+            };
         }
 
 
@@ -98,46 +72,46 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public void Logged_in_member_is_logged_out()
+        public async void Logged_in_member_is_logged_out()
         {
             SetupCurrentMember(Mock.Of<IMember>());
             using (var controller = CreateController())
             {
-                var result = controller.HandleLogout();
+                var result = await controller.HandleLogout();
 
                 _logoutMemberWrapper.Verify(x => x.LogoutMember(), Times.Once);
             }
         }
 
         [Fact]
-        public void Logged_in_member_returns_RedirectToUmbracoPageResult()
+        public async void Logged_in_member_returns_RedirectToUmbracoPageResult()
         {
             SetupCurrentMember(Mock.Of<IMember>());
             using (var controller = CreateController())
             {
-                var result = controller.HandleLogout();
+                var result = await controller.HandleLogout();
 
                 Assert.IsType<RedirectToUmbracoPageResult>(result);
             }
         }
 
         [Fact]
-        public void Logged_out_member_does_not_attempt_logout()
+        public async void Logged_out_member_does_not_attempt_logout()
         {
             using (var controller = CreateController())
             {
-                var result = controller.HandleLogout();
+                var result = await controller.HandleLogout();
 
                 _logoutMemberWrapper.Verify(x => x.LogoutMember(), Times.Never);
             }
         }
 
         [Fact]
-        public void Logged_out_member_returns_RedirectToUmbracoPageResult()
+        public async void Logged_out_member_returns_RedirectToUmbracoPageResult()
         {
             using (var controller = CreateController())
             {
-                var result = controller.HandleLogout();
+                var result = await controller.HandleLogout();
 
                 Assert.IsType<RedirectToUmbracoPageResult>(result);
             }
