@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Moq;
+using Stoolball.Email;
 using Stoolball.Security;
 using Stoolball.Web.Account;
 using Stoolball.Web.Email;

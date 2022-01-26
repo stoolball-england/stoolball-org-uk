@@ -1,0 +1,17 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<LoginMember>
+@{
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.min.js") { Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.unobtrusive.min.js") { Order = 100 });
+}
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        @await Html.PartialAsync("_Logout")
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

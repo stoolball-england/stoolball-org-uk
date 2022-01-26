@@ -44,9 +44,6 @@ namespace Stoolball.Web
 
             // Utility classes
             composition.Register<ILogger, UmbracoLogWrapper>();
-            composition.Register<Email.IEmailFormatter, Email.EmailFormatter>();
-            composition.Register<Email.IEmailSender, Email.EmailSender>();
-            composition.Register<IVerificationToken, VerificationToken>();
             composition.Register<IAuditRepository, SqlServerAuditRepository>();
             composition.Register<IRouteGenerator, RouteGenerator>();
             composition.Register<ISeasonEstimator, SeasonEstimator>();
@@ -90,7 +87,6 @@ namespace Stoolball.Web
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
             composition.Register<ICreateMemberExecuter, CreateMemberExecuter>();
             composition.Register<ILoginMemberWrapper, LoginMemberWrapper>();
-            composition.Register<ILogoutMemberWrapper, LogoutMemberWrapper>();
 
             // Listings pages
             composition.Register<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>, ListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();

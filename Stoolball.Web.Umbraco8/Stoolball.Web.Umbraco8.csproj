@@ -635,7 +635,6 @@
     <Content Include="config\umbracoSettings.development.xdt.config" />
     <None Include="config\uSync8.local.xdt.config" />
     <Content Include="js\tests\related-items.test.js" />
-    <Content Include="Email\EmailTemplate.html" />
     <Content Include="Directory.Build.targets" />
     <Content Include="config\uSync8.config" />
     <Content Include="ApplicationInsights.xdt.template.config" />
@@ -774,11 +773,6 @@
     <Compile Include="Account\LogoutMemberWrapper.cs" />
     <Compile Include="Account\CreateMemberExecuter.cs" />
     <Compile Include="Account\ICreateMemberExecuter.cs" />
-    <Compile Include="Account\LoginMember.cs" />
-    <Compile Include="Account\LoginMemberController.cs" />
-    <Compile Include="Account\LoginMemberSurfaceController.cs" />
-    <Compile Include="Account\LogoutMember.cs" />
-    <Compile Include="Account\LogoutMemberController.cs" />
     <Compile Include="Account\EmailAddress.cs" />
     <Compile Include="Account\PersonalDetails.cs" />
     <Compile Include="Account\MyAccount.cs" />
@@ -788,7 +782,6 @@
     <Compile Include="Account\EmailAddressFormData.cs" />
     <Compile Include="Account\EmailAddressSurfaceController.cs" />
     <Compile Include="Account\PersonalDetailsSurfaceController.cs" />
-    <Compile Include="Account\LogoutMemberSurfaceController.cs" />
     <Compile Include="Account\PersonalDetailsFormData.cs" />
     <Compile Include="Account\ResetPassword.cs" />
     <Compile Include="Account\ResetPasswordController.cs" />
@@ -868,6 +861,8 @@
     <Compile Include="Competitions\CompetitionsController.cs" />
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Configuration\IApiKeyProvider.cs" />
+    <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
+    <Compile Include="Email\IEmailSender.cs" />
     <Compile Include="Filtering\FilterViewModel.cs" />
     <Compile Include="Html\HtmlSanitizer.cs" />
     <Compile Include="Matches\EditMatchFormatFormData.cs" />
@@ -1490,16 +1485,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>IndividualScores.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LoginMember.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LoginMember.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\LogoutMember.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LogoutMember.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Match.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1650,16 +1635,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>_InningsStatistics.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\_Login.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_Login.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\_Logout.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_Logout.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\_SeasonListExpandable.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1756,7 +1731,6 @@
       <DependentUpon>TransientTeam.cshtml</DependentUpon>
     </Compile>
     <Compile Include="WebApi\ProgressResult.cs" />
-    <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
     <Compile Include="Matches\TournamentController.cs" />
     <Compile Include="Matches\MatchController.cs" />
     <Compile Include="Matches\MatchListingViewModel.cs" />
@@ -1771,10 +1745,6 @@
     <Compile Include="Teams\TransientTeamController.cs" />
     <Compile Include="Teams\TeamController.cs" />
     <Compile Include="Teams\TeamViewModel.cs" />
-    <Compile Include="Email\EmailSender.cs" />
-    <Compile Include="Email\EmailFormatter.cs" />
-    <Compile Include="Email\IEmailFormatter.cs" />
-    <Compile Include="Email\IEmailSender.cs" />
     <Compile Include="Account\CreateMemberSurfaceController.cs" />
     <Compile Include="App_Data\Models\ApproveMember.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
@@ -1814,14 +1784,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MyAccount.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\LoginMember.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>LoginMember.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\LogoutMember.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>LogoutMember.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\CreateMember.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>CreateMember.generated.cs</LastGenOutput>
@@ -1829,14 +1791,6 @@
     <Content Include="Views\ResetPassword.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ResetPassword.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_Logout.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_Logout.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_Login.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_Login.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Club.cshtml">
       <Generator>RazorGenerator</Generator>

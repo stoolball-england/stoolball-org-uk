@@ -1,12 +1,15 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<IPublishedContent>
-@using Umbraco.Web
-@using Umbraco.Web.Models
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IPublishedContent>
+@inject Stoolball.Email.IEmailProtector emailProtector
+@inject IMemberManager memberManager
+@using Umbraco.Cms.Core.Strings
+@using Umbraco.Cms.Core.Security
+@using Umbraco.Cms.Web.Common.Models
 @using Stoolball.Web.Account
-@using Stoolball.Web.Email
+@using Stoolball.Web.HtmlHelpers
 @{
     var loginPage = Umbraco.ContentSingleAtXPath("//loginMember");
     var loginModel = new LoginModel();
-    loginModel.RedirectUrl = Request.QueryString["ReturnUrl"] ?? "/";
+    loginModel.RedirectUrl = Context.Request.Query["ReturnUrl"].ToString();
     if (!loginModel.RedirectUrl.StartsWith("/"))
     {
         loginModel.RedirectUrl = "/";
@@ -15,23 +18,22 @@
 
 @if (Model.Key != loginPage?.Key)
 {
-    if (Members.IsLoggedIn())
+    if (User.Identity?.IsAuthenticated ?? false)
     {
-        var permissionRequired = loginPage.Value<IHtmlString>("permissionRequired").ToHtmlString().Replace("{{NAME}}", Members.GetCurrentMember().Name);
-        @Html.ProtectEmailAddresses(permissionRequired)
+        var permissionRequired = loginPage.Value<IHtmlEncodedString>("permissionRequired").ToHtmlString().Replace("{{NAME}}", (await memberManager.GetCurrentMemberAsync())?.Name);
+        @Html.ProtectEmailAddresses(emailProtector, permissionRequired)
     }
     else
     {
-        @Html.ProtectEmailAddresses(loginPage.Value<IHtmlString>("loginRequired"))
+        @Html.ProtectEmailAddresses(emailProtector, loginPage.Value<IHtmlEncodedString>("loginRequired"))
     }
-    loginModel.RedirectUrl = Request.Url.AbsolutePath;
+    loginModel.RedirectUrl = Context.Request.Path;
 }
 
-@using (Html.BeginUmbracoForm<LoginMemberSurfaceController>("Login"))
+@using (Html.BeginUmbracoForm<LoginMemberSurfaceController>(nameof(LoginMemberSurfaceController.Login)))
 {
     @Html.HiddenFor(m => loginModel.RedirectUrl)
     @Html.ValidationSummary("loginModel", true)
-    @Html.AntiForgeryToken()
 
     <div class="form-group">
         @Html.LabelFor(m => loginModel.Username, "Email")
@@ -47,11 +49,11 @@
     <button class="btn btn-primary">@loginPage.Value("loginButton")</button>
 }
 
-@Html.ProtectEmailAddresses(loginPage?.Value<IHtmlString>("resetPassword"))
+@Html.ProtectEmailAddresses(emailProtector, loginPage?.Value<IHtmlEncodedString>("resetPassword"))
 
 @if (loginPage != null && loginPage.HasValue("migratedMemberAccounts"))
 {
     <div class="alert alert-info">
-        @Html.ProtectEmailAddresses(loginPage?.Value<IHtmlString>("migratedMemberAccounts"))
+        @Html.ProtectEmailAddresses(emailProtector, loginPage?.Value<IHtmlEncodedString>("migratedMemberAccounts"))
     </div>
 }

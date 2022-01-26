@@ -1,0 +1,20 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.PublishedContent.PublishedContentModel>
+@inject Stoolball.Email.IEmailProtector emailProtector
+@inject IMemberManager memberManager
+@using Umbraco.Cms.Core.Security
+@using Stoolball.Web.Account
+@using Stoolball.Web.HtmlHelpers
+@{
+    var logoutPage = Umbraco.ContentSingleAtXPath("//logoutMember");
+    var loggedIn = !string.IsNullOrEmpty(Model.Value<string>("loggedIn")) ? Model.Value<string>("loggedIn") : logoutPage?.Value<string>("loggedIn");
+    var currentMemberName = (await memberManager.GetCurrentMemberAsync())?.Name; // GetCurrentMemberAsync() returns null when the member has just confirmed their new email address in another tab
+}
+
+@if (!string.IsNullOrEmpty(currentMemberName)) { 
+    @Html.ProtectEmailAddresses(emailProtector, loggedIn?.Replace("{{NAME}}", currentMemberName))
+}
+
+@using (Html.BeginUmbracoForm<LogoutMemberSurfaceController>(nameof(LogoutMemberSurfaceController.HandleLogout)))
+{
+    <button class="btn btn-primary">@(logoutPage?.Value("logoutButton"))</button>
+}

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Stoolball.Web.Email
+namespace Stoolball.Email
 {
     public interface IEmailFormatter
     {

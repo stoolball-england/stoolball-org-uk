@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Umbraco.Core.Persistence;
-using Umbraco.Web;
-using Umbraco.Core;
-using System.Net.Mail;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Web;
-using System.Web.Hosting;
-using System.Runtime.CompilerServices;
 
-namespace Stoolball.Web.Email
+namespace Stoolball.Email
 {
     public class EmailFormatter : IEmailFormatter
     {
@@ -21,16 +12,22 @@ namespace Stoolball.Web.Email
             var revisedBody = ReplaceTokens(bodyHtml != null ? bodyHtml : string.Empty, tokenValues);
 
             // Replace those texts into the email template
-            revisedBody = File.ReadAllText(HostingEnvironment.MapPath("~/Email/EmailTemplate.html"))
-                .Replace("{{SUBJECT}}", revisedSubject)
-                .Replace("{{BODY}}", revisedBody);
+            using (var stream = typeof(EmailFormatter).Assembly.GetManifestResourceStream("Stoolball.Email.EmailTemplate.html"))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    revisedBody = reader.ReadToEnd()
+                        .Replace("{{SUBJECT}}", revisedSubject)
+                        .Replace("{{BODY}}", revisedBody);
+                }
+            }
 
             return (revisedSubject, revisedBody);
         }
 
         private static string ReplaceTokens(string textIn, Dictionary<string, string> tokenValues)
         {
-            string textOut = textIn;
+            var textOut = textIn;
 
             if (tokenValues != null)
             {

@@ -1,0 +1,16 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<LogoutMember>
+@inject Stoolball.Email.IEmailProtector emailProtector
+@using Stoolball.Web.HtmlHelpers
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        @await Html.PartialAsync("_Logout")
+    }
+    else
+    {
+        @Html.ProtectEmailAddresses(emailProtector, Model.LoggedOut)
+        <p><a href="/" class="btn btn-primary btn-back">@Model.HomeButton</a></p>
+    }
+</div>

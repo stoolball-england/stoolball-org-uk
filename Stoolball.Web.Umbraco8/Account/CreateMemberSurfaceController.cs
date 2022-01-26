@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using Stoolball.Email;
 using Stoolball.Security;
 using Stoolball.Web.Email;
 using Stoolball.Web.Security;

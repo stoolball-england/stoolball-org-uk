@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Security;
+using Stoolball.Email;
 using Stoolball.Security;
 using Stoolball.Web.Email;
 using Stoolball.Web.Security;

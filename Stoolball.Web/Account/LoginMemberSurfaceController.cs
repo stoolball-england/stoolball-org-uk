@@ -1,71 +1,78 @@
 ﻿using System.Collections.Generic;
-using System.Web.Mvc;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Stoolball.Email;
 using Stoolball.Security;
-using Stoolball.Web.Email;
-using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Models;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Controllers;
-using Umbraco.Web.Models;
-using Umbraco.Web.Mvc;
-using Umbraco.Web.PublishedModels;
-using UmbracoConstants = Umbraco.Core.Constants;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Models.Email;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Common.Models;
+using Umbraco.Cms.Web.Common.Security;
+using Umbraco.Cms.Web.Website.Controllers;
+using Umbraco.Extensions;
 
 namespace Stoolball.Web.Account
 {
     public class LoginMemberSurfaceController : UmbLoginController
     {
         private readonly IEmailFormatter _emailFormatter;
-        private readonly IEmailSender _emailSender;
+        private readonly Umbraco.Cms.Core.Mail.IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
-        private readonly IStoolballRouterController _stoolballRouterController;
+        //private readonly IStoolballRouterController _stoolballRouterController;
 
         public LoginMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches,
-            ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailFormatter emailFormatter, IEmailSender emailSender,
-            IVerificationToken verificationToken, IStoolballRouterController stoolballRouterController)
-            : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
+            IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberSignInManager memberSignInManager, IEmailFormatter emailFormatter, Umbraco.Cms.Core.Mail.IEmailSender emailSender,
+            IVerificationToken verificationToken)//, IStoolballRouterController stoolballRouterController)
+            : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider, memberSignInManager)
         {
             _emailFormatter = emailFormatter ?? throw new System.ArgumentNullException(nameof(emailFormatter));
             _emailSender = emailSender ?? throw new System.ArgumentNullException(nameof(emailSender));
             _verificationToken = verificationToken ?? throw new System.ArgumentNullException(nameof(verificationToken));
-            _stoolballRouterController = stoolballRouterController ?? throw new System.ArgumentNullException(nameof(stoolballRouterController));
+            //_stoolballRouterController = stoolballRouterController ?? throw new System.ArgumentNullException(nameof(stoolballRouterController));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public ActionResult Login([Bind(Prefix = "loginModel")] LoginModel model)
+        public async Task<IActionResult> Login([Bind(Prefix = "loginModel")] LoginModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BlockedLoginResult();
+            }
+
             // Check whether login is blocked for any reason. If so, don't even try.
             // blockLogin is an extra status nececesary because we use IsApproved for account activation 
-            var member = Services.MemberService.GetByEmail(model?.Username);
+            var member = Services.MemberService.GetByEmail(model.Username);
             if (member != null && (member.GetValue<bool>("blockLogin") || !member.IsApproved || member.IsLockedOut))
             {
                 // Re-send activation email if the account is found but not approved or locked out.
                 if (!member.IsApproved || member.IsLockedOut)
                 {
-                    SendEmailIfNotActivatedOrLockedOut(member);
+                    await SendEmailIfNotActivatedOrLockedOut(member);
                 }
 
                 // Return the same status the built in controller uses if login fails for any reason
                 ModelState.AddModelError("loginModel", "Invalid username or password");
-                if (CurrentPage.GetType() == typeof(StoolballRouter))
-                {
-                    return ReturnToStoolballRouterPage();
-                }
+                //if (CurrentPage.GetType() == typeof(StoolballRouter))
+                //{
+                //    return ReturnToStoolballRouterPage();
+                //}
                 return BlockedLoginResult();
             }
 
-            var baseResult = TryUmbracoLogin(model);
+            var baseResult = await TryUmbracoLogin(model);
 
             // If they were logged in, increment their total logins.
-            if (ModelState.IsValid)
+            if (member != null && ModelState.IsValid)
             {
                 member.SetValue("totalLogins", member.GetValue<int>("totalLogins") + 1);
                 Services.MemberService.Save(member);
@@ -73,10 +80,10 @@ namespace Stoolball.Web.Account
             }
 
             // If this was a page demanding permissions, return to that page. Otherwise return the base result to the standard login page.
-            if (CurrentPage.GetType() == typeof(StoolballRouter))
-            {
-                return ReturnToStoolballRouterPage();
-            }
+            //if (CurrentPage.GetType() == typeof(StoolballRouter))
+            //{
+            //    return ReturnToStoolballRouterPage();
+            //}
             return baseResult;
         }
 
@@ -84,7 +91,7 @@ namespace Stoolball.Web.Account
         /// Calls the base <see cref="CurrentUmbracoPage" /> in a way which can be overridden for testing
         /// </summary>
         /// <returns></returns>
-        protected virtual ActionResult BlockedLoginResult()
+        protected virtual IActionResult BlockedLoginResult()
         {
             return CurrentUmbracoPage();
         }
@@ -94,20 +101,20 @@ namespace Stoolball.Web.Account
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        protected virtual ActionResult TryUmbracoLogin(LoginModel model) => base.HandleLogin(model);
+        protected async virtual Task<IActionResult> TryUmbracoLogin(LoginModel model) => await base.HandleLogin(model);
 
-        private ActionResult ReturnToStoolballRouterPage()
-        {
-            _stoolballRouterController.ControllerContext = ControllerContext;
-            _stoolballRouterController.ControllerContext.RouteData.Values["action"] = ((RouteDefinition)RouteData.DataTokens[UmbracoConstants.Web.UmbracoRouteDefinitionDataToken]).ActionName;
-            _stoolballRouterController.ModelState.Merge(ModelState);
-            return _stoolballRouterController.Index(ControllerContext.RouteData.DataTokens["umbraco"] as ContentModel).Result;
-        }
+        //private IActionResult ReturnToStoolballRouterPage()
+        //{
+        //    _stoolballRouterController.ControllerContext = ControllerContext;
+        //    _stoolballRouterController.ControllerContext.RouteData.Values["action"] = ((RouteDefinition)RouteData.DataTokens[UmbracoIdConstants.Web.UmbracoRouteDefinitionDataToken]).ActionName;
+        //    _stoolballRouterController.ModelState.Merge(ModelState);
+        //    return _stoolballRouterController.Index(ControllerContext.RouteData.DataTokens["umbraco"] as ContentModel).Result;
+        //}
 
-        private void SendEmailIfNotActivatedOrLockedOut(IMember member)
+        private async Task SendEmailIfNotActivatedOrLockedOut(IMember member)
         {
             string tokenField = string.Empty, tokenExpiryField = string.Empty, emailSubjectField = string.Empty, emailBodyField = string.Empty;
-            var loginPage = Umbraco.ContentSingleAtXPath("//loginMember");
+            var loginPage = UmbracoContext.Content.GetSingleByXPath("//loginMember");
             if (loginPage == null)
             {
                 // We can't send emails if we don't have the content, so just return.
@@ -139,7 +146,7 @@ namespace Stoolball.Web.Account
             Services.MemberService.Save(member);
 
             // Send the password reset / member approval email
-            var (sender, body) = _emailFormatter.FormatEmailContent(loginPage.Value<string>(emailSubjectField),
+            var (subject, body) = _emailFormatter.FormatEmailContent(loginPage.Value<string>(emailSubjectField),
                 loginPage.Value<string>(emailBodyField),
                 new Dictionary<string, string>
                 {
@@ -148,14 +155,14 @@ namespace Stoolball.Web.Account
                     {"token", token},
                     {"domain", GetRequestUrlAuthority()}
                 });
-            _emailSender.SendEmail(member.Email, sender, body);
+
+            await _emailSender.SendAsync(new EmailMessage(null, member.Email, subject, body, true), null);
         }
 
         /// <summary>
         /// Gets the authority segment of the request URL
         /// </summary>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:Uri return values should not be strings", Justification = "It's only a partial URI")]
-        protected virtual string GetRequestUrlAuthority() => Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk";
+        protected virtual string GetRequestUrlAuthority() => Request.Host.Host == "localhost" ? Request.Host.Value : "www.stoolball.org.uk";
     }
 }

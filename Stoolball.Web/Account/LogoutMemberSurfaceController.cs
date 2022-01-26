@@ -1,11 +1,15 @@
-﻿using System.Web.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.ActionResults;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Account
 {
@@ -14,8 +18,8 @@ namespace Stoolball.Web.Account
         private readonly ILogoutMemberWrapper _logoutMemberWrapper;
 
         public LogoutMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ILogoutMemberWrapper logoutMemberWrapper) :
-            base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, ILogoutMemberWrapper logoutMemberWrapper) :
+            base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _logoutMemberWrapper = logoutMemberWrapper ?? throw new System.ArgumentNullException(nameof(logoutMemberWrapper));
         }
@@ -24,11 +28,11 @@ namespace Stoolball.Web.Account
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy]
-        public ActionResult HandleLogout()
+        public async Task<IActionResult> HandleLogout()
         {
-            if (Umbraco.MemberIsLoggedOn())
+            if (User.Identity?.IsAuthenticated ?? false)
             {
-                _logoutMemberWrapper.LogoutMember();
+                await _logoutMemberWrapper.LogoutMember();
             }
             return RedirectToCurrentUmbracoPage();
         }

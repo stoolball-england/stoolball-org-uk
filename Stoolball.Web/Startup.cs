@@ -22,9 +22,11 @@ using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
+using Stoolball.Security;
 using Stoolball.SocialMedia;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Web.Account;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
@@ -78,11 +80,16 @@ namespace Stoolball.Web
             services.AddTransient<IBowlingFiguresCalculator, BowlingFiguresCalculator>();
             services.AddTransient<IDateTimeFormatter, DateTimeFormatter>();
             services.AddTransient<IEmailProtector, EmailProtector>();
+            services.AddTransient<IEmailFormatter, EmailFormatter>();
             services.AddTransient<IHtmlFormatter, Stoolball.Html.HtmlFormatter>();
             services.AddTransient<Ganss.XSS.IHtmlSanitizer, Ganss.XSS.HtmlSanitizer>();
             services.AddTransient<IOversHelper, OversHelper>();
             services.AddTransient<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
+            services.AddTransient<IVerificationToken, VerificationToken>();
             services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
+
+            // Authentication
+            services.AddTransient<ILogoutMemberWrapper, LogoutMemberWrapper>();
 
             // Data sources
             services.AddTransient<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();
