@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Web.Mvc;
-using Umbraco.Web.Models;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Umbraco.Cms.Web.Website.Models;
 
 namespace Stoolball.Web.Account
 {
     public class CreateMemberExecuter : ICreateMemberExecuter
     {
-        public ActionResult CreateMember(Func<RegisterModel, ActionResult> executeFunction, RegisterModel model)
+        public async Task<IActionResult> CreateMember(Func<RegisterModel, Task<IActionResult>> executeFunction, RegisterModel model)
         {
             if (executeFunction is null)
             {
@@ -18,7 +19,7 @@ namespace Stoolball.Web.Account
                 throw new ArgumentNullException(nameof(model));
             }
 
-            return executeFunction(model);
+            return await executeFunction(model);
         }
     }
 }

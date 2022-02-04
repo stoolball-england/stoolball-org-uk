@@ -1,37 +1,30 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.CreateMember>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using System.Web.Mvc.Html
-@using ClientDependency.Core.Mvc
-@using Umbraco.Web
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<CreateMember>
+@inject Stoolball.Email.IEmailProtector emailProtector
 @using Stoolball.Web.Account
-@using Stoolball.Web.Email
+@using Umbraco.Cms.Web.Website.Models
 @{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.min.js") { Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.unobtrusive.min.js") { Order = 100 });
 
-    var createMemberModel = Members.CreateRegistrationModel();
+    var createMemberModel = new RegisterModel();
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>
 
-    @if (User.Identity.IsAuthenticated)
+    @if (User.Identity?.IsAuthenticated ?? false)
     {
-        @Html.Partial("_Logout")
+        @await Html.PartialAsync("_Logout")
     }
     else
     {
         if (TempData["FormSuccess"] != null)
         {
-            @Html.ProtectEmailAddresses(Model.Value("memberCreatedSuccessfully").ToString(), TempData["Email"]?.ToString())
+            @Html.ProtectEmailAddresses(emailProtector, Model.Value("memberCreatedSuccessfully").ToString(), TempData["Email"]?.ToString())
         }
         else
         {
             using (Html.BeginUmbracoForm<CreateMemberSurfaceController>("CreateMember"))
             {
-                @Html.AntiForgeryToken()
-
                 if (ViewContext.ViewData.ModelState.Where(x => x.Key == string.Empty).Any())
                 {
                     @Html.ValidationSummary(true)
@@ -58,7 +51,7 @@
                     @Html.PasswordFor(m => createMemberModel.Password, new { @class = "form-control", aria_describedby = describedBy, autocorrect = "off", autocapitalize = "off", autocomplete="new-password" })
                     @Html.ValidationMessageFor(m => createMemberModel.Password, "Please create a new password", new { id = "form-password" })
                 </div>
-                @Html.ProtectEmailAddresses(Model.Value("privacyNotice").ToString())
+                @Html.ProtectEmailAddresses(emailProtector, Model.Value("privacyNotice").ToString())
 
                 <button class="btn btn-primary">@Model.Value("createMemberButton")</button>
             }

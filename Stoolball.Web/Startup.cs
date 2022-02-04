@@ -30,6 +30,7 @@ using Stoolball.Web.Account;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
+using Stoolball.Web.Logging;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
@@ -83,6 +84,7 @@ namespace Stoolball.Web
             services.AddTransient<IEmailFormatter, EmailFormatter>();
             services.AddTransient<IHtmlFormatter, Stoolball.Html.HtmlFormatter>();
             services.AddTransient<Ganss.XSS.IHtmlSanitizer, Ganss.XSS.HtmlSanitizer>();
+            services.AddTransient(typeof(Stoolball.Logging.ILogger<>), typeof(LogWrapper<>));
             services.AddTransient<IOversHelper, OversHelper>();
             services.AddTransient<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
             services.AddTransient<IVerificationToken, VerificationToken>();
@@ -90,6 +92,7 @@ namespace Stoolball.Web
 
             // Authentication
             services.AddTransient<ILogoutMemberWrapper, LogoutMemberWrapper>();
+            services.AddTransient<ICreateMemberExecuter, CreateMemberExecuter>();
 
             // Data sources
             services.AddTransient<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();

@@ -20,6 +20,7 @@ namespace Stoolball.Web.UnitTests
         private Mock<IIdentity> _identity;
 
         protected Mock<HttpContext> HttpContext { get; private set; }
+        protected Mock<HttpRequest> Request { get; private set; }
         protected Mock<IUmbracoContextAccessor> UmbracoContextAccessor { get; private set; }
         protected ServiceContext ServiceContext { get; private set; }
         protected Mock<IMemberService> MemberService { get; private set; }
@@ -39,11 +40,11 @@ namespace Stoolball.Web.UnitTests
 
         public virtual void SetupHttpContext()
         {
-            var request = new Mock<HttpRequest>();
-            request.SetupGet(x => x.Host).Returns(new HostString("https://example.org"));
+            Request = new Mock<HttpRequest>();
+            Request.SetupGet(x => x.Host).Returns(new HostString("www.stoolball.org.uk"));
 
             HttpContext = new Mock<HttpContext>();
-            HttpContext.SetupGet(x => x.Request).Returns(request.Object);
+            HttpContext.SetupGet(x => x.Request).Returns(Request.Object);
 
             _identity = new Mock<IIdentity>();
             _identity.Setup(x => x.IsAuthenticated).Returns(false);

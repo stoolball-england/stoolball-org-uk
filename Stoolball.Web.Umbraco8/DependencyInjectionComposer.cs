@@ -20,7 +20,6 @@ using Stoolball.Web.Account;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
-using Stoolball.Web.Logging;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Routing;
@@ -43,7 +42,6 @@ namespace Stoolball.Web
             }
 
             // Utility classes
-            composition.Register<ILogger, UmbracoLogWrapper>();
             composition.Register<IAuditRepository, SqlServerAuditRepository>();
             composition.Register<IRouteGenerator, RouteGenerator>();
             composition.Register<ISeasonEstimator, SeasonEstimator>();
@@ -85,7 +83,6 @@ namespace Stoolball.Web
             composition.Register<IMatchFilterHumanizer, MatchFilterHumanizer>();
             composition.Register<IStatisticsFilterHumanizer, StatisticsFilterHumanizer>();
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
-            composition.Register<ICreateMemberExecuter, CreateMemberExecuter>();
             composition.Register<ILoginMemberWrapper, LoginMemberWrapper>();
 
             // Listings pages

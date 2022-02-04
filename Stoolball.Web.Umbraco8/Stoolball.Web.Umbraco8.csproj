@@ -765,14 +765,10 @@
     <Compile Include="Account\ConfirmEmailAddress.cs" />
     <Compile Include="Account\ApproveMemberController.cs" />
     <Compile Include="Account\ApproveMember.cs" />
-    <Compile Include="Account\CreateMember.cs" />
-    <Compile Include="Account\CreateMemberController.cs" />
     <Compile Include="Account\ILoginMemberWrapper.cs" />
     <Compile Include="Account\ILogoutMemberWrapper.cs" />
     <Compile Include="Account\LoginMemberExecuter.cs" />
     <Compile Include="Account\LogoutMemberWrapper.cs" />
-    <Compile Include="Account\CreateMemberExecuter.cs" />
-    <Compile Include="Account\ICreateMemberExecuter.cs" />
     <Compile Include="Account\EmailAddress.cs" />
     <Compile Include="Account\PersonalDetails.cs" />
     <Compile Include="Account\MyAccount.cs" />
@@ -1157,7 +1153,6 @@
     <Compile Include="WebApi\CsvHandler.cs" />
     <Compile Include="HtmlHelpers\LabelExtensions.cs" />
     <Compile Include="HtmlHelpers\RequiredFieldStatus.cs" />
-    <Compile Include="Logging\UmbracoLogWrapper.cs" />
     <Compile Include="Matches\AddMatchMenuViewModel.cs" />
     <Compile Include="Matches\EditCloseOfPlayFormData.cs" />
     <Compile Include="Matches\MatchAwardViewModel.cs" />
@@ -1334,11 +1329,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CreateMatchLocation.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\CreateMember.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CreateMember.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\CreateSeason.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1745,7 +1735,6 @@
     <Compile Include="Teams\TransientTeamController.cs" />
     <Compile Include="Teams\TeamController.cs" />
     <Compile Include="Teams\TeamViewModel.cs" />
-    <Compile Include="Account\CreateMemberSurfaceController.cs" />
     <Compile Include="App_Data\Models\ApproveMember.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
     <Compile Include="App_Data\Models\Folder.generated.cs" />
@@ -1783,10 +1772,6 @@
     <Content Include="Views\MyAccount.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MyAccount.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\CreateMember.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>CreateMember.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\ResetPassword.cshtml">
       <Generator>RazorGenerator</Generator>

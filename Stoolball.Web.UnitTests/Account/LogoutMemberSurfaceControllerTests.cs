@@ -9,6 +9,7 @@ using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Infrastructure.Persistence;
 using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Common.Security;
 using Umbraco.Cms.Web.Website.ActionResults;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class LogoutMemberSurfaceControllerTests : UmbracoBaseTest
     {
-        private readonly Mock<ILogoutMemberWrapper> _logoutMemberWrapper = new Mock<ILogoutMemberWrapper>();
+        private readonly Mock<IMemberSignInManager> _memberSignInManager = new Mock<IMemberSignInManager>();
 
         public LogoutMemberSurfaceControllerTests()
         {
@@ -31,7 +32,7 @@ namespace Stoolball.Web.UnitTests.Account
                             AppCaches.NoCache,
                             Mock.Of<IProfilingLogger>(),
                             Mock.Of<IPublishedUrlProvider>(),
-                            _logoutMemberWrapper.Object)
+                            _memberSignInManager.Object)
             {
                 ControllerContext = new ControllerContext
                 {
@@ -79,7 +80,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 var result = await controller.HandleLogout();
 
-                _logoutMemberWrapper.Verify(x => x.LogoutMember(), Times.Once);
+                _memberSignInManager.Verify(x => x.SignOutAsync(), Times.Once);
             }
         }
 
@@ -102,7 +103,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 var result = await controller.HandleLogout();
 
-                _logoutMemberWrapper.Verify(x => x.LogoutMember(), Times.Never);
+                _memberSignInManager.Verify(x => x.SignOutAsync(), Times.Never);
             }
         }
 
