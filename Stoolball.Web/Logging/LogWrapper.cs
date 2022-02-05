@@ -11,6 +11,8 @@ namespace Stoolball.Web.Logging
     {
         private readonly ILogger<T> _logger;
 
+        public ILogger<T> Logger { get { return _logger; } }
+
         public LogWrapper(ILogger<T> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

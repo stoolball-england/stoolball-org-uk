@@ -14,6 +14,8 @@ namespace Stoolball.Logging
     /// </remarks>
     public interface ILogger<T>
     {
+        Microsoft.Extensions.Logging.ILogger<T> Logger { get; }
+
         /// <summary>
         /// Logs a info message.
         /// </summary>

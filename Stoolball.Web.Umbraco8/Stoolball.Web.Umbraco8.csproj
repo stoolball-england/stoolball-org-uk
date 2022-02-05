@@ -763,8 +763,6 @@
   <ItemGroup>
     <Compile Include="Account\ConfirmEmailAddressController.cs" />
     <Compile Include="Account\ConfirmEmailAddress.cs" />
-    <Compile Include="Account\ApproveMemberController.cs" />
-    <Compile Include="Account\ApproveMember.cs" />
     <Compile Include="Account\ILoginMemberWrapper.cs" />
     <Compile Include="Account\ILogoutMemberWrapper.cs" />
     <Compile Include="Account\LoginMemberExecuter.cs" />
@@ -1255,11 +1253,6 @@
     <Compile Include="Teams\DeleteTeamViewModel.cs" />
     <Compile Include="Teams\TeamAuthorizationPolicy.cs" />
     <Compile Include="Teams\TeamsMapController.cs" />
-    <Compile Include="Views\ApproveMember.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ApproveMember.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\BowlingFigures.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1765,10 +1758,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\ApproveMember.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ApproveMember.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\MyAccount.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MyAccount.generated.cs</LastGenOutput>

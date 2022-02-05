@@ -1,0 +1,14 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ApproveMember>
+@inject Stoolball.Email.IEmailProtector emailProtector
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+
+    @if (Model.ApprovalTokenValid)
+    {
+        @Html.ProtectEmailAddresses(emailProtector, Model.ApprovalSuccessful?.ToHtmlString().Replace("{{NAME}}", Model.MemberName))
+    }
+    else
+    {
+        @Html.ProtectEmailAddresses(emailProtector, Model.ApprovalFailed)
+    }
+</div>

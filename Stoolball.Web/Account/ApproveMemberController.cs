@@ -1,41 +1,46 @@
 ﻿using System;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Stoolball.Logging;
 using Stoolball.Metadata;
 using Stoolball.Security;
+using Stoolball.Web.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
-using Umbraco.Web.Mvc;
-using Umbraco.Web.PublishedModels;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.Account
 {
-    public class ApproveMemberController : RenderMvcController
+    public class ApproveMemberController : RenderController
     {
         private readonly IVerificationToken _verificationToken;
+        private readonly ILogger<ApproveMemberController> _logger;
+        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly ServiceContext _serviceContext;
 
-        public ApproveMemberController(IGlobalSettings globalSettings,
+        public ApproveMemberController(
+            ILogger<ApproveMemberController> logger,
+            ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
-            ServiceContext services,
-            AppCaches appCaches,
-            IProfilingLogger profilingLogger,
-            UmbracoHelper umbracoHelper,
+            IVariationContextAccessor variationContextAccessor,
+            ServiceContext context,
             IVerificationToken verificationToken) :
-            base(globalSettings, umbracoContextAccessor, services, appCaches, profilingLogger, umbracoHelper)
+            base(logger.Logger, compositeViewEngine, umbracoContextAccessor)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _variationContextAccessor = variationContextAccessor ?? throw new System.ArgumentNullException(nameof(variationContextAccessor));
+            _serviceContext = context ?? throw new System.ArgumentNullException(nameof(context));
             _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
         }
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public override ActionResult Index(ContentModel contentModel)
+        public override IActionResult Index()
         {
-            var model = new ApproveMember(contentModel?.Content);
+            var model = new ApproveMember(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor));
             model.Metadata = new ViewMetadata
             {
                 PageTitle = model.Name,
@@ -44,10 +49,10 @@ namespace Stoolball.Web.Account
 
             try
             {
-                var approvalToken = Request.QueryString["token"];
+                var approvalToken = Request.Query["token"];
                 var memberId = _verificationToken.ExtractId(approvalToken);
 
-                var memberService = Services.MemberService;
+                var memberService = _serviceContext.MemberService;
                 var member = memberService.GetById(memberId);
 
                 if (member != null && member.GetValue("approvalToken")?.ToString() == approvalToken && !_verificationToken.HasExpired(member.GetValue<DateTime>("approvalTokenExpires")))
@@ -60,7 +65,7 @@ namespace Stoolball.Web.Account
                     model.ApprovalTokenValid = true;
                     model.MemberName = member.Name;
 
-                    Logger.Info(typeof(ApproveMemberController), LoggingTemplates.ApproveMember, member.Username, member.Key, typeof(ApproveMemberController), nameof(Index));
+                    _logger.Info(LoggingTemplates.ApproveMember, member.Username, member.Key, typeof(ApproveMemberController), nameof(Index));
                 }
                 else
                 {
