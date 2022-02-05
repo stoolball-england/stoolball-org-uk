@@ -1,0 +1,34 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<MyAccount>
+@inject Stoolball.Email.IEmailProtector emailProtector
+@inject IMemberManager memberManager
+@inject IMemberService memberService
+@using Stoolball.Account
+@using Umbraco.Cms.Core.Security
+@using Umbraco.Cms.Core.Services
+@using Umbraco.Cms.Core.Strings
+@{
+    SmidgeHelper.RequiresCss(new CssFile("~/css/account.min.css") { Order = 100 });
+    var currentMember = await memberManager.GetCurrentMemberAsync();
+    var currentMemberBypassingCache = currentMember != null ? memberService.GetByKey(currentMember.Key) : null;
+}
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        @await Html.PartialAsync("_ConfirmEmailAddress", currentMemberBypassingCache)
+       
+        var gravatar = new Gravatar(User.Identity.Name);
+        @Html.GetBlockListHtml(Model, "blockList")
+
+        <h2>Account picture</h2>
+        <div class="gravatar">
+            <img src="@gravatar.Url" alt="Your account picture from gravatar.com" width="@gravatar.Size" height="@gravatar.Size" />
+            <div>@Html.ProtectEmailAddresses(emailProtector, Model.Value<IHtmlEncodedString>("gravatar"))</div>
+        </div>
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

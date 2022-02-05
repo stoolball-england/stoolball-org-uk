@@ -769,8 +769,6 @@
     <Compile Include="Account\LogoutMemberWrapper.cs" />
     <Compile Include="Account\EmailAddress.cs" />
     <Compile Include="Account\PersonalDetails.cs" />
-    <Compile Include="Account\MyAccount.cs" />
-    <Compile Include="Account\MyAccountController.cs" />
     <Compile Include="Account\EmailAddressController.cs" />
     <Compile Include="Account\PersonalDetailsController.cs" />
     <Compile Include="Account\EmailAddressFormData.cs" />
@@ -1022,11 +1020,6 @@
       <DependentUpon>_BattingStrikeRate.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_ConfirmEmailAddress.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_ConfirmEmailAddress.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_EconomyRate.generated.cs">
       <DependentUpon>_EconomyRate.cshtml</DependentUpon>
@@ -1518,11 +1511,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MatchLocationStatistics.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MyAccount.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MyAccount.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\Forms\Emails\Stoolball-England-Email.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1758,10 +1746,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\MyAccount.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>MyAccount.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\ResetPassword.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ResetPassword.generated.cs</LastGenOutput>
@@ -2206,10 +2190,6 @@
     <Content Include="Views\PersonalDetails.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>PersonalDetails.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_ConfirmEmailAddress.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_ConfirmEmailAddress.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\ResetPasswordComplete.cshtml">
       <Generator>RazorGenerator</Generator>

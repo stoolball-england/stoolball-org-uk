@@ -1,16 +1,12 @@
 ﻿using System.Linq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Stoolball.Web.Account;
-using Stoolball.Web.Metadata;
+using Stoolball.Web.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Web;
-using Umbraco.Web.Models;
-using Umbraco.Web.PublishedModels;
+using Umbraco.Cms.Core.Models.PublishedContent;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Account
@@ -21,28 +17,38 @@ namespace Stoolball.Web.UnitTests.Account
         {
             base.Setup();
         }
+        private MyAccountController CreateController()
+        {
+            return new MyAccountController(
+                            Mock.Of<ILogger<MyAccountController>>(),
+                            Mock.Of<ICompositeViewEngine>(),
+                            UmbracoContextAccessor.Object,
+                            Mock.Of<IVariationContextAccessor>(),
+                            ServiceContext)
+            {
+                ControllerContext = new ControllerContext
+                {
+                    HttpContext = HttpContext.Object
+                }
+            };
+        }
 
         [Fact]
         public void Sets_name_and_description_from_content()
         {
-            using (var controller = new MyAccountController(Mock.Of<IGlobalSettings>(),
-                            Mock.Of<IUmbracoContextAccessor>(),
-                            ServiceContext,
-                            AppCaches.NoCache,
-                            Mock.Of<IProfilingLogger>(),
-                            UmbracoHelper))
+            using (var controller = CreateController())
             {
-                var currentPage = new Mock<IPublishedContent>();
-                currentPage.Setup(x => x.Name).Returns("My account");
-                SetupPropertyValue(currentPage, "description", "This is the description");
+                CurrentPage.Setup(x => x.Name).Returns("My account");
+                SetupPropertyValue(CurrentPage, "description", "This is the description");
 
-                var result = controller.Index(new ContentModel(currentPage.Object));
+                var result = controller.Index();
 
                 var meta = ((IHasViewMetadata)((ViewResult)result).Model).Metadata;
                 Assert.Equal("My account", meta.PageTitle);
                 Assert.Equal("This is the description", meta.Description);
             }
         }
+
 
         [Fact]
         public void Has_content_security_policy()
@@ -62,17 +68,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Returns_MyAccount_ModelsBuilder_model()
         {
-            using (var controller = new MyAccountController(Mock.Of<IGlobalSettings>(),
-                            Mock.Of<IUmbracoContextAccessor>(),
-                            ServiceContext,
-                            AppCaches.NoCache,
-                            Mock.Of<IProfilingLogger>(),
-                            UmbracoHelper))
+            using (var controller = CreateController())
             {
-                var currentPage = new Mock<IPublishedContent>();
-                SetupPropertyValue(currentPage, "description", string.Empty);
+                SetupPropertyValue(CurrentPage, "description", string.Empty);
 
-                var result = controller.Index(new ContentModel(currentPage.Object));
+                var result = controller.Index();
 
                 Assert.IsType<MyAccount>(((ViewResult)result).Model);
             }

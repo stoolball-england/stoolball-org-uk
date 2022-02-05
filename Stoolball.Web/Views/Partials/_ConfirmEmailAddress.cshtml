@@ -1,0 +1,15 @@
+﻿@model IMember
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@using Stoolball.Dates
+@using Umbraco.Cms.Core.Models
+@{
+    var requestedEmail = Model.Properties["requestedEmail"].GetValue()?.ToString();
+    if (!string.IsNullOrEmpty(requestedEmail))
+    {
+        var expiry = DateTimeOffset.Parse(Model.Properties["requestedEmailTokenExpires"].GetValue().ToString()!);
+        if (expiry >= DateTimeOffset.UtcNow)
+        {
+            <p class="alert alert-info"><strong>Awaiting confirmation of new email address.</strong> Please check your email inbox at @requestedEmail before @(dateTimeFormatter.FormatDateTime(expiry.LocalDateTime, false, true)).</p>
+        }
+    }
+}

@@ -70,7 +70,6 @@
     <Compile Include="Account\PersonalDetailsSurfaceControllerTests.cs" />
     <Compile Include="Account\EmailAddressControllerTests.cs" />
     <Compile Include="Account\PersonalDetailsControllerTests.cs" />
-    <Compile Include="Account\MyAccountControllerTests.cs" />
     <Compile Include="Clubs\ClubActionsControllerTests.cs" />
     <Compile Include="Clubs\DeleteClubControllerTests.cs" />
     <Compile Include="Clubs\CreateClubControllerTests.cs" />
