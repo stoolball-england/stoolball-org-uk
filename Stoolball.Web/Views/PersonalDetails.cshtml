@@ -1,28 +1,24 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.PersonalDetails>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using ClientDependency.Core.Mvc
-@using System.Web.Mvc.Html
-@using Umbraco.Web
+﻿@inherits UmbracoViewPage<PersonalDetails>
+@inject Stoolball.Email.IEmailProtector emailProtector
+@inject IMemberManager memberManager
 @using Stoolball.Web.Account
-@using Stoolball.Web.Email
+@using Umbraco.Cms.Core.Security
+@using Umbraco.Cms.Core.Strings
+@await Html.PartialAsync("_JQueryValidate")
 @{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+    var currentMemberName = (await memberManager.GetCurrentMemberAsync())?.Name; // GetCurrentMemberAsync() returns null when the member has just confirmed their new email address in another tab
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>
 
-    @if (User.Identity.IsAuthenticated)
+    @if (User.Identity?.IsAuthenticated ?? false)
     {
         if (TempData["Success"] == null)
         {
             using (Html.BeginUmbracoForm<PersonalDetailsSurfaceController>("UpdatePersonalDetails"))
             {
-                @Html.AntiForgeryToken()
                 var formData = new PersonalDetailsFormData();
-                formData.Name = Members.GetCurrentMember().Name;
+                formData.Name = currentMemberName;
 
                 <div class="form-group">
                     @Html.LabelFor(m => formData.Name)
@@ -35,11 +31,11 @@
         }
         else
         {
-            @Html.ProtectEmailAddresses(Model.Value<IHtmlString>("saved"))
+            @Html.ProtectEmailAddresses(emailProtector, Model.Value<IHtmlEncodedString>("saved"))
         }
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

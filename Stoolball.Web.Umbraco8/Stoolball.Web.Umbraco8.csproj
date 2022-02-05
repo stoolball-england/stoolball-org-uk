@@ -768,13 +768,9 @@
     <Compile Include="Account\LoginMemberExecuter.cs" />
     <Compile Include="Account\LogoutMemberWrapper.cs" />
     <Compile Include="Account\EmailAddress.cs" />
-    <Compile Include="Account\PersonalDetails.cs" />
     <Compile Include="Account\EmailAddressController.cs" />
-    <Compile Include="Account\PersonalDetailsController.cs" />
     <Compile Include="Account\EmailAddressFormData.cs" />
     <Compile Include="Account\EmailAddressSurfaceController.cs" />
-    <Compile Include="Account\PersonalDetailsSurfaceController.cs" />
-    <Compile Include="Account\PersonalDetailsFormData.cs" />
     <Compile Include="Account\ResetPassword.cs" />
     <Compile Include="Account\ResetPasswordController.cs" />
     <Compile Include="Account\ResetPasswordRequestFormData.cs" />
@@ -1090,11 +1086,6 @@
       <DependentUpon>_CreateOrEditTrainingSession.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\PersonalDetails.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PersonalDetails.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\PlayerBowling.generated.cs">
       <AutoGen>True</AutoGen>
@@ -2187,10 +2178,6 @@
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textfield.cshtml" />
-    <Content Include="Views\PersonalDetails.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>PersonalDetails.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\ResetPasswordComplete.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ResetPasswordComplete.generated.cs</LastGenOutput>

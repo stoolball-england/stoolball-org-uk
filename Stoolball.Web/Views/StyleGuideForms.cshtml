@@ -1,11 +1,9 @@
 ﻿@using Umbraco.Forms.Web.Extensions
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<StyleGuide>
+@await Html.PartialAsync("_JQueryValidate")
 @{
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.autocomplete.min.js") { Order = 50 });
     SmidgeHelper.RequiresCss(new CssFile("~/css/autocomplete.min.css") { Order = 100 });
-
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.min.js") { Order = 90 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.unobtrusive.min.js") { Order = 100 });
 
     SmidgeHelper.RequiresCss(new CssFile("~/css/related-items.min.css") { Order = 100 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/related-item.js") { Order = 100 });
