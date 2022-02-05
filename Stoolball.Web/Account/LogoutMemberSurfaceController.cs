@@ -8,6 +8,7 @@ using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Infrastructure.Persistence;
 using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Common.Security;
 using Umbraco.Cms.Web.Website.ActionResults;
 using Umbraco.Cms.Web.Website.Controllers;
 
@@ -15,13 +16,13 @@ namespace Stoolball.Web.Account
 {
     public class LogoutMemberSurfaceController : SurfaceController
     {
-        private readonly ILogoutMemberWrapper _logoutMemberWrapper;
+        private readonly IMemberSignInManager _memberSignInManager;
 
         public LogoutMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, ILogoutMemberWrapper logoutMemberWrapper) :
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberSignInManager memberSignInManager) :
             base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _logoutMemberWrapper = logoutMemberWrapper ?? throw new System.ArgumentNullException(nameof(logoutMemberWrapper));
+            _memberSignInManager = memberSignInManager ?? throw new System.ArgumentNullException(nameof(memberSignInManager));
         }
 
         [HttpPost]
@@ -32,7 +33,7 @@ namespace Stoolball.Web.Account
         {
             if (User.Identity?.IsAuthenticated ?? false)
             {
-                await _logoutMemberWrapper.LogoutMember();
+                await _memberSignInManager.SignOutAsync();
             }
             return RedirectToCurrentUmbracoPage();
         }

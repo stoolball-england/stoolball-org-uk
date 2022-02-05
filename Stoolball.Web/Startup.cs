@@ -91,7 +91,6 @@ namespace Stoolball.Web
             services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
 
             // Authentication
-            services.AddTransient<ILogoutMemberWrapper, LogoutMemberWrapper>();
             services.AddTransient<ICreateMemberExecuter, CreateMemberExecuter>();
 
             // Data sources
