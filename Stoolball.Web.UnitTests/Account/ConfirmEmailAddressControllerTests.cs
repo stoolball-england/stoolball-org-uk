@@ -1,21 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Primitives;
 using Moq;
+using Stoolball.Logging;
 using Stoolball.Security;
 using Stoolball.Web.Account;
-using Stoolball.Web.Metadata;
+using Stoolball.Web.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Models;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Web;
-using Umbraco.Web.Models;
-using Umbraco.Web.PublishedModels;
+using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Models.PublishedContent;
 using Xunit;
 using static Stoolball.Constants;
 
@@ -23,22 +20,20 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class ConfirmEmailAddressControllerTests : UmbracoBaseTest
     {
-        private readonly Mock<IPublishedContent> _currentPage;
         private const string CURRENT_PAGE_NAME = "Confirm email address";
         private const string CURRENT_PAGE_DESCRIPTION = "This is the description";
         private readonly string _token;
-        private Mock<IVerificationToken> _tokenReader = new Mock<IVerificationToken>();
+        private Mock<IVerificationToken> _tokenReader = new();
         private Mock<IMember> MEMBER = new Mock<IMember>();
-        private Mock<IProfilingLogger> _logger = new Mock<IProfilingLogger>();
+        private Mock<ILogger<ConfirmEmailAddressController>> _logger = new();
         private const string REQUESTED_EMAIL = "new@example.org";
 
         public ConfirmEmailAddressControllerTests()
         {
             base.Setup();
 
-            _currentPage = new Mock<IPublishedContent>();
-            _currentPage.Setup(x => x.Name).Returns(CURRENT_PAGE_NAME);
-            SetupPropertyValue(_currentPage, "description", CURRENT_PAGE_DESCRIPTION);
+            CurrentPage.Setup(x => x.Name).Returns(CURRENT_PAGE_NAME);
+            SetupPropertyValue(CurrentPage, "description", CURRENT_PAGE_DESCRIPTION);
 
             MEMBER.SetupGet(x => x.Id).Returns(123);
             MEMBER.SetupGet(x => x.Username).Returns("old@example.org");
@@ -49,23 +44,25 @@ namespace Stoolball.Web.UnitTests.Account
             MemberService.Setup(x => x.GetById(MEMBER.Object.Id)).Returns(MEMBER.Object);
 
             _token = Guid.NewGuid().ToString();
-            base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString("?token=" + _token));
+            base.Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", new StringValues(_token) } }));
             _tokenReader.Setup(x => x.ExtractId(_token)).Returns(MEMBER.Object.Id);
         }
 
         private ConfirmEmailAddressController CreateController()
         {
-            var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                                        Mock.Of<IUmbracoContextAccessor>(),
-                                        ServiceContext,
-                                        AppCaches.NoCache,
-                                        _logger.Object,
-                                        UmbracoHelper,
-                                        _tokenReader.Object);
-
-            controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
-
-            return controller;
+            return new ConfirmEmailAddressController(
+                _logger.Object,
+                Mock.Of<ICompositeViewEngine>(),
+                UmbracoContextAccessor.Object,
+                Mock.Of<IVariationContextAccessor>(),
+                ServiceContext,
+                _tokenReader.Object)
+            {
+                ControllerContext = new ControllerContext
+                {
+                    HttpContext = HttpContext.Object
+                }
+            };
         }
 
         [Fact]
@@ -73,7 +70,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 var meta = ((IHasViewMetadata)((ViewResult)result).Model).Metadata;
                 Assert.Equal(CURRENT_PAGE_NAME, meta.PageTitle);
@@ -101,7 +98,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 _tokenReader.Verify(x => x.ExtractId(_token), Times.Once);
                 MemberService.Verify(x => x.GetById(MEMBER.Object.Id), Times.Once);
@@ -114,10 +111,10 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 _tokenReader.Setup(x => x.ExtractId(_token)).Throws<FormatException>();
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.False(((ConfirmEmailAddress)((ViewResult)result).Model).TokenValid);
-                MemberService.Verify(x => x.Save(MEMBER.Object, true), Times.Never);
+                MemberService.Verify(x => x.Save(MEMBER.Object), Times.Never);
             }
         }
 
@@ -129,10 +126,10 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token.Reverse());
                 _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.False(((ConfirmEmailAddress)((ViewResult)result).Model).TokenValid);
-                MemberService.Verify(x => x.Save(MEMBER.Object, true), Times.Never);
+                MemberService.Verify(x => x.Save(MEMBER.Object), Times.Never);
             }
         }
 
@@ -145,11 +142,11 @@ namespace Stoolball.Web.UnitTests.Account
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
                 MEMBER.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
                 _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(true);
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 _tokenReader.Verify(x => x.HasExpired(expiryDate), Times.Once);
                 Assert.False(((ConfirmEmailAddress)((ViewResult)result).Model).TokenValid);
-                MemberService.Verify(x => x.Save(MEMBER.Object, true), Times.Never);
+                MemberService.Verify(x => x.Save(MEMBER.Object), Times.Never);
             }
         }
 
@@ -162,10 +159,10 @@ namespace Stoolball.Web.UnitTests.Account
 
             using (var controller = CreateController())
             {
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 base.MemberService.Verify(x => x.GetByEmail(REQUESTED_EMAIL), Times.Once);
-                base.MemberService.Verify(x => x.Save(MEMBER.Object, true), Times.Never);
+                base.MemberService.Verify(x => x.Save(MEMBER.Object), Times.Never);
                 Assert.False(((ConfirmEmailAddress)((ViewResult)result).Model).TokenValid);
             }
         }
@@ -177,11 +174,11 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
                 _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 MEMBER.VerifySet(x => x.Username = REQUESTED_EMAIL, Times.Once);
                 MEMBER.VerifySet(x => x.Email = REQUESTED_EMAIL, Times.Once);
-                MemberService.Verify(x => x.Save(MEMBER.Object, true), Times.Once);
+                MemberService.Verify(x => x.Save(MEMBER.Object), Times.Once);
             }
         }
 
@@ -194,10 +191,10 @@ namespace Stoolball.Web.UnitTests.Account
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
                 _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
                 _tokenReader.Setup(x => x.ResetExpiryTo()).Returns(resetExpiry);
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 MEMBER.Verify(x => x.SetValue("requestedEmailTokenExpires", resetExpiry, null, null), Times.Once);
-                MemberService.Verify(x => x.Save(MEMBER.Object, true), Times.Once);
+                MemberService.Verify(x => x.Save(MEMBER.Object), Times.Once);
             }
         }
 
@@ -208,9 +205,9 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
                 _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
-                _logger.Verify(x => x.Info(typeof(ConfirmEmailAddressController), LoggingTemplates.ConfirmEmailAddress, MEMBER.Object.Username, MEMBER.Object.Key, typeof(ConfirmEmailAddressController), nameof(ConfirmEmailAddressController.Index)), Times.Once);
+                _logger.Verify(x => x.Info(LoggingTemplates.ConfirmEmailAddress, MEMBER.Object.Username, MEMBER.Object.Key, typeof(ConfirmEmailAddressController), nameof(ConfirmEmailAddressController.Index)), Times.Once);
             }
         }
 
@@ -221,7 +218,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
                 _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 var model = (ConfirmEmailAddress)((ViewResult)result).Model;
                 Assert.True(model.TokenValid);
@@ -235,7 +232,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.IsType<ConfirmEmailAddress>(((ViewResult)result).Model);
             }

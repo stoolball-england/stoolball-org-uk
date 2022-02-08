@@ -1,42 +1,47 @@
 ﻿using System;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Stoolball.Logging;
 using Stoolball.Metadata;
 using Stoolball.Security;
+using Stoolball.Web.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Models;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
-using Umbraco.Web.Mvc;
-using Umbraco.Web.PublishedModels;
+using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.Account
 {
-    public class ConfirmEmailAddressController : RenderMvcController
+    public class ConfirmEmailAddressController : RenderController
     {
+        private readonly ILogger<ConfirmEmailAddressController> _logger;
+        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly ServiceContext _serviceContext;
         private readonly IVerificationToken _verificationToken;
 
-        public ConfirmEmailAddressController(IGlobalSettings globalSettings,
+        public ConfirmEmailAddressController(
+            ILogger<ConfirmEmailAddressController> logger,
+            ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
-            ServiceContext services,
-            AppCaches appCaches,
-            IProfilingLogger profilingLogger,
-            UmbracoHelper umbracoHelper,
+            IVariationContextAccessor variationContextAccessor,
+            ServiceContext context,
             IVerificationToken verificationToken) :
-            base(globalSettings, umbracoContextAccessor, services, appCaches, profilingLogger, umbracoHelper)
+            base(logger.Logger, compositeViewEngine, umbracoContextAccessor)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _variationContextAccessor = variationContextAccessor ?? throw new System.ArgumentNullException(nameof(variationContextAccessor));
+            _serviceContext = context ?? throw new System.ArgumentNullException(nameof(context));
             _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
         }
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public override ActionResult Index(ContentModel contentModel)
+        public override IActionResult Index()
         {
-            var model = new ConfirmEmailAddress(contentModel?.Content);
+            var model = new ConfirmEmailAddress(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor));
             model.Metadata = new ViewMetadata
             {
                 PageTitle = model.Name,
@@ -45,7 +50,7 @@ namespace Stoolball.Web.Account
 
             try
             {
-                var token = Request.QueryString["token"];
+                var token = Request.Query["token"];
                 var member = FindMemberMatchingThisToken(token);
 
                 if (MemberHasValidEmailToken(member, token))
@@ -85,14 +90,14 @@ namespace Stoolball.Web.Account
             // Update the email address and expire the token
             member.Username = member.Email = member.GetValue("requestedEmail").ToString();
             member.SetValue("requestedEmailTokenExpires", _verificationToken.ResetExpiryTo());
-            Services.MemberService.Save(member);
+            _serviceContext.MemberService.Save(member);
 
-            Logger.Info(typeof(ConfirmEmailAddressController), LoggingTemplates.ConfirmEmailAddress, member.Username, member.Key, typeof(ConfirmEmailAddressController), nameof(Index));
+            _logger.Info(LoggingTemplates.ConfirmEmailAddress, member.Username, member.Key, typeof(ConfirmEmailAddressController), nameof(Index));
         }
 
         private bool RequestedEmailIsNotUsedByAnotherMember(IMember member)
         {
-            return Services.MemberService.GetByEmail(member.GetValue("requestedEmail").ToString()) == null;
+            return _serviceContext.MemberService.GetByEmail(member.GetValue("requestedEmail").ToString()) == null;
         }
 
         private bool MemberHasValidEmailToken(IMember member, string token)
@@ -103,7 +108,7 @@ namespace Stoolball.Web.Account
         private IMember FindMemberMatchingThisToken(string token)
         {
             var memberId = _verificationToken.ExtractId(token);
-            return Services.MemberService.GetById(memberId);
+            return _serviceContext.MemberService.GetById(memberId);
         }
     }
 }

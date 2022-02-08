@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using Stoolball.Metadata;
 using Stoolball.Navigation;
-using Stoolball.Web.Metadata;
-using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Extensions;
 
-namespace Umbraco.Web.PublishedModels
+namespace Stoolball.Web.Models
 {
     public partial class ConfirmEmailAddress : IHasViewMetadata
     {
@@ -31,7 +31,7 @@ namespace Umbraco.Web.PublishedModels
         /// <summary>
         /// Gets the photo that appears in the header of the site
         /// </summary>
-        public IPublishedContent HeaderPhotoWithInheritance() => this.Value("headerPhoto", fallback: Fallback.ToAncestors) as IPublishedContent;
+        public IPublishedContent HeaderPhotoWithInheritance() => (IPublishedContent)this.Value("headerPhoto", fallback: Fallback.ToAncestors);
 
         /// <inheritdoc/>
         public List<Breadcrumb> Breadcrumbs { get; } = new List<Breadcrumb>();

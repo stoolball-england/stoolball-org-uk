@@ -746,14 +746,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>EditMatchFormat.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\EmailAddress.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EmailAddress.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\ConfirmEmailAddress.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ConfirmEmailAddress.generated.cs</LastGenOutput>
-    </Content>
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -761,16 +753,10 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account\ConfirmEmailAddressController.cs" />
-    <Compile Include="Account\ConfirmEmailAddress.cs" />
     <Compile Include="Account\ILoginMemberWrapper.cs" />
     <Compile Include="Account\ILogoutMemberWrapper.cs" />
     <Compile Include="Account\LoginMemberExecuter.cs" />
     <Compile Include="Account\LogoutMemberWrapper.cs" />
-    <Compile Include="Account\EmailAddress.cs" />
-    <Compile Include="Account\EmailAddressController.cs" />
-    <Compile Include="Account\EmailAddressFormData.cs" />
-    <Compile Include="Account\EmailAddressSurfaceController.cs" />
     <Compile Include="Account\ResetPassword.cs" />
     <Compile Include="Account\ResetPasswordController.cs" />
     <Compile Include="Account\ResetPasswordRequestFormData.cs" />
@@ -927,11 +913,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Catches.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ConfirmEmailAddress.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ConfirmEmailAddress.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\CreateTrainingSession.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -961,11 +942,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EditTrainingSession.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EmailAddress.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EmailAddress.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Matches.generated.cs">
       <AutoGen>True</AutoGen>

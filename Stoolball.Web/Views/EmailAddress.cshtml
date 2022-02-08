@@ -1,34 +1,29 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.EmailAddress>
-@using ContentModels = Umbraco.Web.PublishedModels;
-@using ClientDependency.Core.Mvc
-@using System.Web.Mvc.Html
-@using Umbraco.Web
+﻿@inherits UmbracoViewPage<EmailAddress>
+@inject Stoolball.Email.IEmailProtector emailProtector
+@inject IMemberManager memberManager
+@inject IMemberService memberService
 @using Stoolball.Web.Account
-@using Stoolball.Web.Email
+@using Umbraco.Cms.Core.Security
+@using Umbraco.Cms.Core.Services
+@using Umbraco.Cms.Core.Strings
+@await Html.PartialAsync("_JQueryValidate")
 @{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-
-    var currentMemberBypassingCache = Members.GetById(Members.GetCurrentMember().Id);
+    var currentMemberBypassingCache = memberService.GetByKey((await memberManager.GetCurrentMemberAsync()).Key);
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>
 
-    @if (User.Identity.IsAuthenticated)
+    @if (User.Identity?.IsAuthenticated ?? false)
     {
         if (TempData["Success"] == null)
         {
-            @Html.Partial("_ConfirmEmailAddress", currentMemberBypassingCache)
+            @await Html.PartialAsync("_ConfirmEmailAddress", currentMemberBypassingCache)
 
             using (Html.BeginUmbracoForm<EmailAddressSurfaceController>("UpdateEmailAddress", null, new { id = "calling-it-search-disables-contact-managers" }))
             {
-                @Html.AntiForgeryToken()
-
                 <div class="form-group">
                     @Html.LabelFor(m => Model.FormData.Requested)
-                    <p class="form-text" id="form-email-help">Your email address is currently <strong>@currentMemberBypassingCache.Value("email")</strong>.</p>
+                    <p class="form-text" id="form-email-help">Your email address is currently <strong>@currentMemberBypassingCache.Email</strong>.</p>
                     @Html.TextBoxFor(m => Model.FormData.Requested, new { @class = "form-control", required = "required", aria_describedby = "form-email-help form-email", autocorrect = "off", autocapitalize = "off", autocomplete = "email", type = "email" })
                     @Html.ValidationMessageFor(m => Model.FormData.Requested, null, new { id = "form-email" })
                 </div>
@@ -50,11 +45,11 @@
         }
         else
         {
-            @Html.ProtectEmailAddresses(Model.Value<IHtmlString>("requested"))
+            @Html.ProtectEmailAddresses(emailProtector, Model.Value<IHtmlEncodedString>("requested"))
         }
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

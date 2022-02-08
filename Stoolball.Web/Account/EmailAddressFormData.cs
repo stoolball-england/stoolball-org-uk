@@ -10,9 +10,9 @@ namespace Stoolball.Web.Account
         [Required]
         [EmailAddress]
         [Display(Name = "New email address")]
-        public string Requested { get; set; }
+        public string? Requested { get; set; }
 
         [Required]
-        public string Password { get; set; }
+        public string? Password { get; set; }
     }
 }

@@ -1,42 +1,55 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
-using System.Web.Security;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Email;
+using Stoolball.Logging;
 using Stoolball.Security;
-using Stoolball.Web.Email;
+using Stoolball.Web.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
-using Umbraco.Web.PublishedModels;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Mail;
+using Umbraco.Cms.Core.Models.Email;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
+using Umbraco.Extensions;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.Account
 {
     public class EmailAddressSurfaceController : SurfaceController
     {
-        private readonly MembershipProvider _membershipProvider;
+        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly ILogger<EmailAddressSurfaceController> _logger;
+        private readonly IMemberManager _memberManager;
         private readonly IEmailFormatter _emailFormatter;
         private readonly IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
 
         public EmailAddressSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
+            IVariationContextAccessor variationContextAccessor,
             IUmbracoDatabaseFactory databaseFactory,
             ServiceContext services,
             AppCaches appCaches,
-            ILogger logger,
+            ILogger<EmailAddressSurfaceController> logger,
             IProfilingLogger profilingLogger,
-            UmbracoHelper umbracoHelper,
-            MembershipProvider membershipProvider,
+            IPublishedUrlProvider publishedUrlProvider,
+            IMemberManager memberManager,
             IEmailFormatter emailFormatter,
             IEmailSender emailSender,
             IVerificationToken verificationToken)
-        : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
+        : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _membershipProvider = membershipProvider ?? throw new System.ArgumentNullException(nameof(membershipProvider));
+            _variationContextAccessor = variationContextAccessor ?? throw new ArgumentNullException(nameof(variationContextAccessor));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _memberManager = memberManager ?? throw new System.ArgumentNullException(nameof(memberManager));
             _emailFormatter = emailFormatter ?? throw new System.ArgumentNullException(nameof(emailFormatter));
             _emailSender = emailSender ?? throw new System.ArgumentNullException(nameof(emailSender));
             _verificationToken = verificationToken ?? throw new System.ArgumentNullException(nameof(verificationToken));
@@ -46,16 +59,21 @@ namespace Stoolball.Web.Account
         [ValidateAntiForgeryToken()]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public ActionResult UpdateEmailAddress([Bind(Prefix = "formData")] EmailAddressFormData model)
+        public async Task<IActionResult> UpdateEmailAddress([Bind(Prefix = "formData")] EmailAddressFormData model)
         {
-            if (!_membershipProvider.ValidateUser(Members.CurrentUserName, model?.Password?.Trim()))
+            if (model == null)
+            {
+                return new StatusCodeResult(400);
+            }
+
+            var member = await _memberManager.GetCurrentMemberAsync();
+            if (!await _memberManager.CheckPasswordAsync(member, model?.Password?.Trim()))
             {
                 ModelState.AddModelError("formData." + nameof(model.Password), "Your password is incorrect or your account is locked.");
             }
 
             if (ModelState.IsValid && model != null)
             {
-                var member = Members.GetCurrentMember();
 
                 // Create an requested email token including the id so we can find the member.
 
@@ -64,48 +82,52 @@ namespace Stoolball.Web.Account
 
                 // It's OK to save the token for an invalid situation as the token will not be sent to the requester,
                 // and in any case the check for an existing member would happen again at confirmation time.
-                var token = SaveConfirmationTokenForMember(model.Requested, member.Id);
+                var token = SaveConfirmationTokenForMember(model.Requested!, Convert.ToInt32(member.Id));
 
                 // Check whether the requested email already belongs to another account
-                var alreadyTaken = Members.GetByEmail(model.Requested?.Trim());
+                var alreadyTaken = Services.MemberService.GetByEmail(model.Requested?.Trim());
                 if (alreadyTaken != null && alreadyTaken.Key != member.Key)
                 {
                     // Send the address already in use email
-                    var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("emailTakenSubject"),
-                        CurrentPage.Value<string>("emailTakenBody"),
+                    var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
+                    var (subject, body) = _emailFormatter.FormatEmailContent(
+                        CurrentPage.Value<string>(publishedValueFallback, "emailTakenSubject"),
+                        CurrentPage.Value<string>(publishedValueFallback, "emailTakenBody"),
                         new Dictionary<string, string>
                         {
                         {"name", alreadyTaken.Name},
-                        {"email", model.Requested},
+                        {"email", model.Requested!},
                         {"domain", GetRequestUrlAuthority()}
                         });
-                    _emailSender.SendEmail(model.Requested?.Trim(), subject, body);
+                    await _emailSender.SendAsync(new EmailMessage(null, model.Requested?.Trim(), subject, body, true), null);
 
-                    Logger.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberRequestedEmailAddressAlreadyInUse, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
+                    _logger.Info(LoggingTemplates.MemberRequestedEmailAddressAlreadyInUse, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
                 }
                 else
                 {
 
                     // Send the token by email
-                    var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("confirmEmailSubject"),
-                        CurrentPage.Value<string>("confirmEmailBody"),
+                    var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
+                    var (subject, body) = _emailFormatter.FormatEmailContent(
+                        CurrentPage.Value<string>(publishedValueFallback, "confirmEmailSubject"),
+                        CurrentPage.Value<string>(publishedValueFallback, "confirmEmailBody"),
                         new Dictionary<string, string>
                         {
                         {"name", member.Name},
-                        {"email", model.Requested},
+                        {"email", model.Requested!},
                         {"domain", GetRequestUrlAuthority()},
                         {"token", token }
                         });
-                    _emailSender.SendEmail(model.Requested?.Trim(), subject, body);
+                    await _emailSender.SendAsync(new EmailMessage(null, model.Requested?.Trim(), subject, body, true), null);
 
-                    Logger.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberRequestedEmailAddress, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
+                    _logger.Info(LoggingTemplates.MemberRequestedEmailAddress, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
                 }
                 TempData["Success"] = true;
                 return RedirectToCurrentUmbracoPage();
             }
             else
             {
-                return View("EmailAddress", new EmailAddress(CurrentPage) { FormData = model });
+                return View("EmailAddress", new EmailAddress(CurrentPage, new PublishedValueFallback(Services, _variationContextAccessor)) { FormData = model! });
             }
         }
 
@@ -126,12 +148,6 @@ namespace Stoolball.Web.Account
         /// Gets the authority segment of the request URL
         /// </summary>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:Uri return values should not be strings", Justification = "It's only a partial URI")]
-        protected virtual string GetRequestUrlAuthority() => Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk";
-
-        /// <summary>
-        /// Calls the base <see cref="SurfaceController.RedirectToCurrentUmbracoPage" /> in a way which can be overridden for testing
-        /// </summary>
-        protected new virtual RedirectToUmbracoPageResult RedirectToCurrentUmbracoPage() => base.RedirectToCurrentUmbracoPage();
+        protected virtual string GetRequestUrlAuthority() => Request.Host.Host == "localhost" ? Request.Host.Value : "www.stoolball.org.uk";
     }
 }
