@@ -1,32 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.Mvc;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Email;
+using Stoolball.Logging;
 using Stoolball.Metadata;
 using Stoolball.Security;
-using Stoolball.Web.Email;
+using Stoolball.Web.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
-using Umbraco.Web.PublishedModels;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Mail;
+using Umbraco.Cms.Core.Models.Email;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
+using Umbraco.Extensions;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.Account
 {
     public class ResetPasswordRequestSurfaceController : SurfaceController
     {
+        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly ILogger<ResetPasswordRequestSurfaceController> _logger;
         private readonly IEmailFormatter _emailFormatter;
         private readonly IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
 
-        public ResetPasswordRequestSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailFormatter emailFormatter, IEmailSender emailSender, IVerificationToken verificationToken)
-            : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
+        public ResetPasswordRequestSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IVariationContextAccessor variationContextAccessor,
+            IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext, AppCaches appCaches,
+            ILogger<ResetPasswordRequestSurfaceController> logger, IProfilingLogger profilingLogger,
+            IPublishedUrlProvider publishedUrlProvider, IEmailFormatter emailFormatter, IEmailSender emailSender, IVerificationToken verificationToken)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _variationContextAccessor = variationContextAccessor ?? throw new ArgumentNullException(nameof(variationContextAccessor));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _emailFormatter = emailFormatter ?? throw new ArgumentNullException(nameof(emailFormatter));
             _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
             _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
@@ -36,15 +49,15 @@ namespace Stoolball.Web.Account
         [ValidateAntiForgeryToken()]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public ActionResult RequestPasswordReset([Bind(Prefix = "resetPasswordRequest")] ResetPasswordRequestFormData model)
+        public async Task<IActionResult> RequestPasswordReset([Bind(Prefix = "resetPasswordRequest")] ResetPasswordRequestFormData model)
         {
-            var contentModel = new ResetPassword(CurrentPage);
+            var contentModel = new ResetPassword(CurrentPage, new PublishedValueFallback(Services, _variationContextAccessor));
             contentModel.Metadata = new ViewMetadata
             {
                 PageTitle = contentModel.Name,
                 Description = contentModel.Description
             };
-            contentModel.Email = model?.Email;
+            contentModel.Email = model?.Email!;
 
             if (!ModelState.IsValid || model == null)
             {
@@ -85,18 +98,19 @@ namespace Stoolball.Web.Account
                 memberService.Save(member);
 
                 // Send the password reset / member approval email
-                var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(emailSubjectField),
-                    CurrentPage.Value<string>(emailBodyField),
+                var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
+                var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(publishedValueFallback, emailSubjectField),
+                    CurrentPage.Value<string>(publishedValueFallback, emailBodyField),
                     new Dictionary<string, string>
                     {
                         {"name", member.Name},
-                        {"email", model.Email},
+                        {"email", model.Email!},
                         {"token", token},
                         {"domain", GetRequestUrlAuthority()}
                     });
-                _emailSender.SendEmail(model.Email, subject, body);
+                await _emailSender.SendAsync(new EmailMessage(null, model.Email, subject, body, true), null);
 
-                Logger.Info(typeof(ResetPasswordRequestSurfaceController), LoggingTemplates.MemberPasswordResetRequested, member.Username, member.Key, typeof(ResetPasswordRequestSurfaceController), nameof(RequestPasswordReset));
+                _logger.Info(LoggingTemplates.MemberPasswordResetRequested, member.Username, member.Key, typeof(ResetPasswordRequestSurfaceController), nameof(RequestPasswordReset));
 
                 contentModel.ShowPasswordResetRequested = true;
                 return View("ResetPasswordRequest", contentModel);
@@ -106,14 +120,15 @@ namespace Stoolball.Web.Account
                 // Same result as if a member was found, since password reset should not reveal a valid email address
                 // However we can prompt them to create an account. Since it sends an email either way this also guards
                 // against detecting the result by timing the response.
-                var (sender, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("createMemberSubject"),
-                    CurrentPage.Value<string>("createMemberBody"),
+                var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
+                var (sender, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(publishedValueFallback, "createMemberSubject"),
+                    CurrentPage.Value<string>(publishedValueFallback, "createMemberBody"),
                     new Dictionary<string, string>
                     {
-                        {"email", model.Email},
+                        {"email", model.Email!},
                         {"domain", GetRequestUrlAuthority()}
                     });
-                _emailSender.SendEmail(model.Email, sender, body);
+                await _emailSender.SendAsync(new EmailMessage(null, model.Email, sender, body, true), null);
 
                 contentModel.ShowPasswordResetRequested = true;
                 return View("ResetPasswordRequest", contentModel);
@@ -125,6 +140,6 @@ namespace Stoolball.Web.Account
         /// Gets the authority segment of the request URL
         /// </summary>
         /// <returns></returns>
-        private string GetRequestUrlAuthority() => Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk";
+        private string GetRequestUrlAuthority() => Request.Host.Host == "localhost" ? Request.Host.Value : "www.stoolball.org.uk";
     }
 }

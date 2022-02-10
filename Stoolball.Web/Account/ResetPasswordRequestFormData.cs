@@ -6,6 +6,6 @@ namespace Stoolball.Web.Account
     {
         [Required]
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
 }

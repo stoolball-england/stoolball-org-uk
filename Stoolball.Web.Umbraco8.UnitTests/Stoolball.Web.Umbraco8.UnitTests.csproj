@@ -59,11 +59,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account\ResetPasswordFormDataTests.cs" />
-    <Compile Include="Account\ResetPasswordSurfaceControllerTests.cs" />
-    <Compile Include="Account\ResetPasswordRequestSurfaceControllerTests.cs" />
-    <Compile Include="Account\ResetPasswordRequestFormDataTests.cs" />
-    <Compile Include="Account\ResetPasswordControllerTests.cs" />
     <Compile Include="Clubs\ClubActionsControllerTests.cs" />
     <Compile Include="Clubs\DeleteClubControllerTests.cs" />
     <Compile Include="Clubs\CreateClubControllerTests.cs" />

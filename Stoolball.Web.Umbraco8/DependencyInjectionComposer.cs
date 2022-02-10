@@ -16,7 +16,6 @@ using Stoolball.Schools;
 using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
-using Stoolball.Web.Account;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
@@ -83,7 +82,6 @@ namespace Stoolball.Web
             composition.Register<IMatchFilterHumanizer, MatchFilterHumanizer>();
             composition.Register<IStatisticsFilterHumanizer, StatisticsFilterHumanizer>();
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
-            composition.Register<ILoginMemberWrapper, LoginMemberWrapper>();
 
             // Listings pages
             composition.Register<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>, ListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();

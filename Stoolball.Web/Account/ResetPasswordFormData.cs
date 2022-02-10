@@ -8,6 +8,6 @@ namespace Stoolball.Web.Account
         // Error message matches the one in Umbraco.Web.Controllers.UmbRegisterController 
         // and the criterion set in web.config
         [RegularExpression(@"^.{10,}$", ErrorMessage = "Your password must be at least 10 characters")]
-        public string NewPassword { get; set; }
+        public string? NewPassword { get; set; }
     }
 }

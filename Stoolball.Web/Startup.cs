@@ -118,13 +118,13 @@ namespace Stoolball.Web
                 var logger = serviceProvider.GetService<ILogger>();
                 var cachePolicy = Policy.CacheAsync(asyncMemoryCacheProvider, TimeSpan.FromMinutes(120), (context, key, ex) =>
                 {
-                    logger.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
+                    logger!.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
                 });
 
                 var syncMemoryCacheProvider = serviceProvider.GetService<ISyncCacheProvider>();
                 var slidingPolicy = Policy.Cache(syncMemoryCacheProvider, new SlidingTtl(TimeSpan.FromMinutes(120)), (context, key, ex) =>
                 {
-                    logger.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
+                    logger!.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
                 });
 
                 registry.Add(CacheConstants.StatisticsPolicy, cachePolicy);

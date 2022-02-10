@@ -1,21 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Primitives;
 using Moq;
+using Stoolball.Logging;
 using Stoolball.Security;
 using Stoolball.Web.Account;
-using Stoolball.Web.Metadata;
+using Stoolball.Web.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Models;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Web;
-using Umbraco.Web.Models;
-using Umbraco.Web.PublishedModels;
+using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Models.PublishedContent;
 using Xunit;
 using static Stoolball.Constants;
 
@@ -23,18 +20,17 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class ResetPasswordControllerTests : UmbracoBaseTest
     {
-        private readonly Mock<IVerificationToken> _tokenReader = new Mock<IVerificationToken>();
-        private readonly Mock<IPublishedContent> _currentPage = new Mock<IPublishedContent>();
-        private readonly Mock<IMember> _member = new Mock<IMember>();
-        private readonly Mock<IProfilingLogger> _logger = new Mock<IProfilingLogger>();
+        private readonly Mock<IVerificationToken> _tokenReader = new();
+        private readonly Mock<IMember> _member = new();
+        private readonly Mock<ILogger<ResetPasswordController>> _logger = new();
         private string _token = Guid.NewGuid().ToString();
 
         public ResetPasswordControllerTests()
         {
             base.Setup();
 
-            _currentPage.Setup(x => x.Name).Returns("Reset password");
-            SetupPropertyValue(_currentPage, "description", "This is the description");
+            CurrentPage.Setup(x => x.Name).Returns("Reset password");
+            SetupPropertyValue(CurrentPage, "description", "This is the description");
 
             _tokenReader.Setup(x => x.ExtractId(_token)).Returns(123);
             base.MemberService.Setup(x => x.GetById(123)).Returns(_member.Object);
@@ -57,15 +53,18 @@ namespace Stoolball.Web.UnitTests.Account
 
         private ResetPasswordController CreateController()
         {
-            var controller = new ResetPasswordController(Mock.Of<IGlobalSettings>(),
-                                        Mock.Of<IUmbracoContextAccessor>(),
-                                        ServiceContext,
-                                        AppCaches.NoCache,
-                                        _logger.Object,
-                                        UmbracoHelper,
-                                        _tokenReader.Object);
-
-            controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
+            var controller = new ResetPasswordController(_logger.Object,
+                Mock.Of<ICompositeViewEngine>(),
+                UmbracoContextAccessor.Object,
+                Mock.Of<IVariationContextAccessor>(),
+                ServiceContext,
+                _tokenReader.Object)
+            {
+                ControllerContext = new ControllerContext
+                {
+                    HttpContext = HttpContext.Object
+                }
+            };
 
             return controller;
         }
@@ -75,11 +74,11 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 var meta = ((IHasViewMetadata)((ViewResult)result).Model).Metadata;
-                Assert.Equal(_currentPage.Object.Name, meta.PageTitle);
-                Assert.Equal(_currentPage.Object.Value("description"), meta.Description);
+                Assert.Equal(CurrentPage.Object.Name, meta.PageTitle);
+                Assert.Equal("This is the description", meta.Description);
             }
         }
 
@@ -88,7 +87,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.Equal("ResetPasswordRequest", ((ViewResult)result).ViewName);
             }
@@ -99,7 +98,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.IsType<ResetPassword>(((ViewResult)result).Model);
             }
@@ -111,12 +110,12 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var expiryDate = DateTime.Now.AddDays(1);
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _member.Setup(x => x.GetValue("passwordResetToken", null, null, false)).Returns(_token);
                 _member.Setup(x => x.GetValue<DateTime>("passwordResetTokenExpires", null, null, false)).Returns(expiryDate);
                 _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(false);
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.IsType<ResetPassword>(((ViewResult)result).Model);
                 Assert.True(((ResetPassword)((ViewResult)result).Model).PasswordResetTokenValid);
@@ -129,12 +128,12 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var expiryDate = DateTime.Now.AddDays(1);
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _member.Setup(x => x.GetValue("passwordResetToken", null, null, false)).Returns(_token);
                 _member.Setup(x => x.GetValue<DateTime>("passwordResetTokenExpires", null, null, false)).Returns(expiryDate);
                 _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(true);
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.Equal("ResetPassword", ((ViewResult)result).ViewName);
             }
@@ -145,10 +144,10 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _tokenReader.Setup(x => x.ExtractId(_token)).Throws<FormatException>();
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.IsType<ResetPassword>(((ViewResult)result).Model);
                 Assert.False(((ResetPassword)((ViewResult)result).Model).PasswordResetTokenValid);
@@ -160,10 +159,10 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _tokenReader.Setup(x => x.ExtractId(_token)).Throws<FormatException>();
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.Equal("ResetPassword", ((ViewResult)result).ViewName);
             }
@@ -174,12 +173,12 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _tokenReader.Setup(x => x.ExtractId(_token)).Throws<FormatException>();
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
-                _logger.Verify(x => x.Info(typeof(ResetPasswordController), LoggingTemplates.MemberPasswordResetTokenInvalid, _token, typeof(ResetPasswordController), nameof(ResetPasswordController.Index)), Times.Once);
+                _logger.Verify(x => x.Info(LoggingTemplates.MemberPasswordResetTokenInvalid, _token, typeof(ResetPasswordController), nameof(ResetPasswordController.Index)), Times.Once);
             }
         }
 
@@ -189,12 +188,12 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var expiryDate = DateTime.Now.AddDays(1);
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _member.Setup(x => x.GetValue("passwordResetToken", null, null, false)).Returns(_token.Reverse());
                 _member.Setup(x => x.GetValue<DateTime>("passwordResetTokenExpires", null, null, false)).Returns(expiryDate);
                 _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(true);
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.IsType<ResetPassword>(((ViewResult)result).Model);
                 Assert.False(((ResetPassword)((ViewResult)result).Model).PasswordResetTokenValid);
@@ -207,12 +206,12 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var expiryDate = DateTime.Now.AddDays(1);
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _member.Setup(x => x.GetValue("passwordResetToken", null, null, false)).Returns(_token.Reverse());
                 _member.Setup(x => x.GetValue<DateTime>("passwordResetTokenExpires", null, null, false)).Returns(expiryDate);
                 _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(true);
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.Equal("ResetPassword", ((ViewResult)result).ViewName);
             }
@@ -224,14 +223,14 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var expiryDate = DateTime.Now.AddDays(1);
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _member.Setup(x => x.GetValue("passwordResetToken", null, null, false)).Returns(_token.Reverse());
                 _member.Setup(x => x.GetValue<DateTime>("passwordResetTokenExpires", null, null, false)).Returns(expiryDate);
                 _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(true);
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
-                _logger.Verify(x => x.Info(typeof(ResetPasswordController), LoggingTemplates.MemberPasswordResetTokenInvalid, _token, typeof(ResetPasswordController), nameof(ResetPasswordController.Index)), Times.Once);
+                _logger.Verify(x => x.Info(LoggingTemplates.MemberPasswordResetTokenInvalid, _token, typeof(ResetPasswordController), nameof(ResetPasswordController.Index)), Times.Once);
             }
         }
 
@@ -241,12 +240,12 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var expiryDate = DateTime.Now.AddMinutes(-1);
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _member.Setup(x => x.GetValue("passwordResetToken", null, null, false)).Returns(_token);
                 _member.Setup(x => x.GetValue<DateTime>("passwordResetTokenExpires", null, null, false)).Returns(expiryDate);
                 _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(true);
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.IsType<ResetPassword>(((ViewResult)result).Model);
                 Assert.False(((ResetPassword)((ViewResult)result).Model).PasswordResetTokenValid);
@@ -259,12 +258,12 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var expiryDate = DateTime.Now.AddMinutes(-1);
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _member.Setup(x => x.GetValue("passwordResetToken", null, null, false)).Returns(_token);
                 _member.Setup(x => x.GetValue<DateTime>("passwordResetTokenExpires", null, null, false)).Returns(expiryDate);
                 _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(true);
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.Equal("ResetPassword", ((ViewResult)result).ViewName);
             }
@@ -276,14 +275,14 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var expiryDate = DateTime.Now.AddMinutes(-1);
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));
                 _member.Setup(x => x.GetValue("passwordResetToken", null, null, false)).Returns(_token);
                 _member.Setup(x => x.GetValue<DateTime>("passwordResetTokenExpires", null, null, false)).Returns(expiryDate);
                 _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(true);
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
-                _logger.Verify(x => x.Info(typeof(ResetPasswordController), LoggingTemplates.MemberPasswordResetTokenInvalid, _token, typeof(ResetPasswordController), nameof(ResetPasswordController.Index)), Times.Once);
+                _logger.Verify(x => x.Info(LoggingTemplates.MemberPasswordResetTokenInvalid, _token, typeof(ResetPasswordController), nameof(ResetPasswordController.Index)), Times.Once);
             }
         }
 
@@ -292,9 +291,9 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}&successful=yes"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token }, { "successful", "yes" } }));
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.Equal("ResetPasswordComplete", ((ViewResult)result).ViewName);
             }
@@ -305,9 +304,9 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"?token={_token}&successful=yes"));
+                Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token }, { "successful", "yes" } }));
 
-                var result = controller.Index(new ContentModel(_currentPage.Object));
+                var result = controller.Index();
 
                 Assert.IsType<ResetPassword>(((ViewResult)result).Model);
             }

@@ -42,6 +42,7 @@ namespace Stoolball.Web.UnitTests
         {
             Request = new Mock<HttpRequest>();
             Request.SetupGet(x => x.Host).Returns(new HostString("www.stoolball.org.uk"));
+            Request.SetupGet(x => x.Query).Returns(new QueryCollection());
 
             HttpContext = new Mock<HttpContext>();
             HttpContext.SetupGet(x => x.Request).Returns(Request.Object);

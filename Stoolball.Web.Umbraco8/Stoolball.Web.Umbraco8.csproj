@@ -753,16 +753,6 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account\ILoginMemberWrapper.cs" />
-    <Compile Include="Account\ILogoutMemberWrapper.cs" />
-    <Compile Include="Account\LoginMemberExecuter.cs" />
-    <Compile Include="Account\LogoutMemberWrapper.cs" />
-    <Compile Include="Account\ResetPassword.cs" />
-    <Compile Include="Account\ResetPasswordController.cs" />
-    <Compile Include="Account\ResetPasswordRequestFormData.cs" />
-    <Compile Include="Account\ResetPasswordRequestSurfaceController.cs" />
-    <Compile Include="Account\ResetPasswordSurfaceController.cs" />
-    <Compile Include="Account\ResetPasswordFormData.cs" />
     <Compile Include="App_Data\Models\ConfirmEmailAddress.generated.cs" />
     <Compile Include="App_Data\Models\Consent.generated.cs" />
     <Compile Include="App_Data\Models\Content.generated.cs" />
@@ -1077,11 +1067,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>PlayersForTeam.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ResetPasswordComplete.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ResetPasswordComplete.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\RunOuts.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1593,16 +1578,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Player.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ResetPassword.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ResetPassword.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ResetPasswordRequest.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ResetPasswordRequest.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Season.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1713,10 +1688,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\ResetPassword.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ResetPassword.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Club.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Club.generated.cs</LastGenOutput>
@@ -2000,10 +1971,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_SeasonListExpandable.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\ResetPasswordRequest.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ResetPasswordRequest.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Partials\_CompetitionContactDetails.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_CompetitionContactDetails.generated.cs</LastGenOutput>
@@ -2154,10 +2121,6 @@
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textfield.cshtml" />
-    <Content Include="Views\ResetPasswordComplete.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ResetPasswordComplete.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Schools.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Submitted.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\Fieldtype.Recaptcha3.cshtml" />

@@ -1,42 +1,46 @@
 ﻿using System;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Stoolball.Logging;
 using Stoolball.Metadata;
 using Stoolball.Security;
+using Stoolball.Web.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
-using Umbraco.Web.Mvc;
-using Umbraco.Web.PublishedModels;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.Account
 {
-    public class ResetPasswordController : RenderMvcController
+    public class ResetPasswordController : RenderController
     {
+        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly ServiceContext _serviceContext;
+        private readonly ILogger<ResetPasswordController> _logger;
         private readonly IVerificationToken _verificationToken;
 
         public ResetPasswordController(
-            IGlobalSettings globalSettings,
+            ILogger<ResetPasswordController> logger,
+            ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
-            ServiceContext services,
-            AppCaches appCaches,
-            IProfilingLogger profilingLogger,
-            UmbracoHelper umbracoHelper,
+            IVariationContextAccessor variationContextAccessor,
+            ServiceContext context,
             IVerificationToken verificationToken) :
-            base(globalSettings, umbracoContextAccessor, services, appCaches, profilingLogger, umbracoHelper)
+            base(logger.Logger, compositeViewEngine, umbracoContextAccessor)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _variationContextAccessor = variationContextAccessor ?? throw new ArgumentNullException(nameof(variationContextAccessor));
+            _serviceContext = context ?? throw new ArgumentNullException(nameof(context));
             _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
         }
 
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
-        public override ActionResult Index(ContentModel contentModel)
+        public override IActionResult Index()
         {
-            var model = new ResetPassword(contentModel?.Content);
+            var model = new ResetPassword(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor));
             model.Metadata = new ViewMetadata
             {
                 PageTitle = model.Name,
@@ -45,7 +49,7 @@ namespace Stoolball.Web.Account
 
             try
             {
-                model.PasswordResetToken = Request.QueryString["token"];
+                model.PasswordResetToken = Request.Query["token"];
 
                 // If there's no token, show the form to request a password reset
                 if (string.IsNullOrEmpty(model.PasswordResetToken))
@@ -54,7 +58,7 @@ namespace Stoolball.Web.Account
                 }
 
                 // Show a message saying the reset was successful
-                if (Request.QueryString["successful"] == "yes")
+                if (Request.Query["successful"] == "yes")
                 {
                     model.ShowPasswordResetSuccessful = true;
                     return View("ResetPasswordComplete", model);
@@ -62,7 +66,7 @@ namespace Stoolball.Web.Account
 
                 var memberId = _verificationToken.ExtractId(model.PasswordResetToken);
 
-                var member = Services.MemberService.GetById(memberId);
+                var member = _serviceContext.MemberService.GetById(memberId);
 
                 if (member.GetValue("passwordResetToken").ToString() == model.PasswordResetToken && !_verificationToken.HasExpired(member.GetValue<DateTime>("passwordResetTokenExpires")))
                 {
@@ -72,14 +76,14 @@ namespace Stoolball.Web.Account
                 else
                 {
                     // Show a message saying the token was not valid
-                    Logger.Info(typeof(ResetPasswordController), LoggingTemplates.MemberPasswordResetTokenInvalid, model.PasswordResetToken, typeof(ResetPasswordController), nameof(ResetPasswordController.Index));
+                    _logger.Info(LoggingTemplates.MemberPasswordResetTokenInvalid, model.PasswordResetToken, typeof(ResetPasswordController), nameof(ResetPasswordController.Index));
                     model.PasswordResetTokenValid = false;
                 }
             }
             catch (FormatException)
             {
                 // Show a message saying the token was not valid
-                Logger.Info(typeof(ResetPasswordController), LoggingTemplates.MemberPasswordResetTokenInvalid, model.PasswordResetToken, typeof(ResetPasswordController), nameof(ResetPasswordController.Index));
+                _logger.Info(LoggingTemplates.MemberPasswordResetTokenInvalid, model.PasswordResetToken, typeof(ResetPasswordController), nameof(ResetPasswordController.Index));
                 model.PasswordResetTokenValid = false;
             }
             return View("ResetPassword", model);
