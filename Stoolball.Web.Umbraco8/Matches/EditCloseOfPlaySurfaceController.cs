@@ -7,7 +7,6 @@ using Stoolball.Caching;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Security;
@@ -85,7 +84,7 @@ namespace Stoolball.Web.Matches
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
+            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
                 if ((int)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
 

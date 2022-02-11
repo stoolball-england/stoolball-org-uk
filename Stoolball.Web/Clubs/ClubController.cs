@@ -1,60 +1,54 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Clubs;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Clubs
 {
-    public class ClubController : RenderMvcControllerAsync
+    public class ClubController : RenderController, IRenderControllerAsync
     {
+        private readonly IUserService _userService;
         private readonly IClubDataSource _clubDataSource;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
 
-        public ClubController(IGlobalSettings globalSettings,
+        public ClubController(ILogger<RenderController> logger,
+           ICompositeViewEngine compositeViewEngine,
            IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
+           IUserService userService,
            IClubDataSource clubDataSource,
            IAuthorizationPolicy<Club> authorizationPolicy)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+           : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
+            _userService = userService;
             _clubDataSource = clubDataSource ?? throw new System.ArgumentNullException(nameof(clubDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new ClubViewModel(CurrentPage, _userService)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new ClubViewModel(contentModel.Content, Services?.UserService)
-            {
-                Club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false)
+                Club = await _clubDataSource.ReadClubByRoute(Request.Path).ConfigureAwait(false)
             };
 
             if (model.Club == null)
             {
-                return new HttpNotFoundResult();
+                return new NotFoundResult();
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Club);
 
                 model.Metadata.PageTitle = model.Club.ClubName;
                 model.Metadata.Description = model.Club.Description();

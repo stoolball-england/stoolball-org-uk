@@ -13,6 +13,7 @@ using Polly.Caching;
 using Polly.Caching.Memory;
 using Polly.Registry;
 using Stoolball.Caching;
+using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Data.Cache;
 using Stoolball.Data.SqlServer;
@@ -28,9 +29,11 @@ using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Account;
 using Stoolball.Web.Caching;
+using Stoolball.Web.Clubs;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
 using Stoolball.Web.Logging;
+using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
@@ -97,6 +100,7 @@ namespace Stoolball.Web
             services.AddTransient<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();
             services.AddTransient<IRouteNormaliser, RouteNormaliser>();
             services.AddTransient<ICacheOverride, CacheOverride>();
+            services.AddTransient<IClubDataSource, SqlServerClubDataSource>();
             services.AddTransient<IMatchLocationFilterSerializer, MatchLocationFilterQueryStringSerializer>();
             services.AddTransient<IMatchLocationDataSource, CachedMatchLocationDataSource>();
             services.AddTransient<ICacheableMatchLocationDataSource, SqlServerMatchLocationDataSource>();
@@ -138,6 +142,18 @@ namespace Stoolball.Web
 
             });
 
+            // Security checks
+            services.AddTransient<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();
+            services.AddScoped<DelegatedContentSecurityPolicyAttribute>();
+
+            // Routing controllers for stoolball data pages.
+            services.AddTransient<IStoolballRouteParser, StoolballRouteParser>();
+            services.AddTransient<IStoolballRouteTypeMapper, StoolballRouteTypeMapper>();
+            services.AddTransient<IStoolballRouterController, StoolballRouterController>();
+
+            // Actual controllers. Register the concrete class since it'll never need to 
+            // be injected anywhere except the one place where it's serving a page of content.
+            services.AddTransient<ClubController>();
         }
 
         /// <summary>

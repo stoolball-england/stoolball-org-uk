@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Security;
@@ -72,7 +71,7 @@ namespace Stoolball.Web.Teams
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (isAuthorized[AuthorizedAction.EditTeam] && ModelState.IsValid)
+            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditTeam] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedTeam = await _teamRepository.UpdateTransientTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);

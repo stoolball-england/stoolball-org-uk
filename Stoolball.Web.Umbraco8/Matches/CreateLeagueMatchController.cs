@@ -6,7 +6,6 @@ using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -119,11 +118,11 @@ namespace Stoolball.Web.Matches
                 }
             }
 
-            model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
+            model.IsAuthorized[Stoolball.Security.AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
             if (model.Season != null && model.Season.Teams.Count <= 1 && model.Season.Competition != null)
             {
-                _competitionAuthorizationPolicy.IsAuthorized(model.Season.Competition).TryGetValue(AuthorizedAction.EditCompetition, out var canEditCompetition);
-                model.IsAuthorized[AuthorizedAction.EditCompetition] = canEditCompetition;
+                _competitionAuthorizationPolicy.IsAuthorized(model.Season.Competition).TryGetValue(Stoolball.Security.AuthorizedAction.EditCompetition, out var canEditCompetition);
+                model.IsAuthorized[Stoolball.Security.AuthorizedAction.EditCompetition] = canEditCompetition;
             }
 
             _editMatchHelper.ConfigureAddMatchModelMetadata(model);

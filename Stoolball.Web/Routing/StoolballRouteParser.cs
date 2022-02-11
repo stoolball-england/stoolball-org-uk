@@ -1,50 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Umbraco.Core;
-using Umbraco.Web;
-using Umbraco.Web.Routing;
 
 namespace Stoolball.Web.Routing
 {
-    /// <summary>
-    /// Looks for routes that correspond to stoolball entities, and directs them to an 
-    /// instance of the 'Stoolball router' document type where it's handled by <see cref="StoolballRouterController"/>.
-    /// </summary>
-    public class StoolballRouteContentFinder : IContentFinder
+    public class StoolballRouteParser : IStoolballRouteParser
     {
-        public bool TryFindContent(PublishedRequest request)
-        {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            var matchedRouteType = MatchStoolballRouteType(request.Uri);
-            if (matchedRouteType.HasValue)
-            {
-                // Direct the response to the 'Stoolball router' document type to be handled by StoolballRouterController
-                var router = request.UmbracoContext.Content.GetSingleByXPath("//stoolballRouter");
-
-                if (router != null)
-                {
-                    request.PublishedContent = router;
-                    request.TrySetTemplate(matchedRouteType.Value.ToString());
-                    return request.HasTemplate && router.IsAllowedTemplate(request.TemplateAlias);
-                }
-            }
-
-            return false;
-        }
-
         /// <summary>
-        /// Matches a request URL to a route reserved for stoolball entities
+        /// Matches a request route to a route reserved for stoolball entities
         /// </summary>
-        /// <param name="requestUrl">The request URL to test</param>
-        /// <returns>The stoolball route type matching the URL, or <c>null</c> for no match</returns>
-        internal static StoolballRouteType? MatchStoolballRouteType(Uri requestUrl)
+        /// <param name="route">The request route to test</param>
+        /// <returns>The stoolball route type matching the route, or <c>null</c> for no match</returns>
+        public StoolballRouteType? ParseRouteType(string route)
         {
-            var path = requestUrl.GetAbsolutePathDecoded();
             const string ANY_VALID_ROUTE = "[a-z0-9-]+";
             const string SLASH = @"\/";
             const string OPTIONAL_SLASH = @"\/?";
@@ -254,7 +221,7 @@ namespace Stoolball.Web.Routing
 
             foreach (var routePattern in routeTypes.Keys)
             {
-                if (Regex.IsMatch(path, $@"^{SLASH}{routePattern}$", RegexOptions.IgnoreCase))
+                if (Regex.IsMatch(route, $@"^{SLASH}{routePattern}$", RegexOptions.IgnoreCase))
                 {
                     return routeTypes[routePattern];
                 }

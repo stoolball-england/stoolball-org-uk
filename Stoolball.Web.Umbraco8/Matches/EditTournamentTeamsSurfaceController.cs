@@ -6,7 +6,6 @@ using Stoolball.Caching;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -69,7 +68,7 @@ namespace Stoolball.Web.Matches
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[AuthorizedAction.EditTournament] && ModelState.IsValid)
+            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.EditTournament] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedTournament = await _tournamentRepository.UpdateTeams(model.Tournament, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);

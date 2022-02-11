@@ -1,7 +1,6 @@
-﻿using Umbraco.Core;
-using Umbraco.Core.Composing;
-using Umbraco.Web;
-using Umbraco.Web.Routing;
+﻿using Umbraco.Cms.Core.Composing;
+using Umbraco.Cms.Core.DependencyInjection;
+using Umbraco.Cms.Core.Routing;
 
 namespace Stoolball.Web.Routing
 {
@@ -10,12 +9,11 @@ namespace Stoolball.Web.Routing
     /// so that if an Umbraco page is created with a URL that matches a route reserved for stoolball content, 
     /// the stoolball content wins.
     /// </summary>
-    [RuntimeLevel(MinLevel = RuntimeLevel.Run)]
-    public class ContentFinderComposer : IUserComposer
+    public class ContentFinderComposer : IComposer
     {
-        public void Compose(Composition composition)
+        public void Compose(IUmbracoBuilder builder)
         {
-            composition.ContentFinders().InsertBefore<ContentFinderByUrl, StoolballRouteContentFinder>();
+            builder.ContentFinders().InsertBefore<ContentFinderByUrl, StoolballRouteContentFinder>();
         }
     }
 }

@@ -6,7 +6,7 @@ using static Stoolball.Constants;
 
 namespace Stoolball.Web.Teams
 {
-    public class TeamAuthorizationPolicy : IAuthorizationPolicy<Team>
+    public class TeamAuthorizationPolicy : Security.IAuthorizationPolicy<Team>
     {
         private readonly MembershipHelper _membershipHelper;
 

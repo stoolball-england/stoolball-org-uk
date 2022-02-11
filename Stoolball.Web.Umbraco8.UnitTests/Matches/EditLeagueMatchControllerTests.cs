@@ -9,9 +9,8 @@ using Moq;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
-using Stoolball.Security;
 using Stoolball.Web.Matches;
-using Stoolball.Web.UnitTests;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -129,9 +128,9 @@ namespace Stoolball.Web.UnitTests.Matches
             var helper = new Mock<IEditMatchHelper>();
 
             var matchAuthorizationPolicy = new Mock<IAuthorizationPolicy<Stoolball.Matches.Match>>();
-            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<AuthorizedAction, bool>());
+            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<Stoolball.Security.AuthorizedAction, bool>());
             var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
-            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditCompetition, false } });
+            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<Stoolball.Security.AuthorizedAction, bool> { { Stoolball.Security.AuthorizedAction.EditCompetition, false } });
 
             using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper,
                 matchAuthorizationPolicy.Object, competitionAuthorizationPolicy.Object))
@@ -161,9 +160,9 @@ namespace Stoolball.Web.UnitTests.Matches
             var helper = new Mock<IEditMatchHelper>();
 
             var matchAuthorizationPolicy = new Mock<IAuthorizationPolicy<Stoolball.Matches.Match>>();
-            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<AuthorizedAction, bool>());
+            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<Stoolball.Security.AuthorizedAction, bool>());
             var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
-            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditCompetition, false } });
+            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<Stoolball.Security.AuthorizedAction, bool> { { Stoolball.Security.AuthorizedAction.EditCompetition, false } });
 
             using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper,
                 matchAuthorizationPolicy.Object, competitionAuthorizationPolicy.Object))
@@ -193,9 +192,9 @@ namespace Stoolball.Web.UnitTests.Matches
             var helper = new Mock<IEditMatchHelper>();
 
             var matchAuthorizationPolicy = new Mock<IAuthorizationPolicy<Stoolball.Matches.Match>>();
-            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<AuthorizedAction, bool>());
+            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<Stoolball.Security.AuthorizedAction, bool>());
             var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
-            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditCompetition, false } });
+            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<Stoolball.Security.AuthorizedAction, bool> { { Stoolball.Security.AuthorizedAction.EditCompetition, false } });
 
             using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper,
                 matchAuthorizationPolicy.Object, competitionAuthorizationPolicy.Object))
@@ -226,9 +225,9 @@ namespace Stoolball.Web.UnitTests.Matches
             helper.Setup(x => x.PossibleSeasonsAsListItems(It.IsAny<IEnumerable<Season>>())).Returns((IEnumerable<Season> x) => new List<SelectListItem> { new SelectListItem { Value = season.SeasonId.ToString() } });
 
             var matchAuthorizationPolicy = new Mock<IAuthorizationPolicy<Stoolball.Matches.Match>>();
-            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<AuthorizedAction, bool>());
+            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<Stoolball.Security.AuthorizedAction, bool>());
             var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
-            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditCompetition, false } });
+            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<Stoolball.Security.AuthorizedAction, bool> { { Stoolball.Security.AuthorizedAction.EditCompetition, false } });
 
             using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper,
                 matchAuthorizationPolicy.Object, competitionAuthorizationPolicy.Object))

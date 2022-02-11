@@ -5,7 +5,6 @@ using Stoolball.Caching;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Routing;
-using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -52,7 +51,7 @@ namespace Stoolball.Web.MatchLocations
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(location);
 
-            if (isAuthorized[AuthorizedAction.CreateMatchLocation] && ModelState.IsValid)
+            if (isAuthorized[Stoolball.Security.AuthorizedAction.CreateMatchLocation] && ModelState.IsValid)
             {
                 // Create an owner group
                 var groupName = _routeGenerator.GenerateRoute("location", location.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);

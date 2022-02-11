@@ -151,11 +151,9 @@
     <Compile Include="MatchLocations\MatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\MatchesForMatchLocationControllerTests.cs" />
     <Compile Include="Clubs\MatchesForClubControllerTests.cs" />
-    <Compile Include="Clubs\ClubControllerTests.cs" />
     <Compile Include="Competitions\SeasonControllerTests.cs" />
     <Compile Include="Competitions\CompetitionControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Routing\StoolballRouteContentFinderTests.cs" />
     <Compile Include="UmbracoBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>

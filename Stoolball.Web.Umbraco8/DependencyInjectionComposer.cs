@@ -17,7 +17,6 @@ using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Caching;
-using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
@@ -89,11 +88,6 @@ namespace Stoolball.Web
             composition.Register<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>, ListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
             composition.Register<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>, ListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>>();
 
-            // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
-            // be injected anywhere except the one place where it's serving a page of content.
-            composition.Register<IStoolballRouteTypeMapper, StoolballRouteTypeMapper>();
-            composition.Register<IStoolballRouterController, StoolballRouterController>();
-
             // Caching with Polly
             composition.Register<IClearableCache, ClearableCacheWrapper>();
             composition.Register<ICacheClearer<Tournament>, TournamentCacheClearer>();
@@ -101,7 +95,6 @@ namespace Stoolball.Web
 
             // Data sources for stoolball data.
             composition.Register<IRedirectsRepository, SkybrudRedirectsRepository>();
-            composition.Register<IClubDataSource, SqlServerClubDataSource>();
             composition.Register<IClubRepository, SqlServerClubRepository>();
             composition.Register<ITeamListingDataSource, CachedTeamListingDataSource>();
             composition.Register<ICacheableTeamListingDataSource, SqlServerTeamListingDataSource>();
@@ -139,12 +132,11 @@ namespace Stoolball.Web
             composition.Register<ISchoolDataSource, SqlServerSchoolDataSource>();
 
             // Security checks
-            composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();
-            composition.Register<IAuthorizationPolicy<Competition>, CompetitionAuthorizationPolicy>();
-            composition.Register<IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>();
-            composition.Register<IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>();
-            composition.Register<IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>();
-            composition.Register<IAuthorizationPolicy<Team>, TeamAuthorizationPolicy>();
+            composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Competition>, CompetitionAuthorizationPolicy>();
+            composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>();
+            composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>();
+            composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>();
+            composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Team>, TeamAuthorizationPolicy>();
         }
     }
 }

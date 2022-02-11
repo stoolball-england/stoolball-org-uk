@@ -7,7 +7,6 @@ using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;

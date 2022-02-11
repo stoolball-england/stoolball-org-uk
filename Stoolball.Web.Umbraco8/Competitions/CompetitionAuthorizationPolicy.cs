@@ -7,7 +7,7 @@ using static Stoolball.Constants;
 
 namespace Stoolball.Web.Competitions
 {
-    public class CompetitionAuthorizationPolicy : IAuthorizationPolicy<Competition>
+    public class CompetitionAuthorizationPolicy : Security.IAuthorizationPolicy<Competition>
     {
         private readonly MembershipHelper _membershipHelper;
 

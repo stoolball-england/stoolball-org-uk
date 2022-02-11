@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Caching;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -74,7 +73,7 @@ namespace Stoolball.Web.Teams
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (isAuthorized[AuthorizedAction.EditTeam] && ModelState.IsValid)
+            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditTeam] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedTeam = await _teamRepository.UpdateTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);

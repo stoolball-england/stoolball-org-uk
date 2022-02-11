@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -39,7 +38,7 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteSeason([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation model)
+        public async Task<ActionResult> DeleteSeason([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] Stoolball.Security.MatchingTextConfirmation model)
         {
             if (model is null)
             {
@@ -55,7 +54,7 @@ namespace Stoolball.Web.Competitions
             // Create a version without circular references before it gets serialised for audit
             viewModel.Season.Teams = viewModel.Season.Teams.Select(x => new TeamInSeason { Team = x.Team, WithdrawnDate = x.WithdrawnDate }).ToList();
 
-            if (viewModel.IsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
+            if (viewModel.IsAuthorized[Stoolball.Security.AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 await _seasonRepository.DeleteSeason(viewModel.Season, currentMember.Key, currentMember.Name).ConfigureAwait(false);

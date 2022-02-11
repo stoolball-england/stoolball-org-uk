@@ -6,7 +6,6 @@ using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -81,7 +80,7 @@ namespace Stoolball.Web.Matches
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid)
+            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.EditMatch] && ModelState.IsValid)
             {
                 if ((int?)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
 

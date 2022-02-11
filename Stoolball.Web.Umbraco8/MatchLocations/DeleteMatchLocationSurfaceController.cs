@@ -6,7 +6,6 @@ using Stoolball.Caching;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -42,7 +41,7 @@ namespace Stoolball.Web.MatchLocations
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteMatchLocation([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation model)
+        public async Task<ActionResult> DeleteMatchLocation([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] Stoolball.Security.MatchingTextConfirmation model)
         {
             if (model is null)
             {
@@ -55,7 +54,7 @@ namespace Stoolball.Web.MatchLocations
             };
             viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.MatchLocation);
 
-            if (viewModel.IsAuthorized[AuthorizedAction.DeleteMatchLocation] && ModelState.IsValid)
+            if (viewModel.IsAuthorized[Stoolball.Security.AuthorizedAction.DeleteMatchLocation] && ModelState.IsValid)
             {
                 var memberGroup = Services.MemberGroupService.GetById(viewModel.MatchLocation.MemberGroupKey.Value);
                 if (memberGroup != null)

@@ -8,7 +8,6 @@ using Humanizer;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -176,7 +175,7 @@ namespace Stoolball.Web.Matches
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
+            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 await _matchRepository.UpdateBattingScorecard(model.Match, model.CurrentInnings.MatchInnings.MatchInningsId.Value, currentMember.Key, currentMember.Name).ConfigureAwait(false);

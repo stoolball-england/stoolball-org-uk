@@ -6,7 +6,6 @@ using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -45,7 +44,7 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteCompetition([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation model)
+        public async Task<ActionResult> DeleteCompetition([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] Stoolball.Security.MatchingTextConfirmation model)
         {
             if (model is null)
             {
@@ -58,7 +57,7 @@ namespace Stoolball.Web.Competitions
             };
             viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Competition);
 
-            if (viewModel.IsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
+            if (viewModel.IsAuthorized[Stoolball.Security.AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
             {
                 var memberGroup = Services.MemberGroupService.GetById(viewModel.Competition.MemberGroupKey.Value);
                 if (memberGroup != null)

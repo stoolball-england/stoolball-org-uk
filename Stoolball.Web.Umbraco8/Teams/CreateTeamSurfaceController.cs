@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Caching;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -68,7 +67,7 @@ namespace Stoolball.Web.Teams
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(team);
 
-            if (isAuthorized[AuthorizedAction.CreateTeam] && ModelState.IsValid)
+            if (isAuthorized[Stoolball.Security.AuthorizedAction.CreateTeam] && ModelState.IsValid)
             {
                 // Create the team
                 var currentMember = Members.GetCurrentMember();

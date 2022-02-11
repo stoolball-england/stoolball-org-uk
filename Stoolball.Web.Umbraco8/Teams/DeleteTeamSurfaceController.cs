@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using Stoolball.Caching;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Security;
@@ -45,7 +44,7 @@ namespace Stoolball.Web.Teams
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteTeam([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation postedModel)
+        public async Task<ActionResult> DeleteTeam([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] Stoolball.Security.MatchingTextConfirmation postedModel)
         {
             if (postedModel is null)
             {
@@ -58,7 +57,7 @@ namespace Stoolball.Web.Teams
             };
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
 
-            if (model.IsAuthorized[AuthorizedAction.DeleteTeam] && ModelState.IsValid)
+            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.DeleteTeam] && ModelState.IsValid)
             {
                 var memberGroup = Services.MemberGroupService.GetById(model.Team.MemberGroupKey.Value);
                 if (memberGroup != null)

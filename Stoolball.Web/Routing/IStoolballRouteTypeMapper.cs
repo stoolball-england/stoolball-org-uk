@@ -4,6 +4,6 @@ namespace Stoolball.Web.Routing
 {
     public interface IStoolballRouteTypeMapper
     {
-        Type MapRouteTypeToController(string unparsedRouteType);
+        Type MapRouteTypeToController(StoolballRouteType routeType);
     }
 }

@@ -781,7 +781,7 @@
     <Compile Include="App_Data\Models\YouTubeVideo.generated.cs" />
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="Caching\ClearableCacheWrapper.cs" />
-    <Compile Include="Clubs\ClubAuthorizationPolicy.cs" />
+    <Compile Include="Clubs\ClubViewModel.cs" />
     <Compile Include="Clubs\DeleteClubViewModel.cs" />
     <Compile Include="Clubs\DeleteClubController.cs" />
     <Compile Include="Clubs\CreateClubController.cs" />
@@ -856,8 +856,10 @@
     <Compile Include="Matches\OnlySportCsvExportTask.cs" />
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
+    <Compile Include="Routing\RenderMvcControllerAsync.cs" />
     <Compile Include="Schools\SchoolsController.cs" />
     <Compile Include="Schools\SchoolsViewModel.cs" />
+    <Compile Include="Security\IAuthorizationPolicy.cs" />
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
     <Compile Include="Statistics\BowlingStrikeRateController.cs" />
     <Compile Include="Statistics\BattingStrikeRateController.cs" />
@@ -1162,12 +1164,8 @@
     <Compile Include="MatchLocations\DeleteMatchLocationController.cs" />
     <Compile Include="MatchLocations\DeleteMatchLocationViewModel.cs" />
     <Compile Include="Routing\IPostSaveRedirector.cs" />
-    <Compile Include="Routing\IStoolballRouterController.cs" />
-    <Compile Include="Routing\IStoolballRouteTypeMapper.cs" />
     <Compile Include="Routing\PostSaveRedirector.cs" />
-    <Compile Include="Routing\StoolballRouteTypeMapper.cs" />
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
-    <Compile Include="Security\DelegatedContentSecurityPolicyAttribute.cs" />
     <Compile Include="Security\MemberGroupHelper.cs" />
     <Compile Include="MatchLocations\MatchLocationStatisticsController.cs" />
     <Compile Include="Competitions\CompetitionStatisticsController.cs" />
@@ -1202,11 +1200,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BowlingFigures.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Club.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Club.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\ClubActions.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1478,11 +1471,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>_BowlingFigures.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\_ClubMark.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_ClubMark.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\_CompetitionActions.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1670,14 +1658,7 @@
     <Compile Include="MatchLocations\MatchLocationController.cs" />
     <Compile Include="MatchLocations\MatchLocationViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Clubs\ClubController.cs" />
-    <Compile Include="Routing\ContentFinderComposer.cs" />
-    <Compile Include="Routing\RenderMvcControllerAsync.cs" />
-    <Compile Include="Clubs\ClubViewModel.cs" />
-    <Compile Include="Routing\StoolballRouteContentFinder.cs" />
     <Compile Include="Routing\BaseViewModel.cs" />
-    <Compile Include="Routing\StoolballRouterController.cs" />
-    <Compile Include="Routing\StoolballRouteType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="config\imageprocessor\security.config" />
@@ -1688,10 +1669,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\Club.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Club.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\MatchLocation.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MatchLocation.generated.cs</LastGenOutput>
@@ -1699,10 +1676,6 @@
     <Content Include="Views\Team.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Team.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_ClubMark.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_ClubMark.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Season.cshtml">
       <Generator>RazorGenerator</Generator>

@@ -5,7 +5,6 @@ using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
 using Stoolball.Routing;
-using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -54,7 +53,7 @@ namespace Stoolball.Web.Competitions
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(competition);
 
-            if (isAuthorized[AuthorizedAction.CreateCompetition] && ModelState.IsValid)
+            if (isAuthorized[Stoolball.Security.AuthorizedAction.CreateCompetition] && ModelState.IsValid)
             {
                 // Create an owner group
                 var groupName = _routeGenerator.GenerateRoute("competition", competition.CompetitionName, NoiseWords.CompetitionRoute);

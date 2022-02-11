@@ -6,7 +6,6 @@ using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -79,8 +78,8 @@ namespace Stoolball.Web.Matches
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
                 if (model.Match.Season != null && model.Match.Season.Teams.Count <= 1 && model.Match.Season.Competition != null)
                 {
-                    _competitionAuthorizationPolicy.IsAuthorized(model.Match.Season.Competition).TryGetValue(AuthorizedAction.EditCompetition, out var canEditCompetition);
-                    model.IsAuthorized[AuthorizedAction.EditCompetition] = canEditCompetition;
+                    _competitionAuthorizationPolicy.IsAuthorized(model.Match.Season.Competition).TryGetValue(Stoolball.Security.AuthorizedAction.EditCompetition, out var canEditCompetition);
+                    model.IsAuthorized[Stoolball.Security.AuthorizedAction.EditCompetition] = canEditCompetition;
                 }
 
                 if (model.Match.Season != null)

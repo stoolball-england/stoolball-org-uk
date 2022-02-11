@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
-using System.Web.Mvc;
-using Umbraco.Web.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Stoolball.Web.Routing
 {
     public interface IStoolballRouterController
     {
-        Task<ActionResult> Index(ContentModel contentModel);
+        Task<IActionResult> Index();
         ControllerContext ControllerContext { get; set; }
         ModelStateDictionary ModelState { get; }
     }

@@ -4,7 +4,6 @@ using System.Web.Mvc;
 using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -58,7 +57,7 @@ namespace Stoolball.Web.Competitions
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
+            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditCompetition] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedCompetition = await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);

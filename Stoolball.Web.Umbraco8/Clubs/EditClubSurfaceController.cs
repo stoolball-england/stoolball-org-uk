@@ -5,7 +5,6 @@ using System.Web.Mvc;
 using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -57,7 +56,7 @@ namespace Stoolball.Web.Clubs
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (isAuthorized[AuthorizedAction.EditClub] && ModelState.IsValid)
+            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditClub] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedClub = await _clubRepository.UpdateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);

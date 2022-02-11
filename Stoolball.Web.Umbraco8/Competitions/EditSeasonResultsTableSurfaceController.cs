@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -49,7 +48,7 @@ namespace Stoolball.Web.Competitions
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate.Competition);
 
-            if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
+            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditCompetition] && ModelState.IsValid)
             {
                 // Update the season
                 var currentMember = Members.GetCurrentMember();

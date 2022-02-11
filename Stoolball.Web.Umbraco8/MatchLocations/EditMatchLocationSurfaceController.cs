@@ -4,7 +4,6 @@ using System.Web.Mvc;
 using Stoolball.Caching;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -53,7 +52,7 @@ namespace Stoolball.Web.MatchLocations
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (isAuthorized[AuthorizedAction.EditMatchLocation] && ModelState.IsValid)
+            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditMatchLocation] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedMatchLocation = await _matchLocationRepository.UpdateMatchLocation(location, currentMember.Key, currentMember.Name).ConfigureAwait(false);

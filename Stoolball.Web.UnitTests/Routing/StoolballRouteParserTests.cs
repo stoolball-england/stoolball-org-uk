@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Stoolball.Web.UnitTests.Routing
 {
-    public class StoolballRouteContentFinderTests
+    public class StoolballRouteParserTests
     {
         [Theory]
         [InlineData("https://example.org/teams", StoolballRouteType.Teams)]
@@ -375,7 +375,7 @@ namespace Stoolball.Web.UnitTests.Routing
         {
             var requestUrl = new Uri(route);
 
-            var result = StoolballRouteContentFinder.MatchStoolballRouteType(requestUrl);
+            var result = new StoolballRouteParser().ParseRouteType(requestUrl.AbsolutePath);
 
             Assert.Equal(expectedType, result);
         }
@@ -406,7 +406,7 @@ namespace Stoolball.Web.UnitTests.Routing
         {
             var requestUrl = new Uri(route);
 
-            var result = StoolballRouteContentFinder.MatchStoolballRouteType(requestUrl);
+            var result = new StoolballRouteParser().ParseRouteType(requestUrl.AbsolutePath);
 
             Assert.Null(result);
         }

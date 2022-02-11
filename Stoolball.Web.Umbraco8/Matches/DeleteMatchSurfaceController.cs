@@ -6,7 +6,6 @@ using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -43,7 +42,7 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteMatch([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation postedModel)
+        public async Task<ActionResult> DeleteMatch([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] Stoolball.Security.MatchingTextConfirmation postedModel)
         {
             if (postedModel is null)
             {
@@ -57,7 +56,7 @@ namespace Stoolball.Web.Matches
             };
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
-            if (model.IsAuthorized[AuthorizedAction.DeleteMatch] && ModelState.IsValid)
+            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.DeleteMatch] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 await _matchRepository.DeleteMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);

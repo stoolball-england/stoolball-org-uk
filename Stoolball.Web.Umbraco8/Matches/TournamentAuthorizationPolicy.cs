@@ -6,7 +6,7 @@ using static Stoolball.Constants;
 
 namespace Stoolball.Web.Matches
 {
-    public class TournamentAuthorizationPolicy : IAuthorizationPolicy<Tournament>
+    public class TournamentAuthorizationPolicy : Security.IAuthorizationPolicy<Tournament>
     {
         private readonly MembershipHelper _membershipHelper;
 

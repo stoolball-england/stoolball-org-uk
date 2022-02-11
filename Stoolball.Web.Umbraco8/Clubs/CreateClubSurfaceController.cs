@@ -6,7 +6,6 @@ using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Navigation;
 using Stoolball.Routing;
-using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -56,7 +55,7 @@ namespace Stoolball.Web.Clubs
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(club);
 
-            if (isAuthorized[AuthorizedAction.CreateClub] && ModelState.IsValid)
+            if (isAuthorized[Stoolball.Security.AuthorizedAction.CreateClub] && ModelState.IsValid)
             {
                 // Create an owner group
                 var groupName = _routeGenerator.GenerateRoute("club", club.ClubName, NoiseWords.ClubRoute);
