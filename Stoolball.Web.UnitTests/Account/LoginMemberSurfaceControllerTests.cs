@@ -3,11 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using Stoolball.Email;
 using Stoolball.Security;
 using Stoolball.Web.Account;
 using Stoolball.Web.Models;
+using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Logging;
@@ -28,9 +30,15 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class LoginMemberSurfaceControllerTests : UmbracoBaseTest
     {
+        private readonly Mock<IStoolballRouterController> _stoolballRouterController = new();
+
         public LoginMemberSurfaceControllerTests()
         {
             base.Setup();
+
+            _stoolballRouterController.Setup(x => x.ModelState).Returns(new ModelStateDictionary());
+            _stoolballRouterController.SetupProperty(x => x.ControllerContext);
+            _stoolballRouterController.Setup(x => x.Index()).Returns(Task.FromResult(new ViewResult() as IActionResult));
         }
 
         private class TestController<T> : LoginMemberSurfaceController where T : PublishedContentModel
@@ -38,7 +46,7 @@ namespace Stoolball.Web.UnitTests.Account
             private readonly T _contentModel;
             private readonly Func<LoginModel, Task<IActionResult>> _handleLogin;
 
-            public TestController(IUmbracoContextAccessor umbracoContextAccessor, HttpContext httpContext, ServiceContext services, T contentModel, Func<LoginModel, Task<IActionResult>> handleLogin)//, IStoolballRouterController stoolballRouterController)
+            public TestController(IUmbracoContextAccessor umbracoContextAccessor, HttpContext httpContext, ServiceContext services, T contentModel, Func<LoginModel, Task<IActionResult>> handleLogin, IStoolballRouterController stoolballRouterController)
             : base(umbracoContextAccessor,
                 Mock.Of<IUmbracoDatabaseFactory>(),
                 services,
@@ -48,14 +56,13 @@ namespace Stoolball.Web.UnitTests.Account
                 Mock.Of<IMemberSignInManager>(),
                 Mock.Of<IEmailFormatter>(),
                 Mock.Of<IEmailSender>(),
-                Mock.Of<IVerificationToken>())
+                Mock.Of<IVerificationToken>(),
+                stoolballRouterController)
             {
                 _contentModel = contentModel;
                 _handleLogin = handleLogin;
 
-
                 ControllerContext = ControllerContext;
-                //ControllerContext.RouteData.DataTokens.Add(UmbracoConstants.Web.UmbracoRouteDefinitionDataToken, new RouteDefinition());
             }
 
             protected override async Task<IActionResult> TryUmbracoLogin(LoginModel model) => await _handleLogin(model);
@@ -67,7 +74,7 @@ namespace Stoolball.Web.UnitTests.Account
             protected override IActionResult BlockedLoginResult()
             {
                 BlockedLoginResultCalled = true;
-                return new UmbracoPageResult(Mock.Of<IProfilingLogger>());
+                return base.BlockedLoginResult();
             }
         }
 
@@ -109,7 +116,8 @@ namespace Stoolball.Web.UnitTests.Account
                 HttpContext.Object,
                 ServiceContext,
                 new LoginMember(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-                x => Task.FromResult(expectedResult))
+                x => Task.FromResult(expectedResult),
+                _stoolballRouterController.Object)
             {
                 ControllerContext = ControllerContext
             };
@@ -355,301 +363,210 @@ namespace Stoolball.Web.UnitTests.Account
             }
         }
 
-        //[Fact]
-        //public async void Valid_login_via_StoolballRouter_returns_RedirectResult()
-        //{
-        //    var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
-
-        //    var member = new Mock<IMember>();
-        //    member.Setup(x => x.GetValue<int>("totalLogins", null, null, false)).Returns(0);
-        //    member.Setup(x => x.IsApproved).Returns(true);
-        //    member.Setup(x => x.IsLockedOut).Returns(false);
-        //    member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
-
-        //    MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
-
-        //    using (var controller = new TestController<StoolballRouter>(
-        //        HttpContext.Object,
-        //        ServiceContext,
-        //        new StoolballRouter(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-        //        x => Task.FromResult(new RedirectResult("/stoolball-router/", false) as IActionResult)))
-        //    //Mock.Of<IStoolballRouterController>()))
-        //    {
-
-        //        var result = await controller.Login(model); // ModelState.IsValid = true
-
-        //        Assert.IsType<RedirectResult>(result);
-        //    }
-
-        //    var expected = new RedirectResult("https://localhost/some/page", false);
-        //}
-
-        //[Fact]
-        //public async void Valid_login_via_StoolballRouter_returns_URL_from_model()
-        //{
-        //    var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
-
-        //    var member = new Mock<IMember>();
-        //    member.Setup(x => x.GetValue<int>("totalLogins", null, null, false)).Returns(0);
-        //    member.Setup(x => x.IsApproved).Returns(true);
-        //    member.Setup(x => x.IsLockedOut).Returns(false);
-        //    member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
-
-        //    MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
-
-        //    using (var controller = new TestController<StoolballRouter>(
-        //        HttpContext.Object,
-        //        ServiceContext,
-        //        new StoolballRouter(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-        //        x => Task.FromResult(new RedirectResult("/stoolball-router/", false) as IActionResult)))
-        //    //Mock.Of<IStoolballRouterController>()))
-        //    {
-
-        //        var result = (RedirectResult)(await controller.Login(model)); // ModelState.IsValid = true
-
-        //        Assert.Equal(model.RedirectUrl, result.Url);
-        //    }
-        //}
-
-
-        //[Fact]
-        //public async void Invalid_password_via_StoolballRouter_returns_ViewResult()
-        //{
-        //    var model = new LoginModel { Username = "valid@example.org", Password = "invalid-password", RedirectUrl = "https://localhost/some/page" };
-
-        //    var member = new Mock<IMember>();
-        //    member.Setup(x => x.IsApproved).Returns(true);
-        //    member.Setup(x => x.IsLockedOut).Returns(false);
-        //    member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
-
-        //    MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
-
-        //    var router = new Mock<IStoolballRouterController>();
-        //    router.Setup(x => x.ModelState).Returns(new ModelStateDictionary());
-        //    router.SetupProperty(x => x.ControllerContext);
-        //    router.Setup(x => x.Index(It.IsAny<ContentModel>())).Returns(Task.FromResult(new ViewResult() as ActionResult));
-
-        //    using (var controller = new TestController<StoolballRouter>(
-        //        HttpContext.Object,
-        //        ServiceContext,
-        //        new StoolballRouter(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-        //        x => Task.FromResult(new ViewResult() as IActionResult),
-        //        router.Object))
-        //    {
-        //        controller.ModelState.AddModelError("loginModel", "Invalid username or password"); // This happens during a real attempt to login
-        //        var result = await controller.Login(model);
-
-        //        Assert.IsType<ViewResult>(result);
-        //    }
-        //}
-
-        //[Fact]
-        //public async void Invalid_username_via_StoolballRouter_returns_ViewResult()
-        //{
-        //    var model = new LoginModel { Username = "invalid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
-
-        //    MemberService.Setup(x => x.GetByEmail(model.Username)).Returns((IMember)null);
-
-        //    var router = new Mock<IStoolballRouterController>();
-        //    router.Setup(x => x.ModelState).Returns(new ModelStateDictionary());
-        //    router.SetupProperty(x => x.ControllerContext);
-        //    router.Setup(x => x.Index(It.IsAny<ContentModel>())).Returns(Task.FromResult(new ViewResult() as ActionResult));
-
-        //    using (var controller = new TestController<StoolballRouter>(
-        //        HttpContext.Object,
-        //        ServiceContext,
-        //        new StoolballRouter(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-        //        x => Task.FromResult(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult),
-        //        router.Object))
-        //    {
-        //        controller.ModelState.AddModelError("loginModel", "Invalid username or password"); // This happens during a real attempt to login
-        //        var result = await controller.Login(model);
-
-        //        Assert.IsType<ViewResult>(result);
-        //    }
-        //}
-
-
-        //[Fact]
-        //public async void Locked_out_via_StoolballRouter_returns_ViewResult()
-        //{
-        //    var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
-
-        //    var member = new Mock<IMember>();
-        //    member.Setup(x => x.IsApproved).Returns(true);
-        //    member.Setup(x => x.IsLockedOut).Returns(true);
-        //    member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
-
-        //    MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
-
-        //    var router = new Mock<IStoolballRouterController>();
-        //    router.Setup(x => x.ModelState).Returns(new ModelStateDictionary());
-        //    router.SetupProperty(x => x.ControllerContext);
-        //    router.Setup(x => x.Index(It.IsAny<ContentModel>())).Returns(Task.FromResult(new ViewResult() as ActionResult));
-
-        //    using (var controller = new TestController<StoolballRouter>(
-        //        HttpContext.Object,
-        //        ServiceContext,
-        //        new StoolballRouter(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-        //        x => Task.FromResult(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult),
-        //        router.Object))
-        //    {
-        //        var result = await controller.Login(model);
-
-        //        Assert.IsType<ViewResult>(result);
-        //    }
-        //}
-
-
-        //[Fact]
-        //public async void Locked_out_via_StoolballRouter_adds_ModelError()
-        //{
-        //    var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
-
-        //    var member = new Mock<IMember>();
-        //    member.Setup(x => x.IsApproved).Returns(true);
-        //    member.Setup(x => x.IsLockedOut).Returns(true);
-        //    member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
-
-        //    MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
-
-        //    var router = new Mock<IStoolballRouterController>();
-        //    router.Setup(x => x.ModelState).Returns(new ModelStateDictionary());
-        //    router.SetupProperty(x => x.ControllerContext);
-        //    router.Setup(x => x.Index(It.IsAny<ContentModel>())).Returns(Task.FromResult(new ViewResult() as ActionResult));
-
-        //    using (var controller = new TestController<StoolballRouter>(
-        //        HttpContext.Object,
-        //        ServiceContext,
-        //        new StoolballRouter(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-        //        x => Task.FromResult(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult),
-        //        router.Object))
-        //    {
-        //        _ = await controller.Login(model);
-
-        //        Assert.True(controller.ModelState["loginModel"].Errors[0].ErrorMessage == "Invalid username or password");
-        //    }
-        //}
-
-
-        //[Fact]
-        //public async void Not_approved_via_StoolballRouter_returns_ViewResult()
-        //{
-        //    var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
-
-        //    var member = new Mock<IMember>();
-        //    member.Setup(x => x.IsApproved).Returns(false);
-        //    member.Setup(x => x.IsLockedOut).Returns(false);
-        //    member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
-
-        //    MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
-
-        //    var router = new Mock<IStoolballRouterController>();
-        //    router.Setup(x => x.ModelState).Returns(new ModelStateDictionary());
-        //    router.SetupProperty(x => x.ControllerContext);
-        //    router.Setup(x => x.Index(It.IsAny<ContentModel>())).Returns(Task.FromResult(new ViewResult() as ActionResult));
-
-        //    using (var controller = new TestController<StoolballRouter>(
-        //        HttpContext.Object,
-        //        ServiceContext,
-        //        new StoolballRouter(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-        //        x => Task.FromResult(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult),
-        //        router.Object))
-        //    {
-        //        var result = await controller.Login(model);
-
-        //        Assert.IsType<ViewResult>(result);
-        //    }
-        //}
-
-        //[Fact]
-        //public async void Not_approved_via_StoolballRouter_addsModelError()
-        //{
-        //    var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
-
-        //    var member = new Mock<IMember>();
-        //    member.Setup(x => x.IsApproved).Returns(false);
-        //    member.Setup(x => x.IsLockedOut).Returns(false);
-        //    member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
-
-        //    MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
-
-        //    var router = new Mock<IStoolballRouterController>();
-        //    router.Setup(x => x.ModelState).Returns(new ModelStateDictionary());
-        //    router.SetupProperty(x => x.ControllerContext);
-        //    router.Setup(x => x.Index(It.IsAny<ContentModel>())).Returns(Task.FromResult(new ViewResult() as ActionResult));
-
-        //    using (var controller = new TestController<StoolballRouter>(
-        //        HttpContext.Object,
-        //        ServiceContext,
-        //        new StoolballRouter(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-        //        x => Task.FromResult(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult),
-        //        router.Object))
-        //    {
-        //        _ = await controller.Login(model);
-
-        //        Assert.True(controller.ModelState["loginModel"].Errors[0].ErrorMessage == "Invalid username or password");
-        //    }
-        //}
-
-
-        //[Fact]
-        //public async void Blocked_via_StoolballRouter_returns_ViewResult()
-        //{
-        //    var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
-
-        //    var member = new Mock<IMember>();
-        //    member.Setup(x => x.IsApproved).Returns(true);
-        //    member.Setup(x => x.IsLockedOut).Returns(false);
-        //    member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(true);
-
-        //    MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
-
-        //    var router = new Mock<IStoolballRouterController>();
-        //    router.Setup(x => x.ModelState).Returns(new ModelStateDictionary());
-        //    router.SetupProperty(x => x.ControllerContext);
-        //    router.Setup(x => x.Index(It.IsAny<ContentModel>())).Returns(Task.FromResult(new ViewResult() as ActionResult));
-
-        //    using (var controller = new TestController<StoolballRouter>(
-        //        HttpContext.Object,
-        //        ServiceContext,
-        //        new StoolballRouter(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-        //        x => Task.FromResult(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult),
-        //        router.Object))
-        //    {
-        //        var result = await controller.Login(model);
-
-        //        Assert.IsType<ViewResult>(result);
-        //    }
-        //}
-
-        //[Fact]
-        //public async void Blocked_via_StoolballRouter_adds_ModelError()
-        //{
-        //    var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
-
-        //    var member = new Mock<IMember>();
-        //    member.Setup(x => x.IsApproved).Returns(true);
-        //    member.Setup(x => x.IsLockedOut).Returns(false);
-        //    member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(true);
-
-        //    MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
-
-        //    router.Setup(x => x.ModelState).Returns(new ModelStateDictionary());
-        //    router.SetupProperty(x => x.ControllerContext);
-        //    router.Setup(x => x.Index(It.IsAny<ContentModel>())).Returns(Task.FromResult(new ViewResult() as ActionResult));
-
-        //    using (var controller = new TestController<StoolballRouter>(
-        //        HttpContext.Object,
-        //        ServiceContext,
-        //        new StoolballRouter(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
-        //        x => Task.FromResult(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult),
-        //        router.Object))
-        //    {
-        //        _ = await controller.Login(model);
-
-        //        Assert.True(controller.ModelState["loginModel"].Errors[0].ErrorMessage == "Invalid username or password");
-        //    }
-        //}
+        [Fact]
+        public async void Valid_login_via_StoolballRouter_returns_RedirectResult()
+        {
+            var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
+
+            var member = new Mock<IMember>();
+            member.Setup(x => x.GetValue<int>("totalLogins", null, null, false)).Returns(0);
+            member.Setup(x => x.IsApproved).Returns(true);
+            member.Setup(x => x.IsLockedOut).Returns(false);
+            member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
+
+            MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
+
+            using (var controller = CreateController(new RedirectResult("/stoolball-router/", false)))
+            {
+                var result = await controller.Login(model); // ModelState.IsValid = true
+
+                Assert.IsType<RedirectResult>(result);
+            }
+
+            var expected = new RedirectResult("https://localhost/some/page", false);
+        }
+
+        [Fact]
+        public async void Valid_login_via_StoolballRouter_returns_URL_from_model()
+        {
+            var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
+
+            var member = new Mock<IMember>();
+            member.Setup(x => x.GetValue<int>("totalLogins", null, null, false)).Returns(0);
+            member.Setup(x => x.IsApproved).Returns(true);
+            member.Setup(x => x.IsLockedOut).Returns(false);
+            member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
+
+            MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
+
+            using (var controller = CreateController(new RedirectResult("/stoolball-router/", false)))
+            {
+                var result = (RedirectResult)(await controller.Login(model)); // ModelState.IsValid = true
+
+                Assert.Equal(model.RedirectUrl, result.Url);
+            }
+        }
+
+
+        [Fact]
+        public async void Invalid_password_via_StoolballRouter_returns_UmbracoPageResult()
+        {
+            var model = new LoginModel { Username = "valid@example.org", Password = "invalid-password", RedirectUrl = "https://localhost/some/page" };
+
+            var member = new Mock<IMember>();
+            member.Setup(x => x.IsApproved).Returns(true);
+            member.Setup(x => x.IsLockedOut).Returns(false);
+            member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
+
+            MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
+
+            using (var controller = CreateController(new ViewResult()))
+            {
+                controller.ModelState.AddModelError("loginModel", "Invalid username or password"); // This happens during a real attempt to login
+                var result = await controller.Login(model);
+
+                Assert.IsType<UmbracoPageResult>(result);
+            }
+        }
+
+        [Fact]
+        public async void Invalid_username_via_StoolballRouter_returns_UmbracoPageResult()
+        {
+            var model = new LoginModel { Username = "invalid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
+
+            MemberService.Setup(x => x.GetByEmail(model.Username)).Returns((IMember)null);
+
+            using (var controller = CreateController(new UmbracoPageResult(Mock.Of<IProfilingLogger>())))
+            {
+                controller.ModelState.AddModelError("loginModel", "Invalid username or password"); // This happens during a real attempt to login
+                var result = await controller.Login(model);
+
+                Assert.IsType<UmbracoPageResult>(result);
+            }
+        }
+
+
+        [Fact]
+        public async void Locked_out_via_StoolballRouter_returns_UmbracoPageResult()
+        {
+            var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
+
+            var member = new Mock<IMember>();
+            member.Setup(x => x.IsApproved).Returns(true);
+            member.Setup(x => x.IsLockedOut).Returns(true);
+            member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
+
+            MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
+
+            using (var controller = CreateController(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult))
+            {
+                var result = await controller.Login(model);
+
+                Assert.IsType<UmbracoPageResult>(result);
+            }
+        }
+
+
+        [Fact]
+        public async void Locked_out_via_StoolballRouter_adds_ModelError()
+        {
+            var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
+
+            var member = new Mock<IMember>();
+            member.Setup(x => x.IsApproved).Returns(true);
+            member.Setup(x => x.IsLockedOut).Returns(true);
+            member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
+
+            MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
+
+            using (var controller = CreateController(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult))
+            {
+                _ = await controller.Login(model);
+
+                Assert.True(controller.ModelState["loginModel"].Errors[0].ErrorMessage == "Invalid username or password");
+            }
+        }
+
+
+        [Fact]
+        public async void Not_approved_via_StoolballRouter_returns_UmbracoPageResult()
+        {
+            var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
+
+            var member = new Mock<IMember>();
+            member.Setup(x => x.IsApproved).Returns(false);
+            member.Setup(x => x.IsLockedOut).Returns(false);
+            member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
+
+            MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
+
+            using (var controller = CreateController(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult))
+            {
+                var result = await controller.Login(model);
+
+                Assert.IsType<UmbracoPageResult>(result);
+            }
+        }
+
+        [Fact]
+        public async void Not_approved_via_StoolballRouter_addsModelError()
+        {
+            var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
+
+            var member = new Mock<IMember>();
+            member.Setup(x => x.IsApproved).Returns(false);
+            member.Setup(x => x.IsLockedOut).Returns(false);
+            member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(false);
+
+            MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
+
+            using (var controller = CreateController(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult))
+            {
+                _ = await controller.Login(model);
+
+                Assert.True(controller.ModelState["loginModel"].Errors[0].ErrorMessage == "Invalid username or password");
+            }
+        }
+
+
+        [Fact]
+        public async void Blocked_via_StoolballRouter_returns_UmbracoPageResult()
+        {
+            var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
+
+            var member = new Mock<IMember>();
+            member.Setup(x => x.IsApproved).Returns(true);
+            member.Setup(x => x.IsLockedOut).Returns(false);
+            member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(true);
+
+            MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
+
+            using (var controller = CreateController(new UmbracoPageResult(Mock.Of<IProfilingLogger>())))
+            {
+                var result = await controller.Login(model);
+
+                Assert.IsType<UmbracoPageResult>(result);
+            }
+        }
+
+        [Fact]
+        public async void Blocked_via_StoolballRouter_adds_ModelError()
+        {
+            var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
+
+            var member = new Mock<IMember>();
+            member.Setup(x => x.IsApproved).Returns(true);
+            member.Setup(x => x.IsLockedOut).Returns(false);
+            member.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(true);
+
+            MemberService.Setup(x => x.GetByEmail(model.Username)).Returns(member.Object);
+
+            using (var controller = CreateController(new UmbracoPageResult(Mock.Of<IProfilingLogger>()) as IActionResult))
+            {
+                _ = await controller.Login(model);
+
+                Assert.True(controller.ModelState["loginModel"].Errors[0].ErrorMessage == "Invalid username or password");
+            }
+        }
     }
 }

@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Email;
 using Stoolball.Security;
+using Stoolball.Web.Models;
+using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Logging;
@@ -25,17 +27,17 @@ namespace Stoolball.Web.Account
         private readonly IEmailFormatter _emailFormatter;
         private readonly Umbraco.Cms.Core.Mail.IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
-        //private readonly IStoolballRouterController _stoolballRouterController;
+        private readonly IStoolballRouterController _stoolballRouterController;
 
         public LoginMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches,
             IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberSignInManager memberSignInManager, IEmailFormatter emailFormatter, Umbraco.Cms.Core.Mail.IEmailSender emailSender,
-            IVerificationToken verificationToken)//, IStoolballRouterController stoolballRouterController)
+            IVerificationToken verificationToken, IStoolballRouterController stoolballRouterController)
             : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider, memberSignInManager)
         {
             _emailFormatter = emailFormatter ?? throw new System.ArgumentNullException(nameof(emailFormatter));
             _emailSender = emailSender ?? throw new System.ArgumentNullException(nameof(emailSender));
             _verificationToken = verificationToken ?? throw new System.ArgumentNullException(nameof(verificationToken));
-            //_stoolballRouterController = stoolballRouterController ?? throw new System.ArgumentNullException(nameof(stoolballRouterController));
+            _stoolballRouterController = stoolballRouterController ?? throw new System.ArgumentNullException(nameof(stoolballRouterController));
         }
 
         [HttpPost]
@@ -62,10 +64,10 @@ namespace Stoolball.Web.Account
 
                 // Return the same status the built in controller uses if login fails for any reason
                 ModelState.AddModelError("loginModel", "Invalid username or password");
-                //if (CurrentPage.GetType() == typeof(StoolballRouter))
-                //{
-                //    return ReturnToStoolballRouterPage();
-                //}
+                if (CurrentPage.GetType() == typeof(StoolballRouter))
+                {
+                    return ReturnToStoolballRouterPage();
+                }
                 return BlockedLoginResult();
             }
 
@@ -80,10 +82,10 @@ namespace Stoolball.Web.Account
             }
 
             // If this was a page demanding permissions, return to that page. Otherwise return the base result to the standard login page.
-            //if (CurrentPage.GetType() == typeof(StoolballRouter))
-            //{
-            //    return ReturnToStoolballRouterPage();
-            //}
+            if (CurrentPage.GetType() == typeof(StoolballRouter))
+            {
+                return ReturnToStoolballRouterPage();
+            }
             return baseResult;
         }
 
@@ -103,13 +105,12 @@ namespace Stoolball.Web.Account
         /// <returns></returns>
         protected async virtual Task<IActionResult> TryUmbracoLogin(LoginModel model) => await base.HandleLogin(model);
 
-        //private IActionResult ReturnToStoolballRouterPage()
-        //{
-        //    _stoolballRouterController.ControllerContext = ControllerContext;
-        //    _stoolballRouterController.ControllerContext.RouteData.Values["action"] = ((RouteDefinition)RouteData.DataTokens[UmbracoIdConstants.Web.UmbracoRouteDefinitionDataToken]).ActionName;
-        //    _stoolballRouterController.ModelState.Merge(ModelState);
-        //    return _stoolballRouterController.Index(ControllerContext.RouteData.DataTokens["umbraco"] as ContentModel).Result;
-        //}
+        private IActionResult ReturnToStoolballRouterPage()
+        {
+            _stoolballRouterController.ControllerContext = ControllerContext;
+            _stoolballRouterController.ModelState.Merge(ModelState);
+            return _stoolballRouterController.Index().Result;
+        }
 
         private async Task SendEmailIfNotActivatedOrLockedOut(IMember member)
         {
