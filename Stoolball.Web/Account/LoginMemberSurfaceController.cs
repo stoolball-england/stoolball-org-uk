@@ -11,6 +11,7 @@ using Umbraco.Cms.Core.Logging;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Email;
 using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Infrastructure.Persistence;
@@ -29,10 +30,12 @@ namespace Stoolball.Web.Account
         private readonly IVerificationToken _verificationToken;
         private readonly IStoolballRouterController _stoolballRouterController;
 
-        public LoginMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches,
-            IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberSignInManager memberSignInManager, IEmailFormatter emailFormatter, Umbraco.Cms.Core.Mail.IEmailSender emailSender,
+        public LoginMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services,
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider,
+            IMemberSignInManager memberSignInManager, IMemberManager memberManager, ITwoFactorLoginService twoFactorLoginService,
+            IEmailFormatter emailFormatter, Umbraco.Cms.Core.Mail.IEmailSender emailSender,
             IVerificationToken verificationToken, IStoolballRouterController stoolballRouterController)
-            : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider, memberSignInManager)
+            : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider, memberSignInManager, memberManager, twoFactorLoginService)
         {
             _emailFormatter = emailFormatter ?? throw new System.ArgumentNullException(nameof(emailFormatter));
             _emailSender = emailSender ?? throw new System.ArgumentNullException(nameof(emailSender));
