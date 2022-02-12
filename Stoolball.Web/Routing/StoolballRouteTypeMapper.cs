@@ -10,9 +10,9 @@ namespace Stoolball.Web.Routing
         {
             { StoolballRouteType.ClubActions, typeof(ClubActionsController) },
             { StoolballRouteType.Club, typeof(ClubController) },
-            //{ StoolballRouteType.CreateClub, typeof(CreateClubController) },
-            //{ StoolballRouteType.EditClub, typeof(EditClubController) },
-            //{ StoolballRouteType.DeleteClub, typeof(DeleteClubController) },
+            { StoolballRouteType.CreateClub, typeof(CreateClubController) },
+            { StoolballRouteType.EditClub, typeof(EditClubController) },
+            { StoolballRouteType.DeleteClub, typeof(DeleteClubController) },
             { StoolballRouteType.MatchesForClub, typeof(MatchesForClubController) },
             //{ StoolballRouteType.Teams, typeof(TeamsController) },
             //{ StoolballRouteType.TeamsMap, typeof(TeamsMapController) },

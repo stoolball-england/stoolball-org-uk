@@ -17,12 +17,12 @@ namespace Stoolball.Data.SqlServer
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
-        private readonly ILogger _logger;
+        private readonly ILogger<SqlServerClubRepository> _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
         private readonly IStoolballEntityCopier _copier;
 
-        public SqlServerClubRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, IRedirectsRepository redirectsRepository, IStoolballEntityCopier copier)
+        public SqlServerClubRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger<SqlServerClubRepository> logger, IRouteGenerator routeGenerator, IRedirectsRepository redirectsRepository, IStoolballEntityCopier copier)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -100,7 +100,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Created, auditableClub, memberName, memberKey, GetType(), nameof(CreateClub));
+                    _logger.Info(LoggingTemplates.Created, auditableClub, memberName, memberKey, GetType(), nameof(CreateClub));
                 }
             }
 
@@ -189,7 +189,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, auditableClub, memberName, memberKey, GetType(), nameof(SqlServerClubRepository.UpdateClub));
+                    _logger.Info(LoggingTemplates.Updated, auditableClub, memberName, memberKey, GetType(), nameof(SqlServerClubRepository.UpdateClub));
                 }
             }
 
@@ -234,7 +234,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Deleted, club, memberName, memberKey, GetType(), nameof(SqlServerClubRepository.DeleteClub));
+                    _logger.Info(LoggingTemplates.Deleted, club, memberName, memberKey, GetType(), nameof(SqlServerClubRepository.DeleteClub));
                 }
             }
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using Stoolball.Caching;
-using Stoolball.Clubs;
 using Stoolball.Comments;
 using Stoolball.Competitions;
 using Stoolball.Data.Cache;
@@ -8,10 +7,8 @@ using Stoolball.Data.SqlServer;
 using Stoolball.Email;
 using Stoolball.Html;
 using Stoolball.Listings;
-using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
-using Stoolball.Routing;
 using Stoolball.Schools;
 using Stoolball.Security;
 using Stoolball.Statistics;
@@ -40,8 +37,6 @@ namespace Stoolball.Web
             }
 
             // Utility classes
-            composition.Register<IAuditRepository, SqlServerAuditRepository>();
-            composition.Register<IRouteGenerator, RouteGenerator>();
             composition.Register<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>();
             composition.Register<IMatchNameBuilder, MatchNameBuilder>();
             composition.Register<IPlayerTypeSelector, PlayerTypeSelector>();
@@ -53,7 +48,6 @@ namespace Stoolball.Web
             composition.Register<IPlayerInningsScaffolder, PlayerInningsScaffolder>();
             composition.Register<IBowlingScorecardComparer, BowlingScorecardComparer>();
             composition.Register<IBattingScorecardComparer, BattingScorecardComparer>();
-            composition.Register<IDataRedactor, DataRedactor>();
             composition.Register<IPostSaveRedirector, PostSaveRedirector>();
             composition.Register<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>();
             composition.Register<IOverSetScaffolder, OverSetScaffolder>();
@@ -66,7 +60,6 @@ namespace Stoolball.Web
             composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
             composition.Register<ICompetitionFilterSerializer, CompetitionFilterQueryStringSerializer>();
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
-            composition.Register<IStoolballEntityCopier, StoolballEntityCopier>();
             composition.Register<IPlayerNameFormatter, PlayerNameFormatter>();
             composition.Register<IMatchInningsFactory, MatchInningsFactory>();
             composition.Register<Stoolball.Html.IHtmlSanitizer, Stoolball.Web.Html.HtmlSanitizer>();
@@ -86,8 +79,6 @@ namespace Stoolball.Web
             composition.Register<ICacheClearer<Match>, MatchCacheClearer>();
 
             // Data sources for stoolball data.
-            composition.Register<IRedirectsRepository, SkybrudRedirectsRepository>();
-            composition.Register<IClubRepository, SqlServerClubRepository>();
             composition.Register<ITeamListingDataSource, CachedTeamListingDataSource>();
             composition.Register<ICacheableTeamListingDataSource, SqlServerTeamListingDataSource>();
             composition.Register<ITeamRepository, SqlServerTeamRepository>();

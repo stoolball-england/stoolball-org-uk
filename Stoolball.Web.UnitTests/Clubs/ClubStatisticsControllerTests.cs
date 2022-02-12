@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Stoolball.Clubs;
@@ -33,7 +32,7 @@ namespace Stoolball.Web.UnitTests.Clubs
         {
             return new ClubStatisticsController(
                 Mock.Of<ILogger<ClubStatisticsController>>(),
-                Mock.Of<ICompositeViewEngine>(),
+                CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _clubDataSource.Object,
                 _bestPerformanceDataSource.Object,
@@ -42,10 +41,7 @@ namespace Stoolball.Web.UnitTests.Clubs
                 _statisticsFilterQueryStringParser.Object,
                 Mock.Of<IStatisticsFilterHumanizer>())
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object
-                }
+                ControllerContext = ControllerContext
             };
         }
 

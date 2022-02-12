@@ -90,10 +90,7 @@ namespace Stoolball.Web.UnitTests.Account
                 _tokenReader.Object,
                 _passwordHasher.Object)
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object
-                }
+                ControllerContext = ControllerContext
             };
 
             Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { "token", _token } }));

@@ -1,38 +1,45 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Navigation;
 using Stoolball.Routing;
+using Stoolball.Security;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Models;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.Clubs
 {
     public class CreateClubSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly IClubRepository _clubRepository;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
         private readonly ICacheOverride _cacheOverride;
 
         public CreateClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubRepository clubRepository, IRouteGenerator routeGenerator,
-            IAuthorizationPolicy<Club> authorizationPolicy, ICacheOverride cacheOverride)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            IClubRepository clubRepository, IRouteGenerator routeGenerator, IAuthorizationPolicy<Club> authorizationPolicy,
+            ICacheOverride cacheOverride)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _clubRepository = clubRepository ?? throw new System.ArgumentNullException(nameof(clubRepository));
-            _routeGenerator = routeGenerator ?? throw new System.ArgumentNullException(nameof(routeGenerator));
-            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
+            _clubRepository = clubRepository ?? throw new ArgumentNullException(nameof(clubRepository));
+            _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
@@ -40,22 +47,22 @@ namespace Stoolball.Web.Clubs
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> CreateClub([Bind(Prefix = "Club", Include = "ClubName,Teams")] Club club)
+        public async Task<IActionResult> CreateClub([Bind("ClubName", "Teams", Prefix = "Club")] Club club)
         {
             if (club is null)
             {
-                throw new System.ArgumentNullException(nameof(club));
+                throw new ArgumentNullException(nameof(club));
             }
 
             // We're not interested in validating the details of the selected teams
             foreach (var key in ModelState.Keys.Where(x => x.StartsWith("Club.Teams", StringComparison.OrdinalIgnoreCase)))
             {
-                ModelState[key].Errors.Clear();
+                ModelState.Remove(key);
             }
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(club);
+            var isAuthorized = await _authorizationPolicy.IsAuthorized(club);
 
-            if (isAuthorized[Stoolball.Security.AuthorizedAction.CreateClub] && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.CreateClub] && ModelState.IsValid)
             {
                 // Create an owner group
                 var groupName = _routeGenerator.GenerateRoute("club", club.ClubName, NoiseWords.ClubRoute);
@@ -82,10 +89,10 @@ namespace Stoolball.Web.Clubs
                 while (group != null);
 
                 // Assign the current member to the group unless they're already admin
-                var currentMember = Members.GetCurrentMember();
-                if (!Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null))
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
+                if (!await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null))
                 {
-                    Services.MemberService.AssignRole(currentMember.Id, group.Name);
+                    Services.MemberService.AssignRole(currentMember.Id, group!.Name);
                 }
 
                 // Create the club

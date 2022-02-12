@@ -4,25 +4,25 @@
 @Html.ValidationSummary(true)
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Club.ClubName)
-    @Html.TextBoxFor(m => Model.Club.ClubName, new { @class = "form-control", required = "required", aria_describedby = "club-name" })
-    @Html.ValidationMessageFor(m => Model.Club.ClubName, null, new { id = "club-name" })
+    @Html.LabelFor(m => Model.Club!.ClubName)
+    @Html.TextBoxFor(m => Model.Club!.ClubName, new { @class = "form-control", required = "required", aria_describedby = "club-name" })
+    @Html.ValidationMessageFor(m => Model.Club!.ClubName, null, new { id = "club-name" })
 </div>
 <table class="table table-hover related-items">
     <thead class="thead-dark">
         <tr><th scope="col" colspan="2">Teams</th></tr>
     </thead>
     <tbody>
-        @for (var i = 0; i < Model.Club.Teams.Count; i++)
+        @for (var i = 0; i < Model.Club!.Teams.Count; i++)
         {
-            var displayName = Model.Club.Teams[i].UntilYear.HasValue ? Model.Club.Teams[i].TeamName + " (no longer active)" : Model.Club.Teams[i].TeamName;
+            var displayName = Model.Club!.Teams[i].UntilYear.HasValue ? Model.Club!.Teams[i].TeamName + " (no longer active)" : Model.Club!.Teams[i].TeamName;
             <tr class="related-item__selected">
                 <td class="related-item__selected__section"><div class="related-item__animate">@displayName</div></td>
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
-                        @Html.Hidden($"Club.Teams[{i}].TeamId", Model.Club.Teams[i].TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Club.Teams[i].TeamId })
-                        @Html.Hidden($"Club.Teams[{i}].TeamName", displayName, new { @class = "related-item__data", data_item = Model.Club.Teams[i].TeamId })@* Redisplayed if !ModelState.IsValid *@
-                        <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Club.Teams[i].TeamName} from this club")</button>
+                        @Html.Hidden($"Club.Teams[{i}].TeamId", Model.Club!.Teams[i].TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Club.Teams[i].TeamId })
+                        @Html.Hidden($"Club.Teams[{i}].TeamName", displayName, new { @class = "related-item__data", data_item = Model.Club!.Teams[i].TeamId })@* Redisplayed if !ModelState.IsValid *@
+                        <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Remove {Model.Club!.Teams[i].TeamName} from this club")</button>
                     </div>
                 </td>
             </tr>
@@ -52,7 +52,7 @@
                 <div class="related-item__animate">
                     <input name="Club.Teams[0].TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                     <input name="Club.Teams[0].TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                    <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this club")</button>
+                    <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}} from this club")</button>
                 </div>
             </td>
         </tr>

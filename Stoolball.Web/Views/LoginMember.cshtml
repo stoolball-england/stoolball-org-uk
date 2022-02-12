@@ -1,8 +1,5 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<LoginMember>
-@{
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.min.js") { Order = 100 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.unobtrusive.min.js") { Order = 100 });
-}
+@await Html.PartialAsync("_JQueryValidate")
 <div class="container-xl">
     <h1>@Model.Name</h1>
 

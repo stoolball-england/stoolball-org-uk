@@ -54,10 +54,7 @@ namespace Stoolball.Web.UnitTests.Account
                 Mock.Of<IPublishedUrlProvider>(),
                 memberManager.Object)
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object,
-                },
+                ControllerContext = ControllerContext,
                 TempData = new TempDataDictionary(HttpContext.Object, Mock.Of<ITempDataProvider>())
             };
         }

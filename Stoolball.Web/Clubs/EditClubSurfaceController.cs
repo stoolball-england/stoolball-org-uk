@@ -1,35 +1,42 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Navigation;
+using Stoolball.Security;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Clubs
 {
     public class EditClubSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly IClubDataSource _clubDataSource;
         private readonly IClubRepository _clubRepository;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
         private readonly ICacheOverride _cacheOverride;
 
         public EditClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubDataSource clubDataSource, IClubRepository clubRepository,
-            IAuthorizationPolicy<Club> authorizationPolicy, ICacheOverride cacheOverride)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            IClubDataSource clubDataSource, IClubRepository clubRepository, IAuthorizationPolicy<Club> authorizationPolicy,
+            ICacheOverride cacheOverride)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _clubDataSource = clubDataSource ?? throw new System.ArgumentNullException(nameof(clubDataSource));
-            _clubRepository = clubRepository ?? throw new System.ArgumentNullException(nameof(clubRepository));
-            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
+            _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
+            _clubRepository = clubRepository ?? throw new ArgumentNullException(nameof(clubRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
@@ -37,28 +44,28 @@ namespace Stoolball.Web.Clubs
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateClub([Bind(Prefix = "Club", Include = "ClubName,Teams")] Club club)
+        public async Task<IActionResult> UpdateClub([Bind("ClubName", "Teams", Prefix = "Club")] Club club)
         {
             if (club is null)
             {
-                throw new System.ArgumentNullException(nameof(club));
+                throw new ArgumentNullException(nameof(club));
             }
 
-            var beforeUpdate = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _clubDataSource.ReadClubByRoute(Request.Path).ConfigureAwait(false);
             club.ClubId = beforeUpdate.ClubId;
             club.ClubRoute = beforeUpdate.ClubRoute;
 
             // We're not interested in validating the details of the selected teams
             foreach (var key in ModelState.Keys.Where(x => x.StartsWith("Club.Teams", StringComparison.OrdinalIgnoreCase)))
             {
-                ModelState[key].Errors.Clear();
+                ModelState.Remove(key);
             }
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
+            var isAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditClub] && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditClub] && ModelState.IsValid)
             {
-                var currentMember = Members.GetCurrentMember();
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedClub = await _clubRepository.UpdateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);

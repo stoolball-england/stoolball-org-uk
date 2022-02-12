@@ -1,0 +1,30 @@
+﻿@inherits UmbracoViewPage<ClubViewModel>
+@using Stoolball.Web.Clubs
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@{
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.autocomplete.min.js") { Order = 50 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/autocomplete.min.css"){ Order = 100});
+
+    SmidgeHelper.RequiresCss(new CssFile("~/css/related-items.min.css"){ Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/related-items.js"){ Order = 100 });
+}
+<div class="container-xl">
+    <h1>Edit @Model.Club?.ClubName</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditClub])
+    {
+        using (Html.BeginUmbracoForm<EditClubSurfaceController>
+            ("UpdateClub"))
+        {
+            @await Html.PartialAsync("_CreateOrEditClub")
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

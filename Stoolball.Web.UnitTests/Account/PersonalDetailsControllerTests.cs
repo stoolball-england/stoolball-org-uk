@@ -25,10 +25,7 @@ namespace Stoolball.Web.UnitTests.Account
                 Mock.Of<IVariationContextAccessor>(),
                 ServiceContext)
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object
-                }
+                ControllerContext = ControllerContext
             };
         }
 

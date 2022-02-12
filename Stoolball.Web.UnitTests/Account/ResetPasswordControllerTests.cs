@@ -60,10 +60,7 @@ namespace Stoolball.Web.UnitTests.Account
                 ServiceContext,
                 _tokenReader.Object)
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object
-                }
+                ControllerContext = ControllerContext
             };
 
             return controller;

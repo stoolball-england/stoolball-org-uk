@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Routing;
 using Moq;
 using Stoolball.Email;
 using Stoolball.Security;
@@ -55,14 +53,9 @@ namespace Stoolball.Web.UnitTests.Account
                 _contentModel = contentModel;
                 _handleLogin = handleLogin;
 
-                var routeData = new RouteData();
-                //routeData.DataTokens.Add(UmbracoConstants.Web.UmbracoRouteDefinitionDataToken, new RouteDefinition());
 
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = httpContext,
-                    RouteData = routeData
-                };
+                ControllerContext = ControllerContext;
+                //ControllerContext.RouteData.DataTokens.Add(UmbracoConstants.Web.UmbracoRouteDefinitionDataToken, new RouteDefinition());
             }
 
             protected override async Task<IActionResult> TryUmbracoLogin(LoginModel model) => await _handleLogin(model);
@@ -118,7 +111,7 @@ namespace Stoolball.Web.UnitTests.Account
                 new LoginMember(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
                 x => Task.FromResult(expectedResult))
             {
-                ControllerContext = new ControllerContext(new ActionContext(HttpContext.Object, new RouteData(), new ControllerActionDescriptor())),
+                ControllerContext = ControllerContext
             };
         }
 

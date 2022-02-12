@@ -88,10 +88,7 @@ namespace Stoolball.Web.UnitTests.Account
                 _emailSender.Object,
                 _verificationToken.Object)
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object
-                },
+                ControllerContext = ControllerContext,
                 TempData = new TempDataDictionary(HttpContext.Object, Mock.Of<ITempDataProvider>())
             };
         }

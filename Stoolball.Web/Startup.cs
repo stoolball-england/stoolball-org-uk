@@ -20,6 +20,7 @@ using Stoolball.Data.SqlServer;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Html;
+using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
@@ -82,6 +83,7 @@ namespace Stoolball.Web
             // Utility classes
             services.AddTransient<IApiKeyProvider, ConfigApiKeyProvider>();
             services.AddTransient<IBowlingFiguresCalculator, BowlingFiguresCalculator>();
+            services.AddTransient<IDataRedactor, DataRedactor>();
             services.AddTransient<IDateTimeFormatter, DateTimeFormatter>();
             services.AddTransient<IEmailProtector, EmailProtector>();
             services.AddTransient<IEmailFormatter, EmailFormatter>();
@@ -90,6 +92,7 @@ namespace Stoolball.Web
             services.AddTransient(typeof(Stoolball.Logging.ILogger<>), typeof(LogWrapper<>));
             services.AddTransient<IOversHelper, OversHelper>();
             services.AddTransient<ISeasonEstimator, SeasonEstimator>();
+            services.AddTransient<IStoolballEntityCopier, StoolballEntityCopier>();
             services.AddTransient<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
             services.AddTransient<IVerificationToken, VerificationToken>();
             services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
@@ -141,7 +144,7 @@ namespace Stoolball.Web
             {
                 var registry = new PolicyRegistry();
                 var asyncMemoryCacheProvider = serviceProvider.GetService<IAsyncCacheProvider>();
-                var logger = serviceProvider.GetService<ILogger>();
+                var logger = serviceProvider.GetService<Microsoft.Extensions.Logging.ILogger>();
                 var cachePolicy = Policy.CacheAsync(asyncMemoryCacheProvider, TimeSpan.FromMinutes(120), (context, key, ex) =>
                 {
                     logger!.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
@@ -164,11 +167,17 @@ namespace Stoolball.Web
 
             });
 
+            // Repositories
+            services.AddTransient<IAuditRepository, SqlServerAuditRepository>();
+            services.AddTransient<IClubRepository, SqlServerClubRepository>();
+            services.AddTransient<IRedirectsRepository, SkybrudRedirectsRepository>();
+
             // Security checks
             services.AddTransient<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();
             services.AddScoped<DelegatedContentSecurityPolicyAttribute>();
 
             // Routing controllers for stoolball data pages.
+            services.AddTransient<IRouteGenerator, RouteGenerator>();
             services.AddTransient<IStoolballRouteParser, StoolballRouteParser>();
             services.AddTransient<IStoolballRouteTypeMapper, StoolballRouteTypeMapper>();
             services.AddTransient<IStoolballRouterController, StoolballRouterController>();
@@ -179,6 +188,9 @@ namespace Stoolball.Web
             services.AddTransient<ClubActionsController>();
             services.AddTransient<ClubStatisticsController>();
             services.AddTransient<MatchesForClubController>();
+            services.AddTransient<CreateClubController>();
+            services.AddTransient<EditClubController>();
+            services.AddTransient<DeleteClubController>();
         }
 
         /// <summary>

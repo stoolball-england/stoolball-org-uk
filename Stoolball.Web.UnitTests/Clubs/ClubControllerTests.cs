@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Stoolball.Clubs;
@@ -22,16 +21,13 @@ namespace Stoolball.Web.UnitTests.Clubs
         {
             return new ClubController(
                 Mock.Of<ILogger<ClubController>>(),
-                Mock.Of<ICompositeViewEngine>(),
+                CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _clubDataSource.Object,
                 Mock.Of<IAuthorizationPolicy<Club>>()
             )
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object
-                }
+                ControllerContext = ControllerContext
             };
         }
 

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Routing;
 using Moq;
 using Stoolball.Email;
 using Stoolball.Logging;
@@ -70,11 +69,7 @@ namespace Stoolball.Web.UnitTests.Account
                 _emailSender.Object,
                 _tokenReader.Object)
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object,
-                    RouteData = new RouteData()
-                },
+                ControllerContext = ControllerContext,
                 TempData = new TempDataDictionary(HttpContext.Object, Mock.Of<ITempDataProvider>())
             };
 

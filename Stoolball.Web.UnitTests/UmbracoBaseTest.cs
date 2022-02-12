@@ -3,7 +3,10 @@ using System.Security.Principal;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
@@ -21,6 +24,8 @@ namespace Stoolball.Web.UnitTests
 
         protected Mock<HttpContext> HttpContext { get; private set; }
         protected Mock<HttpRequest> Request { get; private set; }
+        protected ControllerContext ControllerContext { get; private set; }
+        protected Mock<ICompositeViewEngine> CompositeViewEngine { get; private set; }
         protected Mock<IUmbracoContextAccessor> UmbracoContextAccessor { get; private set; }
         protected ServiceContext ServiceContext { get; private set; }
         protected Mock<IMemberService> MemberService { get; private set; }
@@ -104,6 +109,16 @@ namespace Stoolball.Web.UnitTests
             var features = new FeatureCollection();
             features.Set(new UmbracoRouteValues(publishedRequest.Object, new ControllerActionDescriptor()));
             HttpContext.SetupGet(x => x.Features).Returns(features);
+
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = HttpContext.Object,
+                RouteData = new RouteData(),
+                ActionDescriptor = new ControllerActionDescriptor()
+            };
+
+            CompositeViewEngine = new Mock<ICompositeViewEngine>();
+            CompositeViewEngine.Setup(x => x.FindView(It.IsAny<ActionContext>(), null, false)).Returns(ViewEngineResult.Found("Mock", Mock.Of<IView>()));
 
             var umbracoContextMock = new Mock<IUmbracoContext>();
             umbracoContextMock.Setup(context => context.Content).Returns(Mock.Of<IPublishedContentCache>());

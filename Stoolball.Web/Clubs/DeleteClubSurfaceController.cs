@@ -1,34 +1,41 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Navigation;
+using Stoolball.Security;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Clubs
 {
     public class DeleteClubSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly IClubDataSource _clubDataSource;
         private readonly IClubRepository _clubRepository;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
         private readonly ICacheOverride _cacheOverride;
 
         public DeleteClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubDataSource clubDataSource, IClubRepository clubRepository,
-            IAuthorizationPolicy<Club> authorizationPolicy, ICacheOverride cacheOverride)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            IClubDataSource clubDataSource, IClubRepository clubRepository, IAuthorizationPolicy<Club> authorizationPolicy,
+            ICacheOverride cacheOverride)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _clubDataSource = clubDataSource ?? throw new System.ArgumentNullException(nameof(clubDataSource));
-            _clubRepository = clubRepository ?? throw new System.ArgumentNullException(nameof(clubRepository));
-            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
+            _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
+            _clubRepository = clubRepository ?? throw new ArgumentNullException(nameof(clubRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
@@ -36,28 +43,28 @@ namespace Stoolball.Web.Clubs
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteClub([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] Stoolball.Security.MatchingTextConfirmation model)
+        public async Task<IActionResult> DeleteClub([Bind("RequiredText", "ConfirmationText", Prefix = "ConfirmDeleteRequest")] MatchingTextConfirmation model)
         {
             if (model is null)
             {
-                throw new System.ArgumentNullException(nameof(model));
+                throw new ArgumentNullException(nameof(model));
             }
 
             var viewModel = new DeleteClubViewModel(CurrentPage, Services.UserService)
             {
-                Club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false),
+                Club = await _clubDataSource.ReadClubByRoute(Request.Path).ConfigureAwait(false),
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Club);
+            viewModel.IsAuthorized = await _authorizationPolicy.IsAuthorized(viewModel.Club);
 
-            if (viewModel.IsAuthorized[Stoolball.Security.AuthorizedAction.DeleteClub] && ModelState.IsValid)
+            if (viewModel.IsAuthorized[AuthorizedAction.DeleteClub] && ModelState.IsValid)
             {
-                var memberGroup = Services.MemberGroupService.GetById(viewModel.Club.MemberGroupKey.Value);
+                var memberGroup = Services.MemberGroupService.GetById(viewModel.Club.MemberGroupKey!.Value);
                 if (memberGroup != null)
                 {
                     Services.MemberGroupService.Delete(memberGroup);
                 }
 
-                var currentMember = Members.GetCurrentMember();
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _clubRepository.DeleteClub(viewModel.Club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);
                 viewModel.Deleted = true;

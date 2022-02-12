@@ -34,10 +34,7 @@ namespace Stoolball.Web.UnitTests.Account
                             Mock.Of<IPublishedUrlProvider>(),
                             _memberSignInManager.Object)
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object
-                }
+                ControllerContext = ControllerContext
             };
         }
 

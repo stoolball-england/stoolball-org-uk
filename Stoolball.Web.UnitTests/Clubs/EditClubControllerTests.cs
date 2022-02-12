@@ -9,22 +9,23 @@ using Xunit;
 
 namespace Stoolball.Web.UnitTests.Clubs
 {
-    public class ClubActionsControllerTests : UmbracoBaseTest
+    public class EditClubControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IClubDataSource> _clubDataSource = new();
 
-        public ClubActionsControllerTests()
+        public EditClubControllerTests()
         {
             Setup();
         }
-        private ClubActionsController CreateController()
+        private EditClubController CreateController()
         {
-            return new ClubActionsController(
-                Mock.Of<ILogger<ClubActionsController>>(),
+            return new EditClubController(
+                Mock.Of<ILogger<EditClubController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _clubDataSource.Object,
-                Mock.Of<IAuthorizationPolicy<Club>>())
+                Mock.Of<IAuthorizationPolicy<Club>>()
+                )
             {
                 ControllerContext = ControllerContext
             };
@@ -42,6 +43,8 @@ namespace Stoolball.Web.UnitTests.Clubs
                 Assert.IsType<NotFoundResult>(result);
             }
         }
+
+
 
         [Fact]
         public async Task Route_matching_club_returns_ClubViewModel()

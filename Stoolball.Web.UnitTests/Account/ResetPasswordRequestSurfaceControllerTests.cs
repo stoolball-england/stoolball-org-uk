@@ -79,10 +79,7 @@ namespace Stoolball.Web.UnitTests.Account
                 _emailSender.Object,
                 _tokenReader.Object)
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object
-                }
+                ControllerContext = ControllerContext
             };
         }
 

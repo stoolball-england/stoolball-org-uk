@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Stoolball.Clubs;
@@ -28,7 +27,7 @@ namespace Stoolball.Web.UnitTests.Clubs
         {
             return new MatchesForClubController(
                 Mock.Of<ILogger<MatchesForClubController>>(),
-                Mock.Of<ICompositeViewEngine>(),
+                CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _clubDataSource.Object,
                 _matchListingDataSource.Object,
@@ -38,10 +37,7 @@ namespace Stoolball.Web.UnitTests.Clubs
                 _matchFilterQueryStringParser.Object,
                 Mock.Of<IMatchFilterHumanizer>())
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object
-                }
+                ControllerContext = ControllerContext
             };
         }
 
