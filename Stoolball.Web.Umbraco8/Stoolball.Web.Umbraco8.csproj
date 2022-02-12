@@ -819,7 +819,6 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Configuration\IApiKeyProvider.cs" />
     <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
-    <Compile Include="Email\IEmailSender.cs" />
     <Compile Include="Filtering\FilterViewModel.cs" />
     <Compile Include="Html\HtmlSanitizer.cs" />
     <Compile Include="Matches\EditMatchFormatFormData.cs" />
