@@ -662,10 +662,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>CompetitionStatistics.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\ClubStatistics.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ClubStatistics.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\BowlingFigures.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>BowlingFigures.generated.cs</LastGenOutput>
@@ -789,9 +785,6 @@
     <Compile Include="Clubs\CreateClubSurfaceController.cs" />
     <Compile Include="Clubs\DeleteClubSurfaceController.cs" />
     <Compile Include="Clubs\EditClubSurfaceController.cs" />
-    <Compile Include="Clubs\MatchesForClubController.cs" />
-    <Compile Include="Clubs\ClubActionsController.cs" />
-    <Compile Include="Clubs\ClubStatisticsController.cs" />
     <Compile Include="Competitions\CompetitionActionsController.cs" />
     <Compile Include="Competitions\CompetitionAuthorizationPolicy.cs" />
     <Compile Include="Competitions\SeasonMapController.cs" />
@@ -975,61 +968,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MostWickets.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\_BowlingStrikeRate.generated.cs">
-      <DependentUpon>_BowlingStrikeRate.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_BattingStrikeRate.generated.cs">
-      <DependentUpon>_BattingStrikeRate.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_EconomyRate.generated.cs">
-      <DependentUpon>_EconomyRate.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_BowlingAverage.generated.cs">
-      <DependentUpon>_BowlingAverage.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_MatchListSubscriptions.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_MatchListSubscriptions.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\_MostRunOuts.generated.cs">
-      <DependentUpon>_MostRunOuts.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_MostCatches.generated.cs">
-      <DependentUpon>_MostCatches.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_BattingAverage.generated.cs">
-      <DependentUpon>_BattingAverage.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_MostWickets.generated.cs">
-      <DependentUpon>_MostWickets.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_MostRuns.generated.cs">
-      <DependentUpon>_MostRuns.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_NoData.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_NoData.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\_PlayerHeader.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1200,16 +1138,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BowlingFigures.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ClubActions.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ClubActions.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ClubStatistics.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ClubStatistics.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Competition.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1416,11 +1344,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MatchActions.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MatchesForClub.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MatchesForClub.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\MatchesForMatchLocation.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1465,11 +1388,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>_AddMatchMenu.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\_BowlingFigures.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_BowlingFigures.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_CompetitionActions.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1535,16 +1453,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>_EditMatchResultTypeFuture.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\_IndividualScores.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_IndividualScores.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\_InningsStatistics.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_InningsStatistics.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_SeasonListExpandable.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1689,10 +1597,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MatchesForTeam.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\MatchesForClub.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>MatchesForClub.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\MatchesForMatchLocation.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MatchesForMatchLocation.generated.cs</LastGenOutput>
@@ -1805,10 +1709,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MatchLocationActions.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\ClubActions.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ClubActions.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\DeleteClub.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>DeleteClub.generated.cs</LastGenOutput>
@@ -1833,7 +1733,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Competitions.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Partials\_AdminOnly.cshtml" />
     <Content Include="Views\MatchActions.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MatchActions.generated.cs</LastGenOutput>
@@ -1956,10 +1855,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Player.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Partials\_IndividualScores.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_IndividualScores.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Statistics.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Statistics.generated.cs</LastGenOutput>
@@ -1976,17 +1871,9 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>SeasonStatistics.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Partials\_BowlingFigures.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_BowlingFigures.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Partials\_Paging.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_Paging.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_InningsStatistics.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_InningsStatistics.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\TournamentsRss.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -2003,10 +1890,6 @@
     <Content Include="Views\Tournaments.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Tournaments.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_MatchListSubscriptions.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_MatchListSubscriptions.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\PlayerBowling.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -2040,49 +1923,9 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_RunOuts.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Partials\_MostRuns.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_MostRuns.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_MostWickets.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_MostWickets.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_MostCatches.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_MostCatches.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_MostRunOuts.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_MostRunOuts.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\SeasonMap.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>SeasonMap.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_BattingAverage.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_BattingAverage.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_NoData.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_NoData.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_BowlingAverage.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_BowlingAverage.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_EconomyRate.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_EconomyRate.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_BattingStrikeRate.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_BattingStrikeRate.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_BowlingStrikeRate.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_BowlingStrikeRate.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textarea.cshtml" />

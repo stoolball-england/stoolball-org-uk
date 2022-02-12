@@ -89,9 +89,21 @@ namespace Stoolball.Web
             services.AddTransient<Ganss.XSS.IHtmlSanitizer, Ganss.XSS.HtmlSanitizer>();
             services.AddTransient(typeof(Stoolball.Logging.ILogger<>), typeof(LogWrapper<>));
             services.AddTransient<IOversHelper, OversHelper>();
+            services.AddTransient<ISeasonEstimator, SeasonEstimator>();
             services.AddTransient<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
             services.AddTransient<IVerificationToken, VerificationToken>();
             services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
+
+            // Data filters
+            services.AddTransient<IMatchFilterFactory, MatchFilterFactory>();
+            services.AddTransient<IMatchFilterHumanizer, MatchFilterHumanizer>();
+            services.AddTransient<IMatchFilterQueryStringParser, MatchFilterQueryStringParser>();
+            services.AddTransient<IMatchFilterQueryStringSerializer, MatchFilterQueryStringSerializer>();
+            services.AddTransient<IPlayerFilterSerializer, PlayerFilterQueryStringSerializer>();
+            services.AddTransient<IStatisticsFilterHumanizer, StatisticsFilterHumanizer>();
+            services.AddTransient<IStatisticsFilterQueryStringParser, StatisticsFilterQueryStringParser>();
+            services.AddTransient<IStatisticsFilterQueryStringSerializer, StatisticsFilterQueryStringSerializer>();
+            services.AddTransient<IStatisticsQueryBuilder, StatisticsQueryBuilder>();
 
             // Authentication
             services.AddTransient<ICreateMemberExecuter, CreateMemberExecuter>();
@@ -100,15 +112,25 @@ namespace Stoolball.Web
             services.AddTransient<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();
             services.AddTransient<IRouteNormaliser, RouteNormaliser>();
             services.AddTransient<ICacheOverride, CacheOverride>();
+
             services.AddTransient<IClubDataSource, SqlServerClubDataSource>();
+            services.AddTransient<IMatchListingDataSource, CachedMatchListingDataSource>();
+            services.AddTransient<ICacheableMatchListingDataSource, SqlServerMatchListingDataSource>();
             services.AddTransient<IMatchLocationFilterSerializer, MatchLocationFilterQueryStringSerializer>();
             services.AddTransient<IMatchLocationDataSource, CachedMatchLocationDataSource>();
             services.AddTransient<ICacheableMatchLocationDataSource, SqlServerMatchLocationDataSource>();
-            services.AddTransient<IPlayerFilterSerializer, PlayerFilterQueryStringSerializer>();
             services.AddTransient<IPlayerDataSource, CachedPlayerDataSource>();
             services.AddTransient<ICacheablePlayerDataSource, SqlServerPlayerDataSource>();
             services.AddTransient<ISeasonDataSource, SqlServerSeasonDataSource>();
             services.AddTransient<ITeamDataSource, SqlServerTeamDataSource>();
+
+            // Statistics data sources
+            services.AddTransient<IBestPerformanceInAMatchStatisticsDataSource, CachedBestPerformanceInAMatchStatisticsDataSource>();
+            services.AddTransient<ICacheableBestPerformanceInAMatchStatisticsDataSource, SqlServerBestPerformanceInAMatchStatisticsDataSource>();
+            services.AddTransient<IBestPlayerTotalStatisticsDataSource, CachedBestPlayerTotalStatisticsDataSource>();
+            services.AddTransient<ICacheableBestPlayerTotalStatisticsDataSource, SqlServerBestPlayerTotalStatisticsDataSource>();
+            services.AddTransient<IInningsStatisticsDataSource, CachedInningsStatisticsDataSource>();
+            services.AddTransient<ICacheableInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
 
             // Caching with Polly
             services.AddSingleton<IMemoryCache, MemoryCache>();
@@ -154,6 +176,9 @@ namespace Stoolball.Web
             // Actual controllers. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.
             services.AddTransient<ClubController>();
+            services.AddTransient<ClubActionsController>();
+            services.AddTransient<ClubStatisticsController>();
+            services.AddTransient<MatchesForClubController>();
         }
 
         /// <summary>

@@ -1,0 +1,44 @@
+﻿@inherits UmbracoViewPage<Stoolball.Web.Clubs.ClubViewModel>
+@using Stoolball.Web.Matches.Models
+@{
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+<div class="container-xl">
+    <h1>@Model.Club?.ClubName</h1>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Club?.ClubRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Matches</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Club?.ClubRoute/statistics">Statistics</a>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+    </ul>
+    @await Html.PartialAsync("_Filters", new MatchFilterViewModel
+{
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedMatchFilter.FromDate,
+    to = Model.AppliedMatchFilter.UntilDate
+})
+
+    @if (Model.Matches.Matches.Count > 0)
+    {
+        @await Html.PartialAsync("_MatchList", Model.Matches)
+    }
+    else
+    {
+        <p>There are no matches for this club matching this filter.</p>
+        <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
+    }
+    @await Html.PartialAsync("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Club?.ClubRoute, DefaultMatchFilter = Model.DefaultMatchFilter, AppliedMatchFilter = Model.AppliedMatchFilter })
+</div>

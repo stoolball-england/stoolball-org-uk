@@ -42,7 +42,6 @@ namespace Stoolball.Web
             // Utility classes
             composition.Register<IAuditRepository, SqlServerAuditRepository>();
             composition.Register<IRouteGenerator, RouteGenerator>();
-            composition.Register<ISeasonEstimator, SeasonEstimator>();
             composition.Register<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>();
             composition.Register<IMatchNameBuilder, MatchNameBuilder>();
             composition.Register<IPlayerTypeSelector, PlayerTypeSelector>();
@@ -64,22 +63,15 @@ namespace Stoolball.Web
             composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
             composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
-            composition.Register<IMatchFilterQueryStringSerializer, MatchFilterQueryStringSerializer>();
-            composition.Register<IStatisticsFilterQueryStringSerializer, StatisticsFilterQueryStringSerializer>();
             composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
             composition.Register<ICompetitionFilterSerializer, CompetitionFilterQueryStringSerializer>();
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
-            composition.Register<IStatisticsQueryBuilder, StatisticsQueryBuilder>();
             composition.Register<IStoolballEntityCopier, StoolballEntityCopier>();
             composition.Register<IPlayerNameFormatter, PlayerNameFormatter>();
             composition.Register<IMatchInningsFactory, MatchInningsFactory>();
             composition.Register<Stoolball.Html.IHtmlSanitizer, Stoolball.Web.Html.HtmlSanitizer>();
             composition.Register<IUrlFormatter, UrlFormatter>();
             composition.Register<ISocialMediaAccountFormatter, SocialMediaAccountFormatter>();
-            composition.Register<IMatchFilterQueryStringParser, MatchFilterQueryStringParser>();
-            composition.Register<IStatisticsFilterQueryStringParser, StatisticsFilterQueryStringParser>();
-            composition.Register<IMatchFilterHumanizer, MatchFilterHumanizer>();
-            composition.Register<IStatisticsFilterHumanizer, StatisticsFilterHumanizer>();
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
 
             // Listings pages
@@ -106,8 +98,6 @@ namespace Stoolball.Web
             composition.Register<ICompetitionRepository, SqlServerCompetitionRepository>();
             composition.Register<ISeasonRepository, SqlServerSeasonRepository>();
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>();
-            composition.Register<IMatchListingDataSource, CachedMatchListingDataSource>();
-            composition.Register<ICacheableMatchListingDataSource, SqlServerMatchListingDataSource>();
             composition.Register<ICommentsDataSource<Match>, CachedCommentsDataSource<Match>>();
             composition.Register<ICommentsDataSource<Tournament>, CachedCommentsDataSource<Tournament>>();
             composition.Register<ICacheableCommentsDataSource<Match>, SqlServerMatchCommentsDataSource>();
@@ -115,18 +105,11 @@ namespace Stoolball.Web
             composition.Register<IMatchRepository, SqlServerMatchRepository>();
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>();
-            composition.Register<IBestPerformanceInAMatchStatisticsDataSource, CachedBestPerformanceInAMatchStatisticsDataSource>();
-            composition.Register<ICacheableBestPerformanceInAMatchStatisticsDataSource, SqlServerBestPerformanceInAMatchStatisticsDataSource>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
-            composition.Register<IInningsStatisticsDataSource, CachedInningsStatisticsDataSource>();
-            composition.Register<ICacheableInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
-            composition.Register<IMatchFilterFactory, MatchFilterFactory>();
             composition.Register<IPlayerSummaryStatisticsDataSource, CachedPlayerSummaryStatisticsDataSource>();
             composition.Register<ICacheablePlayerSummaryStatisticsDataSource, SqlServerPlayerSummaryStatisticsDataSource>();
             composition.Register<IPlayerPerformanceStatisticsDataSource, CachedPlayerPerformanceStatisticsDataSource>();
             composition.Register<ICacheablePlayerPerformanceStatisticsDataSource, SqlServerPlayerPerformanceStatisticsDataSource>();
-            composition.Register<IBestPlayerTotalStatisticsDataSource, CachedBestPlayerTotalStatisticsDataSource>();
-            composition.Register<ICacheableBestPlayerTotalStatisticsDataSource, SqlServerBestPlayerTotalStatisticsDataSource>();
             composition.Register<IBestPlayerAverageStatisticsDataSource, CachedBestPlayerAverageStatisticsDataSource>();
             composition.Register<ICacheableBestPlayerAverageStatisticsDataSource, SqlServerBestPlayerAverageStatisticsDataSource>();
             composition.Register<ISchoolDataSource, SqlServerSchoolDataSource>();

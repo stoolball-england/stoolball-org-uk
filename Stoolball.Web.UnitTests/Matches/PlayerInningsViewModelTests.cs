@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Stoolball.Testing;
-using Stoolball.Web.Matches;
+using Stoolball.Web.Matches.Models;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Matches

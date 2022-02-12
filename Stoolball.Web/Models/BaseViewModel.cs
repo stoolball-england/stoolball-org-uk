@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Stoolball.Metadata;
 using Stoolball.Navigation;
 using Stoolball.Security;
@@ -20,14 +21,16 @@ namespace Stoolball.Web.Models
     /// </remarks>
     public abstract partial class BaseViewModel : IPublishedContent, IHasViewMetadata
     {
-        private readonly IPublishedContent _contentModel;
-        private readonly IUserService _userService;
+        private readonly IPublishedContent? _contentModel;
+        private readonly IUserService? _userService;
 
-        public BaseViewModel(IPublishedContent contentModel, IUserService userService)
+        public BaseViewModel(IPublishedContent? contentModel = null, IUserService? userService = null)
         {
             _contentModel = contentModel;
             _userService = userService;
         }
+
+        private T ThrowMissingContentException<T>() { throw new NotSupportedException($"This property is only available when an {nameof(IPublishedContent)} is passed to the view model constructor."); }
 
         /// <summary>
         /// Gets the metadata for a view
@@ -53,63 +56,63 @@ namespace Stoolball.Web.Models
         });
 
         #region Implement IPublishedContent
-        public int Id => _contentModel.Id;
+        public int Id => _contentModel?.Id ?? ThrowMissingContentException<int>();
 
-        public string Name => _contentModel.Name;
+        public string Name => _contentModel?.Name ?? string.Empty;
 
-        public string UrlSegment => _contentModel.UrlSegment;
+        public string UrlSegment => _contentModel?.UrlSegment ?? string.Empty;
 
-        public int SortOrder => _contentModel.SortOrder;
+        public int SortOrder => _contentModel?.SortOrder ?? ThrowMissingContentException<int>();
 
-        public int Level => _contentModel.Level;
+        public int Level => _contentModel?.Level ?? ThrowMissingContentException<int>();
 
-        public string Path => _contentModel.Path;
+        public string Path => _contentModel?.Path ?? string.Empty;
 
-        public int? TemplateId => _contentModel.TemplateId;
+        public int? TemplateId => _contentModel != null ? _contentModel.TemplateId : ThrowMissingContentException<int?>();
 
-        public int CreatorId => _contentModel.CreatorId;
+        public int CreatorId => _contentModel?.CreatorId ?? ThrowMissingContentException<int>();
 
-        public string CreatorName => _contentModel.CreatorName(_userService);
+        public string CreatorName => _contentModel != null && _userService != null ? _contentModel.CreatorName(_userService) : string.Empty;
 
-        public DateTime CreateDate => _contentModel.CreateDate;
+        public DateTime CreateDate => _contentModel?.CreateDate ?? ThrowMissingContentException<DateTime>();
 
-        public int WriterId => _contentModel.WriterId;
+        public int WriterId => _contentModel?.WriterId ?? ThrowMissingContentException<int>();
 
-        public string WriterName => _contentModel.WriterName(_userService);
+        public string WriterName => _contentModel != null && _userService != null ? _contentModel.WriterName(_userService) : string.Empty;
 
-        public DateTime UpdateDate => _contentModel.UpdateDate;
+        public DateTime UpdateDate => _contentModel?.UpdateDate ?? ThrowMissingContentException<DateTime>();
 
-        public string Url => _contentModel.Url();
+        public string Url => _contentModel?.Url() ?? string.Empty;
 
-        public IReadOnlyDictionary<string, PublishedCultureInfo> Cultures => _contentModel.Cultures;
+        public IReadOnlyDictionary<string, PublishedCultureInfo> Cultures => _contentModel?.Cultures ?? new ReadOnlyDictionary<string, PublishedCultureInfo>(new Dictionary<string, PublishedCultureInfo>());
 
-        public PublishedItemType ItemType => _contentModel.ItemType;
+        public PublishedItemType ItemType => _contentModel?.ItemType ?? PublishedItemType.Unknown;
 
-        public IPublishedContent Parent => _contentModel.Parent;
+        public IPublishedContent Parent => _contentModel != null ? _contentModel.Parent : ThrowMissingContentException<IPublishedContent>();
 
-        public IEnumerable<IPublishedContent> Children => _contentModel.Children;
+        public IEnumerable<IPublishedContent> Children => _contentModel?.Children ?? Array.Empty<IPublishedContent>();
 
-        public IEnumerable<IPublishedContent> ChildrenForAllCultures => _contentModel.ChildrenForAllCultures;
+        public IEnumerable<IPublishedContent> ChildrenForAllCultures => _contentModel?.ChildrenForAllCultures ?? Array.Empty<IPublishedContent>();
 
-        public IPublishedContentType ContentType => _contentModel.ContentType;
+        public IPublishedContentType ContentType => _contentModel != null ? _contentModel.ContentType : ThrowMissingContentException<IPublishedContentType>();
 
-        public Guid Key => _contentModel.Key;
+        public Guid Key => _contentModel != null ? _contentModel.Key : ThrowMissingContentException<Guid>();
 
-        public IEnumerable<IPublishedProperty> Properties => _contentModel.Properties;
+        public IEnumerable<IPublishedProperty> Properties => _contentModel?.Properties ?? Array.Empty<IPublishedProperty>();
 
         public IPublishedProperty GetProperty(string alias)
         {
-            return _contentModel.GetProperty(alias);
+            return _contentModel != null ? _contentModel.GetProperty(alias) : ThrowMissingContentException<IPublishedProperty>();
         }
 
         public bool IsDraft(string? culture = null)
         {
-            return _contentModel.IsDraft(culture);
+            return _contentModel?.IsDraft(culture) ?? false;
         }
 
         public bool IsPublished(string? culture = null)
         {
-            return _contentModel.IsPublished(culture);
+            return _contentModel?.IsPublished(culture) ?? true;
         }
 
         #endregion // Implement IPublishedContent

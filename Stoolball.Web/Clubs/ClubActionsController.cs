@@ -13,12 +13,12 @@ using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Clubs
 {
-    public class ClubController : RenderController, IRenderControllerAsync
+    public class ClubActionsController : RenderController, IRenderControllerAsync
     {
         private readonly IClubDataSource _clubDataSource;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
 
-        public ClubController(ILogger<ClubController> logger,
+        public ClubActionsController(ILogger<ClubActionsController> logger,
            ICompositeViewEngine compositeViewEngine,
            IUmbracoContextAccessor umbracoContextAccessor,
            IClubDataSource clubDataSource,
@@ -40,16 +40,16 @@ namespace Stoolball.Web.Clubs
 
             if (model.Club == null)
             {
-                return new NotFoundResult();
+                return NotFound();
             }
             else
             {
                 model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Club);
 
-                model.Metadata.PageTitle = model.Club.ClubName;
-                model.Metadata.Description = model.Club.Description();
+                model.Metadata.PageTitle = "Edit " + model.Club.ClubName;
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Club.ClubName, Url = new Uri(model.Club.ClubRoute, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

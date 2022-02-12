@@ -8,12 +8,12 @@ namespace Stoolball.Web.Routing
     {
         private readonly Dictionary<StoolballRouteType, Type> _supportedControllers = new()
         {
-            //{ StoolballRouteType.ClubActions, typeof(ClubActionsController) },
+            { StoolballRouteType.ClubActions, typeof(ClubActionsController) },
             { StoolballRouteType.Club, typeof(ClubController) },
             //{ StoolballRouteType.CreateClub, typeof(CreateClubController) },
             //{ StoolballRouteType.EditClub, typeof(EditClubController) },
             //{ StoolballRouteType.DeleteClub, typeof(DeleteClubController) },
-            //{ StoolballRouteType.MatchesForClub, typeof(MatchesForClubController) },
+            { StoolballRouteType.MatchesForClub, typeof(MatchesForClubController) },
             //{ StoolballRouteType.Teams, typeof(TeamsController) },
             //{ StoolballRouteType.TeamsMap, typeof(TeamsMapController) },
             //{ StoolballRouteType.Team, typeof(TeamController) },
@@ -82,7 +82,7 @@ namespace Stoolball.Web.Routing
             //{ StoolballRouteType.PlayerBowling, typeof(PlayerBowlingController) },
             //{ StoolballRouteType.PlayerFielding, typeof(PlayerFieldingController) },
             //{ StoolballRouteType.PlayersForTeam, typeof(PlayersForTeamController) },
-            //{ StoolballRouteType.ClubStatistics, typeof(ClubStatisticsController) },
+            { StoolballRouteType.ClubStatistics, typeof(ClubStatisticsController) },
             //{ StoolballRouteType.TeamStatistics, typeof(TeamStatisticsController) },
             //{ StoolballRouteType.MatchLocationStatistics, typeof(MatchLocationStatisticsController) },
             //{ StoolballRouteType.CompetitionStatistics, typeof(CompetitionStatisticsController) },

@@ -1,6 +1,4 @@
-﻿using System.Collections.Specialized;
-
-namespace Stoolball.Matches
+﻿namespace Stoolball.Matches
 {
     public interface IMatchFilterQueryStringParser
     {
@@ -10,6 +8,6 @@ namespace Stoolball.Matches
         /// <param name="filter">An existing filter to be updated</param>
         /// <param name="queryString">The querystring from which to take filter parameters</param>
         /// <returns>A new filter combining the original filter with the querystring values</returns>
-        MatchFilter ParseQueryString(MatchFilter filter, NameValueCollection queryString);
+        MatchFilter ParseQueryString(MatchFilter filter, string queryString);
     }
 }

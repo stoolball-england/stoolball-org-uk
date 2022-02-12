@@ -19,7 +19,7 @@ namespace Stoolball.Web.Routing
         private readonly IStoolballRouteParser _routeParser;
         private readonly IStoolballRouteTypeMapper _routeTypeMapper;
 
-        public StoolballRouterController(ILogger<RenderController> logger,
+        public StoolballRouterController(ILogger<StoolballRouterController> logger,
            ICompositeViewEngine compositeViewEngine,
            IUmbracoContextAccessor umbracoContextAccessor,
            IStoolballRouteParser routeParser,

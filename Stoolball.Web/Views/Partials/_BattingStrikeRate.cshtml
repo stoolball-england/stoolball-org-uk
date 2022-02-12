@@ -1,0 +1,63 @@
+﻿@inherits UmbracoViewPage<StatisticsViewModel<BestStatistic>>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@inject IStatisticsFilterQueryStringSerializer serialiser
+@using Humanizer
+@using Stoolball.Statistics
+@using Stoolball.Web.Statistics.Models
+@{
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
+}
+@if (Model.Results.Any() || Model.ShowLinkOnly)
+{
+    if (!Model.ShowLinkOnly)
+    {
+    <table class="statistics table-as-cards table-as-cards-reset-md">
+        @if (Model.ShowCaption)
+        {
+            <caption>Best batting strike rate</caption>
+        }
+        <thead>
+            <tr>
+                <th scope="col" class="table-order">#</th>
+                <th scope="col">Player</th>
+                @if (Model.ShowTeamsColumn)
+                {
+                    <th scope="col">Teams</th>
+                }
+                <th scope="col" class="numeric statistic">Matches</th>
+                <th scope="col" class="numeric statistic">Innings</th>
+                <th scope="col" class="numeric statistic">Strike rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                decimal? previous = null;
+                for (var i = 0; i < Model.Results.Count(); i++)
+                {
+                    var equalToPrevious = Model.Results[i].Result.Average == previous;
+                    previous = Model.Results[i].Result.Average;
+                    <tr>
+                        <td class="table-as-cards__header-md">@(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString())</td>
+                        <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Player</span><a href="@Model.Results[i].Result.Player.PlayerRoute">@(Model.Results[i].Result.Player.PlayerName())</a></td>
+                        @if (Model.ShowTeamsColumn)
+                        {
+                            <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Teams</span><div>@Model.Results[i].Result.Player.PlayerIdentities.Select(x => x.Team.TeamName).Humanize()</div></td>
+                        }
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Matches</span>@Model.Results[i].Result.TotalMatches</td>
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Innings</span>@Model.Results[i].Result.TotalInnings</td>
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span>@Math.Round(Model.Results[i].Result.Average!.Value, 2)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    }
+    if (Model.ShowLinkOnly)
+    {
+        <p><a href="@Context.Request.Path/batting-strike-rate@(queryString)">Best batting strike rate – view all and filter</a></p>
+    }
+    else
+    {
+        @await Html.PartialAsync("_Paging", Model.AppliedFilter.Paging)
+    }
+}

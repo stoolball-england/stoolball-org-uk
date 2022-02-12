@@ -1,0 +1,78 @@
+﻿@inherits UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@inject IStatisticsFilterQueryStringSerializer serialiser
+@using Stoolball.Matches
+@using Stoolball.Statistics
+@using Stoolball.Web.Statistics.Models
+@{
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
+}
+@if (Model.Results.Any())
+{
+    <table class="statistics table-as-cards table-as-cards-reset-md">
+        @if (Model.ShowCaption)
+        {
+            <caption>Highest individual scores</caption>
+        }
+        <thead>
+            <tr>
+                <th scope="col" class="table-order">#</th>
+                @if (Model.ShowPlayerColumn)
+                {
+                    <th scope="col">Player</th>
+
+                }
+                <th scope="col">Match</th>
+                <th scope="col">When</th>
+                <th scope="col" class="numeric statistic">Runs</th>
+                <th scope="col" class="numeric statistic">Balls</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int? previousRunsScored = null;
+                bool? previousNotOut = null;
+                for (var i = 0; i < Model.Results.Count(); i++)
+                {
+                    var notOut = !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(Model.Results[i].Result.DismissalType);
+                    var equalToPrevious = Model.Results[i].Result.RunsScored == previousRunsScored && notOut == previousNotOut;
+                    previousRunsScored = Model.Results[i].Result.RunsScored;
+                    previousNotOut = notOut;
+                    <tr>
+                        <td class="table-as-cards__header-md">@(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString())</td>
+                        @if (Model.ShowPlayerColumn)
+                        {
+                            <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Player</span><a href="@Model.Results[i].Player.PlayerRoute">@(Model.Results[i].Player.PlayerName())</a></td>
+                        }
+                        <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Match</span><div><a href="@Model.Results[i].Match.MatchRoute">@Model.Results[i].Match.MatchName</a></div></td>
+                        <td data-stackable="true" class="text-nowrap"><span class="table-as-cards__label" aria-hidden="true">When</span>@(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime, false, true, false))</td>
+                        @if (notOut)
+                        {
+                            <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="runs-scored">@Model.Results[i].Result.RunsScored*</span></td>
+                        }
+                        else
+                        {
+                            <td data-stackable="true" class="numeric-md player-was-out"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="runs-scored">@Model.Results[i].Result.RunsScored</span></td>
+                        }
+                        @if (Model.Results[i].Result.BallsFaced.HasValue)
+                        {
+                            <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Balls</span><span class="balls-faced">@Model.Results[i].Result.BallsFaced!.Value.ToString()</span></td>
+                        }
+                        else
+                        {
+                            <td data-stackable="true" class="numeric-md table-as-cards__missing-data">–</td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
+    {
+        <p><a href="@Context.Request.Path/individual-scores@(queryString)">Individual scores – view all and filter</a></p>
+    }
+    else
+    {
+        @await Html.PartialAsync("_Paging", Model.AppliedFilter.Paging)
+    }
+}

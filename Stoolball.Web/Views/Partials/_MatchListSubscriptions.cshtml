@@ -1,0 +1,9 @@
+﻿@model  Stoolball.Web.Matches.Models.MatchListSubscriptionsViewModel
+@inject Stoolball.Matches.IMatchFilterQueryStringSerializer serialiser
+@{ 
+    var queryString = serialiser.Serialize(Model.AppliedMatchFilter, Model.DefaultMatchFilter);
+}
+<ul class="list-unstyled">
+    <li><a type="text/calendar" href="webcal://@(Context.Request.Host.Host == "localhost" ? Context.Request.Host.Value : "www.stoolball.org.uk")@Model.BaseRoute/@(Model.FilenameWithoutExtension).ics@(queryString)" rel="nofollow">Add to calendar</a></li>
+    <li><a type="application/rss+xml" href="@Model.BaseRoute/@(Model.FilenameWithoutExtension).rss@(queryString)" rel="nofollow">Subscribe with RSS</a></li>
+</ul>

@@ -1,23 +1,24 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
+using Microsoft.Extensions.Primitives;
 
 namespace Stoolball.Filtering
 {
     public abstract class BaseFilterQueryStringParser
     {
-        protected static (DateTimeOffset? fromDate, DateTimeOffset? untilDate) ParseDateFilter(DateTimeOffset? fromDate, DateTimeOffset? untilDate, NameValueCollection queryString)
+        protected static (DateTimeOffset? fromDate, DateTimeOffset? untilDate) ParseDateFilter(DateTimeOffset? fromDate, DateTimeOffset? untilDate, Dictionary<string, StringValues> queryString)
         {
             if (queryString is null)
             {
                 throw new ArgumentNullException(nameof(queryString));
             }
 
-            if (queryString["from"] != null)
+            if (queryString.ContainsKey("from"))
             {
                 fromDate = DateTimeOffset.TryParse(queryString["from"], out var parsedFromDate) ? parsedFromDate : (DateTimeOffset?)null;
             }
 
-            if (queryString["to"] != null)
+            if (queryString.ContainsKey("to"))
             {
                 if (DateTimeOffset.TryParse(queryString["to"], out var parsedUntilDate))
                 {

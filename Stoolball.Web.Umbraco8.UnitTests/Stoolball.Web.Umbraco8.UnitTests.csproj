@@ -59,11 +59,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Clubs\ClubActionsControllerTests.cs" />
     <Compile Include="Clubs\DeleteClubControllerTests.cs" />
     <Compile Include="Clubs\CreateClubControllerTests.cs" />
     <Compile Include="Clubs\EditClubControllerTests.cs" />
-    <Compile Include="Clubs\ClubStatisticsControllerTests.cs" />
     <Compile Include="Competitions\CompetitionsControllerTests.cs" />
     <Compile Include="Competitions\SeasonMapControllerTests.cs" />
     <Compile Include="Competitions\SeasonStatisticsControllerTests.cs" />
@@ -150,7 +148,6 @@
     <Compile Include="Teams\TeamControllerTests.cs" />
     <Compile Include="MatchLocations\MatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\MatchesForMatchLocationControllerTests.cs" />
-    <Compile Include="Clubs\MatchesForClubControllerTests.cs" />
     <Compile Include="Competitions\SeasonControllerTests.cs" />
     <Compile Include="Competitions\CompetitionControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -10,29 +10,22 @@ using Xunit;
 
 namespace Stoolball.Web.UnitTests.Clubs
 {
-    public class ClubControllerTests : UmbracoBaseTest
+    public class ClubActionsControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IClubDataSource> _clubDataSource = new();
 
-        public ClubControllerTests()
+        public ClubActionsControllerTests()
         {
             Setup();
         }
-        private ClubController CreateController()
+        private ClubActionsController CreateController()
         {
-            return new ClubController(
-                Mock.Of<ILogger<ClubController>>(),
+            return new ClubActionsController(
+                Mock.Of<ILogger<ClubActionsController>>(),
                 Mock.Of<ICompositeViewEngine>(),
                 UmbracoContextAccessor.Object,
                 _clubDataSource.Object,
-                Mock.Of<IAuthorizationPolicy<Club>>()
-            )
-            {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = HttpContext.Object
-                }
-            };
+                Mock.Of<IAuthorizationPolicy<Club>>());
         }
 
         [Fact]
@@ -48,12 +41,10 @@ namespace Stoolball.Web.UnitTests.Clubs
             }
         }
 
-
-
         [Fact]
         public async Task Route_matching_club_returns_ClubViewModel()
         {
-            _clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club());
+            _clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club { ClubRoute = "/clubs/example" });
 
             using (var controller = CreateController())
             {
