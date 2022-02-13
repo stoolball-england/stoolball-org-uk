@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Humanizer;
 using Stoolball.Clubs;
@@ -86,7 +85,7 @@ namespace Stoolball.Web.Matches
                 },
                 DateTimeFormatter = _dateFormatter
             };
-            model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+            model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.Url.Query);
 
             // Don't allow matches in the past - this is a calendar for planning future events
             if (model.AppliedMatchFilter.FromDate < model.DefaultMatchFilter.FromDate)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -75,7 +74,7 @@ namespace Stoolball.Web.UnitTests.Teams
 
             var filter = new MatchFilter();
             var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
-            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(filter);
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(filter, MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
@@ -98,7 +97,7 @@ namespace Stoolball.Web.UnitTests.Teams
 
             var filter = new MatchFilter();
             var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
-            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(filter);
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(filter, MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());

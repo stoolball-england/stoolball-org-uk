@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -79,7 +78,7 @@ namespace Stoolball.Web.MatchLocations
                         DateTimeFormatter = _dateFormatter
                     },
                 };
-                model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+                model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.Url.Query);
                 model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, filter.sortOrder).ConfigureAwait(false);
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation);

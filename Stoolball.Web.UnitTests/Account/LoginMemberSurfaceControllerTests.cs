@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
@@ -17,6 +16,7 @@ using Umbraco.Cms.Core.Mail;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Infrastructure.Persistence;
@@ -46,7 +46,7 @@ namespace Stoolball.Web.UnitTests.Account
             private readonly T _contentModel;
             private readonly Func<LoginModel, Task<IActionResult>> _handleLogin;
 
-            public TestController(IUmbracoContextAccessor umbracoContextAccessor, HttpContext httpContext, ServiceContext services, T contentModel, Func<LoginModel, Task<IActionResult>> handleLogin, IStoolballRouterController stoolballRouterController)
+            public TestController(IUmbracoContextAccessor umbracoContextAccessor, ServiceContext services, T contentModel, Func<LoginModel, Task<IActionResult>> handleLogin, IStoolballRouterController stoolballRouterController)
             : base(umbracoContextAccessor,
                 Mock.Of<IUmbracoDatabaseFactory>(),
                 services,
@@ -54,6 +54,8 @@ namespace Stoolball.Web.UnitTests.Account
                 Mock.Of<IProfilingLogger>(),
                 Mock.Of<IPublishedUrlProvider>(),
                 Mock.Of<IMemberSignInManager>(),
+                Mock.Of<IMemberManager>(),
+                Mock.Of<ITwoFactorLoginService>(),
                 Mock.Of<IEmailFormatter>(),
                 Mock.Of<IEmailSender>(),
                 Mock.Of<IVerificationToken>(),
@@ -113,7 +115,6 @@ namespace Stoolball.Web.UnitTests.Account
         {
             return new TestController<LoginMember>(
                 UmbracoContextAccessor.Object,
-                HttpContext.Object,
                 ServiceContext,
                 new LoginMember(Mock.Of<IPublishedContent>(), Mock.Of<IPublishedValueFallback>()),
                 x => Task.FromResult(expectedResult),

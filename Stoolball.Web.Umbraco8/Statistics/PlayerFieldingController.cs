@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Humanizer;
 using Stoolball.Navigation;
@@ -66,7 +65,7 @@ namespace Stoolball.Web.Statistics
             else
             {
                 model.DefaultFilter = new StatisticsFilter { Player = model.Player, Paging = new Paging { PageSize = 5 } };
-                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.Url.Query);
                 model.FieldingStatistics = await _summaryStatisticsDataSource.ReadFieldingStatistics(model.AppliedFilter).ConfigureAwait(false);
 
                 var catchesFilter = model.AppliedFilter.Clone();

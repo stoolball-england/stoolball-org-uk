@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -67,7 +66,7 @@ namespace Stoolball.Web.Matches
                 },
                 DateTimeFormatter = _dateTimeFormatter
             };
-            model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+            model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.Url.Query);
             model.AppliedMatchFilter.Paging.Total = await _matchesDataSource.ReadTotalMatches(model.AppliedMatchFilter).ConfigureAwait(false);
             model.Matches = await _matchesDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 

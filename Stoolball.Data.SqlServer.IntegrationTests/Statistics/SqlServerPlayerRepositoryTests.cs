@@ -208,11 +208,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var playerNameFormatter = new Mock<IPlayerNameFormatter>();
             playerNameFormatter.Setup(x => x.CapitaliseName(playerIdentity.PlayerIdentityName)).Returns(playerIdentity.PlayerIdentityName);
             var auditRepository = new Mock<IAuditRepository>();
+            var routeGenerator = new Mock<IRouteGenerator>();
+            routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult($"/players/{Guid.NewGuid()}"));
             var logger = new Mock<ILogger>();
             var memberName = "Member name";
             var memberKey = Guid.NewGuid();
 
-            var repo = new SqlServerPlayerRepository(auditRepository.Object, logger.Object, Mock.Of<IRouteGenerator>(), copier.Object, playerNameFormatter.Object);
+            var repo = new SqlServerPlayerRepository(auditRepository.Object, logger.Object, routeGenerator.Object, copier.Object, playerNameFormatter.Object);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {

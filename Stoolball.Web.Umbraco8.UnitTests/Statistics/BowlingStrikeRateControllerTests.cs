@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -8,7 +7,6 @@ using System.Web.Mvc;
 using Moq;
 using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
-using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -77,7 +75,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             filterFactory.Setup(x => x.FromRoute(_requestUrl.AbsolutePath)).Returns(Task.FromResult(defaultFilter));
 
             var queryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            queryStringParser.Setup(x => x.ParseQueryString(defaultFilter, It.IsAny<NameValueCollection>())).Returns(appliedFilter);
+            queryStringParser.Setup(x => x.ParseQueryString(defaultFilter, It.IsAny<string>())).Returns(appliedFilter);
 
             var results = new List<StatisticsResult<BestStatistic>>();
             var statisticsDataSource = new Mock<IBestPlayerAverageStatisticsDataSource>();
@@ -102,7 +100,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             filterFactory.Setup(x => x.FromRoute(_requestUrl.AbsolutePath)).Returns(Task.FromResult(defaultFilter));
 
             var queryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            queryStringParser.Setup(x => x.ParseQueryString(defaultFilter, It.IsAny<NameValueCollection>())).Returns(appliedFilter);
+            queryStringParser.Setup(x => x.ParseQueryString(defaultFilter, It.IsAny<string>())).Returns(appliedFilter);
 
             var results = new List<StatisticsResult<BestStatistic>> {
                 new StatisticsResult<BestStatistic> {

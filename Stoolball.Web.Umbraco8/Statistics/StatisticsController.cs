@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Stoolball.Security;
 using Stoolball.Statistics;
@@ -55,7 +54,7 @@ namespace Stoolball.Web.Statistics
             model.IsAuthorized[AuthorizedAction.EditStatistics] = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
 
             model.DefaultFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.Url.Query);
             model.PlayerInnings = (await _bestPerformanceInAMatchStatisticsDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
             model.MostRuns = (await _bestTotalStatisticsDataSource.ReadMostRunsScored(model.AppliedFilter).ConfigureAwait(false)).ToList();
             model.MostWickets = (await _bestTotalStatisticsDataSource.ReadMostWickets(model.AppliedFilter).ConfigureAwait(false)).ToList();

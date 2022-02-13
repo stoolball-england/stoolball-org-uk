@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -11,7 +10,6 @@ using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Statistics;
-using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -70,7 +68,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         public async Task Route_not_matching_location_returns_404()
         {
             var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation>(null));
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
@@ -87,7 +85,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         public async Task Route_matching_location_returns_StatisticsSummaryViewModel()
         {
             var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();

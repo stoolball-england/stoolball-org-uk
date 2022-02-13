@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;
@@ -54,7 +53,7 @@ namespace Stoolball.Web.Statistics
 
             var model = new StatisticsViewModel<BestStatistic>(contentModel.Content, Services?.UserService) { ShowCaption = false };
             model.DefaultFilter = await _statisticsFilterFactory.FromRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
-            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.Url.Query);
             if (model.AppliedFilter.Team != null) { model.ShowTeamsColumn = false; }
 
             model.Results = (await _statisticsDataSource.ReadMostWickets(model.AppliedFilter).ConfigureAwait(false)).ToList();

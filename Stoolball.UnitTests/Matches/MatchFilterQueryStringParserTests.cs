@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Specialized;
-using System.Web;
 using Stoolball.Matches;
 using Xunit;
 
@@ -13,15 +11,36 @@ namespace Stoolball.Tests.Matches
         {
             var parser = new MatchFilterQueryStringParser();
 
-            Assert.Throws<ArgumentNullException>(() => _ = parser.ParseQueryString(null, new NameValueCollection()));
+            Assert.Throws<ArgumentNullException>(() => _ = parser.ParseQueryString(null, String.Empty));
         }
 
         [Fact]
-        public void Null_querystring_throws_ArgumentNullException()
+        public void Null_querystring_returns_cloned_filter()
         {
             var parser = new MatchFilterQueryStringParser();
+            var filter = new MatchFilter();
 
-            Assert.Throws<ArgumentNullException>(() => _ = parser.ParseQueryString(new MatchFilter(), null));
+            var result = parser.ParseQueryString(filter, null);
+
+            Assert.NotEqual(filter, result);
+            Assert.Equal(filter.CompetitionIds.Count, result.CompetitionIds.Count);
+            Assert.Equal(filter.FromDate, result.FromDate);
+            Assert.Equal(filter.IncludeMatches, result.IncludeMatches);
+            Assert.Equal(filter.IncludeTournamentMatches, result.IncludeTournamentMatches);
+            Assert.Equal(filter.IncludeTournaments, result.IncludeTournaments);
+            Assert.Equal(filter.MatchLocationIds.Count, result.MatchLocationIds.Count);
+            Assert.Equal(filter.MatchResultTypes.Count, result.MatchResultTypes.Count);
+            Assert.Equal(filter.MatchTypes.Count, result.MatchTypes.Count);
+            Assert.Equal(filter.Paging.PageSize, result.Paging.PageSize);
+            Assert.Equal(filter.Paging.PageNumber, result.Paging.PageNumber);
+            Assert.Equal(filter.Paging.Total, result.Paging.Total);
+            Assert.Equal(filter.Paging.PageUrl, result.Paging.PageUrl);
+            Assert.Equal(filter.PlayerTypes.Count, result.PlayerTypes.Count);
+            Assert.Equal(filter.Query, result.Query);
+            Assert.Equal(filter.SeasonIds.Count, result.SeasonIds.Count);
+            Assert.Equal(filter.TeamIds.Count, result.TeamIds.Count);
+            Assert.Equal(filter.TournamentId, result.TournamentId);
+            Assert.Equal(filter.UntilDate, result.UntilDate);
         }
 
         [Theory]
@@ -33,7 +52,7 @@ namespace Stoolball.Tests.Matches
         {
             var parser = new MatchFilterQueryStringParser();
 
-            var filter = parser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString(queryString));
+            var filter = parser.ParseQueryString(new MatchFilter(), queryString);
 
             Assert.Null(filter.FromDate);
         }
@@ -43,7 +62,7 @@ namespace Stoolball.Tests.Matches
         {
             var parser = new MatchFilterQueryStringParser();
 
-            var filter = parser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString("?from=2020-07-10"));
+            var filter = parser.ParseQueryString(new MatchFilter(), "?from=2020-07-10");
 
             Assert.Equal(new DateTime(2020, 7, 10), filter.FromDate.Value.Date);
         }
@@ -57,7 +76,7 @@ namespace Stoolball.Tests.Matches
         {
             var parser = new MatchFilterQueryStringParser();
 
-            var filter = parser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString(queryString));
+            var filter = parser.ParseQueryString(new MatchFilter(), queryString);
 
             Assert.Null(filter.UntilDate);
         }
@@ -67,7 +86,7 @@ namespace Stoolball.Tests.Matches
         {
             var parser = new MatchFilterQueryStringParser();
 
-            var filter = parser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString("to=2022-06-09"));
+            var filter = parser.ParseQueryString(new MatchFilter(), "to=2022-06-09");
 
             Assert.Equal(new DateTime(2022, 6, 9), filter.UntilDate.Value.Date);
         }
@@ -77,7 +96,7 @@ namespace Stoolball.Tests.Matches
         {
             var parser = new MatchFilterQueryStringParser();
 
-            var filter = parser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString("q=%20hello%20world%20"));
+            var filter = parser.ParseQueryString(new MatchFilter(), "q=%20hello%20world%20");
 
             Assert.Equal("hello world", filter.Query);
         }

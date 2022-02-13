@@ -101,13 +101,15 @@ namespace Stoolball.Web.UnitTests
 
         public void SetupCurrentPage()
         {
+            const string TEMPLATE_NAME = "Mock";
+
             CurrentPage = new Mock<IPublishedContent>();
 
             var publishedRequest = new Mock<IPublishedRequest>();
             publishedRequest.Setup(request => request.PublishedContent).Returns(CurrentPage.Object);
 
             var features = new FeatureCollection();
-            features.Set(new UmbracoRouteValues(publishedRequest.Object, new ControllerActionDescriptor()));
+            features.Set(new UmbracoRouteValues(publishedRequest.Object, new ControllerActionDescriptor(), TEMPLATE_NAME));
             HttpContext.SetupGet(x => x.Features).Returns(features);
 
             ControllerContext = new ControllerContext
@@ -118,7 +120,8 @@ namespace Stoolball.Web.UnitTests
             };
 
             CompositeViewEngine = new Mock<ICompositeViewEngine>();
-            CompositeViewEngine.Setup(x => x.FindView(It.IsAny<ActionContext>(), null, false)).Returns(ViewEngineResult.Found("Mock", Mock.Of<IView>()));
+            CompositeViewEngine.Setup(x => x.FindView(ControllerContext, TEMPLATE_NAME, false))
+                .Returns(ViewEngineResult.Found(TEMPLATE_NAME, Mock.Of<IView>()));
 
             var umbracoContextMock = new Mock<IUmbracoContext>();
             umbracoContextMock.Setup(context => context.Content).Returns(Mock.Of<IPublishedContentCache>());

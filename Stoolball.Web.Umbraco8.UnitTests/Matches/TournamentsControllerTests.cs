@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -8,7 +7,6 @@ using Moq;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Web.Matches;
-using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -57,7 +55,7 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var dataSource = new Mock<IMatchListingDataSource>();
             var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
-            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(new MatchFilter());
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(new MatchFilter());
             var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
 
             using (var controller = new TestController(dataSource.Object, matchFilterQueryStringParser.Object, matchFilterHumanizer.Object))
@@ -74,7 +72,7 @@ namespace Stoolball.Web.UnitTests.Matches
             var dataSource = new Mock<IMatchListingDataSource>();
             var filter = new MatchFilter();
             var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
-            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(filter);
             var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
 
             using (var controller = new TestController(dataSource.Object, matchFilterQueryStringParser.Object, matchFilterHumanizer.Object))
@@ -92,7 +90,7 @@ namespace Stoolball.Web.UnitTests.Matches
             var filter = new MatchFilter();
             var dataSource = new Mock<IMatchListingDataSource>();
             var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
-            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(filter);
             var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
             matchFilterHumanizer.Setup(x => x.MatchesAndTournaments(filter)).Returns("tournaments");
             matchFilterHumanizer.Setup(x => x.MatchingFilter(filter)).Returns(" matching filter");

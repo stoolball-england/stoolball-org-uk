@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -11,7 +10,6 @@ using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Statistics;
 using Stoolball.Web.Teams;
-using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -74,7 +72,7 @@ namespace Stoolball.Web.UnitTests.Teams
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team>(null));
             var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             var inningsDataSource = new Mock<IInningsStatisticsDataSource>();
 
@@ -92,7 +90,7 @@ namespace Stoolball.Web.UnitTests.Teams
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
             var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
             var inningsDataSource = new Mock<IInningsStatisticsDataSource>();

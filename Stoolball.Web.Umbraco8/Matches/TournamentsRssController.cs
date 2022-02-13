@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Humanizer;
 using Stoolball.Dates;
@@ -55,7 +54,7 @@ namespace Stoolball.Web.Matches
 
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString(Request.Url.Query)),
+                AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(new MatchFilter(), Request.Url.Query),
                 DateTimeFormatter = _dateFormatter
             };
 

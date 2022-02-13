@@ -14,10 +14,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
     public abstract class BaseSqlServerFixture : IDisposable
     {
-        private const string _localDbInstance = @"(LocalDB)\Umbraco";
+        private const string _localDbInstance = @"(LocalDB)\MSSQLLocalDb";
         private string _sqlServerContainerInstance;
         private readonly string _databaseName;
-        private readonly string _umbracoDatabasePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../../Stoolball.Web/App_Data/Umbraco.mdf"));
+        private readonly string _umbracoDatabasePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../../Stoolball.Web/umbraco/Data/Umbraco.mdf"));
         private readonly string _dacpacPath;
         private bool _isDisposed;
         DacServices _dacServices;

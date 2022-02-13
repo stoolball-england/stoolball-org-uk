@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -7,7 +6,6 @@ using System.Web.Mvc;
 using Moq;
 using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
-using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -61,7 +59,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         public async Task Route_not_matching_player_returns_404()
         {
             var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
             var dataSource = new Mock<IPlayerDataSource>();
             dataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult<Player>(null));
 
@@ -77,7 +75,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         public async Task Route_matching_player_returns_PlayerFieldingViewModel()
         {
             var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter { Player = new Player() });
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter { Player = new Player() });
             var dataSource = new Mock<IPlayerDataSource>();
             dataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult<Player>(new Player()));
 

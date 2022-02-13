@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -13,7 +12,6 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using Stoolball.Web.Matches;
-using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -81,7 +79,7 @@ namespace Stoolball.Web.UnitTests.Matches
             matchDataSource.Setup(x => x.ReadMatchListings(filter, MatchSortOrder.LatestUpdateFirst)).ReturnsAsync(new List<MatchListing>());
 
             var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
-            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(filter);
             var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
 
             using (var controller = new TestController(matchDataSource.Object, matchFilterQueryStringParser.Object, matchFilterHumanizer.Object, UmbracoHelper))

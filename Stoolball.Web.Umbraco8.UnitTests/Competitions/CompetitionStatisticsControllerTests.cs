@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -71,7 +70,7 @@ namespace Stoolball.Web.UnitTests.Competitions
             var competitionDataSource = new Mock<ICompetitionDataSource>();
             competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition>(null));
             var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
 
             using (var controller = new TestController(competitionDataSource.Object, statisticsDataSource.Object, statisticsFilterQueryStringParser.Object, UmbracoHelper))
@@ -86,7 +85,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         public async Task Route_matching_competition_returns_StatisticsSummaryViewModel()
         {
             var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
             var competitionDataSource = new Mock<ICompetitionDataSource>();
             competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionId = Guid.NewGuid() });
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
