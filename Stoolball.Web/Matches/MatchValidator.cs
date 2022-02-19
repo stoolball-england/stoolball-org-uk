@@ -12,13 +12,6 @@ namespace Stoolball.Web.Matches
     /// <inheritdoc/>
     public class MatchValidator : IMatchValidator
     {
-        private readonly ISeasonEstimator _seasonEstimator;
-
-        public MatchValidator(ISeasonEstimator seasonEstimator)
-        {
-            _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
-        }
-
         public void TeamsMustBeDifferent(IEditMatchViewModel model, ModelStateDictionary modelState)
         {
             if (model is null)
