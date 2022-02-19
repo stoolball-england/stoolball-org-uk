@@ -198,16 +198,16 @@
       <Version>4.7.1221</Version>
     </PackageReference>
     <PackageReference Include="Our.Umbraco.Community.Tests">
-      <Version>8.17.1</Version>
+      <Version>8.17.2</Version>
     </PackageReference>
     <PackageReference Include="System.Memory">
       <Version>4.5.4</Version>
     </PackageReference>
     <PackageReference Include="UmbracoCms.Web">
-      <Version>8.17.0</Version>
+      <Version>8.17.2</Version>
     </PackageReference>
     <PackageReference Include="UmbracoForms.Core">
-      <Version>8.10.0</Version>
+      <Version>8.10.3</Version>
     </PackageReference>
     <PackageReference Include="xunit">
       <Version>2.4.1</Version>
