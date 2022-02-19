@@ -1,0 +1,52 @@
+﻿@inherits UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
+@using Stoolball.Web.Matches.Models
+@using Stoolball.Matches
+@{ 
+    SmidgeHelper.RequiresCss(new CssFile("~/css/matches.min.css") { Order = 100 });
+
+    var matchMenu = new AddMatchMenuViewModel { BaseRoute = Model.Season!.SeasonRoute, EnableTournaments = Model.Season.EnableTournaments, IsFirstAdminButton = true };
+    matchMenu.MatchTypes.AddRange(Model.Season.MatchTypes);
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+<div class="container-xl">
+    <h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
+
+    <ul class="nav nav-tabs nav-tabs-has-add">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Matches</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/map">Map</a>
+        </li>
+        @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) ||
+            Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) ||
+            Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) ||
+            !string.IsNullOrEmpty(Model.Season.Results))
+        {
+            <li class="nav-item">
+                <a class="nav-link" href="@Model.Season.SeasonRoute/table">Table</a>
+            </li>
+        }
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/statistics">Statistics</a>
+        </li>
+        @await Html.PartialAsync("_AddMatchMenu", matchMenu)
+    </ul>
+
+
+    @if (Model.Matches.Matches.Count > 0)
+    {
+        @await Html.PartialAsync("_MatchList", Model.Matches)
+    }
+    else
+    {
+        <p>There are no matches for this season.</p>
+        <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
+    }
+    @await Html.PartialAsync("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Season.Competition.CompetitionRoute })
+</div>

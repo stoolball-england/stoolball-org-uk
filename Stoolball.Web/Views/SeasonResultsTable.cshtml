@@ -1,0 +1,241 @@
+﻿@inherits UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
+@using Humanizer
+@using System.Linq
+@using Stoolball.Competitions
+@using Stoolball.Matches
+@using Stoolball.Web.Matches.Models
+@using Stoolball.Security
+@{
+    SmidgeHelper.RequiresCss(new CssFile("/css/competitions.min.css"){ Order = 100 });
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];
+}
+<div class="container-xl">
+    <h1>@Model.Season!.SeasonFullNameAndPlayerType()</h1>
+
+    @if (Model.Season.Competition.UntilYear.HasValue)
+    {
+        <div class="alert alert-info">
+            <p><strong>This competition isn't played any more.</strong></p>
+        </div>
+    }
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/map">Map</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Table</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/statistics">Statistics</a>
+        </li>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Season.SeasonRoute/edit/table">Edit results table</a>
+            </li>
+        }
+    </ul>
+
+    @{
+        var noResults = true;
+        if (Model.Season.Teams.Count > 0)
+        {
+            if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable || Model.Season.ResultsTableType == ResultsTableType.NonLeagueResultsTable)
+            {
+                var matchesAwaitingResults = new MatchListingViewModel(Umbraco.AssignedContentItem);
+                var withdrawnTeams = Model.Season.Teams.Where(x => x.WithdrawnDate.HasValue);
+                var columns = 7;
+                <table class="results-table table-as-cards table-as-cards-reset-md table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Team</th>
+                            <th scope="col" class="numeric">Played</th>
+                            <th scope="col" class="numeric">Won</th>
+                            <th scope="col" class="numeric">Lost</th>
+                            <th scope="col" class="numeric">Tied</th>
+                            <th scope="col" class="numeric">No result</th>
+                            @if (Model.Season.EnableRunsScored)
+                            {
+                                columns++;
+                                <th scope="col" class="numeric">Runs scored</th>
+                            }
+                            @if (Model.Season.EnableRunsConceded)
+                            {
+                                columns++;
+                                <th scope="col" class="numeric">Runs conceded</th>
+                            }
+                            @if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                            {
+                                <th scope="col" class="numeric">Points</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var rows = new Dictionary<Guid, ResultsTableRow>();
+                            foreach (var team in Model.Season.Teams)
+                            {
+                                if (!team.WithdrawnDate.HasValue)
+                                {
+                                    rows.Add(team.Team.TeamId!.Value, new ResultsTableRow { Team = team.Team });
+                                }
+                            }
+                            // Look at matches to build data for each team
+                            foreach (var match in Model.Matches.Matches)
+                            {
+                                var homeTeam = match.Teams.FirstOrDefault(team => team.TeamRole == TeamRole.Home);
+                                var awayTeam = match.Teams.FirstOrDefault(team => team.TeamRole == TeamRole.Away);
+                                var homeRuns = homeTeam != null ? match.MatchInnings.Where(x => x.BattingMatchTeamId == homeTeam.MatchTeamId).Sum(x => x.Runs) : null;
+                                var awayRuns = awayTeam != null ? match.MatchInnings.Where(x => x.BattingMatchTeamId == awayTeam.MatchTeamId).Sum(x => x.Runs) : null;
+
+                                // Discount matches in the future
+                                if (match.StartTime >= DateTime.UtcNow) { break; }
+
+                                // Discount non-league matches
+                                if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable && match.MatchType != MatchType.LeagueMatch) { continue; }
+
+                                // Discount postponed matches
+                                if (match.MatchResultType == MatchResultType.Postponed || match.MatchResultType == MatchResultType.AbandonedDuringPlayAndPostponed) { continue; }
+
+                                // Discount matches where a team has withdrawn from the season
+                                if (homeTeam != null && withdrawnTeams.Any(x => x.Team.TeamId == homeTeam.Team.TeamId)) { continue; }
+                                if (awayTeam != null && withdrawnTeams.Any(x => x.Team.TeamId == awayTeam.Team.TeamId)) { continue; }
+
+                                // Make a note of missing results, to excuse inaccuracies
+                                if (!match.MatchResultType.HasValue)
+                                {
+                                    matchesAwaitingResults.Matches.Add(match);
+                                    continue;
+                                }
+
+                                // Home team
+                                if (homeTeam != null && rows.ContainsKey(homeTeam.Team.TeamId!.Value))
+                                {
+                                    rows[homeTeam.Team.TeamId.Value].Played++;
+                                    if (match.IsHomeWin()) { rows[homeTeam.Team.TeamId.Value].Won++; }
+                                    else if (match.IsAwayWin()) { rows[homeTeam.Team.TeamId.Value].Lost++; }
+                                    else if (match.IsEqualResult()) { rows[homeTeam.Team.TeamId.Value].Tied++; }
+                                    else if (match.IsNoResult()) { rows[homeTeam.Team.TeamId.Value].NoResult++; }
+                                    if (Model.Season.EnableRunsScored && homeRuns.HasValue) { rows[homeTeam.Team.TeamId.Value].RunsScored = (rows[homeTeam.Team.TeamId.Value].RunsScored + homeRuns.Value); }
+                                    if (Model.Season.EnableRunsConceded && awayRuns.HasValue) { rows[homeTeam.Team.TeamId.Value].RunsConceded = (rows[homeTeam.Team.TeamId.Value].RunsConceded + awayRuns.Value); }
+                                    if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                                    {
+                                        rows[homeTeam.Team.TeamId.Value].Points = (rows[homeTeam.Team.TeamId.Value].Points + (Model.Season.PointsRules.First(x => x.MatchResultType == match.MatchResultType)?.HomePoints ?? 0));
+                                    }
+                                }
+
+                                // Away team
+                                if (awayTeam != null && rows.ContainsKey(awayTeam.Team.TeamId!.Value))
+                                {
+                                    rows[awayTeam.Team.TeamId.Value].Played++;
+                                    if (match.IsHomeWin()) { rows[awayTeam.Team.TeamId.Value].Lost++; }
+                                    else if (match.IsAwayWin()) { rows[awayTeam.Team.TeamId.Value].Won++; }
+                                    else if (match.IsEqualResult()) { rows[awayTeam.Team.TeamId.Value].Tied++; }
+                                    else if (match.IsNoResult()) { rows[awayTeam.Team.TeamId.Value].NoResult++; }
+                                    if (Model.Season.EnableRunsScored && awayRuns.HasValue) { rows[awayTeam.Team.TeamId.Value].RunsScored = (rows[awayTeam.Team.TeamId.Value].RunsScored + awayRuns.Value); }
+                                    if (Model.Season.EnableRunsConceded && homeRuns.HasValue) { rows[awayTeam.Team.TeamId.Value].RunsConceded = (rows[awayTeam.Team.TeamId.Value].RunsConceded + homeRuns.Value); }
+                                    if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                                    {
+                                        rows[awayTeam.Team.TeamId.Value].Points = (rows[awayTeam.Team.TeamId.Value].Points + (Model.Season.PointsRules.FirstOrDefault(x => x.MatchResultType == match.MatchResultType)?.AwayPoints ?? 0));
+                                    }
+                                }
+                            }
+
+                            // Apply points adjustments
+                            if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                            {
+                                foreach (var point in Model.Season.PointsAdjustments)
+                                {
+                                    rows[point.Team.TeamId!.Value].Points += point.Points;
+                                }
+                            }
+
+                            // For league tables, sort the teams so that the highest points come first
+                            var sortedRows = new List<ResultsTableRow>(rows.Values);
+                            if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                            {
+                                sortedRows.Sort(new LeagueTableRowComparer());
+                            }
+
+                            foreach (var row in sortedRows)
+                            {
+                                <tr>
+                                    <th scope="row"><a href="@row.Team.TeamRoute">@row.Team.TeamName</a></th>
+                                    <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Played</span><span class="results-table__numeric-value">@row.Played</span></td>
+                                    <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Won</span><span class="results-table__numeric-value">@row.Won</span></td>
+                                    <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Lost</span><span class="results-table__numeric-value">@row.Lost</span></td>
+                                    <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Tied</span><span class="results-table__numeric-value">@row.Tied</span></td>
+                                    <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">No result</span><span class="results-table__numeric-value">@row.NoResult</span></td>
+                                    @if (Model.Season.EnableRunsScored)
+                                    {
+                                        <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Runs scored</span><span class="results-table__numeric-value">@row.RunsScored</span></td>
+                                    }
+                                    @if (Model.Season.EnableRunsConceded)
+                                    {
+                                        <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Runs conceded</span><span class="results-table__numeric-value">@row.RunsConceded</span></td>
+                                    }
+                                    @if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                                    {
+                                        <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Points</span><span class="results-table__numeric-value">@row.Points</span></td>
+                                    }
+                                </tr>
+                            }
+                            foreach (var team in withdrawnTeams)
+                            {
+                                <tr class="text-muted"><th scope="row"><a href="@team.Team.TeamRoute">@team.Team.TeamName</a></th><td colspan="@(columns-1)">Withdrew from season</td></tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable && Model.Season.PointsAdjustments.Count > 0)
+                {
+                    <p>The league table includes the following points adjustments:</p>
+                    <ul>
+                        @foreach (var adjustment in Model.Season.PointsAdjustments)
+                        {
+                            var reason = !string.IsNullOrEmpty(adjustment.Reason) ? $"for {adjustment.Reason}" : string.Empty;
+                            if (adjustment.Points > 0)
+                            {
+                                <li>@("point".ToQuantity(adjustment.Points)) awarded to @adjustment.Team.TeamName @reason</li>
+                            }
+                            else if (adjustment.Points < 0)
+                            {
+                                <li>@("point".ToQuantity(adjustment.Points *-1)) deducted from @adjustment.Team.TeamName @reason</li>
+                            }
+                        }
+                    </ul>
+                }
+
+                if (matchesAwaitingResults.Matches.Count > 0)
+                {
+
+                    <p>Waiting for results from:</p>
+                    @await Html.PartialAsync("_MatchList", matchesAwaitingResults)
+                }
+
+                noResults = false;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Model.Season?.Results))
+        {
+            @Html.Raw(Model.Season.Results);
+            noResults = false;
+        }
+
+        if (noResults)
+        {
+            <p>There's no results table for this season.</p>
+            <p>You can add match results to this website to see your results table updated instantly. For leagues, points are calculated.</p>
+            <p>To get started, see <a href="/organise/website/results-tables/">Results tables – how they work</a>.</p>
+        }
+    }
+</div>

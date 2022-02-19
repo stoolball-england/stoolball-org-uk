@@ -20,6 +20,7 @@ using Stoolball.Data.SqlServer;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Html;
+using Stoolball.Listings;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -31,6 +32,7 @@ using Stoolball.Teams;
 using Stoolball.Web.Account;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Clubs;
+using Stoolball.Web.Competitions;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
 using Stoolball.Web.Logging;
@@ -98,6 +100,7 @@ namespace Stoolball.Web
             services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
 
             // Data filters
+            services.AddTransient<ICompetitionFilterSerializer, CompetitionFilterQueryStringSerializer>();
             services.AddTransient<IMatchFilterFactory, MatchFilterFactory>();
             services.AddTransient<IMatchFilterHumanizer, MatchFilterHumanizer>();
             services.AddTransient<IMatchFilterQueryStringParser, MatchFilterQueryStringParser>();
@@ -117,6 +120,8 @@ namespace Stoolball.Web
             services.AddTransient<ICacheOverride, CacheOverride>();
 
             services.AddTransient<IClubDataSource, SqlServerClubDataSource>();
+            services.AddTransient<ICompetitionDataSource, CachedCompetitionDataSource>();
+            services.AddTransient<ICacheableCompetitionDataSource, SqlServerCompetitionDataSource>();
             services.AddTransient<IMatchListingDataSource, CachedMatchListingDataSource>();
             services.AddTransient<ICacheableMatchListingDataSource, SqlServerMatchListingDataSource>();
             services.AddTransient<IMatchLocationFilterSerializer, MatchLocationFilterQueryStringSerializer>();
@@ -174,6 +179,7 @@ namespace Stoolball.Web
 
             // Security checks
             services.AddTransient<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();
+            services.AddTransient<IAuthorizationPolicy<Competition>, CompetitionAuthorizationPolicy>();
             services.AddScoped<DelegatedContentSecurityPolicyAttribute>();
 
             // Routing controllers for stoolball data pages.
@@ -191,6 +197,21 @@ namespace Stoolball.Web
             services.AddTransient<CreateClubController>();
             services.AddTransient<EditClubController>();
             services.AddTransient<DeleteClubController>();
+
+            services.AddTransient<CompetitionsController>();
+            services.AddTransient<CompetitionController>();
+            services.AddTransient<CompetitionActionsController>();
+            services.AddTransient<CompetitionStatisticsController>();
+
+            services.AddTransient<SeasonController>();
+            services.AddTransient<SeasonResultsTableController>();
+            services.AddTransient<SeasonStatisticsController>();
+            services.AddTransient<SeasonActionsController>();
+            services.AddTransient<SeasonMapController>();
+            services.AddTransient<MatchesForSeasonController>();
+
+            // Listings pages
+            services.AddTransient<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();
         }
 
         /// <summary>

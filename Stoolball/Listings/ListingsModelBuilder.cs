@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Stoolball.Listings
 {
@@ -15,7 +15,7 @@ namespace Stoolball.Listings
             Func<TFilter, Task<List<TModel>>> listings,
             string pageTitle,
             Uri pageUrl,
-            NameValueCollection queryParameters)
+            string queryString)
         {
             if (buildInitialState is null)
             {
@@ -42,11 +42,6 @@ namespace Stoolball.Listings
                 throw new ArgumentNullException(nameof(pageUrl));
             }
 
-            if (queryParameters is null)
-            {
-                throw new ArgumentNullException(nameof(queryParameters));
-            }
-
             var model = buildInitialState();
 
             if (model == null || model.Filter == null)
@@ -54,10 +49,16 @@ namespace Stoolball.Listings
                 throw new ArgumentException($"{ nameof(buildInitialState)} must return a non-null model with a non-null Filter property.");
             }
 
-            model.Filter.Query = queryParameters["q"]?.Trim();
+            var query = QueryHelpers.ParseQuery(queryString);
+            if (query.ContainsKey("q"))
+            {
+                model.Filter.Query = query["q"].ToString().Trim();
+            }
 
-            _ = int.TryParse(queryParameters["page"], out var pageNumber);
-            model.Filter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
+            if (query.ContainsKey("page") && int.TryParse(query["page"], out var pageNumber))
+            {
+                model.Filter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
+            }
             model.Filter.Paging.PageSize = Constants.Defaults.PageSize;
             model.Filter.Paging.PageUrl = pageUrl;
             model.Filter.Paging.Total = await totalListings(model.Filter).ConfigureAwait(false);

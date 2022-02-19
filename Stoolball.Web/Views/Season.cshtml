@@ -1,0 +1,75 @@
+﻿@inherits UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
+@using System.Linq
+@using Stoolball.Matches
+@using Stoolball.Security
+@{ 
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];
+}
+<div class="container-xl">
+    <h1>@Model.Season!.SeasonFullNameAndPlayerType()</h1>
+
+    @if (Model.Season.Competition.UntilYear.HasValue)
+    {
+        <div class="alert alert-info">
+            <p><strong>This competition isn't played any more.</strong></p>
+        </div>
+    }
+
+    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
+        <li class="nav-item">
+            <em class="nav-link active">Summary</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/map">Map</a>
+        </li>
+        @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) ||
+            Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) ||
+            Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) ||
+            !string.IsNullOrEmpty(Model.Season.Results))
+        {
+            <li class="nav-item">
+                <a class="nav-link" href="@Model.Season.SeasonRoute/table">Table</a>
+            </li>
+        }
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/statistics">Statistics</a>
+        </li>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Season.SeasonRoute/edit">Edit season</a>
+            </li>
+        }
+    </ul>
+
+    @Html.Raw(Model.Season.Competition.Introduction)
+    @Html.Raw(Model.Season.Introduction)
+
+    @if (Model.Season.Teams.Count > 0)
+    {
+        <h2>Teams</h2>
+        @await Html.PartialAsync("_TeamList", Model.Season.Teams.Select(x => x.Team).ToList())
+    }
+
+    @await Html.PartialAsync("_CompetitionContactDetails", Model.Season.Competition)
+
+    @if (Model.Season.Competition.Seasons.Count > 1)
+    {
+        var previous = Model.Season.Competition.Seasons.FirstOrDefault(x => x.FromYear <= Model.Season.FromYear && x.UntilYear <= Model.Season.UntilYear && x.SeasonId != Model.Season.SeasonId);
+        var next = Model.Season.Competition.Seasons.LastOrDefault(x => x.FromYear >= Model.Season.FromYear && x.UntilYear >= Model.Season.UntilYear && x.SeasonId != Model.Season.SeasonId);
+        <h2 class="sr-only">Seasons in this competition</h2>
+        <p class="d-print-none">
+            @if (previous != null)
+            {
+                <a href="@previous.SeasonRoute" class="btn btn-secondary btn-back">Previous season</a>
+            }
+            @if (next != null)
+            {
+                <a href="@next.SeasonRoute" class="btn btn-secondary">Next season</a>
+            }
+        </p>
+    }
+</div>

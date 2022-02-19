@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Http.Extensions
+@using Microsoft.AspNetCore.WebUtilities
+@model Stoolball.Navigation.Paging
+@if (Model.Total > Model.PageSize)
+{
+    var query = QueryHelpers.ParseQuery(Model.PageUrl.Query);
+    <p>
+    @if (Model.PageNumber > 1)
+    {
+        query["page"] = (Model.PageNumber - 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        <a href="@Model.PageUrl.AbsolutePath@(new QueryBuilder(query).ToQueryString())" class="btn btn-secondary btn-back">Previous page</a>
+    }
+    @if (Model.Total > (Model.PageNumber * Model.PageSize))
+    {
+        query["page"] = (Model.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        <a href="@Model.PageUrl.AbsolutePath@(new QueryBuilder(query).ToQueryString())" class="btn btn-secondary">Next page</a>
+    }
+    </p>
+}

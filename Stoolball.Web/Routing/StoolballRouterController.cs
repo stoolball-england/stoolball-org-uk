@@ -49,7 +49,8 @@ namespace Stoolball.Web.Routing
             var controllerType = _routeTypeMapper.MapRouteTypeToController(routeType.Value);
 
             // Pass off the work of building a response to the appropriate controller.
-            var controller = (IRenderControllerAsync)HttpContext.RequestServices.GetService(controllerType)!;
+            var controller = HttpContext.RequestServices.GetService(controllerType) as IRenderControllerAsync;
+            if (controller == null) { throw new NotSupportedException($"{controllerType} is not registered with the dependency injection container."); }
             controller.ControllerContext = ControllerContext;
             controller.ModelState.Merge(ModelState);
             return await controller.Index();

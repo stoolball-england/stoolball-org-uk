@@ -1,0 +1,17 @@
+﻿@inherits UmbracoViewPage<Stoolball.Web.Competitions.CompetitionViewModel>
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+<div class="container-xl">
+    <h1>Edit @Model.Competition!.CompetitionNameAndPlayerType()</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
+    {
+        @await Html.PartialAsync("_CompetitionActions", Model)
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

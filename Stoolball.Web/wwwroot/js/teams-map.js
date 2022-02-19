@@ -9,32 +9,19 @@
       return;
     }
 
-    // Parse the querystring this script was called with. Most of it will be passed on to the API.
-    const scriptUrl = document
-      .querySelector('script[src*="teams-map.js"]')
-      .getAttribute("src");
-    const urlParser = document.createElement("a");
-    urlParser.setAttribute("href", scriptUrl);
+    var mapControl = document.getElementById("map");
 
-    let query = urlParser.search
-      ? urlParser.search
-          .substring(1)
-          .split("&")
-          .map(function (x) {
-            return x.split("=");
-          })
-      : "";
+    // Convert data attributes into a querystring for the API
+    const query = [["season", mapControl.getAttribute("data-seasonid")]]
+      .map(function (x) {
+        return x.join("=");
+      })
+      .join("&");
 
-    // Remove the CDV parameter
-    const cdvQuery = query.filter(function (x) {
-      return x[0] == "cdv";
-    });
-    if (cdvQuery.length) {
-      query.splice(query.indexOf(cdvQuery[0]), 1);
-    }
+    // Adjust the map to the markers or leave at default?
+    const fixMap = mapControl.getAttribute("data-adjust") === "true";
 
     // Make the placeholder big enough for a map
-    var mapControl = document.getElementById("map");
     mapControl.setAttribute("class", "google-map");
     const myOptions = {
       mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -48,27 +35,10 @@
     let clusterer;
     let previousZoom = map.getZoom();
 
-    // Adjust the map to the markers or leave at default?
-    let fixMap = false;
-    const fixQuery = query.filter(function (x) {
-      return x[0] === "adjust";
-    });
-    if (fixQuery.length) {
-      query.splice(query.indexOf(fixQuery[0]), 1);
-      fixMap = fixQuery[0][1] === "true";
-    }
-
     // JavaScript will create two sets of markers, one for each ground, and one for each team.
     // This is so that, when clustered, we can display the number of teams by creating a marker for each(even though they're actually duplicates).
     // You can't get an infoWindow for a cluster though, so once we're zoomed in far enough switch to using the ground markers, which are unique.
-    fetch(
-      "/api/locations/map?" +
-        query
-          .map(function (x) {
-            return x.join("=");
-          })
-          .join("&")
-    )
+    fetch("/api/locations/map?" + query)
       .then(function (response) {
         return response.json();
       })

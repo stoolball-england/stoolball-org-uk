@@ -14,7 +14,6 @@ using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Caching;
-using Stoolball.Web.Competitions;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Routing;
@@ -58,7 +57,6 @@ namespace Stoolball.Web
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
             composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
             composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
-            composition.Register<ICompetitionFilterSerializer, CompetitionFilterQueryStringSerializer>();
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
             composition.Register<IPlayerNameFormatter, PlayerNameFormatter>();
             composition.Register<IMatchInningsFactory, MatchInningsFactory>();
@@ -69,7 +67,6 @@ namespace Stoolball.Web
 
             // Listings pages
             composition.Register<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>, ListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();
-            composition.Register<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();
             composition.Register<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>, ListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
             composition.Register<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>, ListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>>();
 
@@ -84,8 +81,6 @@ namespace Stoolball.Web
             composition.Register<ITeamRepository, SqlServerTeamRepository>();
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();
             composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>();
-            composition.Register<ICompetitionDataSource, CachedCompetitionDataSource>();
-            composition.Register<ICacheableCompetitionDataSource, SqlServerCompetitionDataSource>();
             composition.Register<ICompetitionRepository, SqlServerCompetitionRepository>();
             composition.Register<ISeasonRepository, SqlServerSeasonRepository>();
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>();
@@ -106,7 +101,6 @@ namespace Stoolball.Web
             composition.Register<ISchoolDataSource, SqlServerSchoolDataSource>();
 
             // Security checks
-            composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Competition>, CompetitionAuthorizationPolicy>();
             composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>();
             composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>();
             composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>();

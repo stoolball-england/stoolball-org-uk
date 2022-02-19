@@ -46,6 +46,7 @@ namespace Stoolball.Web.UnitTests
         public virtual void SetupHttpContext()
         {
             Request = new Mock<HttpRequest>();
+            Request.SetupGet(x => x.Scheme).Returns("https");
             Request.SetupGet(x => x.Host).Returns(new HostString("www.stoolball.org.uk"));
             Request.SetupGet(x => x.Query).Returns(new QueryCollection());
 

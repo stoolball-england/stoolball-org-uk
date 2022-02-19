@@ -1,0 +1,51 @@
+﻿@inherits UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
+@using Stoolball.Matches
+@{
+    SmidgeHelper.RequiresJs(new JavaScriptFile("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey) { Order = 50 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/maps.js") { Order = 90 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/lib/markerclustererplus.1.0.3.min.js") { Order = 95 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile($"/js/teams-map.js") { Order = 100 });
+}
+<div class="container-xl">
+    <h1>@Model.Season!.SeasonFullNameAndPlayerType()</h1>
+
+    @if (Model.Season.Competition.UntilYear.HasValue)
+    {
+        <div class="alert alert-info">
+            <p><strong>This competition isn't played any more.</strong></p>
+        </div>
+    }
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Map</em>
+        </li>
+        @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) ||
+            Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) ||
+            Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) ||
+            !string.IsNullOrEmpty(Model.Season.Results))
+        {
+            <li class="nav-item">
+                <a class="nav-link" href="@Model.Season.SeasonRoute/table">Table</a>
+            </li>
+        }
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/statistics">Statistics</a>
+        </li>
+    </ul>
+
+    <div id="map" data-seasonid="@Model.Season.SeasonId" data-adjust="false">
+        <p class="alert-danger alert">
+            <strong>
+                You can view teams in this season using Google Maps,
+                but we can only show you the map if you <a href="/privacy/cookies/">consent to maps</a>.
+            </strong>
+        </p>
+    </div>
+</div>

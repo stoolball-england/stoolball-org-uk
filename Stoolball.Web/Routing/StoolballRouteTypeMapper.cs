@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Stoolball.Web.Clubs;
+using Stoolball.Web.Competitions;
 
 namespace Stoolball.Web.Routing
 {
@@ -31,22 +32,22 @@ namespace Stoolball.Web.Routing
             //{ StoolballRouteType.DeleteMatchLocation, typeof(DeleteMatchLocationController) },
             //{ StoolballRouteType.MatchLocations, typeof(MatchLocationsController) },
             //{ StoolballRouteType.MatchesForMatchLocation, typeof(MatchesForMatchLocationController) },
-            //{ StoolballRouteType.Competitions, typeof(CompetitionsController) },
-            //{ StoolballRouteType.Competition, typeof(CompetitionController) },
-            //{ StoolballRouteType.CompetitionActions, typeof(CompetitionActionsController) },
+            { StoolballRouteType.Competitions, typeof(CompetitionsController) },
+            { StoolballRouteType.Competition, typeof(CompetitionController) },
+            { StoolballRouteType.CompetitionActions, typeof(CompetitionActionsController) },
             //{ StoolballRouteType.CreateCompetition, typeof(CreateCompetitionController) },
             //{ StoolballRouteType.EditCompetition, typeof(EditCompetitionController) },
             //{ StoolballRouteType.DeleteCompetition, typeof(DeleteCompetitionController) },
-            //{ StoolballRouteType.Season, typeof(SeasonController) },
-            //{ StoolballRouteType.SeasonMap, typeof(SeasonMapController) },
-            //{ StoolballRouteType.SeasonActions, typeof(SeasonActionsController) },
+            { StoolballRouteType.Season, typeof(SeasonController) },
+            { StoolballRouteType.SeasonMap, typeof(SeasonMapController) },
+            { StoolballRouteType.SeasonActions, typeof(SeasonActionsController) },
             //{ StoolballRouteType.CreateSeason, typeof(CreateSeasonController) },
             //{ StoolballRouteType.EditSeason, typeof(EditSeasonController) },
             //{ StoolballRouteType.EditSeasonResultsTable, typeof(EditSeasonResultsTableController) },
             //{ StoolballRouteType.EditSeasonTeams, typeof(EditSeasonTeamsController) },
             //{ StoolballRouteType.DeleteSeason, typeof(DeleteSeasonController) },
-            //{ StoolballRouteType.MatchesForSeason, typeof(MatchesForSeasonController) },
-            //{ StoolballRouteType.SeasonResultsTable, typeof(SeasonResultsTableController) },
+            { StoolballRouteType.MatchesForSeason, typeof(MatchesForSeasonController) },
+            { StoolballRouteType.SeasonResultsTable, typeof(SeasonResultsTableController) },
             //{ StoolballRouteType.Matches, typeof(MatchesController) },
             //{ StoolballRouteType.MatchesCalendar, typeof(MatchesCalendarController) },
             //{ StoolballRouteType.MatchesRss, typeof(MatchesRssController) },
@@ -85,8 +86,8 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.ClubStatistics, typeof(ClubStatisticsController) },
             //{ StoolballRouteType.TeamStatistics, typeof(TeamStatisticsController) },
             //{ StoolballRouteType.MatchLocationStatistics, typeof(MatchLocationStatisticsController) },
-            //{ StoolballRouteType.CompetitionStatistics, typeof(CompetitionStatisticsController) },
-            //{ StoolballRouteType.SeasonStatistics, typeof(SeasonStatisticsController) },
+            { StoolballRouteType.CompetitionStatistics, typeof(CompetitionStatisticsController) },
+            { StoolballRouteType.SeasonStatistics, typeof(SeasonStatisticsController) },
             //{ StoolballRouteType.IndividualScores, typeof(IndividualScoresController) },
             //{ StoolballRouteType.BowlingFigures, typeof(BowlingFiguresController) },
             //{ StoolballRouteType.Catches, typeof(CatchesController) },
