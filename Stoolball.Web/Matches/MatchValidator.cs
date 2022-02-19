@@ -78,40 +78,40 @@ namespace Stoolball.Web.Matches
             }
         }
 
-        public void DateIsValidForSqlServer(Func<DateTimeOffset?> dateToValidate, ModelStateDictionary modelState, string fieldName, string dateOfWhat)
+        public void DateIsValidForSqlServer(DateTimeOffset? dateToValidate, ModelStateDictionary modelState, string fieldName, string dateOfWhat)
         {
-            if (dateToValidate is null)
-            {
-                throw new ArgumentNullException(nameof(dateToValidate));
-            }
-
             if (modelState is null)
             {
                 throw new ArgumentNullException(nameof(modelState));
             }
 
-            if (dateToValidate() < SqlDateTime.MinValue.Value.Date || dateToValidate() > SqlDateTime.MaxValue.Value.Date)
+            if (dateToValidate < SqlDateTime.MinValue.Value.Date || dateToValidate > SqlDateTime.MaxValue.Value.Date)
             {
                 modelState.AddModelError(fieldName, $"The {dateOfWhat} date must be between {SqlDateTime.MinValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)} and {SqlDateTime.MaxValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)}.");
             }
         }
 
-        public void DateIsWithinTheSeason(Func<DateTimeOffset?> dateToValidate, Season season, ModelStateDictionary modelState, string fieldName, string dateOfWhat)
+        public void DateIsWithinTheSeason(DateTimeOffset? dateToValidate, Season season, ModelStateDictionary modelState, string fieldName, string dateOfWhat)
         {
-            if (dateToValidate is null)
-            {
-                throw new ArgumentNullException(nameof(dateToValidate));
-            }
-
             if (modelState is null)
             {
                 throw new ArgumentNullException(nameof(modelState));
             }
 
-            if (dateToValidate().HasValue && season != null)
+            if (dateToValidate.HasValue && season != null)
             {
-                var seasonForMatch = _seasonEstimator.EstimateSeasonDates(dateToValidate().Value);
-                if (seasonForMatch.fromDate.Year != season.FromYear || seasonForMatch.untilDate.Year != season.UntilYear)
+                bool isValid;
+                if (season.FromYear == season.UntilYear)
+                {
+                    isValid = (dateToValidate.Value.Year == season.FromYear);
+                }
+                else
+                {
+                    isValid = (dateToValidate.Value.Year == season.FromYear && dateToValidate.Value.Month > 6) ||
+                              (dateToValidate.Value.Year == season.UntilYear && dateToValidate.Value.Month <= 6);
+                }
+
+                if (!isValid)
                 {
                     modelState.AddModelError(fieldName, $"The {dateOfWhat} date is not in the {season.SeasonFullName()}");
                 }

@@ -72,8 +72,8 @@ namespace Stoolball.Web.Matches
                 model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId.Value).ConfigureAwait(false);
             }
 
-            _matchValidator.DateIsValidForSqlServer(() => model.MatchDate, ModelState, "MatchDate", "match");
-            _matchValidator.DateIsWithinTheSeason(() => model.MatchDate, model.Match.Season, ModelState, "MatchDate", "match");
+            _matchValidator.DateIsValidForSqlServer(model.MatchDate, ModelState, "MatchDate", "match");
+            _matchValidator.DateIsWithinTheSeason(model.MatchDate, model.Match.Season, ModelState, "MatchDate", "match");
             _matchValidator.AtLeastOneTeamId(model, ModelState);
 
             model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;

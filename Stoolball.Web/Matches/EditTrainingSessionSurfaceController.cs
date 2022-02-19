@@ -78,8 +78,8 @@ namespace Stoolball.Web.Matches
                 model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId.Value).ConfigureAwait(false);
             }
 
-            _matchValidator.DateIsValidForSqlServer(() => model.MatchDate, ModelState, "MatchDate", "match");
-            _matchValidator.DateIsWithinTheSeason(() => model.MatchDate, model.Match.Season, ModelState, "MatchDate", "match");
+            _matchValidator.DateIsValidForSqlServer(model.MatchDate, ModelState, "MatchDate", "match");
+            _matchValidator.DateIsWithinTheSeason(model.MatchDate, model.Match.Season, ModelState, "MatchDate", "match");
             _matchValidator.AtLeastOneTeamInMatch(model.Match.Teams, ModelState);
 
             foreach (var team in model.Match.Teams)

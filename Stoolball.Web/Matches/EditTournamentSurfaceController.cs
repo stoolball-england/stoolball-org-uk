@@ -105,8 +105,8 @@ namespace Stoolball.Web.Matches
                 ModelState.AddModelError("TournamentDate", "Enter a date in YYYY-MM-DD format.");
             }
 
-            _matchValidator.DateIsValidForSqlServer(() => model.TournamentDate, ModelState, "TournamentDate", "tournament");
-            _matchValidator.DateIsWithinTheSeason(() => model.TournamentDate, model.Tournament.Seasons.FirstOrDefault(), ModelState, "TournamentDate", "tournament");
+            _matchValidator.DateIsValidForSqlServer(model.TournamentDate, ModelState, "TournamentDate", "tournament");
+            _matchValidator.DateIsWithinTheSeason(model.TournamentDate, model.Tournament.Seasons.FirstOrDefault(), ModelState, "TournamentDate", "tournament");
 
             if (!string.IsNullOrEmpty(Request.Form["TournamentLocationId"]))
             {

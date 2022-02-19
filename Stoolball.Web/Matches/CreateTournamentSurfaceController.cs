@@ -91,7 +91,7 @@ namespace Stoolball.Web.Matches
                 ModelState.AddModelError("TournamentDate", "Enter a date in YYYY-MM-DD format.");
             }
 
-            _matchValidator.DateIsValidForSqlServer(() => model.TournamentDate, ModelState, "TournamentDate", "tournament");
+            _matchValidator.DateIsValidForSqlServer(model.TournamentDate, ModelState, "TournamentDate", "tournament");
 
             if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
@@ -105,7 +105,7 @@ namespace Stoolball.Web.Matches
                 model.Tournament.Seasons.Add(model.Season);
                 model.Metadata.PageTitle = $"Add a tournament in the {model.Season.SeasonFullName()}";
 
-                _matchValidator.DateIsWithinTheSeason(() => model.TournamentDate, model.Season, ModelState, "TournamentDate", "tournament");
+                _matchValidator.DateIsWithinTheSeason(model.TournamentDate, model.Season, ModelState, "TournamentDate", "tournament");
             }
 
             if (!string.IsNullOrEmpty(Request.Form["TournamentLocationId"]))
