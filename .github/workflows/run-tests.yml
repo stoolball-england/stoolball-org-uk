@@ -9,7 +9,7 @@ on:
 
 jobs:
   stoolball-web-unit-tests:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
