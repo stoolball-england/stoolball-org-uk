@@ -67,3 +67,66 @@ A `Player` is therefore represented by one or more `PlayerIdentities`, so that w
 ## Awards
 
 `Awards` like player of the match or player of the season are awarded to a `PlayerIdentity` at the end of a `Match`, `Tournament` or `Season`.
+
+## Database table dependencies
+
+When copying data between instances of the database, copy tables in the following order to respect the dependencies between these entities:
+
+### **Round 1**
+
+- SkybrudRedirects
+- StoolballAudit
+- StoolballAward
+- StoolballCompetition
+- StoolballClub
+- StoolballMatchLocation
+- StoolballNotificationSubscription
+- StoolballPlayer
+- StoolballSchool
+
+### **Round 2**
+
+- StoolballCompetitionVersion
+- StoolballClubVersion
+- StoolballSchoolVersion
+- StoolballSeason
+- StoolballTeam
+- StoolballTournament
+
+### **Round 3**
+
+- StoolballMatch
+- StoolballPointsAdjustment
+- StoolballPointsRule
+- StoolballPlayerIdentity
+- StoolballSeasonMatchType
+- StoolballSeasonTeam
+- StoolballTeamMatchLocation
+- StoolballTeamVersion
+- StoolballTournamentTeam
+- StoolballTournamentSeason
+
+### **Round 4**
+
+- StoolballComment
+- StoolballMatchTeam
+
+### **Round 5**
+
+- StoolballMatchInnings
+- StoolballAwardedTo
+
+### **Round 6**
+
+- StoolballFallOfWicket
+- StoolballOverSet
+- StoolballPlayerInnings
+
+### **Round 7**
+
+- StoolballBowlingFigures
+- StoolballOver
+
+### **Round 8**
+
+- StoolballPlayerInMatchStatistics
