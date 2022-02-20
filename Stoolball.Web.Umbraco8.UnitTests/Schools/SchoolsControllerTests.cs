@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -46,7 +45,7 @@ namespace Stoolball.Web.UnitTests.Schools
             }
         }
 
-        private readonly NameValueCollection _queryString = new NameValueCollection();
+        private readonly string _queryString = string.Empty;
         private readonly Uri _pageUrl = new Uri("https://example.org/example");
 
         public SchoolsControllerTests()
@@ -61,7 +60,6 @@ namespace Stoolball.Web.UnitTests.Schools
             var controller = new TestController(dataSource, listingsBuilder);
 
             base.Request.SetupGet(x => x.Url).Returns(_pageUrl);
-            base.Request.SetupGet(x => x.QueryString).Returns(_queryString);
             controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
 
             return controller;

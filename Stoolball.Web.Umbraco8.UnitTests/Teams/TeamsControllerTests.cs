@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -44,7 +43,7 @@ namespace Stoolball.Web.UnitTests.Teams
             }
         }
 
-        private readonly NameValueCollection _queryString = new NameValueCollection();
+        private readonly string _queryString = string.Empty;
         private readonly Uri _pageUrl = new Uri("https://example.org/example");
 
         public TeamsControllerTests()
@@ -59,7 +58,7 @@ namespace Stoolball.Web.UnitTests.Teams
             var controller = new TestController(dataSource, listingsBuilder);
 
             base.Request.SetupGet(x => x.Url).Returns(_pageUrl);
-            base.Request.SetupGet(x => x.QueryString).Returns(_queryString);
+
             controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
 
             return controller;
@@ -104,7 +103,7 @@ namespace Stoolball.Web.UnitTests.Teams
                 _pageUrl,
                 _queryString
                 ))
-                .Callback<Func<TeamsViewModel>, Func<TeamListingFilter, Task<int>>, Func<TeamListingFilter, Task<List<TeamListing>>>, string, Uri, NameValueCollection>(
+                .Callback<Func<TeamsViewModel>, Func<TeamListingFilter, Task<int>>, Func<TeamListingFilter, Task<List<TeamListing>>>, string, Uri, string>(
                     (buildInitialState, totalListings, listings, pageTitle, pageUrl, queryParameters) =>
                     {
                         model = buildInitialState();

@@ -74,8 +74,8 @@ namespace Stoolball.Web.Matches
 
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
 
-            _matchValidator.DateIsValidForSqlServer(() => model.MatchDate, ModelState, "MatchDate", "match");
-            _matchValidator.DateIsWithinTheSeason(() => model.MatchDate, model.Match.Season, ModelState, "MatchDate", "match");
+            _matchValidator.DateIsValidForSqlServer(model.MatchDate, ModelState, "MatchDate", "match");
+            _matchValidator.DateIsWithinTheSeason(model.MatchDate, model.Match.Season, ModelState, "MatchDate", "match");
             _matchValidator.TeamsMustBeDifferent(model, ModelState);
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);

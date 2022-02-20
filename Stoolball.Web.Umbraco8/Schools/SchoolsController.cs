@@ -49,7 +49,7 @@ namespace Stoolball.Web.Schools
                 _schoolDataSource.ReadSchools,
                 Constants.Pages.Schools,
                 Request.Url,
-                Request.QueryString).ConfigureAwait(false);
+                Request.Url.Query).ConfigureAwait(false);
 
             model.Breadcrumbs.RemoveAt(model.Breadcrumbs.Count - 1);
             model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Schools, Url = new Uri(Constants.Pages.SchoolsUrl, UriKind.Relative) });

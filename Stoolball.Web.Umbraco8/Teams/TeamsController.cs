@@ -53,7 +53,7 @@ namespace Stoolball.Web.Teams
             _teamDataSource.ReadTeamListings,
             Constants.Pages.Teams,
             Request.Url,
-            Request.QueryString).ConfigureAwait(false);
+            Request.Url.Query).ConfigureAwait(false);
 
             return CurrentTemplate(model);
         }

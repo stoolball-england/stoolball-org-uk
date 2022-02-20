@@ -54,7 +54,7 @@ namespace Stoolball.Web.MatchLocations
             _matchLocationDataSource.ReadMatchLocations,
             Constants.Pages.MatchLocations,
             Request.Url,
-            Request.QueryString
+            Request.Url.Query
             ).ConfigureAwait(false);
 
             return CurrentTemplate(model);

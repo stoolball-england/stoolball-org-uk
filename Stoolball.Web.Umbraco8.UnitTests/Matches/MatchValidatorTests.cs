@@ -18,7 +18,7 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var modelState = new ModelStateDictionary();
 
-            Assert.Throws<ArgumentNullException>(() => new MatchValidator(Mock.Of<ISeasonEstimator>()).TeamsMustBeDifferent(null, modelState));
+            Assert.Throws<ArgumentNullException>(() => new MatchValidator().TeamsMustBeDifferent(null, modelState));
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var model = new Mock<IEditMatchViewModel>();
 
-            Assert.Throws<ArgumentNullException>(() => new MatchValidator(Mock.Of<ISeasonEstimator>()).TeamsMustBeDifferent(model.Object, null));
+            Assert.Throws<ArgumentNullException>(() => new MatchValidator().TeamsMustBeDifferent(model.Object, null));
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace Stoolball.Web.UnitTests.Matches
             var model = new Mock<IEditMatchViewModel>();
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).TeamsMustBeDifferent(model.Object, modelState);
+            new MatchValidator().TeamsMustBeDifferent(model.Object, modelState);
 
             Assert.Empty(modelState.Keys);
         }
@@ -47,7 +47,7 @@ namespace Stoolball.Web.UnitTests.Matches
             model.Setup(x => x.AwayTeamId).Returns(Guid.NewGuid());
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).TeamsMustBeDifferent(model.Object, modelState);
+            new MatchValidator().TeamsMustBeDifferent(model.Object, modelState);
 
             Assert.Empty(modelState.Keys);
         }
@@ -59,7 +59,7 @@ namespace Stoolball.Web.UnitTests.Matches
             model.Setup(x => x.HomeTeamId).Returns(Guid.NewGuid());
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).TeamsMustBeDifferent(model.Object, modelState);
+            new MatchValidator().TeamsMustBeDifferent(model.Object, modelState);
 
             Assert.Empty(modelState.Keys);
         }
@@ -72,7 +72,7 @@ namespace Stoolball.Web.UnitTests.Matches
             model.Setup(x => x.AwayTeamId).Returns(Guid.NewGuid());
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).TeamsMustBeDifferent(model.Object, modelState);
+            new MatchValidator().TeamsMustBeDifferent(model.Object, modelState);
 
             Assert.Empty(modelState.Keys);
         }
@@ -86,7 +86,7 @@ namespace Stoolball.Web.UnitTests.Matches
             model.Setup(x => x.AwayTeamId).Returns(teamId);
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).TeamsMustBeDifferent(model.Object, modelState);
+            new MatchValidator().TeamsMustBeDifferent(model.Object, modelState);
 
             Assert.Contains("AwayTeamId", modelState.Keys);
         }
@@ -96,7 +96,7 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var modelState = new ModelStateDictionary();
 
-            Assert.Throws<ArgumentNullException>(() => new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamInMatch(null, modelState));
+            Assert.Throws<ArgumentNullException>(() => new MatchValidator().AtLeastOneTeamInMatch(null, modelState));
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var model = new List<TeamInMatch>();
 
-            Assert.Throws<ArgumentNullException>(() => new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamInMatch(model, null));
+            Assert.Throws<ArgumentNullException>(() => new MatchValidator().AtLeastOneTeamInMatch(model, null));
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace Stoolball.Web.UnitTests.Matches
             modelState.AddModelError("Match.Teams.AnyProperty", "Error text");
             modelState.AddModelError("Match.OtherProperty", "Error text");
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamInMatch(model, modelState);
+            new MatchValidator().AtLeastOneTeamInMatch(model, modelState);
 
             Assert.Empty(modelState.Where(x => x.Key.StartsWith("Match.Teams", StringComparison.OrdinalIgnoreCase)).SelectMany(x => x.Value.Errors));
             Assert.Single(modelState.Where(x => !x.Key.StartsWith("Match.Teams", StringComparison.OrdinalIgnoreCase)).SelectMany(x => x.Value.Errors));
@@ -131,7 +131,7 @@ namespace Stoolball.Web.UnitTests.Matches
             var model = new List<TeamInMatch>();
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamInMatch(model, modelState);
+            new MatchValidator().AtLeastOneTeamInMatch(model, modelState);
 
             Assert.Contains("Match.Teams", modelState.Keys);
         }
@@ -145,7 +145,7 @@ namespace Stoolball.Web.UnitTests.Matches
             };
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamInMatch(model, modelState);
+            new MatchValidator().AtLeastOneTeamInMatch(model, modelState);
 
             Assert.Empty(modelState.Keys);
         }
@@ -155,7 +155,7 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var modelState = new ModelStateDictionary();
 
-            Assert.Throws<ArgumentNullException>(() => new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamId(null, modelState));
+            Assert.Throws<ArgumentNullException>(() => new MatchValidator().AtLeastOneTeamId(null, modelState));
         }
 
         [Fact]
@@ -163,7 +163,7 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var model = new Mock<IEditMatchViewModel>();
 
-            Assert.Throws<ArgumentNullException>(() => new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamId(model.Object, null));
+            Assert.Throws<ArgumentNullException>(() => new MatchValidator().AtLeastOneTeamId(model.Object, null));
         }
 
         [Fact]
@@ -172,7 +172,7 @@ namespace Stoolball.Web.UnitTests.Matches
             var model = new Mock<IEditMatchViewModel>();
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamId(model.Object, modelState);
+            new MatchValidator().AtLeastOneTeamId(model.Object, modelState);
 
             Assert.Contains("HomeTeamId", modelState.Keys);
         }
@@ -184,7 +184,7 @@ namespace Stoolball.Web.UnitTests.Matches
             model.Setup(x => x.HomeTeamId).Returns(Guid.NewGuid());
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamId(model.Object, modelState);
+            new MatchValidator().AtLeastOneTeamId(model.Object, modelState);
 
             Assert.Empty(modelState.Keys);
         }
@@ -196,23 +196,15 @@ namespace Stoolball.Web.UnitTests.Matches
             model.Setup(x => x.AwayTeamId).Returns(Guid.NewGuid());
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamId(model.Object, modelState);
+            new MatchValidator().AtLeastOneTeamId(model.Object, modelState);
 
             Assert.Empty(modelState.Keys);
         }
 
         [Fact]
-        public void DateIsValidForSqlServer_throws_NullReferenceException_if_date_Func_is_null()
-        {
-            var modelState = new ModelStateDictionary();
-
-            Assert.Throws<ArgumentNullException>(() => new MatchValidator(Mock.Of<ISeasonEstimator>()).DateIsValidForSqlServer(null, modelState, "MatchDate", "match"));
-        }
-
-        [Fact]
         public void DateIsValidForSqlServer_throws_NullReferenceException_if_ModelState_is_null()
         {
-            Assert.Throws<ArgumentNullException>(() => new MatchValidator(Mock.Of<ISeasonEstimator>()).DateIsValidForSqlServer(() => DateTimeOffset.UtcNow, null, "MatchDate", "match"));
+            Assert.Throws<ArgumentNullException>(() => new MatchValidator().DateIsValidForSqlServer(DateTimeOffset.UtcNow, null, "MatchDate", "match"));
         }
 
         [Fact]
@@ -221,7 +213,7 @@ namespace Stoolball.Web.UnitTests.Matches
             var modelState = new ModelStateDictionary();
             var fieldName = Guid.NewGuid().ToString();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).DateIsValidForSqlServer(() => SqlDateTime.MinValue.Value.Date.AddDays(-1), modelState, fieldName, "match");
+            new MatchValidator().DateIsValidForSqlServer(SqlDateTime.MinValue.Value.Date.AddDays(-1), modelState, fieldName, "match");
 
             Assert.Contains(fieldName, modelState.Keys);
         }
@@ -233,7 +225,7 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).DateIsValidForSqlServer(() => SqlDateTime.MinValue.Value.Date, modelState, "MatchDate", "match");
+            new MatchValidator().DateIsValidForSqlServer(SqlDateTime.MinValue.Value.Date, modelState, "MatchDate", "match");
 
             Assert.Empty(modelState.Keys);
         }
@@ -243,34 +235,25 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).DateIsValidForSqlServer(() => SqlDateTime.MaxValue.Value.Date, modelState, "MatchDate", "match");
+            new MatchValidator().DateIsValidForSqlServer(SqlDateTime.MaxValue.Value.Date, modelState, "MatchDate", "match");
 
             Assert.Empty(modelState.Keys);
         }
 
         [Fact]
-        public void DateIsValidForSqlServer_is_valid_if_MatchDate_is_null()
+        public void DateIsValidForSqlServer_is_valid_if_date_is_null()
         {
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).DateIsValidForSqlServer(() => null, modelState, "MatchDate", "match");
+            new MatchValidator().DateIsValidForSqlServer(null, modelState, "MatchDate", "match");
 
             Assert.Empty(modelState.Keys);
-        }
-
-
-        [Fact]
-        public void DateIsWithinTheSeason_throws_NullReferenceException_if_date_Func_is_null()
-        {
-            var modelState = new ModelStateDictionary();
-
-            Assert.Throws<ArgumentNullException>(() => new MatchValidator(Mock.Of<ISeasonEstimator>()).DateIsWithinTheSeason(null, new Season(), modelState, "MatchDate", "match"));
         }
 
         [Fact]
         public void DateIsWithinTheSeason_throws_NullReferenceException_if_ModelState_is_null()
         {
-            Assert.Throws<ArgumentNullException>(() => new MatchValidator(Mock.Of<ISeasonEstimator>()).DateIsWithinTheSeason(() => DateTimeOffset.UtcNow, new Season(), null, "MatchDate", "match"));
+            Assert.Throws<ArgumentNullException>(() => new MatchValidator().DateIsWithinTheSeason(DateTimeOffset.UtcNow, new Season(), null, "MatchDate", "match"));
         }
 
         [Fact]
@@ -278,7 +261,7 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).DateIsWithinTheSeason(() => null, new Season(), modelState, "MatchDate", "match");
+            new MatchValidator().DateIsWithinTheSeason(null, new Season(), modelState, "MatchDate", "match");
 
             Assert.Empty(modelState.Keys);
         }
@@ -288,62 +271,58 @@ namespace Stoolball.Web.UnitTests.Matches
         {
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(Mock.Of<ISeasonEstimator>()).DateIsWithinTheSeason(() => DateTimeOffset.UtcNow, null, modelState, "MatchDate", "match");
+            new MatchValidator().DateIsWithinTheSeason(DateTimeOffset.UtcNow, null, modelState, "MatchDate", "match");
 
             Assert.Empty(modelState.Keys);
         }
 
-        [Fact]
-        public void DateIsWithinTheSeason_estimates_season_for_match()
+        [Theory]
+        [InlineData(2019, 12, 31, false)]
+        [InlineData(2020, 1, 1, true)]
+        [InlineData(2020, 6, 30, true)]
+        [InlineData(2020, 12, 31, true)]
+        [InlineData(2021, 1, 1, false)]
+        public void DateIsWithinTheSeason_is_valid_if_its_the_same_calendar_year_as_a_single_year_season(int year, int month, int day, bool shouldBeValid)
         {
-            var matchDate = DateTimeOffset.UtcNow;
-            var estimator = new Mock<ISeasonEstimator>();
-            var modelState = new ModelStateDictionary();
-
-            new MatchValidator(estimator.Object).DateIsWithinTheSeason(() => matchDate, new Season(), modelState, "MatchDate", "match");
-
-            estimator.Verify(x => x.EstimateSeasonDates(matchDate), Times.Once);
-        }
-
-        [Fact]
-        public void DateIsWithinTheSeason_is_valid_if_FromYear_and_UntilYear_match_the_estimate()
-        {
-            var matchDate = new DateTimeOffset(2020, 12, 31, 18, 0, 0, TimeSpan.Zero);
-            var estimator = new Mock<ISeasonEstimator>();
-            estimator.Setup(x => x.EstimateSeasonDates(matchDate)).Returns((new DateTimeOffset(2020, 9, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(2021, 3, 31, 0, 0, 0, TimeSpan.Zero)));
-            var modelState = new ModelStateDictionary();
-
-            new MatchValidator(estimator.Object).DateIsWithinTheSeason(() => matchDate, new Season { FromYear = 2020, UntilYear = 2021 }, modelState, "MatchDate", "match");
-
-            Assert.Empty(modelState.Keys);
-        }
-
-        [Fact]
-        public void DateIsWithinTheSeason_marks_field_invalid_if_FromYear_does_not_match_the_estimate()
-        {
-            var matchDate = new DateTimeOffset(2020, 12, 31, 18, 0, 0, TimeSpan.Zero);
-            var estimator = new Mock<ISeasonEstimator>();
-            estimator.Setup(x => x.EstimateSeasonDates(matchDate)).Returns((new DateTimeOffset(2021, 4, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(2021, 8, 31, 0, 0, 0, TimeSpan.Zero)));
+            var matchDate = new DateTimeOffset(year, month, day, 18, 0, 0, TimeSpan.Zero);
             var fieldName = Guid.NewGuid().ToString();
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(estimator.Object).DateIsWithinTheSeason(() => matchDate, new Season { FromYear = 2020, UntilYear = 2021 }, modelState, fieldName, "match");
+            new MatchValidator().DateIsWithinTheSeason(matchDate, new Season { FromYear = 2020, UntilYear = 2020 }, modelState, fieldName, "match");
 
-            Assert.Contains(fieldName, modelState.Keys);
+            if (shouldBeValid)
+            {
+                Assert.Empty(modelState.Keys);
+            }
+            else
+            {
+                Assert.Contains(fieldName, modelState.Keys);
+            }
         }
 
-        [Fact]
-        public void DateIsWithinTheSeason_marks_field_invalid_if_UntilYear_does_not_match_the_estimate()
+        [Theory]
+        [InlineData(2020, 6, 30, false)]
+        [InlineData(2020, 7, 1, true)]
+        [InlineData(2020, 12, 31, true)]
+        [InlineData(2021, 1, 1, true)]
+        [InlineData(2021, 6, 30, true)]
+        [InlineData(2021, 7, 1, false)]
+        public void DateIsWithinTheSeason_marks_field_invalid_if_more_than_6_months_either_way_in_a_season_spanning_2_years(int year, int month, int day, bool shouldBeValid)
         {
-            var matchDate = new DateTimeOffset(2020, 12, 31, 18, 0, 0, TimeSpan.Zero);
-            var estimator = new Mock<ISeasonEstimator>();
-            estimator.Setup(x => x.EstimateSeasonDates(matchDate)).Returns((new DateTimeOffset(2020, 4, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(2020, 8, 31, 0, 0, 0, TimeSpan.Zero)));
+            var matchDate = new DateTimeOffset(year, month, day, 18, 0, 0, TimeSpan.Zero);
             var fieldName = Guid.NewGuid().ToString();
             var modelState = new ModelStateDictionary();
 
-            new MatchValidator(estimator.Object).DateIsWithinTheSeason(() => matchDate, new Season { FromYear = 2020, UntilYear = 2021 }, modelState, fieldName, "match");
+            new MatchValidator().DateIsWithinTheSeason(matchDate, new Season { FromYear = 2020, UntilYear = 2021 }, modelState, fieldName, "match");
 
-            Assert.Contains(fieldName, modelState.Keys);
+            if (shouldBeValid)
+            {
+                Assert.Empty(modelState.Keys);
+            }
+            else
+            {
+                Assert.Contains(fieldName, modelState.Keys);
+            }
         }
     }
 }
