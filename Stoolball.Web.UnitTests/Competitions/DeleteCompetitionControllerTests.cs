@@ -1,32 +1,40 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Security;
+using Stoolball.Teams;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Competitions.Models;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Competitions
 {
-    public class CompetitionActionsControllerTests : UmbracoBaseTest
+    public class DeleteCompetitionControllerTests : UmbracoBaseTest
     {
         private readonly Mock<ICompetitionDataSource> _competitionDataSource = new();
+        private readonly Mock<IMatchListingDataSource> _matchListingDataSource = new();
+        private readonly Mock<ITeamDataSource> _teamDataSource = new();
 
-        public CompetitionActionsControllerTests()
+        public DeleteCompetitionControllerTests()
         {
             Setup();
         }
 
-        private CompetitionActionsController CreateController()
+        private DeleteCompetitionController CreateController()
         {
-            return new CompetitionActionsController(
-                Mock.Of<ILogger<CompetitionActionsController>>(),
+            return new DeleteCompetitionController(
+                Mock.Of<ILogger<DeleteCompetitionController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _competitionDataSource.Object,
-                Mock.Of<IAuthorizationPolicy<Competition>>())
+                _matchListingDataSource.Object,
+                _teamDataSource.Object,
+                Mock.Of<IAuthorizationPolicy<Competition>>()
+                )
             {
                 ControllerContext = ControllerContext
             };
@@ -46,15 +54,15 @@ namespace Stoolball.Web.UnitTests.Competitions
         }
 
         [Fact]
-        public async Task Route_matching_competition_returns_CompetitionViewModel()
+        public async Task Route_matching_competition_returns_DeleteCompetitionViewModel()
         {
-            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example", CompetitionRoute = "/competitions/example" });
+            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionId = Guid.NewGuid(), CompetitionRoute = "/competitions/example" });
 
             using (var controller = CreateController())
             {
                 var result = await controller.Index();
 
-                Assert.IsType<CompetitionViewModel>(((ViewResult)result).Model);
+                Assert.IsType<DeleteCompetitionViewModel>(((ViewResult)result).Model);
             }
         }
     }

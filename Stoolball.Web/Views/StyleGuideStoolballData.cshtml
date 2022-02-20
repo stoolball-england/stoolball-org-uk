@@ -4,7 +4,7 @@
 @using Stoolball.Competitions
 @using Stoolball.Matches
 @using Stoolball.Web.Matches.Models
-@using Stoolball.Web.Competitions
+@using Stoolball.Web.Competitions.Models
 @using Stoolball.Statistics
 @inject Umbraco.Cms.Core.Services.IUserService userService
 @{
@@ -15,8 +15,7 @@
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.autocomplete.min.js") { Order = 50 });
     SmidgeHelper.RequiresCss(new CssFile("~/css/autocomplete.min.css"){ Order = 100 });
 
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/umbraco/lib/tinymce/tinymce.min.js") { Order = 90 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/tinymce.js") { Order = 100 });
+    await Html.PartialAsync("_TinyMCE");
 
     SmidgeHelper.RequiresCss(new CssFile("~/css/scorecards.min.css"){ Order = 100 });
     SmidgeHelper.RequiresCss(new CssFile("~/css/steps.min.css"){ Order = 100 });

@@ -8,6 +8,7 @@ using Moq;
 using Stoolball.Competitions;
 using Stoolball.Listings;
 using Stoolball.Web.Competitions;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Services;

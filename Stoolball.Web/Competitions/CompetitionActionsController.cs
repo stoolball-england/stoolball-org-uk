@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
 using Stoolball.Security;
-using Stoolball.Web.Models;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Web;

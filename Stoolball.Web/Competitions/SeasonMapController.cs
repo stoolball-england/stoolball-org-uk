@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;

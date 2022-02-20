@@ -23,13 +23,18 @@ namespace Stoolball.Data.SqlServer
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
-        private readonly ILogger _logger;
+        private readonly ILogger<SqlServerSeasonRepository> _logger;
         private readonly IHtmlSanitizer _htmlSanitiser;
         private readonly IRedirectsRepository _redirectsRepository;
         private readonly IStoolballEntityCopier _copier;
 
-        public SqlServerSeasonRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger,
-            IHtmlSanitizer htmlSanitiser, IRedirectsRepository redirectsRepository, IStoolballEntityCopier copier)
+        public SqlServerSeasonRepository(
+            IDatabaseConnectionFactory databaseConnectionFactory,
+            IAuditRepository auditRepository,
+            ILogger<SqlServerSeasonRepository> logger,
+            IHtmlSanitizer htmlSanitiser,
+            IRedirectsRepository redirectsRepository,
+            IStoolballEntityCopier copier)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -225,7 +230,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.CreateSeason));
+                    _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.CreateSeason));
                 }
             }
 
@@ -338,7 +343,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateSeason));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateSeason));
                 }
             }
 
@@ -411,7 +416,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateResultsTable));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateResultsTable));
                 }
             }
 
@@ -471,7 +476,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateTeams));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateTeams));
                 }
             }
 
@@ -546,7 +551,7 @@ namespace Stoolball.Data.SqlServer
                     AuditDate = DateTime.UtcNow
                 }, transaction).ConfigureAwait(false);
 
-                _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteSeason));
+                _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteSeason));
             }
         }
     }

@@ -33,6 +33,7 @@ using Stoolball.Web.Account;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
 using Stoolball.Web.Logging;
@@ -91,11 +92,14 @@ namespace Stoolball.Web
             services.AddTransient<IEmailFormatter, EmailFormatter>();
             services.AddTransient<IHtmlFormatter, Stoolball.Html.HtmlFormatter>();
             services.AddTransient<Ganss.XSS.IHtmlSanitizer, Ganss.XSS.HtmlSanitizer>();
+            services.AddTransient<Stoolball.Html.IHtmlSanitizer, Stoolball.Html.HtmlSanitizer>();
             services.AddTransient(typeof(Stoolball.Logging.ILogger<>), typeof(LogWrapper<>));
             services.AddTransient<IOversHelper, OversHelper>();
             services.AddTransient<ISeasonEstimator, SeasonEstimator>();
+            services.AddTransient<ISocialMediaAccountFormatter, SocialMediaAccountFormatter>();
             services.AddTransient<IStoolballEntityCopier, StoolballEntityCopier>();
             services.AddTransient<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
+            services.AddTransient<IUrlFormatter, UrlFormatter>();
             services.AddTransient<IVerificationToken, VerificationToken>();
             services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
 
@@ -175,7 +179,9 @@ namespace Stoolball.Web
             // Repositories
             services.AddTransient<IAuditRepository, SqlServerAuditRepository>();
             services.AddTransient<IClubRepository, SqlServerClubRepository>();
+            services.AddTransient<ICompetitionRepository, SqlServerCompetitionRepository>();
             services.AddTransient<IRedirectsRepository, SkybrudRedirectsRepository>();
+            services.AddTransient<ISeasonRepository, SqlServerSeasonRepository>();
 
             // Security checks
             services.AddTransient<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();
@@ -187,6 +193,7 @@ namespace Stoolball.Web
             services.AddTransient<IStoolballRouteParser, StoolballRouteParser>();
             services.AddTransient<IStoolballRouteTypeMapper, StoolballRouteTypeMapper>();
             services.AddTransient<IStoolballRouterController, StoolballRouterController>();
+            services.AddTransient<IPostSaveRedirector, PostSaveRedirector>();
 
             // Actual controllers. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.
@@ -202,6 +209,9 @@ namespace Stoolball.Web
             services.AddTransient<CompetitionController>();
             services.AddTransient<CompetitionActionsController>();
             services.AddTransient<CompetitionStatisticsController>();
+            services.AddTransient<CreateCompetitionController>();
+            services.AddTransient<EditCompetitionController>();
+            services.AddTransient<DeleteCompetitionController>();
 
             services.AddTransient<SeasonController>();
             services.AddTransient<SeasonResultsTableController>();

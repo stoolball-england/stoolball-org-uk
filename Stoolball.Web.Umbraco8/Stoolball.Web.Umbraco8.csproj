@@ -773,12 +773,6 @@
     <Compile Include="App_Data\Models\YouTubeVideo.generated.cs" />
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="Caching\ClearableCacheWrapper.cs" />
-    <Compile Include="Competitions\CompetitionAuthorizationPolicy.cs" />
-    <Compile Include="Competitions\CompetitionsViewModel.cs" />
-    <Compile Include="Competitions\CompetitionViewModel.cs" />
-    <Compile Include="Competitions\DeleteCompetitionViewModel.cs" />
-    <Compile Include="Competitions\DeleteCompetitionController.cs" />
-    <Compile Include="Competitions\DeleteCompetitionSurfaceController.cs" />
     <Compile Include="Competitions\DeleteSeasonSurfaceController.cs" />
     <Compile Include="Competitions\EditSeasonTeamsSurfaceController.cs" />
     <Compile Include="Competitions\EditSeasonTeamsController.cs" />
@@ -787,11 +781,7 @@
     <Compile Include="Competitions\EditSeasonSurfaceController.cs" />
     <Compile Include="Competitions\CreateSeasonSurfaceController.cs" />
     <Compile Include="Competitions\CreateSeasonController.cs" />
-    <Compile Include="Competitions\CreateCompetitionSurfaceController.cs" />
-    <Compile Include="Competitions\CreateCompetitionController.cs" />
     <Compile Include="Competitions\EditSeasonController.cs" />
-    <Compile Include="Competitions\EditCompetitionSurfaceController.cs" />
-    <Compile Include="Competitions\EditCompetitionController.cs" />
     <Compile Include="Competitions\DeleteSeasonController.cs" />
     <Compile Include="Competitions\DeleteSeasonViewModel.cs" />
     <Compile Include="Competitions\SeasonListViewModel.cs" />
@@ -799,7 +789,8 @@
     <Compile Include="Configuration\IApiKeyProvider.cs" />
     <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
     <Compile Include="Filtering\FilterViewModel.cs" />
-    <Compile Include="Html\HtmlSanitizer.cs" />
+    <Compile Include="HtmlHelpers\LabelExtensions.cs" />
+    <Compile Include="HtmlHelpers\RequiredFieldStatus.cs" />
     <Compile Include="Matches\EditMatchFormatFormData.cs" />
     <Compile Include="Matches\EditMatchFormatViewModel.cs" />
     <Compile Include="Matches\EditMatchFormatController.cs" />
@@ -1007,8 +998,6 @@
       <DependentUpon>TournamentTweets.cshtml</DependentUpon>
     </Compile>
     <Compile Include="WebApi\CsvHandler.cs" />
-    <Compile Include="HtmlHelpers\LabelExtensions.cs" />
-    <Compile Include="HtmlHelpers\RequiredFieldStatus.cs" />
     <Compile Include="Matches\AddMatchMenuViewModel.cs" />
     <Compile Include="Matches\EditCloseOfPlayFormData.cs" />
     <Compile Include="Matches\MatchAwardViewModel.cs" />
@@ -1075,7 +1064,6 @@
     <Compile Include="MatchLocations\DeleteMatchLocationController.cs" />
     <Compile Include="MatchLocations\DeleteMatchLocationViewModel.cs" />
     <Compile Include="Routing\IPostSaveRedirector.cs" />
-    <Compile Include="Routing\PostSaveRedirector.cs" />
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
     <Compile Include="Security\MemberGroupHelper.cs" />
     <Compile Include="MatchLocations\MatchLocationStatisticsController.cs" />
@@ -1111,11 +1099,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>BowlingFigures.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CreateCompetition.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CreateCompetition.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\CreateFriendlyMatch.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1150,11 +1133,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CreateTournament.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DeleteCompetition.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DeleteCompetition.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\DeleteMatch.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1195,11 +1173,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EditCloseOfPlay.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditCompetition.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditCompetition.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditFriendlyMatch.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1315,11 +1288,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Stoolball-England-Email.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\_CreateOrEditCompetition.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_CreateOrEditCompetition.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_CreateOrEditFriendlyMatch.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1524,18 +1492,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>EditTransientTeam.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\CreateCompetition.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>CreateCompetition.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\EditCompetition.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditCompetition.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_CreateOrEditCompetition.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_CreateOrEditCompetition.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\CreateSeason.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>CreateSeason.generated.cs</LastGenOutput>
@@ -1567,10 +1523,6 @@
     <Content Include="Views\DeleteSeason.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>DeleteSeason.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\DeleteCompetition.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>DeleteCompetition.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\MatchActions.cshtml">
       <Generator>RazorGenerator</Generator>

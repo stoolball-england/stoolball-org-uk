@@ -5,7 +5,7 @@ using Stoolball.Web.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Services;
 
-namespace Stoolball.Web.Competitions
+namespace Stoolball.Web.Competitions.Models
 {
     public class SeasonViewModel : BaseViewModel
     {

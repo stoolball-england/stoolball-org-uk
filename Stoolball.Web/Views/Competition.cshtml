@@ -1,5 +1,5 @@
-﻿@inherits UmbracoViewPage<Stoolball.Web.Competitions.CompetitionViewModel>
-@using Stoolball.Web.Competitions
+﻿@inherits UmbracoViewPage<CompetitionViewModel>
+@using Stoolball.Web.Competitions.Models
 @using Stoolball.Security
 @{ 
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];

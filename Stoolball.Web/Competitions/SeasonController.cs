@@ -7,6 +7,7 @@ using Stoolball.Competitions;
 using Stoolball.Email;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Web;
@@ -53,10 +54,10 @@ namespace Stoolball.Web.Competitions
                 model.Metadata.PageTitle = model.Season.SeasonFullNameAndPlayerType();
                 model.Metadata.Description = model.Season.Description();
 
-                model.Season.Competition.Introduction = _emailProtector.ProtectEmailAddresses(model.Season.Competition.Introduction, User.Identity.IsAuthenticated);
-                model.Season.Competition.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Season.Competition.PublicContactDetails, User.Identity.IsAuthenticated);
+                model.Season.Competition.Introduction = _emailProtector.ProtectEmailAddresses(model.Season.Competition.Introduction, User.Identity?.IsAuthenticated ?? false);
+                model.Season.Competition.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Season.Competition.PublicContactDetails, User.Identity?.IsAuthenticated ?? false);
 
-                model.Season.Introduction = _emailProtector.ProtectEmailAddresses(model.Season.Introduction, User.Identity.IsAuthenticated);
+                model.Season.Introduction = _emailProtector.ProtectEmailAddresses(model.Season.Introduction, User.Identity?.IsAuthenticated ?? false);
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
                 model.Breadcrumbs.Add(new Breadcrumb { Name = model.Season.Competition.CompetitionName, Url = new Uri(model.Season.Competition.CompetitionRoute, UriKind.Relative) });

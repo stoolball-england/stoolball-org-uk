@@ -9,6 +9,7 @@ using Stoolball.Email;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Web.Competitions;
+using Stoolball.Web.Competitions.Models;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Competitions

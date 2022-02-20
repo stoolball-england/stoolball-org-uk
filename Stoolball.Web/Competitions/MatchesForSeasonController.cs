@@ -7,6 +7,7 @@ using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;

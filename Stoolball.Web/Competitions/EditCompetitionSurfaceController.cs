@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Competitions
 {
     public class EditCompetitionSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly ICompetitionDataSource _competitionDataSource;
         private readonly ICompetitionRepository _competitionRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
@@ -24,10 +30,11 @@ namespace Stoolball.Web.Competitions
         private readonly ICacheOverride _cacheOverride;
 
         public EditCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource,
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, ICompetitionDataSource competitionDataSource,
             ICompetitionRepository competitionRepository, IAuthorizationPolicy<Competition> authorizationPolicy, IPostSaveRedirector postSaveRedirector, ICacheOverride cacheOverride)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
             _competitionRepository = competitionRepository ?? throw new ArgumentNullException(nameof(competitionRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
@@ -39,31 +46,31 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> UpdateCompetition([Bind(Prefix = "Competition", Include = "CompetitionName,UntilYear,PlayerType,Facebook,Twitter,Instagram,YouTube,Website")] Competition competition)
+        public async Task<ActionResult> UpdateCompetition([Bind("CompetitionName", "UntilYear", "PlayerType", "Facebook", "Twitter", "Instagram", "YouTube", "Website", Prefix = "Competition")] Competition competition)
         {
             if (competition is null)
             {
                 throw new ArgumentNullException(nameof(competition));
             }
 
-            var beforeUpdate = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _competitionDataSource.ReadCompetitionByRoute(Request.Path).ConfigureAwait(false);
             competition.CompetitionId = beforeUpdate.CompetitionId;
             competition.CompetitionRoute = beforeUpdate.CompetitionRoute;
 
-            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
-            competition.Introduction = Request.Unvalidated.Form["Competition.Introduction"];
-            competition.PublicContactDetails = Request.Unvalidated.Form["Competition.PublicContactDetails"];
-            competition.PrivateContactDetails = Request.Unvalidated.Form["Competition.PrivateContactDetails"];
+            // get this from the form instead of via modelbinding so that HTML can be allowed
+            competition.Introduction = Request.Form["Competition.Introduction"];
+            competition.PublicContactDetails = Request.Form["Competition.PublicContactDetails"];
+            competition.PrivateContactDetails = Request.Form["Competition.PrivateContactDetails"];
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
+            var isAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditCompetition] && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
             {
-                var currentMember = Members.GetCurrentMember();
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedCompetition = await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix).ConfigureAwait(false);
 
-                return _postSaveRedirector.WorkOutRedirect(competition.CompetitionRoute, updatedCompetition.CompetitionRoute, "/edit", Request.Form["UrlReferrer"], null);
+                return _postSaveRedirector.WorkOutRedirect(competition.CompetitionRoute, updatedCompetition.CompetitionRoute, "/edit", Request.Form["UrlReferrer"]);
             }
 
             var viewModel = new CompetitionViewModel(CurrentPage, Services.UserService)

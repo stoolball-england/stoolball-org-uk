@@ -36,7 +36,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                 Mock.Of<ISeasonRepository>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
@@ -54,7 +54,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                _databaseFixture.ConnectionFactory,
                Mock.Of<IAuditRepository>(),
-               Mock.Of<ILogger>(),
+               Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                Mock.Of<ISeasonRepository>(),
                Mock.Of<IRouteGenerator>(),
                Mock.Of<IRedirectsRepository>(),
@@ -72,7 +72,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                   _databaseFixture.ConnectionFactory,
                   Mock.Of<IAuditRepository>(),
-                  Mock.Of<ILogger>(),
+                  Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                   Mock.Of<ISeasonRepository>(),
                   Mock.Of<IRouteGenerator>(),
                   Mock.Of<IRedirectsRepository>(),
@@ -105,7 +105,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                             _databaseFixture.ConnectionFactory,
                             Mock.Of<IAuditRepository>(),
-                            Mock.Of<ILogger>(),
+                            Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                             Mock.Of<ISeasonRepository>(),
                             routeGenerator.Object,
                             Mock.Of<IRedirectsRepository>(),
@@ -215,7 +215,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                          _databaseFixture.ConnectionFactory,
                          Mock.Of<IAuditRepository>(),
-                         Mock.Of<ILogger>(),
+                         Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                          Mock.Of<ISeasonRepository>(),
                          routeGenerator.Object,
                          Mock.Of<IRedirectsRepository>(),
@@ -288,7 +288,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                             _databaseFixture.ConnectionFactory,
                             Mock.Of<IAuditRepository>(),
-                            Mock.Of<ILogger>(),
+                            Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                             Mock.Of<ISeasonRepository>(),
                             routeGenerator.Object,
                             Mock.Of<IRedirectsRepository>(),
@@ -334,7 +334,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             copier.Setup(x => x.CreateAuditableCopy(location)).Returns(auditable);
             copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
             var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger<SqlServerCompetitionRepository>>();
 
             var repo = new SqlServerCompetitionRepository(
                         _databaseFixture.ConnectionFactory,
@@ -354,7 +354,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
             auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(typeof(SqlServerCompetitionRepository), LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerCompetitionRepository), nameof(SqlServerCompetitionRepository.CreateCompetition)));
+            logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerCompetitionRepository), nameof(SqlServerCompetitionRepository.CreateCompetition)));
         }
 
 
@@ -364,7 +364,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                         _databaseFixture.ConnectionFactory,
                         Mock.Of<IAuditRepository>(),
-                        Mock.Of<ILogger>(),
+                        Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                         Mock.Of<ISeasonRepository>(),
                         Mock.Of<IRouteGenerator>(),
                         Mock.Of<IRedirectsRepository>(),
@@ -382,7 +382,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                         _databaseFixture.ConnectionFactory,
                         Mock.Of<IAuditRepository>(),
-                        Mock.Of<ILogger>(),
+                        Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                         Mock.Of<ISeasonRepository>(),
                         Mock.Of<IRouteGenerator>(),
                         Mock.Of<IRedirectsRepository>(),
@@ -400,7 +400,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                           _databaseFixture.ConnectionFactory,
                           Mock.Of<IAuditRepository>(),
-                          Mock.Of<ILogger>(),
+                          Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                           Mock.Of<ISeasonRepository>(),
                           Mock.Of<IRouteGenerator>(),
                           Mock.Of<IRedirectsRepository>(),
@@ -440,7 +440,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                     _databaseFixture.ConnectionFactory,
                     Mock.Of<IAuditRepository>(),
-                    Mock.Of<ILogger>(),
+                    Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                     Mock.Of<ISeasonRepository>(),
                     routeGenerator.Object,
                     Mock.Of<IRedirectsRepository>(),
@@ -515,7 +515,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                          _databaseFixture.ConnectionFactory,
                          Mock.Of<IAuditRepository>(),
-                         Mock.Of<ILogger>(),
+                         Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                          Mock.Of<ISeasonRepository>(),
                          routeGenerator.Object,
                          Mock.Of<IRedirectsRepository>(),
@@ -595,7 +595,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                          _databaseFixture.ConnectionFactory,
                          Mock.Of<IAuditRepository>(),
-                         Mock.Of<ILogger>(),
+                         Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                          Mock.Of<ISeasonRepository>(),
                          routeGenerator.Object,
                          Mock.Of<IRedirectsRepository>(),
@@ -651,7 +651,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                          _databaseFixture.ConnectionFactory,
                          Mock.Of<IAuditRepository>(),
-                         Mock.Of<ILogger>(),
+                         Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                          Mock.Of<ISeasonRepository>(),
                          routeGenerator.Object,
                          Mock.Of<IRedirectsRepository>(),
@@ -699,7 +699,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                            _databaseFixture.ConnectionFactory,
                            Mock.Of<IAuditRepository>(),
-                           Mock.Of<ILogger>(),
+                           Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                            Mock.Of<ISeasonRepository>(),
                            routeGenerator.Object,
                            redirects.Object,
@@ -735,7 +735,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                            _databaseFixture.ConnectionFactory,
                            Mock.Of<IAuditRepository>(),
-                           Mock.Of<ILogger>(),
+                           Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                            Mock.Of<ISeasonRepository>(),
                            routeGenerator.Object,
                            redirects.Object,
@@ -780,7 +780,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var repo = new SqlServerCompetitionRepository(
                            _databaseFixture.ConnectionFactory,
                            Mock.Of<IAuditRepository>(),
-                           Mock.Of<ILogger>(),
+                           Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                            Mock.Of<ISeasonRepository>(),
                            routeGenerator.Object,
                            redirects.Object,
@@ -817,7 +817,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             copier.Setup(x => x.CreateAuditableCopy(location)).Returns(auditable);
             copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
             var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger<SqlServerCompetitionRepository>>();
 
             var repo = new SqlServerCompetitionRepository(
                     _databaseFixture.ConnectionFactory,
@@ -837,7 +837,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
             auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(typeof(SqlServerCompetitionRepository), LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerCompetitionRepository), nameof(SqlServerCompetitionRepository.UpdateCompetition)));
+            logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerCompetitionRepository), nameof(SqlServerCompetitionRepository.UpdateCompetition)));
         }
 
         [Fact]
@@ -866,7 +866,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var seasonRepository = new SqlServerSeasonRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerSeasonRepository>>(),
                 sanitizer.Object,
                 Mock.Of<IRedirectsRepository>(),
                 copier.Object
@@ -875,7 +875,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var competitionRepository = new SqlServerCompetitionRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
                 seasonRepository,
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),

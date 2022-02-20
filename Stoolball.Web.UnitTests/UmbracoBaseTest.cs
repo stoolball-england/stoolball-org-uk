@@ -49,6 +49,7 @@ namespace Stoolball.Web.UnitTests
             Request.SetupGet(x => x.Scheme).Returns("https");
             Request.SetupGet(x => x.Host).Returns(new HostString("www.stoolball.org.uk"));
             Request.SetupGet(x => x.Query).Returns(new QueryCollection());
+            Request.SetupGet(x => x.Headers).Returns(new HeaderDictionary());
 
             HttpContext = new Mock<HttpContext>();
             HttpContext.SetupGet(x => x.Request).Returns(Request.Object);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Stoolball.Listings;
 using Stoolball.Metadata;
@@ -37,7 +36,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection()).ConfigureAwait(false)).ConfigureAwait(false);
+                string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -50,7 +49,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection()).ConfigureAwait(false)).ConfigureAwait(false);
+                string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -64,7 +63,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection()).ConfigureAwait(false)).ConfigureAwait(false);
+                string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -78,7 +77,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection()).ConfigureAwait(false)).ConfigureAwait(false);
+                string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -92,7 +91,7 @@ namespace Stoolball.UnitTests.Listings
                 null,
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection()).ConfigureAwait(false)).ConfigureAwait(false);
+                string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Theory]
@@ -108,7 +107,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 pageTitle,
                 PAGE_URL,
-                new NameValueCollection()).ConfigureAwait(false)).ConfigureAwait(false);
+                string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -122,21 +121,23 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 null,
-                new NameValueCollection()).ConfigureAwait(false)).ConfigureAwait(false);
+                string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Throws_ArgumentNullException_if_queryParameters_is_null()
+        public async Task Does_not_throw_exception_if_queryParameters_is_null()
         {
             var listingsBuilder = new ListingsModelBuilder<StubModel, StubFilter, StubViewModel>();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await listingsBuilder.BuildModel(
+            var result = await listingsBuilder.BuildModel(
                 () => new StubViewModel { Filter = new StubFilter() },
                 x => Task.FromResult(0),
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                null).ConfigureAwait(false)).ConfigureAwait(false);
+                null);
+
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -151,7 +152,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection()
+                string.Empty
                 ).ConfigureAwait(false);
 
             Assert.Equal(initialModel, result);
@@ -168,7 +169,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection() { { "page", "5" } }
+                "page=5"
                 ).ConfigureAwait(false);
 
             Assert.Equal(5, result.Filter.Paging.PageNumber);
@@ -185,7 +186,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection()
+                string.Empty
                 ).ConfigureAwait(false);
 
             Assert.Equal(1, result.Filter.Paging.PageNumber);
@@ -202,7 +203,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection() { { "page", "0" } }
+                "page=0"
                 ).ConfigureAwait(false);
 
             Assert.Equal(1, result.Filter.Paging.PageNumber);
@@ -219,7 +220,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection() { { "page", "-1" } }
+                "page=-1"
                 ).ConfigureAwait(false);
 
             Assert.Equal(1, result.Filter.Paging.PageNumber);
@@ -236,7 +237,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection() { { "page", "invalid" } }
+                "page=invalid"
                 ).ConfigureAwait(false);
 
             Assert.Equal(1, result.Filter.Paging.PageNumber);
@@ -253,7 +254,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection() { { "size", "15" }, { "pagesize", "15" } }
+                "size=15&pagesize=15"
                 ).ConfigureAwait(false);
 
             Assert.Equal(Constants.Defaults.PageSize, result.Filter.Paging.PageSize);
@@ -270,7 +271,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection() { { "size", "15" }, { "pagesize", "15" } }
+                "size=15&pagesize=15"
                 ).ConfigureAwait(false);
 
             Assert.Equal(PAGE_URL, result.Filter.Paging.PageUrl);
@@ -288,7 +289,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection() { { "size", "15" }, { "pagesize", "15" } }
+                "size=15&pagesize=15"
                 ).ConfigureAwait(false);
 
             Assert.Equal(EXPECTED, result.Filter.Paging.Total);
@@ -311,7 +312,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel> { EXPECTED[0], EXPECTED[1], EXPECTED[2] }),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection() { { "size", "15" }, { "pagesize", "15" } }
+                "size=15&pagesize=15"
                 ).ConfigureAwait(false);
 
             Assert.Equal(EXPECTED.Count, result.Listings.Count);
@@ -332,7 +333,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection() { { "q", "example" } }
+                "q=example"
                 ).ConfigureAwait(false);
 
             Assert.Equal("example", result.Filter.Query);
@@ -349,7 +350,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection()
+                string.Empty
                 ).ConfigureAwait(false);
 
             Assert.Equal(PAGE_TITLE, result.Metadata.PageTitle);
@@ -366,7 +367,7 @@ namespace Stoolball.UnitTests.Listings
                 x => Task.FromResult(new List<StubModel>()),
                 PAGE_TITLE,
                 PAGE_URL,
-                new NameValueCollection() { { "q", "example" } }
+                "q=example"
                 ).ConfigureAwait(false);
 
             Assert.StartsWith(PAGE_TITLE, result.Metadata.PageTitle);

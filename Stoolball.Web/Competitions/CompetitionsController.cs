@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Stoolball.Competitions;
 using Stoolball.Listings;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Web;

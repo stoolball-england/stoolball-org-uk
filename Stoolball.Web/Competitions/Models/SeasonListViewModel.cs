@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Stoolball.Competitions;
 
-namespace Stoolball.Web.Competitions
+namespace Stoolball.Web.Competitions.Models
 {
     public class SeasonListViewModel
     {

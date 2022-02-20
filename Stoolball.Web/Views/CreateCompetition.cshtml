@@ -1,0 +1,25 @@
+﻿@inherits UmbracoViewPage<CompetitionViewModel>
+@using Stoolball.Web.Competitions
+@using Stoolball.Web.Competitions.Models
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_TinyMCE")
+<div class="container-xl">
+    <h1>Add a competition</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.CreateCompetition])
+    {
+        using (Html.BeginUmbracoForm<CreateCompetitionSurfaceController>
+            (nameof(CreateCompetitionSurfaceController.CreateCompetition)))
+        {
+            @await Html.PartialAsync("_CreateOrEditCompetition")
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

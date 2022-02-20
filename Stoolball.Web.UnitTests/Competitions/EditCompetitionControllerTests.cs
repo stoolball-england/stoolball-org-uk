@@ -10,19 +10,19 @@ using Xunit;
 
 namespace Stoolball.Web.UnitTests.Competitions
 {
-    public class CompetitionActionsControllerTests : UmbracoBaseTest
+    public class EditCompetitionControllerTests : UmbracoBaseTest
     {
         private readonly Mock<ICompetitionDataSource> _competitionDataSource = new();
 
-        public CompetitionActionsControllerTests()
+        public EditCompetitionControllerTests()
         {
             Setup();
         }
 
-        private CompetitionActionsController CreateController()
+        private EditCompetitionController CreateController()
         {
-            return new CompetitionActionsController(
-                Mock.Of<ILogger<CompetitionActionsController>>(),
+            return new EditCompetitionController(
+                Mock.Of<ILogger<EditCompetitionController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _competitionDataSource.Object,
@@ -48,7 +48,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public async Task Route_matching_competition_returns_CompetitionViewModel()
         {
-            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example", CompetitionRoute = "/competitions/example" });
+            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionRoute = "/competitions/example" });
 
             using (var controller = CreateController())
             {

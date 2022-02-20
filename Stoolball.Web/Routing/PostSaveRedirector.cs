@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Stoolball.Web.Routing
 {
     public class PostSaveRedirector : IPostSaveRedirector
     {
         /// <inheritdoc/>
-        public RedirectResult WorkOutRedirect(string routeBefore, string routeAfter, string defaultDestinationSuffix, string referrer, string permittedReferrerRegex)
+        public RedirectResult WorkOutRedirect(string routeBefore, string routeAfter, string defaultDestinationSuffix, string referrer, string? permittedReferrerRegex = null)
         {
             if (!string.IsNullOrEmpty(referrer))
             {

@@ -2,10 +2,8 @@
 @inject Stoolball.Email.IEmailProtector emailProtector
 @using Stoolball.Web.Account
 @using Umbraco.Cms.Web.Website.Models
+@await Html.PartialAsync("_JQueryValidate")
 @{
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.min.js") { Order = 100 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.unobtrusive.min.js") { Order = 100 });
-
     var createMemberModel = new RegisterModel();
 }
 <div class="container-xl">

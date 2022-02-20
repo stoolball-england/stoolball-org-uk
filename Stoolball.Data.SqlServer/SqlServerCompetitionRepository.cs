@@ -18,7 +18,7 @@ namespace Stoolball.Data.SqlServer
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
-        private readonly ILogger _logger;
+        private readonly ILogger<SqlServerCompetitionRepository> _logger;
         private readonly ISeasonRepository _seasonRepository;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
@@ -27,8 +27,17 @@ namespace Stoolball.Data.SqlServer
         private readonly IUrlFormatter _urlFormatter;
         private readonly ISocialMediaAccountFormatter _socialMediaAccountFormatter;
 
-        public SqlServerCompetitionRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, ISeasonRepository seasonRepository, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IStoolballEntityCopier copier, IUrlFormatter urlFormatter, ISocialMediaAccountFormatter socialMediaAccountFormatter)
+        public SqlServerCompetitionRepository(
+            IDatabaseConnectionFactory databaseConnectionFactory,
+            IAuditRepository auditRepository,
+            ILogger<SqlServerCompetitionRepository> logger,
+            ISeasonRepository seasonRepository,
+            IRouteGenerator routeGenerator,
+            IRedirectsRepository redirectsRepository,
+            IHtmlSanitizer htmlSanitiser,
+            IStoolballEntityCopier copier,
+            IUrlFormatter urlFormatter,
+            ISocialMediaAccountFormatter socialMediaAccountFormatter)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -128,7 +137,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerCompetitionRepository.CreateCompetition));
+                    _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerCompetitionRepository.CreateCompetition));
                 }
             }
 
@@ -169,7 +178,7 @@ namespace Stoolball.Data.SqlServer
                     auditableCompetition.CompetitionRoute = await _routeGenerator.GenerateUniqueRoute(
                         competition.CompetitionRoute,
                         "/competitions", auditableCompetition.CompetitionName, NoiseWords.CompetitionRoute,
-                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { auditableCompetition.CompetitionRoute }, transaction).ConfigureAwait(false)
+                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { CompetitionRoute = route }, transaction).ConfigureAwait(false)
                     ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(
@@ -244,7 +253,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerCompetitionRepository.UpdateCompetition));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerCompetitionRepository.UpdateCompetition));
                 }
             }
 
@@ -300,7 +309,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteCompetition));
+                    _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteCompetition));
                 }
             }
         }

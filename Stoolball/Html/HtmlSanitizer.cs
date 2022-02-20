@@ -1,4 +1,4 @@
-﻿namespace Stoolball.Web.Html
+﻿namespace Stoolball.Html
 {
     public class HtmlSanitizer : Ganss.XSS.HtmlSanitizer, Stoolball.Html.IHtmlSanitizer
     {

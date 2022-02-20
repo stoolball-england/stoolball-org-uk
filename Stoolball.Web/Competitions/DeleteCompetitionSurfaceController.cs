@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
 using Stoolball.Teams;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Competitions
 {
     public class DeleteCompetitionSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly ICompetitionDataSource _competitionDataSource;
         private readonly ICompetitionRepository _competitionRepository;
         private readonly IMatchListingDataSource _matchDataSource;
@@ -27,11 +33,12 @@ namespace Stoolball.Web.Competitions
         private readonly ICacheOverride _cacheOverride;
 
         public DeleteCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource,
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, ICompetitionDataSource competitionDataSource,
             ICompetitionRepository competitionRepository, IMatchListingDataSource matchDataSource, ITeamDataSource teamDataSource, IAuthorizationPolicy<Competition> authorizationPolicy,
             ICacheOverride cacheOverride)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
             _competitionRepository = competitionRepository ?? throw new ArgumentNullException(nameof(competitionRepository));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -44,7 +51,7 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteCompetition([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] Stoolball.Security.MatchingTextConfirmation model)
+        public async Task<ActionResult> DeleteCompetition([Bind("RequiredText", "ConfirmationText", Prefix = "ConfirmDeleteRequest")] MatchingTextConfirmation model)
         {
             if (model is null)
             {
@@ -53,26 +60,26 @@ namespace Stoolball.Web.Competitions
 
             var viewModel = new DeleteCompetitionViewModel(CurrentPage, Services.UserService)
             {
-                Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false),
+                Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.Path).ConfigureAwait(false),
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Competition);
+            viewModel.IsAuthorized = await _authorizationPolicy.IsAuthorized(viewModel.Competition);
 
-            if (viewModel.IsAuthorized[Stoolball.Security.AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
+            if (viewModel.IsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
             {
-                var memberGroup = Services.MemberGroupService.GetById(viewModel.Competition.MemberGroupKey.Value);
+                var memberGroup = Services.MemberGroupService.GetById(viewModel.Competition.MemberGroupKey!.Value);
                 if (memberGroup != null)
                 {
                     Services.MemberGroupService.Delete(memberGroup);
                 }
 
-                var currentMember = Members.GetCurrentMember();
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _competitionRepository.DeleteCompetition(viewModel.Competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix).ConfigureAwait(false);
                 viewModel.Deleted = true;
             }
             else
             {
-                var competitionIds = new List<Guid> { viewModel.Competition.CompetitionId.Value };
+                var competitionIds = new List<Guid> { viewModel.Competition.CompetitionId!.Value };
                 viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchFilter
                 {
                     CompetitionIds = competitionIds,

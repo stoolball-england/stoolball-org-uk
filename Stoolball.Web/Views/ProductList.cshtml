@@ -2,11 +2,8 @@
 @inject Stoolball.Email.IEmailProtector emailProtector
 @using Umbraco.Forms.Web.Extensions
 @{
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.min.js") { Order = 90 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.validate.unobtrusive.min.js") { Order = 100 });
-
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/umbraco/lib/tinymce/tinymce.min.js") { Order = 90 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/tinymce.js") { Order = 100 });
+    @await Html.PartialAsync("_JQueryValidate")
+    @await Html.PartialAsync("_TinyMCE")
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>

@@ -44,7 +44,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var seasonRepository = new SqlServerSeasonRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerSeasonRepository>>(),
                 sanitizer.Object,
                 Mock.Of<IRedirectsRepository>(),
                 copier.Object

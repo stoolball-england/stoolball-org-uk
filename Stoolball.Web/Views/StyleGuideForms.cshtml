@@ -1,6 +1,7 @@
 ﻿@using Umbraco.Forms.Web.Extensions
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<StyleGuide>
 @await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_TinyMCE")
 @{
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.autocomplete.min.js") { Order = 50 });
     SmidgeHelper.RequiresCss(new CssFile("~/css/autocomplete.min.css") { Order = 100 });
@@ -8,9 +9,6 @@
     SmidgeHelper.RequiresCss(new CssFile("~/css/related-items.min.css") { Order = 100 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/related-item.js") { Order = 100 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/related-items.js") { Order = 100 });
-
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/umbraco/lib/tinymce/tinymce.min.js") { Order = 90 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/tinymce.js") { Order = 100 });
 
     SmidgeHelper.RequiresCss(new CssFile("~/css/account.min.css") { Order = 100 });
 }

@@ -1,40 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
 using Stoolball.Teams;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Competitions
 {
-    public class DeleteCompetitionController : RenderMvcControllerAsync
+    public class DeleteCompetitionController : RenderController, IRenderControllerAsync
     {
         private readonly ICompetitionDataSource _competitionDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly ITeamDataSource _teamDataSource;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
-        public DeleteCompetitionController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           ICompetitionDataSource competitionDataSource,
-           IMatchListingDataSource matchDataSource,
-           ITeamDataSource teamDataSource,
-           IAuthorizationPolicy<Competition> authorizationPolicy)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public DeleteCompetitionController(ILogger<DeleteCompetitionController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            ICompetitionDataSource competitionDataSource,
+            IMatchListingDataSource matchDataSource,
+            ITeamDataSource teamDataSource,
+            IAuthorizationPolicy<Competition> authorizationPolicy)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -44,25 +41,20 @@ namespace Stoolball.Web.Competitions
 
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new DeleteCompetitionViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new DeleteCompetitionViewModel(contentModel.Content, Services?.UserService)
-            {
-                Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false)
+                Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.Path).ConfigureAwait(false)
             };
 
             if (model.Competition == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
-                var competitionIds = new List<Guid> { model.Competition.CompetitionId.Value };
+                var competitionIds = new List<Guid> { model.Competition.CompetitionId!.Value };
                 model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchFilter
                 {
                     CompetitionIds = competitionIds,
@@ -76,7 +68,7 @@ namespace Stoolball.Web.Competitions
 
                 model.ConfirmDeleteRequest.RequiredText = model.Competition.CompetitionName;
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Competition);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Competition);
 
                 model.Metadata.PageTitle = "Delete " + model.Competition.CompetitionName;
 

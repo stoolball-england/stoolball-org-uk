@@ -1,7 +1,6 @@
 ﻿using System;
 using Stoolball.Caching;
 using Stoolball.Comments;
-using Stoolball.Competitions;
 using Stoolball.Data.Cache;
 using Stoolball.Data.SqlServer;
 using Stoolball.Email;
@@ -16,7 +15,6 @@ using Stoolball.Teams;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
-using Stoolball.Web.Routing;
 using Stoolball.Web.Schools;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics;
@@ -47,7 +45,6 @@ namespace Stoolball.Web
             composition.Register<IPlayerInningsScaffolder, PlayerInningsScaffolder>();
             composition.Register<IBowlingScorecardComparer, BowlingScorecardComparer>();
             composition.Register<IBattingScorecardComparer, BattingScorecardComparer>();
-            composition.Register<IPostSaveRedirector, PostSaveRedirector>();
             composition.Register<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>();
             composition.Register<IOverSetScaffolder, OverSetScaffolder>();
             composition.Register<IPlayerInMatchStatisticsBuilder, PlayerInMatchStatisticsBuilder>();
@@ -60,9 +57,6 @@ namespace Stoolball.Web
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
             composition.Register<IPlayerNameFormatter, PlayerNameFormatter>();
             composition.Register<IMatchInningsFactory, MatchInningsFactory>();
-            composition.Register<Stoolball.Html.IHtmlSanitizer, Stoolball.Web.Html.HtmlSanitizer>();
-            composition.Register<IUrlFormatter, UrlFormatter>();
-            composition.Register<ISocialMediaAccountFormatter, SocialMediaAccountFormatter>();
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
 
             // Listings pages
@@ -81,8 +75,6 @@ namespace Stoolball.Web
             composition.Register<ITeamRepository, SqlServerTeamRepository>();
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();
             composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>();
-            composition.Register<ICompetitionRepository, SqlServerCompetitionRepository>();
-            composition.Register<ISeasonRepository, SqlServerSeasonRepository>();
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>();
             composition.Register<ICommentsDataSource<Match>, CachedCommentsDataSource<Match>>();
             composition.Register<ICommentsDataSource<Tournament>, CachedCommentsDataSource<Tournament>>();
