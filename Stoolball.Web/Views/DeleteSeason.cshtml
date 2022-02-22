@@ -1,21 +1,15 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.DeleteSeasonViewModel>
+﻿@inherits UmbracoViewPage<Stoolball.Web.Competitions.Models.DeleteSeasonViewModel>
 @using Humanizer
-@using ClientDependency.Core.Mvc
 @using Stoolball.Competitions
 @using Stoolball.Matches
 @using Stoolball.Web.Competitions
 @using Stoolball.Security
-@{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-}
+@await Html.PartialAsync("_JQueryValidate")
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>Delete @Model.Season.SeasonFullName()</h1>
+    <h1>Delete @Model.Season!.SeasonFullName()</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
     {
@@ -48,11 +42,8 @@
             </ul>
             <p><strong><strong>You cannot undo this.</strong></strong></p>
 
-            using (Html.BeginUmbracoForm<DeleteSeasonSurfaceController>
-                   ("DeleteSeason"))
+            using (Html.BeginUmbracoForm<DeleteSeasonSurfaceController>(nameof(DeleteSeasonSurfaceController.DeleteSeason)))
             {
-                @Html.AntiForgeryToken()
-
                 @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
                 <div class="form-group">
                     @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Season.SeasonFullName()}' into this box:")
@@ -71,6 +62,6 @@
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

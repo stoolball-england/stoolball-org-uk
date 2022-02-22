@@ -642,10 +642,6 @@
     <None Include="Secret-Email.Web.development.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
-    <Content Include="Views\EditSeasonResultsTable.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditSeasonResultsTable.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\EditStatistics.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>EditStatistics.generated.cs</LastGenOutput>
@@ -773,19 +769,7 @@
     <Compile Include="App_Data\Models\YouTubeVideo.generated.cs" />
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="Caching\ClearableCacheWrapper.cs" />
-    <Compile Include="Competitions\DeleteSeasonSurfaceController.cs" />
-    <Compile Include="Competitions\EditSeasonTeamsSurfaceController.cs" />
-    <Compile Include="Competitions\EditSeasonTeamsController.cs" />
-    <Compile Include="Competitions\EditSeasonResultsTableController.cs" />
-    <Compile Include="Competitions\EditSeasonResultsTableSurfaceController.cs" />
-    <Compile Include="Competitions\EditSeasonSurfaceController.cs" />
-    <Compile Include="Competitions\CreateSeasonSurfaceController.cs" />
-    <Compile Include="Competitions\CreateSeasonController.cs" />
-    <Compile Include="Competitions\EditSeasonController.cs" />
-    <Compile Include="Competitions\DeleteSeasonController.cs" />
-    <Compile Include="Competitions\DeleteSeasonViewModel.cs" />
     <Compile Include="Competitions\SeasonListViewModel.cs" />
-    <Compile Include="Competitions\SeasonViewModel.cs" />
     <Compile Include="Configuration\IApiKeyProvider.cs" />
     <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
     <Compile Include="Filtering\FilterViewModel.cs" />
@@ -1119,11 +1103,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CreateMatchLocation.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CreateSeason.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CreateSeason.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\CreateTeam.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1143,11 +1122,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DeleteMatchLocation.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DeleteSeason.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DeleteSeason.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\DeleteTeam.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1193,21 +1167,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EditMatchLocation.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditSeason.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditSeason.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditSeasonResultsTable.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditSeasonResultsTable.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditSeasonTeams.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditSeasonTeams.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditStartOfPlay.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1308,11 +1267,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>_CreateOrEditMatchLocation.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\_CreateOrEditSeason.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_CreateOrEditSeason.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_CreateOrEditTeam.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1492,18 +1446,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>EditTransientTeam.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\CreateSeason.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>CreateSeason.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\EditSeason.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditSeason.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_CreateOrEditSeason.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_CreateOrEditSeason.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\DeleteMatchLocation.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>DeleteMatchLocation.generated.cs</LastGenOutput>
@@ -1520,10 +1462,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>DeleteTeam.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\DeleteSeason.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>DeleteSeason.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\MatchActions.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MatchActions.generated.cs</LastGenOutput>
@@ -1539,10 +1477,6 @@
     <Content Include="Views\DeleteTournament.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>DeleteTournament.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\EditSeasonTeams.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditSeasonTeams.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\CreateLeagueMatch.cshtml">
       <Generator>RazorGenerator</Generator>

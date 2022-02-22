@@ -1,30 +1,37 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Competitions
 {
     public class EditSeasonTeamsSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ISeasonRepository _seasonRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public EditSeasonTeamsSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ISeasonDataSource seasonDataSource,
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, ISeasonDataSource seasonDataSource,
             ISeasonRepository seasonRepository, IAuthorizationPolicy<Competition> authorizationPolicy)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _seasonRepository = seasonRepository ?? throw new ArgumentNullException(nameof(seasonRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
@@ -34,14 +41,14 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateSeason([Bind(Prefix = "Season", Include = "Teams")] Season season)
+        public async Task<ActionResult> UpdateSeason([Bind("Teams", Prefix = "Season")] Season season)
         {
             if (season is null)
             {
                 season = new Season(); // if there are no teams, season is null
             }
 
-            var beforeUpdate = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _seasonDataSource.ReadSeasonByRoute(Request.Path).ConfigureAwait(false);
             season.SeasonId = beforeUpdate.SeasonId;
 
             ReplaceDateFormatErrorMessages("Date withdrew");
@@ -49,15 +56,15 @@ namespace Stoolball.Web.Competitions
             // We're not interested in validating the details of the selected teams
             foreach (var key in ModelState.Keys.Where(x => x.StartsWith("Season.Teams", StringComparison.OrdinalIgnoreCase)))
             {
-                ModelState[key].Errors.Clear();
+                ModelState.Remove(key);
             }
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate.Competition);
+            var isAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate.Competition);
 
-            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditCompetition] && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
             {
                 // Update the season
-                var currentMember = Members.GetCurrentMember();
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _seasonRepository.UpdateTeams(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the season actions page that led here

@@ -1,37 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Competitions
 {
-    public class DeleteSeasonController : RenderMvcControllerAsync
+    public class DeleteSeasonController : RenderController, IRenderControllerAsync
     {
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
-        public DeleteSeasonController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           ISeasonDataSource seasonDataSource,
-           IMatchListingDataSource matchDataSource,
-           IAuthorizationPolicy<Competition> authorizationPolicy)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public DeleteSeasonController(ILogger<DeleteSeasonController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            ISeasonDataSource seasonDataSource,
+            IMatchListingDataSource matchDataSource,
+            IAuthorizationPolicy<Competition> authorizationPolicy)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -40,33 +37,28 @@ namespace Stoolball.Web.Competitions
 
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new DeleteSeasonViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new DeleteSeasonViewModel(contentModel.Content, Services?.UserService)
-            {
-                Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false)
+                Season = await _seasonDataSource.ReadSeasonByRoute(Request.Path, true).ConfigureAwait(false)
             };
 
             if (model.Season == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
                 model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchFilter
                 {
-                    SeasonIds = new List<Guid> { model.Season.SeasonId.Value },
+                    SeasonIds = new List<Guid> { model.Season.SeasonId!.Value },
                     IncludeTournamentMatches = true
-                }).ConfigureAwait(false);
+                });
 
                 model.ConfirmDeleteRequest.RequiredText = model.Season.SeasonFullName();
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 model.Metadata.PageTitle = "Delete " + model.Season.SeasonFullNameAndPlayerType();
 

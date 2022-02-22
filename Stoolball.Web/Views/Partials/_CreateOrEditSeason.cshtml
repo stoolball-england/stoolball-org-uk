@@ -1,24 +1,24 @@
 ﻿@model SeasonViewModel
 @using Humanizer
 @using Stoolball.Matches
-@using Stoolball.Web.Competitions
+@using Stoolball.Web.Competitions.Models
 @using Stoolball.Web.HtmlHelpers
 <div class="form-group">
-    @Html.LabelFor(m => Model.Season.Introduction, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @Html.LabelFor(m => Model.Season!.Introduction, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     <p class="form-text" id="intro-help"><small>The introduction to the competition is displayed for all seasons. This is added just for this season.</small></p>
-    @Html.TextAreaFor(m => Model.Season.Introduction, new { @class = "form-control", aria_describedby = "intro-validation intro-help" })
-    @Html.ValidationMessageFor(m => Model.Season.Introduction, null, new { id = "intro-validation" })
+    @Html.TextAreaFor(m => Model.Season!.Introduction, new { @class = "form-control", aria_describedby = "intro-validation intro-help" })
+    @Html.ValidationMessageFor(m => Model.Season!.Introduction, null, new { id = "intro-validation" })
 </div>
 
 <fieldset class="form-group">
     <legend>What matches can be listed?</legend>
     <div class="custom-control custom-checkbox">
-        @Html.CheckBoxFor(m => Model.Season.EnableTournaments, new { @class = "custom-control-input", aria_describedby= "match-types-validation" })
-        @Html.LabelFor(m => Model.Season.EnableTournaments, "Tournament", new { @class = "custom-control-label" })
+        @Html.CheckBoxFor(m => Model.Season!.EnableTournaments, new { @class = "custom-control-input", aria_describedby= "match-types-validation" })
+        @Html.LabelFor(m => Model.Season!.EnableTournaments, "Tournament", new { @class = "custom-control-label" })
     </div>
     @{
         // MVC always includes the checked attribute for this one, so build the attribute manually (possibly to do with the enum == 0?)
-        var leagueChecked = Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) ? " checked=\"checked\"" : string.Empty;
+        var leagueChecked = Model.Season!.MatchTypes.Contains(MatchType.LeagueMatch) ? " checked=\"checked\"" : string.Empty;
     }
     <div class="custom-control custom-checkbox">
         <input type="checkbox" name="Season.MatchTypes" value="@MatchType.LeagueMatch" class="custom-control-input" id="match-type-league" @leagueChecked aria-describedby="match-types-validation" />

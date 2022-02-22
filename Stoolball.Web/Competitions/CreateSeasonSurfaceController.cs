@@ -2,31 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Competitions
 {
     public class CreateSeasonSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly ICompetitionDataSource _competitionDataSource;
         private readonly ISeasonRepository _seasonRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public CreateSeasonSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource,
-            ISeasonRepository seasonRepository, IAuthorizationPolicy<Competition> authorizationPolicy)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            ICompetitionDataSource competitionDataSource, ISeasonRepository seasonRepository, IAuthorizationPolicy<Competition> authorizationPolicy)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
             _seasonRepository = seasonRepository ?? throw new System.ArgumentNullException(nameof(seasonRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
@@ -36,11 +43,11 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> CreateSeason([Bind(Prefix = "Season", Include = "FromYear,UntilYear,EnableTournaments,EnableBonusOrPenaltyRuns,PlayersPerTeam,DefaultOverSets,EnableLastPlayerBatsOn")] Season season)
+        public async Task<ActionResult> CreateSeason([Bind("FromYear", "UntilYear", "EnableTournaments", "EnableBonusOrPenaltyRuns", "PlayersPerTeam", "DefaultOverSets", "EnableLastPlayerBatsOn", Prefix = "Season")] Season season)
         {
             if (season is null)
             {
-                throw new System.ArgumentNullException(nameof(season));
+                throw new ArgumentNullException(nameof(season));
             }
 
             season.DefaultOverSets.RemoveAll(x => !x.Overs.HasValue);
@@ -51,17 +58,17 @@ namespace Stoolball.Web.Competitions
             season.UntilYear = season.FromYear + season.UntilYear;
 
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
-            season.Introduction = Request.Unvalidated.Form["Season.Introduction"];
-            season.Results = Request.Unvalidated.Form["Season.Results"];
+            season.Introduction = Request.Form["Season.Introduction"];
+            season.Results = Request.Form["Season.Results"];
 
             try
             {
                 // parse this because there's no way to get it via the standard modelbinder without requiring JavaScript to change the field names on submit
-                season.MatchTypes = Request.Form["Season.MatchTypes"]?.Split(',').Select(x => (MatchType)Enum.Parse(typeof(MatchType), x)).ToList() ?? new List<MatchType>();
+                season.MatchTypes = Request.Form["Season.MatchTypes"].ToString().Split(',').Select(x => (MatchType)Enum.Parse(typeof(MatchType), x)).ToList() ?? new List<MatchType>();
             }
             catch (InvalidCastException)
             {
-                return new HttpStatusCodeResult(400);
+                return StatusCode(400);
             }
 
             if (!season.MatchTypes.Any())
@@ -69,7 +76,7 @@ namespace Stoolball.Web.Competitions
                 ModelState.AddModelError("Season.MatchTypes", $"Please select at least one type of match");
             }
 
-            season.Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
+            season.Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.Path).ConfigureAwait(false);
 
             // Ensure there isn't already a season with the submitted year(s)
             if (season.Competition.Seasons.Any(x => x.FromYear == season.FromYear && x.UntilYear == season.UntilYear))
@@ -77,12 +84,12 @@ namespace Stoolball.Web.Competitions
                 ModelState.AddModelError("Season.FromYear", $"There is already a {season.SeasonName()}");
             }
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(season.Competition);
+            var isAuthorized = await _authorizationPolicy.IsAuthorized(season.Competition);
 
-            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditCompetition] && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
             {
                 // Create the season
-                var currentMember = Members.GetCurrentMember();
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var createdSeason = await _seasonRepository.CreateSeason(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the season

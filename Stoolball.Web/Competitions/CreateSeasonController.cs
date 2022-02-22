@@ -1,35 +1,32 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Competitions
 {
-    public class CreateSeasonController : RenderMvcControllerAsync
+    public class CreateSeasonController : RenderController, IRenderControllerAsync
     {
         private readonly ICompetitionDataSource _competitionDataSource;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
-        public CreateSeasonController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           ICompetitionDataSource competitionDataSource,
-           IAuthorizationPolicy<Competition> authorizationPolicy)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public CreateSeasonController(ILogger<CreateSeasonController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            ICompetitionDataSource competitionDataSource,
+            IAuthorizationPolicy<Competition> authorizationPolicy)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
@@ -37,22 +34,17 @@ namespace Stoolball.Web.Competitions
 
         [HttpGet]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public override async Task<ActionResult> Index(ContentModel contentModel)
+        public new async Task<IActionResult> Index()
         {
-            if (contentModel is null)
-            {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
+            var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.Path).ConfigureAwait(false);
 
             if (competition == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
-                var model = new SeasonViewModel(contentModel.Content, Services?.UserService)
+                var model = new SeasonViewModel(CurrentPage)
                 {
                     Season = competition.Seasons.FirstOrDefault() ?? new Season { PlayersPerTeam = 11 }
                 };
@@ -65,7 +57,7 @@ namespace Stoolball.Web.Competitions
                 model.Season.FromYear = model.Season.FromYear == default ? DateTime.Today.Year : model.Season.FromYear + 1;
                 model.Season.UntilYear = summerSeason ? 0 : 1;
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
                 model.Metadata.PageTitle = $"Add a season in {the}{model.Season.Competition.CompetitionName}";

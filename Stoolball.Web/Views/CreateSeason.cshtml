@@ -1,31 +1,22 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
-@using ClientDependency.Core.Mvc
+﻿@inherits UmbracoViewPage<SeasonViewModel>
 @using Stoolball.Web.Competitions
+@using Stoolball.Web.Competitions.Models
 @using Stoolball.Security
 @{
-    var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
+    var the = Model.Season!.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
 }
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
-@{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-
-    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
-    Html.RequiresJs("/js/tinymce.js");
-}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_TinyMCE")
 <div class="container-xl">
     <h1>Add a season in @the@Model.Season.Competition.CompetitionName</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
     {
-        using (Html.BeginUmbracoForm<CreateSeasonSurfaceController>
-                ("CreateSeason"))
+        using (Html.BeginUmbracoForm<CreateSeasonSurfaceController>(nameof(CreateSeasonSurfaceController.CreateSeason)))
         {
-            @Html.AntiForgeryToken()
             @Html.ValidationSummary(true)
 
             <div class="form-group">
@@ -47,11 +38,11 @@
                 @Html.ValidationMessageFor(m => Model.Season.UntilYear, null, new { id = "end-year-validation" })
             </fieldset>
 
-            @Html.Partial("_CreateOrEditSeason")
+            @await Html.PartialAsync("_CreateOrEditSeason")
         }
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

@@ -1,28 +1,23 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
-@using ClientDependency.Core.Mvc
+﻿@inherits UmbracoViewPage<SeasonViewModel>
 @using Humanizer
 @using Stoolball.Competitions
 @using Stoolball.Web.Competitions
+@using Stoolball.Web.Competitions.Models
 @using Stoolball.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+@await Html.PartialAsync("_JQueryValidate")
 @{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-    Html.RequiresCss("/competitions/competitions.min.css");
+    SmidgeHelper.RequiresCss(new CssFile("/css/competitions.min.css") { Order = 100 });
 }
 <div class="container-xl">
-    <h1>Edit results table for @Model.Season.SeasonFullName()</h1>
+    <h1>Edit results table for @Model.Season!.SeasonFullName()</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
     {
-        using (Html.BeginUmbracoForm<EditSeasonResultsTableSurfaceController>
-            ("UpdateSeason"))
+        using (Html.BeginUmbracoForm<EditSeasonResultsTableSurfaceController>(nameof(EditSeasonResultsTableSurfaceController.UpdateSeason)))
         {
-            @Html.AntiForgeryToken()
             @Html.ValidationSummary(true)
 
             @Html.HiddenFor(m => Model.UrlReferrer)
@@ -97,6 +92,6 @@
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

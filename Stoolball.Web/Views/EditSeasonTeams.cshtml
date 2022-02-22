@@ -1,35 +1,24 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
-@using ClientDependency.Core.Mvc
+﻿@inherits UmbracoViewPage<SeasonViewModel>
 @using Stoolball.Teams
 @using Stoolball.Web.Competitions
+@using Stoolball.Web.Competitions.Models
 @using Stoolball.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItems")
 @{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-
-    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
-    Html.RequiresCss("~/css/autocomplete.min.css");
-
-    Html.RequiresCss("~/css/related-items.min.css");
-    Html.RequiresJs("~/js/related-items.js");
-
-    Html.RequiresCss("~/competitions/competitions.min.css");
+    SmidgeHelper.RequiresCss(new CssFile("~/css/competitions.min.css"){ Order = 100 });
 }
 <div class="container-xl">
-    <h1>Teams in the @Model.Season.SeasonFullName()</h1>
+    <h1>Teams in the @Model.Season!.SeasonFullName()</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
     {
-        using (Html.BeginUmbracoForm<EditSeasonTeamsSurfaceController>
-            ("UpdateSeason"))
+        using (Html.BeginUmbracoForm<EditSeasonTeamsSurfaceController>(nameof(EditSeasonTeamsSurfaceController.UpdateSeason)))
         {
-            @Html.AntiForgeryToken()
-
             <table class="table table-hover related-items edit-season-teams-table">
                 <thead class="thead-dark">
                     <tr><th scope="col">Teams</th><th scope="col" class="edit-season-teams-table__date-withdrew"><span class="related-items__if-not-empty">Date withdrew</span></th><th scope="col"></th></tr>
@@ -48,7 +37,7 @@
                                 <div class="related-item__animate">
                                     @Html.Hidden($"Season.Teams[{i}].Team.TeamId", Model.Season.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Season.Teams[i].Team.TeamId })
                                     @Html.Hidden($"Season.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })
-                                    <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Season.Teams[i].Team.TeamName} from this season")</button>
+                                    <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Remove {Model.Season.Teams[i].Team.TeamName} from this season")</button>
                                 </div>
                             </td>
                         </tr>
@@ -82,7 +71,7 @@
                         <div class="related-item__animate">
                             <input name="Season.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                             <input name="Season.Teams[0].Team.TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                            <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this season")</button>
+                            <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}} from this season")</button>
                         </div>
                     </td>
             </tr>
@@ -94,6 +83,6 @@
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

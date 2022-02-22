@@ -219,6 +219,11 @@ namespace Stoolball.Web
             services.AddTransient<SeasonActionsController>();
             services.AddTransient<SeasonMapController>();
             services.AddTransient<MatchesForSeasonController>();
+            services.AddTransient<CreateSeasonController>();
+            services.AddTransient<EditSeasonController>();
+            services.AddTransient<EditSeasonResultsTableController>();
+            services.AddTransient<EditSeasonTeamsController>();
+            services.AddTransient<DeleteSeasonController>();
 
             // Listings pages
             services.AddTransient<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();

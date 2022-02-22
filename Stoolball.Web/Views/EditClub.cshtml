@@ -5,13 +5,8 @@
     <meta name="robots" content="noindex,follow" />
 }
 @await Html.PartialAsync("_JQueryValidate")
-@{
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery.autocomplete.min.js") { Order = 50 });
-    SmidgeHelper.RequiresCss(new CssFile("~/css/autocomplete.min.css"){ Order = 100});
-
-    SmidgeHelper.RequiresCss(new CssFile("~/css/related-items.min.css"){ Order = 100 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/related-items.js"){ Order = 100 });
-}
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItems")
 <div class="container-xl">
     <h1>Edit @Model.Club?.ClubName</h1>
 
