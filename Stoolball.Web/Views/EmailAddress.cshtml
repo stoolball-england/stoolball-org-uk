@@ -7,9 +7,6 @@
 @using Umbraco.Cms.Core.Services
 @using Umbraco.Cms.Core.Strings
 @await Html.PartialAsync("_JQueryValidate")
-@{
-    var currentMemberBypassingCache = memberService.GetByKey((await memberManager.GetCurrentMemberAsync()).Key);
-}
 <div class="container-xl">
     <h1>@Model.Name</h1>
 
@@ -17,6 +14,7 @@
     {
         if (TempData["Success"] == null)
         {
+            var currentMemberBypassingCache = memberService.GetByKey((await memberManager.GetCurrentMemberAsync()).Key);
             @await Html.PartialAsync("_ConfirmEmailAddress", currentMemberBypassingCache)
 
             using (Html.BeginUmbracoForm<EmailAddressSurfaceController>("UpdateEmailAddress", null, new { id = "calling-it-search-disables-contact-managers" }))
