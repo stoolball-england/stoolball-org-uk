@@ -1,25 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- This file is run automatically when the project is built. 
+	<!-- This file is run automatically when the project is built. 
        https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019
   -->
 
-  <!-- Copy files from npm packages that are needed to run -->
-  <Target Name="StoolballCopyFilesFromNpmPackages" BeforeTargets="WebCompile">
-    <Error Text="bootstrap npm package not found. Run npm install." Condition="!Exists('$(ProjectDir)..\node_modules\bootstrap\')" />
-    <Error Text="popper.js npm package not found. Run npm install." Condition="!Exists('$(ProjectDir)..\node_modules\popper.js\')" />
+	<!-- Copy files from npm packages that are needed to run -->
+	<Target Name="StoolballCopyFilesFromNpmPackages" BeforeTargets="BeforeBuild">
+		<Error Text="bootstrap npm package not found. Run npm install." Condition="!Exists('$(ProjectDir)..\node_modules\bootstrap\')" />
+		<Error Text="popper.js npm package not found. Run npm install." Condition="!Exists('$(ProjectDir)..\node_modules\popper.js\')" />
 
-    <ItemGroup>
-      <FilesFromBootstrapPackage Include="$(ProjectDir)..\node_modules\bootstrap\js\dist\*.js" />
-      <FilesFromPopperPackage Include="$(ProjectDir)..\node_modules\popper.js\dist\umd\popper.min.js" />
-    </ItemGroup>
+		<ItemGroup>
+			<FilesFromBootstrapPackage Include="$(ProjectDir)..\node_modules\bootstrap\js\dist\*.js" />
+			<FilesFromPopperPackage Include="$(ProjectDir)..\node_modules\popper.js\dist\umd\popper.min.js" />
+		</ItemGroup>
 
-    <!-- Copy files that are missing -->
-    <Copy SourceFiles="@(FilesFromBootstrapPackage)"
-          DestinationFiles="$(ProjectDir)\wwwroot\js\lib\bootstrap\%(RecursiveDir)%(Filename)%(Extension)"
-          Condition="!Exists('$(ProjectDir)\wwwroot\js\lib\bootstrap\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(FilesFromPopperPackage)"
-          DestinationFiles="$(ProjectDir)\wwwroot\js\lib\bootstrap\%(RecursiveDir)%(Filename)%(Extension)"
-          Condition="!Exists('$(ProjectDir)\wwwroot\js\lib\bootstrap\%(RecursiveDir)%(Filename)%(Extension)')" />
-  </Target>
+		<!-- Copy files that are missing -->
+		<Copy SourceFiles="@(FilesFromBootstrapPackage)"
+			  DestinationFiles="$(ProjectDir)wwwroot\js\lib\bootstrap\%(RecursiveDir)%(Filename)%(Extension)"
+			  Condition="!Exists('$(ProjectDir)wwwroot\js\lib\bootstrap\%(RecursiveDir)%(Filename)%(Extension)')" />
+		<Copy SourceFiles="@(FilesFromPopperPackage)"
+			  DestinationFiles="$(ProjectDir)wwwroot\js\lib\bootstrap\%(RecursiveDir)%(Filename)%(Extension)"
+			  Condition="!Exists('$(ProjectDir)wwwroot\js\lib\bootstrap\%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
+
+	<Target Name="StoolballCopyFilesFromUmbracoCloud" BeforeTargets="BeforeBuild">
+		<!-- Copy files source-controlled in the .UmbracoCloud repo, if that repo is present -->
+		<Copy SourceFiles="$(ProjectDir)..\.UmbracoCloud\src\UmbracoProject\umbraco-cloud.json"
+				DestinationFiles="$(ProjectDir)umbraco-cloud.json"
+				Condition="Exists('$(ProjectDir)..\.UmbracoCloud\src\UmbracoProject\umbraco-cloud.json')" />
+	</Target>
 </Project>
