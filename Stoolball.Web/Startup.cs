@@ -39,6 +39,8 @@ using Stoolball.Web.Forms;
 using Stoolball.Web.Logging;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
+using Stoolball.Web.Teams;
+using Stoolball.Web.Teams.Models;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
 using Umbraco.Extensions;
@@ -86,6 +88,7 @@ namespace Stoolball.Web
             // Utility classes
             services.AddTransient<IApiKeyProvider, ConfigApiKeyProvider>();
             services.AddTransient<IBowlingFiguresCalculator, BowlingFiguresCalculator>();
+            services.AddTransient<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>();
             services.AddTransient<IDataRedactor, DataRedactor>();
             services.AddTransient<IDateTimeFormatter, DateTimeFormatter>();
             services.AddTransient<IEmailProtector, EmailProtector>();
@@ -110,6 +113,7 @@ namespace Stoolball.Web
             services.AddTransient<IMatchFilterQueryStringParser, MatchFilterQueryStringParser>();
             services.AddTransient<IMatchFilterQueryStringSerializer, MatchFilterQueryStringSerializer>();
             services.AddTransient<IPlayerFilterSerializer, PlayerFilterQueryStringSerializer>();
+            services.AddTransient<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
             services.AddTransient<IStatisticsFilterHumanizer, StatisticsFilterHumanizer>();
             services.AddTransient<IStatisticsFilterQueryStringParser, StatisticsFilterQueryStringParser>();
             services.AddTransient<IStatisticsFilterQueryStringSerializer, StatisticsFilterQueryStringSerializer>();
@@ -135,6 +139,8 @@ namespace Stoolball.Web
             services.AddTransient<ICacheablePlayerDataSource, SqlServerPlayerDataSource>();
             services.AddTransient<ISeasonDataSource, SqlServerSeasonDataSource>();
             services.AddTransient<ITeamDataSource, SqlServerTeamDataSource>();
+            services.AddTransient<ITeamListingDataSource, CachedTeamListingDataSource>();
+            services.AddTransient<ICacheableTeamListingDataSource, SqlServerTeamListingDataSource>();
 
             // Statistics data sources
             services.AddTransient<IBestPerformanceInAMatchStatisticsDataSource, CachedBestPerformanceInAMatchStatisticsDataSource>();
@@ -186,6 +192,7 @@ namespace Stoolball.Web
             // Security checks
             services.AddTransient<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();
             services.AddTransient<IAuthorizationPolicy<Competition>, CompetitionAuthorizationPolicy>();
+            services.AddTransient<IAuthorizationPolicy<Team>, TeamAuthorizationPolicy>();
             services.AddScoped<DelegatedContentSecurityPolicyAttribute>();
 
             // Routing controllers for stoolball data pages.
@@ -204,6 +211,15 @@ namespace Stoolball.Web
             services.AddTransient<CreateClubController>();
             services.AddTransient<EditClubController>();
             services.AddTransient<DeleteClubController>();
+
+            services.AddTransient<TeamsController>();
+            services.AddTransient<TeamsMapController>();
+            services.AddTransient<TeamController>();
+            services.AddTransient<TransientTeamController>();
+            services.AddTransient<TeamActionsController>();
+            services.AddTransient<TeamStatisticsController>();
+            services.AddTransient<MatchesForTeamController>();
+            services.AddTransient<PlayersForTeamController>();
 
             services.AddTransient<CompetitionsController>();
             services.AddTransient<CompetitionController>();
@@ -227,6 +243,7 @@ namespace Stoolball.Web
 
             // Listings pages
             services.AddTransient<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();
+            services.AddTransient<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>, ListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();
         }
 
         /// <summary>

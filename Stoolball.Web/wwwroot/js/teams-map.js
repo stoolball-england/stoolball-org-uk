@@ -9,31 +9,50 @@
       return;
     }
 
-    var mapControl = document.getElementById("map");
+    var map = document.getElementById("map");
 
     // Convert data attributes into a querystring for the API
-    const query = [["season", mapControl.getAttribute("data-seasonid")]]
-      .map(function (x) {
-        return x.join("=");
+    const query = [
+      ["season", map.getAttribute("data-seasonid")],
+      ["hasactiveteams", map.getAttribute("data-hasactiveteams")],
+      [
+        "teamtype",
+        map.getAttribute("data-teamtype")
+          ? map.getAttribute("data-teamtype").split(",")
+          : undefined,
+      ],
+    ]
+      .map(function (queryParam) {
+        if (typeof queryParam[1] === "string") {
+          return queryParam.join("=");
+        }
+        if (Array.isArray(queryParam[1])) {
+          return queryParam[1]
+            .map((value) => queryParam[0] + "=" + value)
+            .join("&");
+        }
+      })
+      .filter(function (queryParam) {
+        return queryParam !== undefined;
       })
       .join("&");
 
     // Adjust the map to the markers or leave at default?
-    const fixMap = mapControl.getAttribute("data-adjust") === "true";
+    const fixMap = map.getAttribute("data-adjust") === "true";
 
     // Make the placeholder big enough for a map
-    mapControl.setAttribute("class", "google-map");
+    map.setAttribute("class", "google-map");
     const myOptions = {
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       center: new google.maps.LatLng(51.8157917, -0.9166621), // Aylesbury - works for showing a map of England by default
       zoom: 6,
     };
-    const map = new google.maps.Map(mapControl, myOptions);
+    const googleMap = new google.maps.Map(map, myOptions);
     const groundMarkers = [],
       teamMarkers = [];
     const info = new google.maps.InfoWindow();
     let clusterer;
-    let previousZoom = map.getZoom();
+    let previousZoom = googleMap.getZoom();
 
     // JavaScript will create two sets of markers, one for each ground, and one for each team.
     // This is so that, when clustered, we can display the number of teams by creating a marker for each(even though they're actually duplicates).
@@ -135,7 +154,7 @@
       (function (marker, content) {
         google.maps.event.addListener(marker, "click", function () {
           info.setContent(content.outerHTML);
-          info.open(map, marker);
+          info.open(googleMap, marker);
         });
       })(locationMarker, infoWindowContent);
       return locationMarker;
@@ -149,7 +168,7 @@
 
     function plotMarkers(addMarkers) {
       if (clusterer) clusterer.clearMarkers();
-      clusterer = new MarkerClusterer(map, addMarkers, {
+      clusterer = new MarkerClusterer(googleMap, addMarkers, {
         gridSize: 30,
         styles: [
           {
@@ -213,20 +232,20 @@
       const midLatitude = minLatitude + latitudeSpan / 2;
       const midLongitude = minLongitude + longitudeSpan / 2;
       if (!isNaN(midLatitude) && !isNaN(midLongitude)) {
-        map.setCenter(new google.maps.LatLng(midLatitude, midLongitude));
+        googleMap.setCenter(new google.maps.LatLng(midLatitude, midLongitude));
 
         if (latitudeSpan < 0.25 && longitudeSpan < 0.25) {
-          map.setZoom(11);
+          googleMap.setZoom(11);
         } else if (latitudeSpan < 0.5 && longitudeSpan < 0.5) {
-          map.setZoom(10);
+          googleMap.setZoom(10);
         } else {
-          map.setZoom(6);
+          googleMap.setZoom(6);
         }
       }
     }
 
     function zoomChanged() {
-      var currentZoom = map.getZoom();
+      var currentZoom = googleMap.getZoom();
       if (previousZoom < 14 && currentZoom >= 14) {
         removeMarkers(teamMarkers);
         plotMarkers(groundMarkers);
@@ -237,6 +256,6 @@
       previousZoom = currentZoom;
     }
 
-    google.maps.event.addListener(map, "zoom_changed", zoomChanged);
+    google.maps.event.addListener(googleMap, "zoom_changed", zoomChanged);
   });
 })();

@@ -1,0 +1,71 @@
+﻿@inherits UmbracoViewPage<Stoolball.Web.Teams.Models.TeamViewModel>
+@using Stoolball.Matches
+@using Stoolball.Web.Matches.Models
+@{
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/matches.min.css") { Order = 100 });
+}
+@{
+    var matchMenu = new AddMatchMenuViewModel { BaseRoute = Model.Team!.TeamRoute, EnableTournaments = true };
+
+    if (Model.IsInACurrentLeague)
+    {
+        matchMenu.MatchTypes.Add(MatchType.LeagueMatch);
+    }
+    if (Model.IsInACurrentKnockoutCompetition)
+    {
+        matchMenu.MatchTypes.Add(MatchType.KnockoutMatch);
+    }
+    matchMenu.MatchTypes.Add(MatchType.TrainingSession);
+    matchMenu.MatchTypes.Add(MatchType.FriendlyMatch);
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+<div class="container-xl">
+    <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
+
+    @if (Model.Team.UntilYear.HasValue)
+    {
+        <div class="alert alert-info">
+            <p><strong>This team is no longer active.</strong></p>
+        </div>
+    }
+
+    <ul class="nav nav-tabs nav-tabs-has-add">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Matches</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute/players">Players</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute/statistics">Statistics</a>
+        </li>
+        <li class="nav-item nav-item-admin nav-item-admin-md-first">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+        @await Html.PartialAsync("_AddMatchMenu", matchMenu)
+    </ul>
+    @await Html.PartialAsync("_Filters", new MatchFilterViewModel
+{
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedMatchFilter.FromDate,
+    to = Model.AppliedMatchFilter.UntilDate
+})
+
+    @if (Model.Matches.Matches.Count > 0)
+    {
+        @await Html.PartialAsync("_MatchList", Model.Matches)
+    }
+    else
+    {
+        <p>There are no matches for this team matching this filter.</p>
+        <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
+    }
+    @await Html.PartialAsync("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Team.TeamRoute, DefaultMatchFilter = Model.DefaultMatchFilter, AppliedMatchFilter = Model.AppliedMatchFilter })
+</div>

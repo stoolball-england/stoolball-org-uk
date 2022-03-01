@@ -1,0 +1,47 @@
+﻿@model Stoolball.Web.Competitions.Models.SeasonListViewModel
+@inject Stoolball.Competitions.ISeasonEstimator estimator
+@using Stoolball.Competitions
+@{
+    var allSeasons = Model.Competitions.SelectMany(x => x.Seasons);
+    if (allSeasons.Any())
+    {
+        var (currentSeasonFrom, currentSeasonUntil) = estimator.EstimateSeasonDates(DateTime.UtcNow);
+
+        var seasonFromYear = currentSeasonFrom.Year + 1;
+        var seasonUntilYear = currentSeasonUntil.Year + 1;
+        IEnumerable<Season> lastSeasonOnwards = Array.Empty<Season>();
+        do
+        {
+            seasonFromYear--;
+            seasonUntilYear--;
+            lastSeasonOnwards = allSeasons.Where(x => seasonFromYear == seasonUntilYear ? x.UntilYear >= seasonFromYear : x.FromYear >= seasonFromYear);
+
+        } while (!lastSeasonOnwards.Any());
+
+    <h2>Competitions</h2>
+    <ul class="season-list__abridged">
+        @foreach (var season in lastSeasonOnwards)
+        {
+            <li><a href="@season.SeasonRoute">@season.SeasonFullName()</a></li>
+        }
+    </ul>
+        if (lastSeasonOnwards.Count() < allSeasons.Count())
+        {
+        <div class="season-list__all d-none">
+            @foreach (var competition in Model.Competitions)
+            {
+                if (Model.ShowCompetitionHeading)
+                {
+                    <h3>@competition.CompetitionName</h3>
+                }
+                <ul class="list-columns">
+                    @foreach (var season in competition.Seasons)
+                    {
+                        <li><a href="@season.SeasonRoute">@(Model.ShowSeasonFullName ? season.SeasonFullName() : season.SeasonName())</a></li>
+                    }
+                </ul>
+            }
+        </div>
+            }
+        }
+    }

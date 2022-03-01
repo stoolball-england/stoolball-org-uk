@@ -1,4 +1,6 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IHasViewMetadata>
+@inject IHostEnvironment environment
+@using Microsoft.Extensions.Hosting
 @using Smidge.Models
 @using Stoolball.Navigation
 @{
@@ -52,7 +54,7 @@
     @RenderSection("canonical", required: false)
     @if (!IsSectionDefined("canonical")) {@await Html.PartialAsync("_CanonicalUrl", Array.Empty<string>())}
     @RenderSection("head", false)
-    @await SmidgeHelper.CssHereAsync()
+    @await SmidgeHelper.CssHereAsync(debug: environment.EnvironmentName == Environments.Development)
 </head>
 <body>
     <a href="#main" class="skip-to-content sr-only sr-only-focusable"><span>Skip to content</span></a>
@@ -63,7 +65,7 @@
     </main>
     @await Html.PartialAsync("_Footer")
     @await SmidgeHelper.JsHereAsync("popper")
-    @await SmidgeHelper.JsHereAsync()
+    @await SmidgeHelper.JsHereAsync(debug: environment.EnvironmentName == Environments.Development)
     @RenderSection("umbracoforms", false)
     @if (Context.Request.Host.Host != "localhost")
     {

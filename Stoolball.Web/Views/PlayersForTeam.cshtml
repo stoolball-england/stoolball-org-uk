@@ -1,0 +1,53 @@
+﻿@inherits UmbracoViewPage<Stoolball.Web.Teams.Models.TeamViewModel>
+@using Stoolball.Statistics
+<div class="container-xl">
+    <h1>@Model.Team!.TeamNameLocationAndPlayerType()</h1>
+
+    @if (Model.Team.UntilYear.HasValue)
+    {
+        <div class="alert alert-info">
+            <p><strong>This team is no longer active.</strong></p>
+        </div>
+    }
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Players</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute/statistics">Statistics</a>
+        </li>
+    </ul>
+    @if (Model.Players.Any())
+    {
+        var recentPlayers = Model.Players.Where(x => x.PlayerIdentities.Max(pi => pi.LastPlayed) > DateTimeOffset.UtcNow.AddYears(-2)).ToList();
+        if (recentPlayers.Any())
+        {
+            <h2>Current and recent players</h2>
+            @await Html.PartialAsync("_PlayerList", recentPlayers)
+        }
+        var moreThanTwo = Model.Players.Where(x => x.PlayerIdentities.Max(pi => pi.LastPlayed) <= DateTimeOffset.UtcNow.AddYears(-2) && x.PlayerIdentities.Max(pi => pi.LastPlayed) >= DateTimeOffset.UtcNow.AddYears(-5)).ToList();
+        if (moreThanTwo.Any())
+        {
+            <h2>More than two years ago</h2>
+            @await Html.PartialAsync("_PlayerList", moreThanTwo)
+
+        }
+        var moreThanFive = Model.Players.Where(x => x.PlayerIdentities.Max(pi => pi.LastPlayed) <= DateTimeOffset.UtcNow.AddYears(-5)).ToList();
+        if (moreThanFive.Any())
+        {
+            <h2>More than five years ago</h2>
+            @await Html.PartialAsync("_PlayerList", moreThanFive)
+        }
+    }
+    else
+    {
+        <p>There are no players for this team yet. Players are listed from scorecards added to this website – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a>.</p>
+    }
+</div>

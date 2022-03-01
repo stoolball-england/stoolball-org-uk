@@ -18,7 +18,6 @@ using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Schools;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics;
-using Stoolball.Web.Teams;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
 
@@ -34,7 +33,6 @@ namespace Stoolball.Web
             }
 
             // Utility classes
-            composition.Register<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>();
             composition.Register<IMatchNameBuilder, MatchNameBuilder>();
             composition.Register<IPlayerTypeSelector, PlayerTypeSelector>();
             composition.Register<IEditMatchHelper, EditMatchHelper>();
@@ -53,14 +51,12 @@ namespace Stoolball.Web
             composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
             composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
-            composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
             composition.Register<IPlayerNameFormatter, PlayerNameFormatter>();
             composition.Register<IMatchInningsFactory, MatchInningsFactory>();
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
 
             // Listings pages
-            composition.Register<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>, ListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();
             composition.Register<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>, ListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
             composition.Register<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>, ListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>>();
 
@@ -70,8 +66,6 @@ namespace Stoolball.Web
             composition.Register<ICacheClearer<Match>, MatchCacheClearer>();
 
             // Data sources for stoolball data.
-            composition.Register<ITeamListingDataSource, CachedTeamListingDataSource>();
-            composition.Register<ICacheableTeamListingDataSource, SqlServerTeamListingDataSource>();
             composition.Register<ITeamRepository, SqlServerTeamRepository>();
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();
             composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>();
@@ -96,7 +90,6 @@ namespace Stoolball.Web
             composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>();
             composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>();
             composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>();
-            composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Team>, TeamAuthorizationPolicy>();
         }
     }
 }

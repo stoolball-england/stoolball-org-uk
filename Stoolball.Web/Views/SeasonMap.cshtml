@@ -5,7 +5,7 @@
     SmidgeHelper.RequiresJs(new JavaScriptFile("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey) { Order = 50 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("/js/maps.js") { Order = 90 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("/js/lib/markerclustererplus.1.0.3.min.js") { Order = 95 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile($"/js/teams-map.js") { Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/teams-map.js") { Order = 100 });
 }
 <div class="container-xl">
     <h1>@Model.Season!.SeasonFullNameAndPlayerType()</h1>
