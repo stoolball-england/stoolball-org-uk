@@ -51,7 +51,7 @@
                 </div>
                 @Html.ProtectEmailAddresses(emailProtector, Model.Value("privacyNotice").ToString())
 
-                <button class="btn btn-primary">@Model.Value("createMemberButton")</button>
+                <button class="btn btn-primary" type="submit">@Model.Value("createMemberButton")</button>
             }
         }
     }

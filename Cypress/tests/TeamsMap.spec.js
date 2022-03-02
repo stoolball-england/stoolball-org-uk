@@ -1,5 +1,9 @@
 describe("Clubs and teams map", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/teams/map");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });

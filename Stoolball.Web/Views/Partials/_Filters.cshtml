@@ -15,6 +15,6 @@
             @Html.TextBox(nameof(Model.to), Model.to.HasValue ? Model.to.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", aria_describedby = "to-date", data_val_date = "Enter a date in YYYY-MM-DD format." })
             @Html.ValidationMessageFor(m => Model.to, null, new { id = "to-date" })
         </div>
-        <div class="form-group"><button class="btn btn-secondary btn-apply-filter">Apply filter</button></div>
+        <div class="form-group"><button class="btn btn-secondary btn-apply-filter" type="submit">Apply filter</button></div>
     </form>
 </div>

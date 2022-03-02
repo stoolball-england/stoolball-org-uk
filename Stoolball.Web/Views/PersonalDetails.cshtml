@@ -26,7 +26,7 @@
                     @Html.ValidationMessageFor(m => formData.Name, null, new { id = "form-name" })
                 </div>
 
-                <button class="btn btn-primary">@Model.Value("saveButton")</button>
+                <button class="btn btn-primary" type="submit">@Model.Value("saveButton")</button>
             }
         }
         else

@@ -1,5 +1,9 @@
 describe("Matches for club", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/clubs/maresfield/matches");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });

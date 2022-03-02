@@ -1,5 +1,9 @@
 describe("Team", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/teams/maresfield-mixed");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });

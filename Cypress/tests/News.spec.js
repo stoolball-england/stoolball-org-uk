@@ -1,5 +1,9 @@
 describe("News", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/news");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });

@@ -38,13 +38,13 @@
         </div>
         <div class="form-group">
             <label for="valid-text-field">Valid text field</label>
-            <input aria-describedby="form-name valid-text-field-error" class="form-control is-valid" id="valid-text-field" name="valid-text-field" required="required" type="text" value="" />
-            <span class="field-validation-valid" data-valmsg-for="valid-text-field" data-valmsg-replace="true" id="form-name"></span>
+            <input aria-describedby="form-name-2" class="form-control is-valid" id="valid-text-field" name="valid-text-field" required="required" type="text" value="" />
+            <span class="field-validation-valid" data-valmsg-for="valid-text-field" data-valmsg-replace="true" id="form-name-2"></span>
         </div>
         <div class="form-group">
             <label for="invalid-text-field">Invalid text field</label>
-            <input aria-describedby="form-email invalid-text-field-error" autocapitalize="off" autocorrect="off" class="form-control input-validation-error" data-val="true" data-val-required="The field is required." id="invalid-text-field" name="invalid-text-field" required="required" type="text" value="" autocomplete="off" />
-            <span class="field-validation-error" data-valmsg-for="invalid-text-field" data-valmsg-replace="true" id="form-email"><span id="invalid-text-field-error" class="">The text field is required.</span></span>
+            <input aria-describedby="form-email-2 invalid-text-field-error" autocapitalize="off" autocorrect="off" class="form-control input-validation-error" data-val="true" data-val-required="The field is required." id="invalid-text-field" name="invalid-text-field" required="required" type="text" value="" autocomplete="off" />
+            <span class="field-validation-error" data-valmsg-for="invalid-text-field" data-valmsg-replace="true" id="form-email-2"><span id="invalid-text-field-error" class="">The text field is required.</span></span>
         </div>
         <div class="form-group">
             <p class="form-label">Account picture</p>
@@ -79,7 +79,7 @@
         <div class="form-group">
             <label for="valid-time-field">Valid time field</label>
             <input aria-describedby="valid-time-field-error" class="form-control valid" id="valid-time-field" name="valid-time-field" type="time" value="" aria-invalid="false">
-            <span class="field-validation-valid" data-valmsg-for="valid-time-field" data-valmsg-replace="true" id="valid-time-field"></span>
+            <span class="field-validation-valid" data-valmsg-for="valid-time-field" data-valmsg-replace="true" id="valid-time-field-error"></span>
         </div>
         <div class="form-group">
             <label for="unvalidated-dropdown-field">Unvalidated dropdown list</label>
@@ -106,7 +106,7 @@
         </div>
         <div class="form-group">
             <label for="unvalidated-password-field">Password field</label>
-            <input aria-describedby="form-password form-password-help" autocapitalize="off" autocorrect="off" class="form-control" data-val="true" data-val-required="The Password field is required." id="unvalidated-password-field" name="unvalidated-password-field" type="password" />
+            <input aria-describedby="form-password" autocapitalize="off" autocorrect="off" class="form-control" data-val="true" data-val-required="The Password field is required." id="unvalidated-password-field" name="unvalidated-password-field" type="password" />
             <span class="field-validation-valid" data-valmsg-for="unvalidated-password-field" data-valmsg-replace="true" id="form-password"></span>
         </div>
         <div class="form-group">
@@ -146,14 +146,14 @@
                     <td class="related-item__selected__section"><div class="related-item__animate">Selected item</div></td>
                     <td class="related-item__delete related-item__selected__section">
                         <div class="related-item__animate">
-                            <button class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove item")</button>
+                            <button class="btn-delete-icon" type="button">@await Html.PartialAsync("_DeleteIcon", "Remove item")</button>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
-                        @Html.TextBox("team-autocomplete", string.Empty, new
+                        @Html.Label("team-autocomplete1", "Add a team", new { @class = "sr-only" })
+                        @Html.TextBox("team-autocomplete1", string.Empty, new
                         {
                             @class = "form-control related-item__search",
                             placeholder = "Add a team",
@@ -174,17 +174,17 @@
             <tbody>
                 <tr class="related-item__selected">
                     <td class="related-item__selected__section"><div class="related-item__animate">Selected item</div></td>
-                    <td class="related-item__selected__section"><div class="related-item__animate"><input type="text" placeholder="Extra input to show layout, not wired up" class="form-control" /></div></td>
+                    <td class="related-item__selected__section"><div class="related-item__animate"><input type="text" placeholder="Extra input to show layout, not wired up" class="form-control" aria-label="Extra input to show layout, not wired up" /></div></td>
                     <td class="related-item__delete related-item__selected__section">
                         <div class="related-item__animate">
-                            <button class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove item")</button>
+                            <button class="btn-delete-icon" type="button">@await Html.PartialAsync("_DeleteIcon", "Remove item")</button>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="3">
-                        @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
-                        @Html.TextBox("team-autocomplete", string.Empty, new
+                        @Html.Label("team-autocomplete2", "Add a team", new { @class = "sr-only" })
+                        @Html.TextBox("team-autocomplete2", string.Empty, new
                         {
                             @class = "form-control related-item__search",
                             placeholder = "Add a team",
@@ -205,7 +205,7 @@
                     <td class="related-item__selected__section"><div class="related-item__animate">Extra column</div></td>
                     <td class="related-item__delete related-item__selected__section">
                         <div class="related-item__animate">
-                            <button class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}}")</button>
+                            <button class="btn-delete-icon" type="button">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}}")</button>
                         </div>
                     </td>
                 </tr>
@@ -230,7 +230,7 @@
                     <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="Match_MatchLocation_PrimaryAddressableObjectName" />
                 </div>
                 <div class="related-item__delete related-item__selected__section">
-                    <button class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}}")</button>
+                    <button class="btn-delete-icon" type="button">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}}")</button>
                 </div>
             </div>
         </script>
@@ -245,12 +245,12 @@
             <textarea aria-describedby="rich-text-with-help-validation rich-text-help" class="form-control" cols="20" id="rich-text-with-help" name="rich-text-with-help" rows="2"></textarea>
             <span class="field-validation-valid" data-valmsg-for="rich-text-with-help" data-valmsg-replace="true" id="rich-text-with-help-validation"></span>
         </div>
-        <button class="btn btn-primary">Primary button</button>
-        <button class="btn btn-primary" disabled="disabled">Primary button (disabled)</button>
-        <button class="btn btn-secondary">Secondary button</button>
-        <button class="btn btn-secondary" disabled="disabled">Secondary button (disabled)</button>
-        <button class="btn btn-danger btn-delete">Delete button</button>
-        <button class="btn btn-danger btn-delete" disabled="disabled">Delete button (disabled)</button>
+        <button class="btn btn-primary" type="submit">Primary button</button>
+        <button class="btn btn-primary" type="button" disabled="disabled">Primary button (disabled)</button>
+        <button class="btn btn-secondary" type="button">Secondary button</button>
+        <button class="btn btn-secondary" type="button" disabled="disabled">Secondary button (disabled)</button>
+        <button class="btn btn-danger btn-delete" type="button">Delete button</button>
+        <button class="btn btn-danger btn-delete" type="button" disabled="disabled">Delete button (disabled)</button>
     </form>
     <p>Paragraph below a button (outside the form).</p>
 </div>

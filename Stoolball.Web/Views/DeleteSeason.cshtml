@@ -51,7 +51,7 @@
                     @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
                 </div>
 
-                <button class="btn btn-danger btn-delete">Delete @Model.Season.SeasonName()</button>
+                <button class="btn btn-danger btn-delete" type="submit">Delete @Model.Season.SeasonName()</button>
             }
         }
         else

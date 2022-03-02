@@ -1,5 +1,9 @@
 describe("Club statistics", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/clubs/maresfield/statistics");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });

@@ -1,5 +1,9 @@
 describe("Product list", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/shop");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });

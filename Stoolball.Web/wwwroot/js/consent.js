@@ -126,13 +126,18 @@ stoolball.consent = {
     consent.appendChild(container);
     container.appendChild(request);
 
-    const acceptButton = createButton("btn btn-primary", "Allow all");
+    const acceptButton = createButton("submit", "btn btn-primary", "Allow all");
     const acceptSelectedButton = createButton(
+      "button",
       "btn btn-primary d-none",
       "Allow selected"
     );
-    const blockButton = createButton("btn btn-danger", "Block all");
-    const choicesButton = createButton("btn btn-light", "Show choices");
+    const blockButton = createButton("button", "btn btn-danger", "Block all");
+    const choicesButton = createButton(
+      "button",
+      "btn btn-light",
+      "Show choices"
+    );
 
     const choices = document.createElement("div");
     choices.setAttribute("class", "d-none");
@@ -231,8 +236,9 @@ stoolball.consent = {
     document.body.insertBefore(consent, document.body.firstChild);
   }
 
-  function createButton(className, label) {
+  function createButton(type, className, label) {
     const button = document.createElement("button");
+    button.setAttribute("type", type);
     button.setAttribute("class", className);
     button.appendChild(document.createTextNode(label));
     return button;

@@ -31,12 +31,12 @@
     <caption>@Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamName's batting@(Model.Match.MatchInnings.Count > 2 ? $" ({(Model.CurrentInnings.MatchInnings.InningsOrderInMatch/2+Model.CurrentInnings.MatchInnings.InningsOrderInMatch%2).Ordinalize()} innings)" : null)</caption>
     <thead>
         <tr>
-            <th class="batting-scorecard-editor__header">Batter</th>
-            <th class="batting-scorecard-editor__header">How out</th>
-            <th class="batting-scorecard-editor__header text-nowrap">Caught/run-out by</th>
-            <th class="batting-scorecard-editor__header">Bowler</th>
-            <th class="batting-scorecard-editor__header batting-scorecard-editor__runs-header">Runs</th>
-            <th class="batting-scorecard-editor__header">Balls</th>
+            <th class="batting-scorecard-editor__header" scope="col">Batter</th>
+            <th class="batting-scorecard-editor__header" scope="col">How out</th>
+            <th class="batting-scorecard-editor__header text-nowrap" scope="col">Caught/run-out by</th>
+            <th class="batting-scorecard-editor__header" scope="col">Bowler</th>
+            <th class="batting-scorecard-editor__header batting-scorecard-editor__runs-header" scope="col">Runs</th>
+            <th class="batting-scorecard-editor__header" scope="col">Balls</th>
         </tr>
     </thead>
     <tbody>

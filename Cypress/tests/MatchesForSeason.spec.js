@@ -1,5 +1,9 @@
 describe("Matches for season", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/competitions/mid-sussex-mixed-league/2021/matches");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });

@@ -1,5 +1,9 @@
 describe("Competition statistics", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/competitions/mid-sussex-mixed-league/statistics");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });

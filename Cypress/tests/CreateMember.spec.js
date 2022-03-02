@@ -1,6 +1,15 @@
 describe("Create competition", () => {
-  it("Requires authentication", () => {
-    cy.visit("/competitions/add");
-    cy.contains("Sign in");
+  describe("When signed out", () => {
+    beforeEach(() => {
+      cy.visit("/account/create");
+    });
+
+    it("Validates", () => {
+      cy.htmlvalidate();
+    });
+
+    it("Requires authentication", () => {
+      cy.contains("Sign in");
+    });
   });
 });

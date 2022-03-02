@@ -1,6 +1,15 @@
 describe("Delete season", () => {
-  it("Requires authentication", () => {
-    cy.visit("/competitions/mid-sussex-mixed-league/2021/delete");
-    cy.contains("Sign in");
+  describe("When signed out", () => {
+    beforeEach(() => {
+      cy.visit("/competitions/mid-sussex-mixed-league/2021/delete");
+    });
+
+    it("Validates", () => {
+      cy.htmlvalidate();
+    });
+
+    it("Requires authentication", () => {
+      cy.contains("Sign in");
+    });
   });
 });

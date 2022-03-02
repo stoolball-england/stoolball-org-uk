@@ -16,5 +16,5 @@
 
 @using (Html.BeginUmbracoForm<LogoutMemberSurfaceController>(nameof(LogoutMemberSurfaceController.HandleLogout)))
 {
-    <button class="btn btn-primary">@(logoutPage?.Value("logoutButton"))</button>
+    <button class="btn btn-primary" type="submit">@(logoutPage?.Value("logoutButton"))</button>
 }

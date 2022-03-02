@@ -1,14 +1,20 @@
 describe("Clubs and teams", () => {
+  beforeEach(() => {
+    cy.visit("/teams");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
+  });
+
   // Note: This only works in Chromium as at Cypress 9.5.0. Firefox does not submit the form with the {enter} key.
   it("Searches when Enter is pressed", () => {
-    cy.visit("/competitions");
-
     let totalResultsBeforeSearch;
     cy.get(".list-results__title").should(($itemsBefore) => {
       totalResultsBeforeSearch = $itemsBefore.length;
       expect(totalResultsBeforeSearch).to.be.greaterThan(0);
     });
-    cy.get("#competition-search").type("england{enter}");
+    cy.get("#team-search").type("england{enter}");
     cy.location("search").should("equal", "?q=england");
     cy.get(".list-results__title").should(($itemsAfter) => {
       const totalResultsAfterSearch = $itemsAfter.length;
@@ -17,8 +23,6 @@ describe("Clubs and teams", () => {
   });
 
   it("Searches when the button is clicked", () => {
-    cy.visit("/teams");
-
     let totalResultsBeforeSearch;
     cy.get(".list-results__title").should(($itemsBefore) => {
       totalResultsBeforeSearch = $itemsBefore.length;

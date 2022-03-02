@@ -1,5 +1,9 @@
 describe("Players for team", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/teams/maresfield-mixed/players");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });

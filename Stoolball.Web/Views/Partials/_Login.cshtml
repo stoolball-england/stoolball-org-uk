@@ -45,7 +45,7 @@
         @Html.ValidationMessageFor(m => loginModel.Password, "The password field is required", new { id = "form-password" })
     </div>
 
-    <button class="btn btn-primary">@loginPage.Value("loginButton")</button>
+    <button class="btn btn-primary" type="submit">@loginPage.Value("loginButton")</button>
 }
 
 @Html.ProtectEmailAddresses(emailProtector, loginPage?.Value<IHtmlEncodedString>("resetPassword"))

@@ -1,5 +1,11 @@
 describe("Logout member", () => {
-  it("Loads", () => {
-    cy.visit("/account/sign-out/");
+  describe("When signed out", () => {
+    beforeEach(() => {
+      cy.visit("/account/sign-out/");
+    });
+
+    it("Validates", () => {
+      cy.htmlvalidate();
+    });
   });
 });

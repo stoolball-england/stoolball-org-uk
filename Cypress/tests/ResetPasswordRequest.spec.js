@@ -1,5 +1,9 @@
 describe("Request password reset", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/account/reset-password/");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });

@@ -1,6 +1,15 @@
 describe("Club actions", () => {
-  it("Requires authentication", () => {
-    cy.visit("/clubs/maresfield/edit");
-    cy.contains("Sign in");
+  describe("When signed out", () => {
+    beforeEach(() => {
+      cy.visit("/clubs/maresfield/edit");
+    });
+
+    it("Validates", () => {
+      cy.htmlvalidate();
+    });
+
+    it("Requires authentication", () => {
+      cy.contains("Sign in");
+    });
   });
 });

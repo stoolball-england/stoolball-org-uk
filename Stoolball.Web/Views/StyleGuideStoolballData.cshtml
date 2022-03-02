@@ -39,13 +39,13 @@
     </ul>
     <table class="table">
         <caption>Table with edit options</caption>
-        <thead><tr><th>Example</th><th>Date</th><th>Number</th></tr></thead>
+        <thead><tr><th scope="col">Example</th><th scope="col">Date</th><th scope="col">Number</th></tr></thead>
         <tbody>
             <tr>
                 <th scope="row">Unvalidated</th>
                 <td><input class="related-item__data" data-item="3040d68b-bc9e-4bad-a8fe-354b72f214c1" id="Season_Teams_0__WithdrawnDate" name="Season.Teams[0].WithdrawnDate" type="date" value=""></td>
                 <td>
-                    <input data-val="true" data-val-number="The field Points for away team must be a number." data-val-required="The Points for away team field is required." id="Season_PointsRules_0__AwayPoints" maxlength="2" name="Season.PointsRules[0].AwayPoints" type="number" value="2">
+                    <input data-val="true" data-val-number="The field Points for away team must be a number." data-val-required="The Points for away team field is required." id="Season_PointsRules_0__AwayPoints" name="Season.PointsRules[0].AwayPoints" type="number" value="2">
                 </td>
             </tr>
             <tr>
@@ -54,15 +54,15 @@
                     <input class="form-control valid" data-val="true" data-val-required="The Match date field is required." id="valid-date-field-in-table" name="valid-date-field-in-table" required="required" type="date" value="" aria-invalid="false">
                 </td>
                 <td>
-                    <input data-val="true" data-val-number="The field Points for home team must be a number." data-val-required="The Points for home team field is required." id="Season_PointsRules_0__HomePoints" maxlength="2" name="Season.PointsRules[0].HomePoints" type="number" value="0" aria-describedby="Season_PointsRules_0__HomePoints-error" class="valid" aria-invalid="false">
+                    <input data-val="true" data-val-number="The field Points for home team must be a number." data-val-required="The Points for home team field is required." id="Season_PointsRules_0__HomePoints" name="Season.PointsRules[0].HomePoints" type="number" value="0" class="valid" aria-invalid="false">
                 </td>
             </tr>
             <tr>
                 <th scope="row">Invalid</th>
                 <td>Not applicable</td>
                 <td>
-                    <input data-val="true" data-val-number="The field Points for away team must be a number." data-val-required="The Points for away team field is required." id="Season_PointsRules_0__AwayPoints" maxlength="2" name="Season.PointsRules[0].AwayPoints" type="number" value="2" class="input-validation-error" aria-describedby="Season_PointsRules_0__AwayPoints-error" aria-invalid="true">
-                    <span class="field-validation-error" data-valmsg-for="Season.PointsRules[0].AwayPoints" data-valmsg-replace="true"><span id="Season_PointsRules_0__AwayPoints-error" class="">The Points for away team field is required.</span></span>
+                    <input data-val="true" data-val-number="The field Points for away team must be a number." data-val-required="The Points for away team field is required." id="Season_PointsRules_1__AwayPoints" name="Season.PointsRules[1].AwayPoints" type="number" value="2" class="input-validation-error" aria-describedby="Season_PointsRules_1__AwayPoints-error" aria-invalid="true">
+                    <span class="field-validation-error" data-valmsg-for="Season.PointsRules[1].AwayPoints" data-valmsg-replace="true"><span id="Season_PointsRules_1__AwayPoints-error" class="">The Points for away team field is required.</span></span>
                 </td>
             </tr>
         </tbody>
@@ -78,9 +78,9 @@
                 <th scope="col">Lost</th>
                 <th scope="col">Tied</th>
                 <th scope="col">No result</th>
-                <th>Runs scored</th>
-                <th>Runs conceded</th>
-                <th>Points</th>
+                <th scope="col">Runs scored</th>
+                <th scope="col">Runs conceded</th>
+                <th scope="col">Points</th>
             </tr>
         </thead>
         <tbody>

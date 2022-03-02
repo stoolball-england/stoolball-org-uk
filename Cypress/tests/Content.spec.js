@@ -1,5 +1,9 @@
 describe("Content page", () => {
-  it("Loads", () => {
+  beforeEach(() => {
     cy.visit("/rules/what-is-stoolball");
+  });
+
+  it("Validates", () => {
+    cy.htmlvalidate();
   });
 });
