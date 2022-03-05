@@ -37,7 +37,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
            _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -55,7 +55,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -73,7 +73,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -91,7 +91,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
            _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -109,7 +109,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
            _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -127,7 +127,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -145,7 +145,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -163,7 +163,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -181,7 +181,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -217,7 +217,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerTeamRepository>>(),
                 routeGenerator.Object,
                 Mock.Of<IRedirectsRepository>(),
                 groupHelper.Object,
@@ -361,7 +361,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        routeGenerator.Object,
                        Mock.Of<IRedirectsRepository>(),
                        groupHelper.Object,
@@ -470,7 +470,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      Mock.Of<IRedirectsRepository>(),
                      groupHelper.Object,
@@ -514,7 +514,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      Mock.Of<IRedirectsRepository>(),
                      groupHelper.Object,
@@ -574,7 +574,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
 
             var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger<SqlServerTeamRepository>>();
 
             var repo = new SqlServerTeamRepository(
                  _databaseFixture.ConnectionFactory,
@@ -594,7 +594,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
             auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(typeof(SqlServerTeamRepository), LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.CreateTeam)), Times.Once);
+            logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.CreateTeam)), Times.Once);
         }
 
         [Fact]
@@ -618,7 +618,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             copier.Setup(x => x.CreateAuditableCopy(team)).Returns(team);
 
             var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger<SqlServerTeamRepository>>();
 
             var repo = new SqlServerTeamRepository(
                  _databaseFixture.ConnectionFactory,
@@ -641,7 +641,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
                     copier.Verify(x => x.CreateRedactedCopy(It.IsAny<Team>()), Times.Never);
                     auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Never);
-                    logger.Verify(x => x.Info(typeof(SqlServerTeamRepository), LoggingTemplates.Created, It.IsAny<Team>(), It.IsAny<string>(), It.IsAny<Guid>(), typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.CreateTeam)), Times.Never);
+                    logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<Team>(), It.IsAny<string>(), It.IsAny<Guid>(), typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.CreateTeam)), Times.Never);
                 }
             }
         }
@@ -652,7 +652,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
            _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -671,7 +671,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
            _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -690,7 +690,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -708,7 +708,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -726,7 +726,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -744,7 +744,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        Mock.Of<IRouteGenerator>(),
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -826,7 +826,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        routeGenerator.Object,
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -906,7 +906,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      Mock.Of<IRedirectsRepository>(),
                      Mock.Of<IMemberGroupHelper>(),
@@ -964,7 +964,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                _databaseFixture.ConnectionFactory,
                Mock.Of<IAuditRepository>(),
-               Mock.Of<ILogger>(),
+               Mock.Of<ILogger<SqlServerTeamRepository>>(),
                routeGenerator.Object,
                Mock.Of<IRedirectsRepository>(),
                Mock.Of<IMemberGroupHelper>(),
@@ -1020,7 +1020,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      redirectsRepository.Object,
                      Mock.Of<IMemberGroupHelper>(),
@@ -1048,7 +1048,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                _databaseFixture.ConnectionFactory,
                Mock.Of<IAuditRepository>(),
-               Mock.Of<ILogger>(),
+               Mock.Of<ILogger<SqlServerTeamRepository>>(),
                routeGenerator.Object,
                Mock.Of<IRedirectsRepository>(),
                Mock.Of<IMemberGroupHelper>(),
@@ -1092,7 +1092,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
 
             var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger<SqlServerTeamRepository>>();
 
             var repo = new SqlServerTeamRepository(
                  _databaseFixture.ConnectionFactory,
@@ -1112,7 +1112,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
             auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(typeof(SqlServerTeamRepository), LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.UpdateTeam)), Times.Once);
+            logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.UpdateTeam)), Times.Once);
         }
 
         [Fact]
@@ -1136,7 +1136,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      Mock.Of<IRedirectsRepository>(),
                      Mock.Of<IMemberGroupHelper>(),
@@ -1174,7 +1174,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      Mock.Of<IRedirectsRepository>(),
                      Mock.Of<IMemberGroupHelper>(),
@@ -1227,7 +1227,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      Mock.Of<IRedirectsRepository>(),
                      Mock.Of<IMemberGroupHelper>(),
@@ -1279,7 +1279,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      Mock.Of<IRedirectsRepository>(),
                      Mock.Of<IMemberGroupHelper>(),
@@ -1373,7 +1373,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                        _databaseFixture.ConnectionFactory,
                        Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger>(),
+                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
                        routeGenerator.Object,
                        Mock.Of<IRedirectsRepository>(),
                        Mock.Of<IMemberGroupHelper>(),
@@ -1454,7 +1454,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      Mock.Of<IRedirectsRepository>(),
                      Mock.Of<IMemberGroupHelper>(),
@@ -1486,7 +1486,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                _databaseFixture.ConnectionFactory,
                Mock.Of<IAuditRepository>(),
-               Mock.Of<ILogger>(),
+               Mock.Of<ILogger<SqlServerTeamRepository>>(),
                routeGenerator.Object,
                Mock.Of<IRedirectsRepository>(),
                Mock.Of<IMemberGroupHelper>(),
@@ -1514,7 +1514,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      redirectsRepository.Object,
                      Mock.Of<IMemberGroupHelper>(),
@@ -1541,7 +1541,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                _databaseFixture.ConnectionFactory,
                Mock.Of<IAuditRepository>(),
-               Mock.Of<ILogger>(),
+               Mock.Of<ILogger<SqlServerTeamRepository>>(),
                routeGenerator.Object,
                Mock.Of<IRedirectsRepository>(),
                Mock.Of<IMemberGroupHelper>(),
@@ -1585,7 +1585,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
 
             var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger<SqlServerTeamRepository>>();
 
             var repo = new SqlServerTeamRepository(
                  _databaseFixture.ConnectionFactory,
@@ -1605,7 +1605,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
             auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(typeof(SqlServerTeamRepository), LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.UpdateTransientTeam)), Times.Once);
+            logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.UpdateTransientTeam)), Times.Once);
         }
 
         [Fact]
@@ -1630,7 +1630,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                      _databaseFixture.ConnectionFactory,
                      Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger>(),
+                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
                      routeGenerator.Object,
                      Mock.Of<IRedirectsRepository>(),
                      Mock.Of<IMemberGroupHelper>(),
@@ -1660,7 +1660,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var repo = new SqlServerTeamRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerTeamRepository>>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IMemberGroupHelper>(),
