@@ -1,10 +1,17 @@
+import { logToConsole } from "./functions/logging";
+
 describe("Clubs and teams", () => {
   beforeEach(() => {
     cy.visit("/teams");
+    cy.injectAxe();
   });
 
   it("Validates", () => {
     cy.htmlvalidate();
+  });
+
+  it("Passes AXE", () => {
+    cy.checkA11y(null, null, logToConsole);
   });
 
   // Note: This only works in Chromium as at Cypress 9.5.0. Firefox does not submit the form with the {enter} key.

@@ -168,6 +168,15 @@ li {
     border-radius: $border-radius;
 }
 
+// Tweak standard link colours to meet WCAG AA contrast
+.match-list__next a:link {
+    color: $alert-link-color;
+}
+
+.match-list__next a:visited {
+    color: $alert-visited-color;
+}
+
 .match-list__next .list-results__detail {
     margin: 0;
 }

@@ -49,10 +49,19 @@
 .product-preview {
     position: relative;
     width: 100%;
-    background: lighten(theme-color("alt-secondary"), 20%);
+    background: lighten(theme-color("alt-secondary"), 25%);
     overflow: visible;
     margin-bottom: $spacer;
     color: $black;
+}
+
+// Tweak standard link colours to meet WCAG AA contrast
+.product-preview a:link {
+    color: $alert-link-color;
+}
+
+.product-preview a:visited {
+    color: $alert-visited-color;
 }
 
 .product-preview__linked > a:link, .product-preview > a:visited {

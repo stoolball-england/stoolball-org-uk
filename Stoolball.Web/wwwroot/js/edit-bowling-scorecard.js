@@ -242,8 +242,8 @@
 
       // update the index of the new row
       let newRow = rows[rows.length - 1].nextElementSibling;
-      const fields = newRow.querySelectorAll("input,select,label");
-      const attributes = ["name", "for", "id"];
+      const fields = newRow.querySelectorAll("input,select,label,th");
+      const attributes = ["name", "for", "id", "aria-labelledby"];
       for (let i = 0; i < fields.length; i++) {
         let ordinal,
           rowNumber = rows.length + 1;
@@ -267,6 +267,10 @@
             fields[i].setAttribute(
               attributes[j],
               value.replace(/\[[0-9]+\]/, "[" + (rowNumber - 1) + "]")
+            );
+            fields[i].setAttribute(
+              attributes[j],
+              value.replace(/--[0-9]+--/, "--" + (rowNumber - 1) + "--")
             );
           }
         }

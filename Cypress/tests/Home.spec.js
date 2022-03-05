@@ -1,10 +1,17 @@
+import { logToConsole } from "./functions/logging";
+
 describe("Home page", () => {
   beforeEach(() => {
     cy.visit("/");
+    cy.injectAxe();
   });
 
   it("Validates", () => {
     cy.htmlvalidate();
+  });
+
+  it("Passes AXE", () => {
+    cy.checkA11y(null, null, logToConsole);
   });
 
   it("Links to 'what is stoolball?'", () => {

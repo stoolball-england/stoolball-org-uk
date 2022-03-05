@@ -23,4 +23,18 @@ module.exports = (on, config) => {
       "long-title": "off", // some competition and team names are genuinely very long!
     },
   });
+
+  // logs AXE output https://github.com/component-driven/cypress-axe
+  on("task", {
+    log(message) {
+      console.log(message);
+
+      return null;
+    },
+    table(message) {
+      console.table(message);
+
+      return null;
+    },
+  });
 };

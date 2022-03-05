@@ -1,11 +1,18 @@
+import { logToConsole } from "./functions/logging";
+
 describe("Login member", () => {
   describe("When signed out", () => {
     beforeEach(() => {
       cy.visit("/account/sign-in/");
+      cy.injectAxe();
     });
 
     it("Validates", () => {
       cy.htmlvalidate();
+    });
+
+    it("Passes AXE", () => {
+      cy.checkA11y(null, null, logToConsole);
     });
 
     it("Requires authentication", () => {

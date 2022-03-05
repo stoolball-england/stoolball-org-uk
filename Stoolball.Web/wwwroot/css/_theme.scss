@@ -9,6 +9,9 @@ $alert-bg-level: -7;
 $alert-border-level: -6;
 $alert-color-level: 8;
 
+$alert-link-color: #007a00;
+$alert-visited-color: #7B644C;
+
 // Don't use opacity for disabled buttons, as it'll break AA accessibility. Use grey instead.
 $btn-disabled-opacity: 1;
 .btn {

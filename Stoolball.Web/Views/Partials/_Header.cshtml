@@ -55,12 +55,12 @@
                                     @if (currentPage == null && currentSection == null && IsCurrentPage(Context.Request.Path.Value!, childUrl))
                                     {
                                         currentPage = childUrl;
-                                        <em role="menuitem" aria-selected="true">@child.Name</em>
+                                        <em role="menuitem" aria-current="location">@child.Name</em>
                                     }
                                     else if (currentPage == null && currentSection == null && IsCurrentSection(Context.Request.Path.Value!, childUrl, rootUrlsForPlaySection))
                                     {
                                         currentSection = childUrl;
-                                        <a role="menuitem" aria-selected="true" href="@childUrl">@child.Name</a>
+                                        <a role="menuitem" aria-current="location" href="@childUrl">@child.Name</a>
                                     }
                                     else
                                     {

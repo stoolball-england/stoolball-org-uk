@@ -233,7 +233,8 @@ stoolball.consent = {
     buttons.appendChild(choicesButton);
     container.appendChild(buttons);
 
-    document.body.insertBefore(consent, document.body.firstChild);
+    const siteHeader = document.querySelector(".header");
+    siteHeader.insertBefore(consent, siteHeader.firstChild);
   }
 
   function createButton(type, className, label) {

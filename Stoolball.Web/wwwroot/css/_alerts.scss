@@ -1,5 +1,6 @@
 ﻿@import "../../../node_modules/bootstrap/scss/_variables.scss";
 @import "../../../node_modules/bootstrap/scss/_alert.scss";
+@import "_theme.scss";
 
 /* An alert has even padding, so remove any bottom margin on the last child which would make that look extra large. */
 .alert > :last-child {
@@ -27,6 +28,14 @@
     .alert-tip {
         padding-left: $spacer*1.25;
     }
+}
+
+// Tweak standard link colours to meet WCAG AA contrast
+.alert-info a:link {
+    color: $alert-link-color;
+}
+.alert-info a:visited {
+    color: $alert-visited-color;
 }
 
 // Don't use green links on a red background!
