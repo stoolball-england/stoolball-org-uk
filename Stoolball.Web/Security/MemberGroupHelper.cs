@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Security;
+using System.Threading.Tasks;
 using Stoolball.Routing;
 using Stoolball.Security;
-using Umbraco.Core.Models;
-using Umbraco.Core.Services;
+using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.Security
@@ -15,14 +16,14 @@ namespace Stoolball.Web.Security
         private readonly IRouteGenerator _routeGenerator;
         private readonly IMemberService _memberService;
         private readonly IMemberGroupService _memberGroupService;
-        private readonly RoleProvider _roleProvider;
+        private readonly IMemberManager _memberManager;
 
-        public MemberGroupHelper(IRouteGenerator routeGenerator, IMemberService memberService, IMemberGroupService memberGroupService, RoleProvider roleProvider)
+        public MemberGroupHelper(IRouteGenerator routeGenerator, IMemberService memberService, IMemberGroupService memberGroupService, IMemberManager memberManager)
         {
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _memberService = memberService ?? throw new ArgumentNullException(nameof(memberService));
             _memberGroupService = memberGroupService ?? throw new ArgumentNullException(nameof(memberGroupService));
-            _roleProvider = roleProvider ?? throw new ArgumentNullException(nameof(roleProvider));
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
         }
 
         public SecurityGroup CreateOrFindGroup(string groupNamePrefix, string suggestedGroupName, IEnumerable<string> noiseWords)
@@ -48,12 +49,15 @@ namespace Stoolball.Web.Security
             }
             while (group != null);
 
-            return new SecurityGroup { Key = group.Key, Name = group.Name };
+            return new SecurityGroup { Key = group!.Key, Name = group.Name };
         }
 
-        public bool MemberIsAdministrator(string username)
+        public async Task<bool> MemberIsAdministrator(string username)
         {
-            return !string.IsNullOrEmpty(username) && _roleProvider.GetRolesForUser(username).Any(x => x.ToUpperInvariant() == Groups.Administrators.ToUpperInvariant());
+            var member = await _memberManager.FindByNameAsync(username);
+            if (string.IsNullOrEmpty(username)) { return false; }
+            if (member == null) { return false; }
+            return (await _memberManager.GetRolesAsync(member)).Any(x => x.ToUpperInvariant() == Groups.Administrators.ToUpperInvariant());
         }
 
         public void AssignRole(string username, string roleName)

@@ -114,10 +114,6 @@
     <Compile Include="Statistics\StatisticsControllerTests.cs" />
     <Compile Include="Statistics\IndividualScoresControllerTests.cs" />
     <Compile Include="Statistics\PlayerControllerTests.cs" />
-    <Compile Include="Teams\CreateTeamControllerTests.cs" />
-    <Compile Include="Teams\EditTransientTeamControllerTests.cs" />
-    <Compile Include="Teams\EditTeamControllerTests.cs" />
-    <Compile Include="Teams\DeleteTeamControllerTests.cs" />
     <Compile Include="MatchLocations\MatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\MatchesForMatchLocationControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

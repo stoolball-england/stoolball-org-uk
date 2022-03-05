@@ -1,0 +1,26 @@
+﻿@inherits UmbracoViewPage<TeamViewModel>
+@using Stoolball.Web.Teams
+@using Stoolball.Web.Teams.Models
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItems")
+@await Html.PartialAsync("_TinyMCE")
+<div class="container-xl">
+    <h1>Edit @Model.Team!.TeamName</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditTeam])
+    {
+        using (Html.BeginUmbracoForm<EditTeamSurfaceController>(nameof(EditTeamSurfaceController.UpdateTeam)))
+        {
+            @await Html.PartialAsync("_CreateOrEditTeam")
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

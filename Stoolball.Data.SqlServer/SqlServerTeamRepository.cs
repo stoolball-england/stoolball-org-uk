@@ -22,7 +22,7 @@ namespace Stoolball.Data.SqlServer
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
-        private readonly ILogger _logger;
+        private readonly ILogger<SqlServerTeamRepository> _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
         private readonly IMemberGroupHelper _memberGroupHelper;
@@ -31,7 +31,7 @@ namespace Stoolball.Data.SqlServer
         private readonly IUrlFormatter _urlFormatter;
         private readonly ISocialMediaAccountFormatter _socialMediaAccountFormatter;
 
-        public SqlServerTeamRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
+        public SqlServerTeamRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger<SqlServerTeamRepository> logger, IRouteGenerator routeGenerator,
             IRedirectsRepository redirectsRepository, IMemberGroupHelper memberGroupHelper, IHtmlSanitizer htmlSanitiser, IStoolballEntityCopier copier,
             IUrlFormatter urlFormatter, ISocialMediaAccountFormatter socialMediaAccountFormatter)
         {
@@ -84,7 +84,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.CreateTeam));
+                    _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.CreateTeam));
 
                     return auditableTeam;
                 }
@@ -137,7 +137,7 @@ namespace Stoolball.Data.SqlServer
             auditableTeam.MemberGroupName = group.Name;
 
             // Assign the member to the group unless they're already admin
-            if (!_memberGroupHelper.MemberIsAdministrator(memberUsername))
+            if (!(await _memberGroupHelper.MemberIsAdministrator(memberUsername)))
             {
                 _memberGroupHelper.AssignRole(memberUsername, group.Name);
             }
@@ -297,7 +297,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.UpdateTeam));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.UpdateTeam));
                 }
             }
 
@@ -426,7 +426,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.UpdateTransientTeam));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.UpdateTransientTeam));
                 }
             }
 
@@ -490,7 +490,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.DeleteTeam));
+                    _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.DeleteTeam));
                 }
             }
 

@@ -121,6 +121,7 @@ namespace Stoolball.Web
 
             // Authentication
             services.AddTransient<ICreateMemberExecuter, CreateMemberExecuter>();
+            services.AddTransient<IMemberGroupHelper, MemberGroupHelper>();
 
             // Data sources
             services.AddTransient<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();
@@ -188,6 +189,7 @@ namespace Stoolball.Web
             services.AddTransient<ICompetitionRepository, SqlServerCompetitionRepository>();
             services.AddTransient<IRedirectsRepository, SkybrudRedirectsRepository>();
             services.AddTransient<ISeasonRepository, SqlServerSeasonRepository>();
+            services.AddTransient<ITeamRepository, SqlServerTeamRepository>();
 
             // Security checks
             services.AddTransient<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();
@@ -220,6 +222,10 @@ namespace Stoolball.Web
             services.AddTransient<TeamStatisticsController>();
             services.AddTransient<MatchesForTeamController>();
             services.AddTransient<PlayersForTeamController>();
+            services.AddTransient<CreateTeamController>();
+            services.AddTransient<EditTeamController>();
+            services.AddTransient<EditTransientTeamController>();
+            services.AddTransient<DeleteTeamController>();
 
             services.AddTransient<CompetitionsController>();
             services.AddTransient<CompetitionController>();

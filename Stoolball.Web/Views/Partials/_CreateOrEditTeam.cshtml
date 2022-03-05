@@ -1,16 +1,16 @@
-﻿@model TeamViewModel
+﻿@model Stoolball.Web.Teams.Models.TeamViewModel
 @using Stoolball.Teams
 @using Stoolball.Web.Teams
 @using Stoolball.Web.HtmlHelpers
 @Html.ValidationSummary(true)
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Team.TeamName)
-    @Html.TextBoxFor(m => Model.Team.TeamName, new { @class = "form-control", required = "required", aria_describedby = "team-name" })
-    @Html.ValidationMessageFor(m => Model.Team.TeamName, null, new { id = "team-name" })
+    @Html.LabelFor(m => Model.Team!.TeamName)
+    @Html.TextBoxFor(m => Model.Team!.TeamName, new { @class = "form-control", required = "required", aria_describedby = "team-name" })
+    @Html.ValidationMessageFor(m => Model.Team!.TeamName, null, new { id = "team-name" })
 </div>
 
-@if (Model.Team.TeamType != TeamType.Transient)
+@if (Model.Team!.TeamType != TeamType.Transient)
 {
     <fieldset class="form-group" id="team-type">
         <legend>Type of team</legend>
@@ -125,7 +125,7 @@
                             @Html.Hidden($"Team.MatchLocations[{i}].MatchLocationId", Model.Team.MatchLocations[i].MatchLocationId, new { @class = "related-item__data related-item__id", data_item = Model.Team.MatchLocations[i].MatchLocationId })
                             @Html.Hidden($"Team.MatchLocations[{i}].PrimaryAddressableObjectName", Model.Team.MatchLocations[i].PrimaryAddressableObjectName, new { @class = "related-item__data", data_item = Model.Team.MatchLocations[i].MatchLocationId })
                             @Html.Hidden($"Team.MatchLocations[{i}].Town", Model.Team.MatchLocations[i].Town, new { @class = "related-item__data", data_item = Model.Team.MatchLocations[i].MatchLocationId })
-                            <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Team.MatchLocations[i].NameAndLocalityOrTownIfDifferent()} from this team")</button>
+                            <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Remove {Model.Team.MatchLocations[i].NameAndLocalityOrTownIfDifferent()} from this team")</button>
                         </div>
                     </td>
                 </tr>
@@ -156,7 +156,7 @@
                         <input name="Team.MatchLocations[0].MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                         <input name="Team.MatchLocations[0].PrimaryAddressableObjectName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
                         <input name="Team.MatchLocations[0].Town" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                        <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this team")</button>
+                        <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}} from this team")</button>
                     </div>
                 </td>
             </tr>
@@ -216,4 +216,4 @@
         @Html.ValidationMessageFor(m => Model.Team.PrivateContactDetails, null, new { id = "private-validation" })
     </div>
 
-    <button class="btn btn-primary">Save team</button>
+    <button class="btn btn-primary" type="submit">Save team</button>

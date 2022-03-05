@@ -9,14 +9,11 @@ using Stoolball.Listings;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Schools;
-using Stoolball.Security;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Schools;
-using Stoolball.Web.Security;
 using Stoolball.Web.Statistics;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -37,7 +34,6 @@ namespace Stoolball.Web
             composition.Register<IPlayerTypeSelector, PlayerTypeSelector>();
             composition.Register<IEditMatchHelper, EditMatchHelper>();
             composition.Register<IMatchValidator, MatchValidator>();
-            composition.Register<IMemberGroupHelper, MemberGroupHelper>();
             composition.Register<IMatchResultEvaluator, MatchResultEvaluator>();
             composition.Register<IMatchInningsUrlParser, MatchInningsUrlParser>();
             composition.Register<IPlayerInningsScaffolder, PlayerInningsScaffolder>();
@@ -66,7 +62,6 @@ namespace Stoolball.Web
             composition.Register<ICacheClearer<Match>, MatchCacheClearer>();
 
             // Data sources for stoolball data.
-            composition.Register<ITeamRepository, SqlServerTeamRepository>();
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();
             composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>();
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>();

@@ -1,0 +1,26 @@
+﻿@inherits UmbracoViewPage<TeamViewModel>
+@using Stoolball.Web.Teams
+@using Stoolball.Web.Teams.Models
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItems")
+@await Html.PartialAsync("_TinyMCE")
+<div class="container-xl">
+    <h1>Add a team</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.CreateTeam])
+    {
+        using (Html.BeginUmbracoForm<CreateTeamSurfaceController>(nameof(CreateTeamSurfaceController.CreateTeam)))
+        {
+            @await Html.PartialAsync("_CreateOrEditTeam")
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

@@ -2,24 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
 using Stoolball.Teams;
-using Stoolball.Web.Matches;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Stoolball.Web.Teams.Models;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Teams
 {
     public class EditTransientTeamSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly ITeamDataSource _teamDataSource;
         private readonly ITeamRepository _teamRepository;
         private readonly IMatchListingDataSource _matchDataSource;
@@ -27,11 +33,13 @@ namespace Stoolball.Web.Teams
         private readonly IDateTimeFormatter _dateFormatter;
 
         public EditTransientTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamDataSource teamDataSource, ITeamRepository teamRepository,
-            IMatchListingDataSource matchDataSource, IAuthorizationPolicy<Team> authorizationPolicy, IDateTimeFormatter dateFormatter)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            ITeamDataSource teamDataSource, ITeamRepository teamRepository, IMatchListingDataSource matchDataSource,
+            IAuthorizationPolicy<Team> authorizationPolicy, IDateTimeFormatter dateFormatter)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _teamDataSource = teamDataSource;
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
@@ -42,22 +50,22 @@ namespace Stoolball.Web.Teams
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> UpdateTransientTeam([Bind(Prefix = "Team", Include = "TeamName,AgeRangeLower,AgeRangeUpper,PlayerType,Facebook,Twitter,Instagram,YouTube,Website")] Team team)
+        public async Task<IActionResult> UpdateTransientTeam([Bind("TeamName", "AgeRangeLower", "AgeRangeUpper", "PlayerType", "Facebook", "Twitter", "Instagram", "YouTube", "Website", Prefix = "Team")] Team team)
         {
             if (team is null)
             {
                 throw new ArgumentNullException(nameof(team));
             }
 
-            var beforeUpdate = await _teamDataSource.ReadTeamByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _teamDataSource.ReadTeamByRoute(Request.Path).ConfigureAwait(false);
             team.TeamId = beforeUpdate.TeamId;
             team.TeamRoute = beforeUpdate.TeamRoute;
 
-            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
-            team.Introduction = Request.Unvalidated.Form["Team.Introduction"];
-            team.Cost = Request.Unvalidated.Form["Team.Cost"];
-            team.PublicContactDetails = Request.Unvalidated.Form["Team.PublicContactDetails"];
-            team.PrivateContactDetails = Request.Unvalidated.Form["Team.PrivateContactDetails"];
+            // get this from the form instead of via modelbinding so that HTML can be allowed
+            team.Introduction = Request.Form["Team.Introduction"];
+            team.Cost = Request.Form["Team.Cost"];
+            team.PublicContactDetails = Request.Form["Team.PublicContactDetails"];
+            team.PrivateContactDetails = Request.Form["Team.PrivateContactDetails"];
 
             if (team.AgeRangeLower < 11 && !team.AgeRangeUpper.HasValue)
             {
@@ -69,11 +77,11 @@ namespace Stoolball.Web.Teams
                 ModelState.AddModelError("Team.AgeRangeUpper", "The maximum age for players cannot be lower than the minimum age");
             }
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
+            var isAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditTeam] && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditTeam] && ModelState.IsValid)
             {
-                var currentMember = Members.GetCurrentMember();
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTeam = await _teamRepository.UpdateTransientTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect back to the team, as there is no actions page for a transient team
@@ -90,10 +98,9 @@ namespace Stoolball.Web.Teams
             {
                 Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                 {
-                    TeamIds = new List<Guid> { model.Team.TeamId.Value },
+                    TeamIds = new List<Guid> { model.Team.TeamId!.Value },
                     IncludeMatches = false
-                }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
-                DateTimeFormatter = _dateFormatter
+                }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false)
             };
 
             var match = model.Matches.Matches.First();

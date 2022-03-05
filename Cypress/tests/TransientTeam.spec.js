@@ -1,7 +1,7 @@
 describe("Transient team", () => {
   beforeEach(() => {
     cy.visit(
-      "/tournaments/lewes-arms-tournament-7jul2013/teams/brighton-beachcombers"
+      "/tournaments/lewes-arms-tournament-7jul2013/teams/brighton-beachcombers/edit"
     );
   });
 

@@ -1,20 +1,14 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.DeleteTeamViewModel>
+﻿@inherits UmbracoViewPage<Stoolball.Web.Teams.Models.DeleteTeamViewModel>
 @using Humanizer
-@using ClientDependency.Core.Mvc
 @using Stoolball.Web.Teams
 @using Stoolball.Security
 @using Constants = Stoolball.Constants
-@{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-}
+@await Html.PartialAsync("_JQueryValidate")
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>Delete @Model.Team.TeamName</h1>
+    <h1>Delete @Model.Team!.TeamName</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.DeleteTeam])
     {
@@ -52,11 +46,8 @@
             </ul>
             <p><strong><strong>You cannot undo this.</strong></strong></p>
 
-            using (Html.BeginUmbracoForm<DeleteTeamSurfaceController>
-                   ("DeleteTeam"))
+            using (Html.BeginUmbracoForm<DeleteTeamSurfaceController>(nameof(DeleteTeamSurfaceController.DeleteTeam)))
             {
-                @Html.AntiForgeryToken()
-
                 @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
                 <div class="form-group">
                     @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Team.TeamName}' into this box:")
@@ -64,7 +55,7 @@
                     @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
                 </div>
 
-                <button class="btn btn-danger btn-delete">Delete @Model.Team.TeamName</button>
+                <button class="btn btn-danger btn-delete" type="submit">Delete @Model.Team.TeamName</button>
             }
         }
         else
@@ -75,6 +66,6 @@
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

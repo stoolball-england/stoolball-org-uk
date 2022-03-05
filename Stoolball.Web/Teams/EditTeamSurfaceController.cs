@@ -1,35 +1,43 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Navigation;
+using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Stoolball.Web.Teams.Models;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Teams
 {
     public class EditTeamSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly ITeamDataSource _teamDataSource;
         private readonly ITeamRepository _teamRepository;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
         private readonly ICacheOverride _cacheOverride;
 
         public EditTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamDataSource teamDataSource, ITeamRepository teamRepository,
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            ITeamDataSource teamDataSource, ITeamRepository teamRepository,
             IAuthorizationPolicy<Team> authorizationPolicy, ICacheOverride cacheOverride)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _teamDataSource = teamDataSource;
-            _teamRepository = teamRepository ?? throw new System.ArgumentNullException(nameof(teamRepository));
-            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
@@ -37,23 +45,23 @@ namespace Stoolball.Web.Teams
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> UpdateTeam([Bind(Prefix = "Team", Include = "TeamName,TeamType,AgeRangeLower,AgeRangeUpper,UntilYear,PlayerType,MatchLocations,Facebook,Twitter,Instagram,YouTube,Website")] Team team)
+        public async Task<IActionResult> UpdateTeam([Bind("TeamName", "TeamType", "AgeRangeLower", "AgeRangeUpper", "UntilYear", "PlayerType", "MatchLocations", "Facebook", "Twitter", "Instagram", "YouTube", "Website", Prefix = "Team")] Team team)
         {
             if (team is null)
             {
-                throw new System.ArgumentNullException(nameof(team));
+                throw new ArgumentNullException(nameof(team));
             }
 
-            var beforeUpdate = await _teamDataSource.ReadTeamByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _teamDataSource.ReadTeamByRoute(Request.Path).ConfigureAwait(false);
             team.TeamId = beforeUpdate.TeamId;
             team.TeamRoute = beforeUpdate.TeamRoute;
 
-            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
-            team.Introduction = Request.Unvalidated.Form["Team.Introduction"];
-            team.PlayingTimes = Request.Unvalidated.Form["Team.PlayingTimes"];
-            team.Cost = Request.Unvalidated.Form["Team.Cost"];
-            team.PublicContactDetails = Request.Unvalidated.Form["Team.PublicContactDetails"];
-            team.PrivateContactDetails = Request.Unvalidated.Form["Team.PrivateContactDetails"];
+            // get this from the form instead of via modelbinding so that HTML can be allowed
+            team.Introduction = Request.Form["Team.Introduction"];
+            team.PlayingTimes = Request.Form["Team.PlayingTimes"];
+            team.Cost = Request.Form["Team.Cost"];
+            team.PublicContactDetails = Request.Form["Team.PublicContactDetails"];
+            team.PrivateContactDetails = Request.Form["Team.PrivateContactDetails"];
 
             if (team.AgeRangeLower < 11 && !team.AgeRangeUpper.HasValue)
             {
@@ -68,14 +76,14 @@ namespace Stoolball.Web.Teams
             // We're not interested in validating the details of the selected locations
             foreach (var key in ModelState.Keys.Where(x => x.StartsWith("Team.MatchLocations", StringComparison.OrdinalIgnoreCase)))
             {
-                ModelState[key].Errors.Clear();
+                ModelState.Remove(key);
             }
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
+            var isAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (isAuthorized[Stoolball.Security.AuthorizedAction.EditTeam] && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditTeam] && ModelState.IsValid)
             {
-                var currentMember = Members.GetCurrentMember();
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTeam = await _teamRepository.UpdateTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);

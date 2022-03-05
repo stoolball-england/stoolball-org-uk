@@ -2,40 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Stoolball.Web.Teams.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Teams
 {
-    public class DeleteTeamController : RenderMvcControllerAsync
+    public class DeleteTeamController : RenderController, IRenderControllerAsync
     {
         private readonly ITeamDataSource _teamDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
 
-        public DeleteTeamController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           ITeamDataSource teamDataSource,
-           IMatchListingDataSource matchDataSource,
-           IPlayerDataSource playerDataSource,
-           IAuthorizationPolicy<Team> authorizationPolicy)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public DeleteTeamController(ILogger<DeleteTeamController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            ITeamDataSource teamDataSource,
+            IMatchListingDataSource matchDataSource,
+            IPlayerDataSource playerDataSource,
+            IAuthorizationPolicy<Team> authorizationPolicy)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -45,25 +42,20 @@ namespace Stoolball.Web.Teams
 
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new DeleteTeamViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new DeleteTeamViewModel(contentModel.Content, Services?.UserService)
-            {
-                Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false)
+                Team = await _teamDataSource.ReadTeamByRoute(Request.Path, true).ConfigureAwait(false)
             };
 
             if (model.Team == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
-                var teamIds = new List<Guid> { model.Team.TeamId.Value };
+                var teamIds = new List<Guid> { model.Team.TeamId!.Value };
                 model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchFilter
                 {
                     TeamIds = teamIds,
@@ -76,7 +68,7 @@ namespace Stoolball.Web.Teams
 
                 model.ConfirmDeleteRequest.RequiredText = model.Team.TeamName;
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
 
                 model.Metadata.PageTitle = "Delete " + model.Team.TeamName;
 

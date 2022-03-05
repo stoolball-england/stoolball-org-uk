@@ -1,0 +1,28 @@
+﻿@inherits UmbracoViewPage<TeamViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@using Stoolball.Web.Teams
+@using Stoolball.Web.Teams.Models
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_TinyMCE")
+@{
+    var firstAndOnlyMatch = Model.Matches.Matches.First();
+}
+<div class="container-xl">
+    <h1>Edit @Model.Team!.TeamName, @dateTimeFormatter.FormatDate(firstAndOnlyMatch.StartTime, false, false)</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditTeam])
+    {
+        using (Html.BeginUmbracoForm<EditTransientTeamSurfaceController>(nameof(EditTransientTeamSurfaceController.UpdateTransientTeam)))
+        {
+            @await Html.PartialAsync("_CreateOrEditTeam")
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>
