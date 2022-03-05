@@ -95,7 +95,6 @@
     <Compile Include="MatchLocations\DeleteMatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\MatchLocationsControllerTests.cs" />
     <Compile Include="MatchLocations\MatchLocationStatisticsControllerTests.cs" />
-    <Compile Include="Schools\SchoolsControllerTests.cs" />
     <Compile Include="Statistics\BowlingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\BattingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\EconomyRateControllerTests.cs" />

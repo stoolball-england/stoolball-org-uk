@@ -25,6 +25,7 @@ using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
+using Stoolball.Schools;
 using Stoolball.Security;
 using Stoolball.SocialMedia;
 using Stoolball.Statistics;
@@ -38,6 +39,7 @@ using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
 using Stoolball.Web.Logging;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Schools;
 using Stoolball.Web.Security;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
@@ -138,6 +140,7 @@ namespace Stoolball.Web
             services.AddTransient<ICacheableMatchLocationDataSource, SqlServerMatchLocationDataSource>();
             services.AddTransient<IPlayerDataSource, CachedPlayerDataSource>();
             services.AddTransient<ICacheablePlayerDataSource, SqlServerPlayerDataSource>();
+            services.AddTransient<ISchoolDataSource, SqlServerSchoolDataSource>();
             services.AddTransient<ISeasonDataSource, SqlServerSeasonDataSource>();
             services.AddTransient<ITeamDataSource, SqlServerTeamDataSource>();
             services.AddTransient<ITeamListingDataSource, CachedTeamListingDataSource>();
@@ -247,9 +250,12 @@ namespace Stoolball.Web
             services.AddTransient<EditSeasonTeamsController>();
             services.AddTransient<DeleteSeasonController>();
 
+            services.AddTransient<SchoolsController>();
+
             // Listings pages
             services.AddTransient<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();
             services.AddTransient<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>, ListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();
+            services.AddTransient<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>, ListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>>();
         }
 
         /// <summary>

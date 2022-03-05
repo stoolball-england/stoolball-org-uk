@@ -1,8 +1,8 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Schools.SchoolsViewModel>
+﻿@inherits UmbracoViewPage<Stoolball.Web.Schools.SchoolsViewModel>
 @using Humanizer
 @using System.Linq
 @using Stoolball.Teams
-@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
+@section canonical {@await Html.PartialAsync("_CanonicalUrl", new[] { "page", "q" })}
 <div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.Schools
@@ -12,7 +12,7 @@
         }
     </h1>
 
-    <form method="get" action="@Request.Url.AbsolutePath" class="form-inline form-search">
+    <form method="get" action="@Context.Request.Path" class="form-inline form-search">
         <label class="sr-only" for="school-search">School name, town or village</label>
         <input type="search" class="form-control" id="school-search" name="q" value="@Model.Filter.Query" />
         <button type="submit" class="btn btn-primary">Search</button>
@@ -62,5 +62,5 @@
     }
 </dl>
     }
-    @Html.Partial("_Paging", Model.Filter.Paging)
+    @await Html.PartialAsync("_Paging", Model.Filter.Paging)
 </div>

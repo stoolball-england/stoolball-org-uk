@@ -803,8 +803,6 @@
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Routing\RenderMvcControllerAsync.cs" />
-    <Compile Include="Schools\SchoolsController.cs" />
-    <Compile Include="Schools\SchoolsViewModel.cs" />
     <Compile Include="Security\IAuthorizationPolicy.cs" />
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
     <Compile Include="Statistics\BowlingStrikeRateController.cs" />
@@ -1477,7 +1475,6 @@
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textfield.cshtml" />
-    <Content Include="Views\Schools.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Submitted.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\Fieldtype.Recaptcha3.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\Fieldtype.Recaptcha2.cshtml" />

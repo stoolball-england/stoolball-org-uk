@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
+using Stoolball.Web.Schools;
 using Stoolball.Web.Teams;
 
 namespace Stoolball.Web.Routing
@@ -102,7 +103,7 @@ namespace Stoolball.Web.Routing
             //{ StoolballRouteType.EconomyRate, typeof(EconomyRateController) },
             //{ StoolballRouteType.BattingStrikeRate, typeof(BattingStrikeRateController) },
             //{ StoolballRouteType.BowlingStrikeRate, typeof(BowlingStrikeRateController) },
-            //{ StoolballRouteType.Schools, typeof(SchoolsController) }
+            { StoolballRouteType.Schools, typeof(SchoolsController) }
         };
 
         public Type MapRouteTypeToController(StoolballRouteType routeType)

@@ -8,12 +8,10 @@ using Stoolball.Html;
 using Stoolball.Listings;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
-using Stoolball.Schools;
 using Stoolball.Statistics;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
-using Stoolball.Web.Schools;
 using Stoolball.Web.Statistics;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -54,7 +52,6 @@ namespace Stoolball.Web
 
             // Listings pages
             composition.Register<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>, ListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
-            composition.Register<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>, ListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>>();
 
             // Caching with Polly
             composition.Register<IClearableCache, ClearableCacheWrapper>();
@@ -79,7 +76,6 @@ namespace Stoolball.Web
             composition.Register<ICacheablePlayerPerformanceStatisticsDataSource, SqlServerPlayerPerformanceStatisticsDataSource>();
             composition.Register<IBestPlayerAverageStatisticsDataSource, CachedBestPlayerAverageStatisticsDataSource>();
             composition.Register<ICacheableBestPlayerAverageStatisticsDataSource, SqlServerBestPlayerAverageStatisticsDataSource>();
-            composition.Register<ISchoolDataSource, SqlServerSchoolDataSource>();
 
             // Security checks
             composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>();
