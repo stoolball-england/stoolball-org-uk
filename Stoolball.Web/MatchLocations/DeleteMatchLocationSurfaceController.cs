@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.MatchLocations.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.MatchLocations
 {
     public class DeleteMatchLocationSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IMatchLocationRepository _matchLocationRepository;
         private readonly IMatchListingDataSource _matchDataSource;
@@ -25,13 +31,14 @@ namespace Stoolball.Web.MatchLocations
         private readonly ICacheOverride _cacheOverride;
 
         public DeleteMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory,
-            ServiceContext serviceContext, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper,
+            ServiceContext serviceContext, AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchLocationDataSource matchLocationDataSource, IMatchLocationRepository matchLocationRepository, IMatchListingDataSource matchDataSource,
            IAuthorizationPolicy<MatchLocation> authorizationPolicy, ICacheOverride cacheOverride)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
-            _matchLocationRepository = matchLocationRepository ?? throw new System.ArgumentNullException(nameof(matchLocationRepository));
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
+            _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
+            _matchLocationRepository = matchLocationRepository ?? throw new ArgumentNullException(nameof(matchLocationRepository));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
@@ -41,39 +48,39 @@ namespace Stoolball.Web.MatchLocations
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteMatchLocation([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] Stoolball.Security.MatchingTextConfirmation model)
+        public async Task<IActionResult> DeleteMatchLocation([Bind("RequiredText", "ConfirmationText", Prefix = "ConfirmDeleteRequest")] MatchingTextConfirmation model)
         {
             if (model is null)
             {
-                throw new System.ArgumentNullException(nameof(model));
+                throw new ArgumentNullException(nameof(model));
             }
 
             var viewModel = new DeleteMatchLocationViewModel(CurrentPage, Services.UserService)
             {
-                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, true).ConfigureAwait(false),
+                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Path, true)
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.MatchLocation);
+            viewModel.IsAuthorized = await _authorizationPolicy.IsAuthorized(viewModel.MatchLocation);
 
-            if (viewModel.IsAuthorized[Stoolball.Security.AuthorizedAction.DeleteMatchLocation] && ModelState.IsValid)
+            if (viewModel.IsAuthorized[AuthorizedAction.DeleteMatchLocation] && ModelState.IsValid)
             {
-                var memberGroup = Services.MemberGroupService.GetById(viewModel.MatchLocation.MemberGroupKey.Value);
+                var memberGroup = Services.MemberGroupService.GetById(viewModel.MatchLocation.MemberGroupKey!.Value);
                 if (memberGroup != null)
                 {
                     Services.MemberGroupService.Delete(memberGroup);
                 }
 
-                var currentMember = Members.GetCurrentMember();
-                await _matchLocationRepository.DeleteMatchLocation(viewModel.MatchLocation, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix).ConfigureAwait(false);
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
+                await _matchLocationRepository.DeleteMatchLocation(viewModel.MatchLocation, currentMember.Key, currentMember.Name);
+                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix);
                 viewModel.Deleted = true;
             }
             else
             {
                 viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchFilter
                 {
-                    MatchLocationIds = new List<Guid> { viewModel.MatchLocation.MatchLocationId.Value },
+                    MatchLocationIds = new List<Guid> { viewModel.MatchLocation.MatchLocationId!.Value },
                     IncludeTournamentMatches = true
-                }).ConfigureAwait(false);
+                });
             }
 
             viewModel.Metadata.PageTitle = $"Delete " + viewModel.MatchLocation.NameAndLocalityOrTown();

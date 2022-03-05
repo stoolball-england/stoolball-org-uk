@@ -192,6 +192,7 @@ namespace Stoolball.Web
             services.AddTransient<IAuditRepository, SqlServerAuditRepository>();
             services.AddTransient<IClubRepository, SqlServerClubRepository>();
             services.AddTransient<ICompetitionRepository, SqlServerCompetitionRepository>();
+            services.AddTransient<IMatchLocationRepository, SqlServerMatchLocationRepository>();
             services.AddTransient<IRedirectsRepository, SkybrudRedirectsRepository>();
             services.AddTransient<ISeasonRepository, SqlServerSeasonRepository>();
             services.AddTransient<ITeamRepository, SqlServerTeamRepository>();
@@ -246,6 +247,9 @@ namespace Stoolball.Web
             services.AddTransient<MatchLocationActionsController>();
             services.AddTransient<MatchLocationStatisticsController>();
             services.AddTransient<MatchesForMatchLocationController>();
+            services.AddTransient<CreateMatchLocationController>();
+            services.AddTransient<EditMatchLocationController>();
+            services.AddTransient<DeleteMatchLocationController>();
 
             services.AddTransient<SeasonController>();
             services.AddTransient<SeasonResultsTableController>();

@@ -33,7 +33,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IHtmlSanitizer>(),
@@ -48,7 +48,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IHtmlSanitizer>(),
@@ -63,7 +63,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IHtmlSanitizer>(),
@@ -91,7 +91,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 routeGenerator.Object,
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IHtmlSanitizer>(),
@@ -147,7 +147,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 routeGenerator.Object,
                 Mock.Of<IRedirectsRepository>(),
                 sanitizer.Object,
@@ -211,7 +211,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 routeGenerator.Object,
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IHtmlSanitizer>(),
@@ -254,7 +254,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             copier.Setup(x => x.CreateAuditableCopy(location)).Returns(auditable);
             copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
             var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger<SqlServerMatchLocationRepository>>();
 
             var repo = new SqlServerMatchLocationRepository(_databaseFixture.ConnectionFactory,
                 auditRepository.Object,
@@ -270,7 +270,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
             auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerMatchLocationRepository), nameof(SqlServerMatchLocationRepository.CreateMatchLocation)));
+            logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerMatchLocationRepository), nameof(SqlServerMatchLocationRepository.CreateMatchLocation)));
         }
 
 
@@ -280,7 +280,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IHtmlSanitizer>(),
@@ -295,7 +295,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IHtmlSanitizer>(),
@@ -310,7 +310,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IHtmlSanitizer>(),
@@ -344,7 +344,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 routeGenerator.Object,
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IHtmlSanitizer>(),
@@ -391,7 +391,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             var repo = new SqlServerMatchLocationRepository(_databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 routeGenerator.Object,
                 Mock.Of<IRedirectsRepository>(),
                 sanitizer.Object,
@@ -449,7 +449,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             var repo = new SqlServerMatchLocationRepository(_databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 routeGenerator.Object,
                 redirects.Object,
                 Mock.Of<IHtmlSanitizer>(),
@@ -480,7 +480,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             var repo = new SqlServerMatchLocationRepository(_databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 routeGenerator.Object,
                 redirects.Object,
                 Mock.Of<IHtmlSanitizer>(),
@@ -514,7 +514,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             copier.Setup(x => x.CreateAuditableCopy(location)).Returns(auditable);
             copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
             var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger<SqlServerMatchLocationRepository>>();
 
             var repo = new SqlServerMatchLocationRepository(_databaseFixture.ConnectionFactory,
                 auditRepository.Object,
@@ -530,7 +530,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
             auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerMatchLocationRepository), nameof(SqlServerMatchLocationRepository.UpdateMatchLocation)));
+            logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerMatchLocationRepository), nameof(SqlServerMatchLocationRepository.UpdateMatchLocation)));
         }
 
         [Fact]
@@ -556,7 +556,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var repo = new SqlServerMatchLocationRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchLocationRepository>>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<IHtmlSanitizer>(),

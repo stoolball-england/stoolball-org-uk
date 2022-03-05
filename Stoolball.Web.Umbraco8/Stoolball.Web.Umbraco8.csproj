@@ -765,9 +765,6 @@
     <Compile Include="App_Data\Models\YouTubeVideo.generated.cs" />
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="Caching\ClearableCacheWrapper.cs" />
-    <Compile Include="Competitions\SeasonListViewModel.cs" />
-    <Compile Include="Configuration\IApiKeyProvider.cs" />
-    <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
     <Compile Include="Filtering\FilterViewModel.cs" />
     <Compile Include="HtmlHelpers\LabelExtensions.cs" />
     <Compile Include="HtmlHelpers\RequiredFieldStatus.cs" />
@@ -1017,18 +1014,10 @@
     <Compile Include="Matches\IEditMatchViewModel.cs" />
     <Compile Include="Matches\TeamComparer.cs" />
     <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
-    <Compile Include="MatchLocations\MatchLocationAuthorizationPolicy.cs" />
     <Compile Include="Metadata\IHasViewMetadata.cs" />
     <Compile Include="Matches\MatchActionsController.cs" />
     <Compile Include="Matches\MatchAuthorizationPolicy.cs" />
     <Compile Include="Matches\TournamentActionsController.cs" />
-    <Compile Include="MatchLocations\DeleteMatchLocationSurfaceController.cs" />
-    <Compile Include="MatchLocations\CreateMatchLocationSurfaceController.cs" />
-    <Compile Include="MatchLocations\CreateMatchLocationController.cs" />
-    <Compile Include="MatchLocations\EditMatchLocationSurfaceController.cs" />
-    <Compile Include="MatchLocations\EditMatchLocationController.cs" />
-    <Compile Include="MatchLocations\DeleteMatchLocationController.cs" />
-    <Compile Include="MatchLocations\DeleteMatchLocationViewModel.cs" />
     <Compile Include="Routing\IPostSaveRedirector.cs" />
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
     <Compile Include="Statistics\BowlingFiguresController.cs" />
@@ -1065,11 +1054,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CreateLeagueMatch.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CreateMatchLocation.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CreateMatchLocation.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\CreateTournament.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1079,11 +1063,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DeleteMatch.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DeleteMatchLocation.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DeleteMatchLocation.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\DeleteTournament.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1119,11 +1098,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EditLeagueMatch.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditMatchLocation.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditMatchLocation.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditStartOfPlay.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1180,11 +1154,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>_CreateOrEditLeagueMatch.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\_CreateOrEditMatchLocation.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_CreateOrEditMatchLocation.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\_CreateOrEditTournament.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1235,7 +1204,6 @@
     <Compile Include="App_Data\Models\Metadata.generated.cs" />
     <Compile Include="App_Data\Models\MyAccount.generated.cs" />
     <Compile Include="DependencyInjectionComposer.cs" />
-    <Compile Include="MatchLocations\MatchLocationViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Routing\BaseViewModel.cs" />
   </ItemGroup>
@@ -1255,22 +1223,6 @@
     <Content Include="Views\Tournament.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Tournament.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\EditMatchLocation.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditMatchLocation.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\CreateMatchLocation.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>CreateMatchLocation.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_CreateOrEditMatchLocation.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_CreateOrEditMatchLocation.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\DeleteMatchLocation.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>DeleteMatchLocation.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\MatchActions.cshtml">
       <Generator>RazorGenerator</Generator>

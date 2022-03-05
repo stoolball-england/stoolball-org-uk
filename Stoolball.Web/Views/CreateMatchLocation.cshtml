@@ -1,0 +1,29 @@
+﻿@inherits UmbracoViewPage<MatchLocationViewModel>
+@using Stoolball.Web.MatchLocations
+@using Stoolball.Web.MatchLocations.Models
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_TinyMCE")
+@{
+    SmidgeHelper.RequiresJs(new JavaScriptFile("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey) { Order = 50});
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/maps.js") { Order = 90 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/edit-match-location.js") { Order = 100 });
+}
+<div class="container-xl">
+    <h1>Add a ground or sports centre</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.CreateMatchLocation])
+    {
+        using (Html.BeginUmbracoForm<CreateMatchLocationSurfaceController>(nameof(CreateMatchLocationSurfaceController.CreateMatchLocation)))
+        {
+            @await Html.PartialAsync("_CreateOrEditMatchLocation")
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

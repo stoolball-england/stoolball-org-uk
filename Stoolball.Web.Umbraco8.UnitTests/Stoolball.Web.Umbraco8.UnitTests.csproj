@@ -89,9 +89,6 @@
     <Compile Include="Matches\TournamentsRssControllerTests.cs" />
     <Compile Include="Matches\TournamentControllerTests.cs" />
     <Compile Include="Matches\MatchControllerTests.cs" />
-    <Compile Include="MatchLocations\CreateMatchLocationControllerTests.cs" />
-    <Compile Include="MatchLocations\EditMatchLocationControllerTests.cs" />
-    <Compile Include="MatchLocations\DeleteMatchLocationControllerTests.cs" />
     <Compile Include="Statistics\BowlingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\BattingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\EconomyRateControllerTests.cs" />

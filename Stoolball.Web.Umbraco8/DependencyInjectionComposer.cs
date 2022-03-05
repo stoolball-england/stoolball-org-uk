@@ -6,7 +6,6 @@ using Stoolball.Data.SqlServer;
 using Stoolball.Email;
 using Stoolball.Html;
 using Stoolball.Matches;
-using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Matches;
@@ -55,7 +54,6 @@ namespace Stoolball.Web
 
             // Data sources for stoolball data.
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();
-            composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>();
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>();
             composition.Register<ICommentsDataSource<Match>, CachedCommentsDataSource<Match>>();
             composition.Register<ICommentsDataSource<Tournament>, CachedCommentsDataSource<Tournament>>();
