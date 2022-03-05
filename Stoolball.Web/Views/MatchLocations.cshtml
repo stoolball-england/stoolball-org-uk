@@ -1,7 +1,7 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.MatchLocationsViewModel>
+﻿@inherits UmbracoViewPage<Stoolball.Web.MatchLocations.Models.MatchLocationsViewModel>
 @using Humanizer
 @using System.Linq
-@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
+@section canonical {@await Html.PartialAsync("_CanonicalUrl", new[] { "page", "q" })}
 <div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.MatchLocations
@@ -20,7 +20,7 @@
         </li>
     </ul>
 
-    <form method="get" action="@Request.Url.AbsolutePath" class="form-inline form-search">
+    <form method="get" action="@Context.Request.Path" class="form-inline form-search">
         <label class="sr-only" for="location-search">Match location name</label>
         <input type="search" class="form-control" id="location-search" name="q" value="@Model.Filter.Query" />
         <button type="submit" class="btn btn-primary">Search</button>
@@ -47,5 +47,5 @@
             }
         </dl>
     }
-    @Html.Partial("_Paging", Model.Filter.Paging)
+    @await Html.PartialAsync("_Paging", Model.Filter.Paging)
 </div>

@@ -1,0 +1,67 @@
+﻿@inherits UmbracoViewPage<StatisticsSummaryViewModel<MatchLocation>>
+@using Stoolball.Web.Statistics.Models
+@using Stoolball.Matches
+@using Stoolball.MatchLocations
+@using Stoolball.Statistics
+@using Stoolball.Web.Filtering
+@{
+    SmidgeHelper.RequiresCss(new CssFile("/css/statistics.min.css"){Order = 100});
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js"){Order = 100});
+    SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css"){Order = 100});
+
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model) { ShowCaption = true, ShowPlayerColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
+    individualScores.Results.AddRange(Model.PlayerInnings);
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model) { ShowCaption = true, ShowPlayerColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
+    bowlingFigures.Results.AddRange(Model.BowlingFigures);
+    var mostRuns = new StatisticsViewModel<BestStatistic>(Model) { ShowCaption = true, ShowTeamsColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
+    mostRuns.Results.AddRange(Model.MostRuns);
+    var mostWickets = new StatisticsViewModel<BestStatistic>(Model) { ShowCaption = true, ShowTeamsColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
+    mostWickets.Results.AddRange(Model.MostWickets);
+    var mostCatches = new StatisticsViewModel<BestStatistic>(Model) { ShowCaption = true, ShowTeamsColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
+    mostCatches.Results.AddRange(Model.MostCatches);
+}
+<div class="container-xl">
+    <h1>@Model.Context!.NameAndLocalityOrTownIfDifferent()</h1>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Context.MatchLocationRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Context.MatchLocationRoute/matches">Matches</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Statistics</em>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+    </ul>
+    @await Html.PartialAsync("_Filters", new FilterViewModel
+    {
+      FilteredItemTypeSingular = "Statistics",
+      FilteredItemTypePlural = "Statistics",
+      FilterDescription = Model.FilterDescription,
+      from = Model.AppliedFilter.FromDate,
+      to = Model.AppliedFilter.UntilDate
+    })
+
+    @if (!Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any() && !Model.MostCatches.Any())
+    {
+        @await Html.PartialAsync("_NoData")
+    }
+    else
+    {
+        @await Html.PartialAsync("_IndividualScores", individualScores)
+        @await Html.PartialAsync("_MostRuns", mostRuns)
+        @await Html.PartialAsync("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+        @await Html.PartialAsync("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+        @await Html.PartialAsync("_BowlingFigures", bowlingFigures)
+        @await Html.PartialAsync("_MostWickets", mostWickets)
+        @await Html.PartialAsync("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+        @await Html.PartialAsync("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+        @await Html.PartialAsync("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+        @await Html.PartialAsync("_MostCatches", mostCatches)
+        @await Html.PartialAsync("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+    }
+</div>

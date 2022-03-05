@@ -1,87 +1,72 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using Stoolball.Dates;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
-using Stoolball.Web.Matches;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
+using Stoolball.Web.MatchLocations.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.MatchLocations
 {
-    public class MatchesForMatchLocationController : RenderMvcControllerAsync
+    public class MatchesForMatchLocationController : RenderController, IRenderControllerAsync
     {
         private readonly IMatchFilterFactory _matchFilterFactory;
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
-        private readonly IDateTimeFormatter _dateFormatter;
         private readonly IMatchFilterQueryStringParser _matchFilterQueryStringParser;
         private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
-        public MatchesForMatchLocationController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IMatchFilterFactory matchFilterFactory,
-           IMatchLocationDataSource matchLocationDataSource,
-           IMatchListingDataSource matchDataSource,
-           IAuthorizationPolicy<MatchLocation> authorizationPolicy,
-           IDateTimeFormatter dateFormatter,
-           IMatchFilterQueryStringParser matchFilterQueryStringParser,
-           IMatchFilterHumanizer matchFilterHumanizer)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public MatchesForMatchLocationController(ILogger<MatchesForMatchLocationController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IMatchFilterFactory matchFilterFactory,
+            IMatchLocationDataSource matchLocationDataSource,
+            IMatchListingDataSource matchDataSource,
+            IAuthorizationPolicy<MatchLocation> authorizationPolicy,
+            IMatchFilterQueryStringParser matchFilterQueryStringParser,
+            IMatchFilterHumanizer matchFilterHumanizer)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
-            _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _matchFilterQueryStringParser = matchFilterQueryStringParser ?? throw new ArgumentNullException(nameof(matchFilterQueryStringParser));
             _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
-            {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var location = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, false).ConfigureAwait(false);
+            var location = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Path, false);
 
             if (location == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
-                var filter = _matchFilterFactory.MatchesForMatchLocation(location.MatchLocationId.Value);
-                var model = new MatchLocationViewModel(contentModel.Content, Services?.UserService)
+                var filter = _matchFilterFactory.MatchesForMatchLocation(location.MatchLocationId!.Value);
+                var model = new MatchLocationViewModel(CurrentPage)
                 {
                     MatchLocation = location,
                     DefaultMatchFilter = filter.filter,
-                    Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
-                    {
-                        DateTimeFormatter = _dateFormatter
-                    },
+                    Matches = new MatchListingViewModel(CurrentPage),
                 };
-                model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.Url.Query);
+                model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.QueryString.Value);
                 model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, filter.sortOrder).ConfigureAwait(false);
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
                 var userFilter = _matchFilterHumanizer.MatchingFilter(model.AppliedMatchFilter);
                 if (!string.IsNullOrWhiteSpace(userFilter))

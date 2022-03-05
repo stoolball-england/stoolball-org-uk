@@ -5,13 +5,11 @@ using Stoolball.Data.Cache;
 using Stoolball.Data.SqlServer;
 using Stoolball.Email;
 using Stoolball.Html;
-using Stoolball.Listings;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Matches;
-using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Statistics;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -50,9 +48,6 @@ namespace Stoolball.Web
             composition.Register<IMatchInningsFactory, MatchInningsFactory>();
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
 
-            // Listings pages
-            composition.Register<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>, ListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
-
             // Caching with Polly
             composition.Register<IClearableCache, ClearableCacheWrapper>();
             composition.Register<ICacheClearer<Tournament>, TournamentCacheClearer>();
@@ -78,7 +73,6 @@ namespace Stoolball.Web
             composition.Register<ICacheableBestPlayerAverageStatisticsDataSource, SqlServerBestPlayerAverageStatisticsDataSource>();
 
             // Security checks
-            composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>();
             composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>();
             composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>();
         }

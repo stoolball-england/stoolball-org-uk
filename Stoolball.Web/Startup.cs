@@ -38,6 +38,8 @@ using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
 using Stoolball.Web.Logging;
+using Stoolball.Web.MatchLocations;
+using Stoolball.Web.MatchLocations.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Schools;
 using Stoolball.Web.Security;
@@ -197,6 +199,7 @@ namespace Stoolball.Web
             // Security checks
             services.AddTransient<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();
             services.AddTransient<IAuthorizationPolicy<Competition>, CompetitionAuthorizationPolicy>();
+            services.AddTransient<IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>();
             services.AddTransient<IAuthorizationPolicy<Team>, TeamAuthorizationPolicy>();
             services.AddScoped<DelegatedContentSecurityPolicyAttribute>();
 
@@ -238,6 +241,12 @@ namespace Stoolball.Web
             services.AddTransient<EditCompetitionController>();
             services.AddTransient<DeleteCompetitionController>();
 
+            services.AddTransient<MatchLocationsController>();
+            services.AddTransient<MatchLocationController>();
+            services.AddTransient<MatchLocationActionsController>();
+            services.AddTransient<MatchLocationStatisticsController>();
+            services.AddTransient<MatchesForMatchLocationController>();
+
             services.AddTransient<SeasonController>();
             services.AddTransient<SeasonResultsTableController>();
             services.AddTransient<SeasonStatisticsController>();
@@ -254,6 +263,7 @@ namespace Stoolball.Web
 
             // Listings pages
             services.AddTransient<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();
+            services.AddTransient<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>, ListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
             services.AddTransient<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>, ListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();
             services.AddTransient<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>, ListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>>();
         }

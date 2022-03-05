@@ -1,10 +1,10 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.MatchLocationViewModel>
+﻿@inherits UmbracoViewPage<Stoolball.Web.MatchLocations.Models.MatchLocationViewModel>
 @using Stoolball.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
+    <h1>Edit @Model.MatchLocation!.NameAndLocalityOrTownIfDifferent()</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
     {
@@ -16,13 +16,13 @@
             }
             @if (Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
             {
-                <dt><a href="@Model.MatchLocation.MatchLocationRoute/delete">Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a> @Html.Partial("_AdminOnly")</dt>
+                <dt><a href="@Model.MatchLocation.MatchLocationRoute/delete">Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a> @await Html.PartialAsync("_AdminOnly")</dt>
                 <dd>Matches played here will have an unknown location. Teams based here will lose their home.</dd>
             }
         </dl>
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

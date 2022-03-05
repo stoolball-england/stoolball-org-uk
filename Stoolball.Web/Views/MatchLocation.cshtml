@@ -1,17 +1,17 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.MatchLocationViewModel>
-@using ClientDependency.Core.Mvc
+﻿@inherits UmbracoViewPage<Stoolball.Web.MatchLocations.Models.MatchLocationViewModel>
 @using System.Globalization
+@using System.Net
 @using Stoolball.MatchLocations
 @using Stoolball.Security
 @{
-    Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
-    Html.RequiresJs("~/js/maps.js", 90);
-    Html.RequiresJs("~/matchlocations/match-location.js");
-    Html.RequiresJs("~/matchlocations/show-all-teams.js");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey){Order = 50});
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/maps.js"){Order = 90});
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/match-location.js"){Order = 100});
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/show-all-teams.js"){Order = 100});
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation];
 }
 <div class="container-xl">
-    <h1>@Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
+    <h1>@Model.MatchLocation!.NameAndLocalityOrTownIfDifferent()</h1>
 
     <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
         <li class="nav-item">
@@ -86,13 +86,13 @@
         if (currentTeams.Any())
         {
         <div class="team-list__current">
-            @Html.Partial("_TeamList", currentTeams)
+            @await Html.PartialAsync("_TeamList", currentTeams)
         </div>
         }
         if (currentTeams.Count < Model.MatchLocation.Teams.Count)
         {
             <div class="team-list__all d-none">
-                @Html.Partial("_TeamList", Model.MatchLocation.Teams)
+                @await Html.PartialAsync("_TeamList", Model.MatchLocation.Teams)
             </div>
         }
     }
@@ -124,8 +124,8 @@
         {
             <p>@precisionWarning</p>
         }
-        <div id="location-map" data-latitude="@Model.MatchLocation.Latitude" data-longitude="@Model.MatchLocation.Longitude" data-precision="@Model.MatchLocation.GeoPrecision.ToString().ToLowerInvariant()">
-            <p><a href="https://maps.google.co.uk/?z=16&amp;q=@HttpUtility.UrlEncode(Model.MatchLocation.NameAndLocalityOrTown())@("@")@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude&amp;ll=@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude">Map of @mapTitle on Google Maps</a></p>
+        <div id="location-map" data-latitude="@Model.MatchLocation.Latitude" data-longitude="@Model.MatchLocation.Longitude" data-precision="@Model.MatchLocation.GeoPrecision?.ToString().ToLowerInvariant()">
+            <p><a href="https://maps.google.co.uk/?z=16&amp;q=@WebUtility.UrlEncode(Model.MatchLocation.NameAndLocalityOrTown())@("@")@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude&amp;ll=@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude">Map of @mapTitle on Google Maps</a></p>
         </div>
     }
 

@@ -650,10 +650,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>IndividualScores.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\MatchLocationStatistics.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>MatchLocationStatistics.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\BowlingFigures.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>BowlingFigures.generated.cs</LastGenOutput>
@@ -1027,7 +1023,6 @@
     <Compile Include="Matches\MatchAuthorizationPolicy.cs" />
     <Compile Include="Matches\TournamentActionsController.cs" />
     <Compile Include="MatchLocations\DeleteMatchLocationSurfaceController.cs" />
-    <Compile Include="MatchLocations\MatchLocationActionsController.cs" />
     <Compile Include="MatchLocations\CreateMatchLocationSurfaceController.cs" />
     <Compile Include="MatchLocations\CreateMatchLocationController.cs" />
     <Compile Include="MatchLocations\EditMatchLocationSurfaceController.cs" />
@@ -1036,7 +1031,6 @@
     <Compile Include="MatchLocations\DeleteMatchLocationViewModel.cs" />
     <Compile Include="Routing\IPostSaveRedirector.cs" />
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
-    <Compile Include="MatchLocations\MatchLocationStatisticsController.cs" />
     <Compile Include="Statistics\BowlingFiguresController.cs" />
     <Compile Include="Statistics\StatisticsFilterFactory.cs" />
     <Compile Include="Statistics\StatisticsSummaryViewModel.cs" />
@@ -1166,31 +1160,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MatchActions.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MatchesForMatchLocation.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MatchesForMatchLocation.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MatchLocation.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MatchLocation.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MatchLocationActions.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MatchLocationActions.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MatchLocations.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MatchLocations.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MatchLocationStatistics.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MatchLocationStatistics.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\Forms\Emails\Stoolball-England-Email.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1257,9 +1226,6 @@
     <Compile Include="Matches\MatchListingViewModel.cs" />
     <Compile Include="Matches\TournamentViewModel.cs" />
     <Compile Include="Matches\MatchViewModel.cs" />
-    <Compile Include="MatchLocations\MatchLocationsViewModel.cs" />
-    <Compile Include="MatchLocations\MatchesForMatchLocationController.cs" />
-    <Compile Include="MatchLocations\MatchLocationsController.cs" />
     <Compile Include="App_Data\Models\ApproveMember.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
     <Compile Include="App_Data\Models\Folder.generated.cs" />
@@ -1269,7 +1235,6 @@
     <Compile Include="App_Data\Models\Metadata.generated.cs" />
     <Compile Include="App_Data\Models\MyAccount.generated.cs" />
     <Compile Include="DependencyInjectionComposer.cs" />
-    <Compile Include="MatchLocations\MatchLocationController.cs" />
     <Compile Include="MatchLocations\MatchLocationViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Routing\BaseViewModel.cs" />
@@ -1283,14 +1248,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\MatchLocation.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>MatchLocation.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\MatchesForMatchLocation.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>MatchesForMatchLocation.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Match.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Match.generated.cs</LastGenOutput>
@@ -1298,10 +1255,6 @@
     <Content Include="Views\Tournament.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Tournament.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\MatchLocations.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>MatchLocations.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\EditMatchLocation.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -1318,10 +1271,6 @@
     <Content Include="Views\DeleteMatchLocation.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>DeleteMatchLocation.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\MatchLocationActions.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>MatchLocationActions.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\MatchActions.cshtml">
       <Generator>RazorGenerator</Generator>

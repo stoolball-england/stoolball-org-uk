@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Stoolball.Web.Statistics;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Stoolball.Web.Statistics.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.MatchLocations
 {
-    public class MatchLocationStatisticsController : RenderMvcControllerAsync
+    public class MatchLocationStatisticsController : RenderController, IRenderControllerAsync
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceDataSource;
@@ -25,18 +23,15 @@ namespace Stoolball.Web.MatchLocations
         private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
-        public MatchLocationStatisticsController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IMatchLocationDataSource matchLocationDataSource,
-           IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
-           IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource,
-           IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
-           IStatisticsFilterHumanizer statisticsFilterHumanizer)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public MatchLocationStatisticsController(ILogger<MatchLocationStatisticsController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IMatchLocationDataSource matchLocationDataSource,
+            IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
+            IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource,
+            IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+            IStatisticsFilterHumanizer statisticsFilterHumanizer)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _bestPerformanceDataSource = bestPerformanceDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceDataSource));
@@ -47,31 +42,26 @@ namespace Stoolball.Web.MatchLocations
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new StatisticsSummaryViewModel<MatchLocation>(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new StatisticsSummaryViewModel<MatchLocation>(contentModel.Content, Services?.UserService)
-            {
-                Context = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, false).ConfigureAwait(false),
+                Context = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Path, false),
             };
 
             if (model.Context == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
                 model.DefaultFilter = new StatisticsFilter { MatchLocation = model.Context, MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.Url.Query);
-                model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
-                model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
-                model.MostRuns = (await _bestPlayerTotalDataSource.ReadMostRunsScored(model.AppliedFilter).ConfigureAwait(false)).ToList();
-                model.MostWickets = (await _bestPlayerTotalDataSource.ReadMostWickets(model.AppliedFilter).ConfigureAwait(false)).ToList();
-                model.MostCatches = (await _bestPlayerTotalDataSource.ReadMostCatches(model.AppliedFilter).ConfigureAwait(false)).ToList();
+                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
+                model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst)).ToList();
+                model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.AppliedFilter, StatisticsSortOrder.BestFirst)).ToList();
+                model.MostRuns = (await _bestPlayerTotalDataSource.ReadMostRunsScored(model.AppliedFilter)).ToList();
+                model.MostWickets = (await _bestPlayerTotalDataSource.ReadMostWickets(model.AppliedFilter)).ToList();
+                model.MostCatches = (await _bestPlayerTotalDataSource.ReadMostCatches(model.AppliedFilter)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
 

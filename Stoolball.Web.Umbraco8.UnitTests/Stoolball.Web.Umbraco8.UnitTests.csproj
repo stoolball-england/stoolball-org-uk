@@ -89,12 +89,9 @@
     <Compile Include="Matches\TournamentsRssControllerTests.cs" />
     <Compile Include="Matches\TournamentControllerTests.cs" />
     <Compile Include="Matches\MatchControllerTests.cs" />
-    <Compile Include="MatchLocations\MatchLocationActionsControllerTests.cs" />
     <Compile Include="MatchLocations\CreateMatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\EditMatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\DeleteMatchLocationControllerTests.cs" />
-    <Compile Include="MatchLocations\MatchLocationsControllerTests.cs" />
-    <Compile Include="MatchLocations\MatchLocationStatisticsControllerTests.cs" />
     <Compile Include="Statistics\BowlingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\BattingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\EconomyRateControllerTests.cs" />
@@ -113,8 +110,6 @@
     <Compile Include="Statistics\StatisticsControllerTests.cs" />
     <Compile Include="Statistics\IndividualScoresControllerTests.cs" />
     <Compile Include="Statistics\PlayerControllerTests.cs" />
-    <Compile Include="MatchLocations\MatchLocationControllerTests.cs" />
-    <Compile Include="MatchLocations\MatchesForMatchLocationControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UmbracoBaseTest.cs" />
   </ItemGroup>
