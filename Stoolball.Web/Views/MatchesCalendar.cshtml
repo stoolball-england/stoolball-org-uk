@@ -1,12 +1,13 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchListingViewModel>
+﻿@inherits UmbracoViewPage<MatchListingViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
 @using Constants = Stoolball.Constants
-@using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
 @{
     Layout = null;
-    Response.ContentType = "text/calendar; charset=utf-8";
-    var canonicalUrl = new Uri($"https://www.stoolball.org.uk{Request.Url.AbsolutePath.Substring(0, Request.Url.AbsolutePath.Length - 4)}.ics{Request.Url.Query}");
-    Response.Headers.Add("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
-    Response.Headers.Add("Content-Disposition", "attachment; filename=stoolball" + Request.Url.AbsolutePath.Replace('/', '-').Replace("-ics", string.Empty) + ".ics");
+    Context.Response.ContentType = "text/calendar; charset=utf-8";
+    var canonicalUrl = new Uri($"https://www.stoolball.org.uk{Context.Request.Path.Value!.Substring(0, Context.Request.Path.Value.Length - 4)}.ics{Context.Request.QueryString.Value}");
+    Context.Response.Headers.Add("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
+    Context.Response.Headers.Add("Content-Disposition", "attachment; filename=stoolball" + Context.Request.Path.Value.Replace('/', '-').Replace("-ics", string.Empty) + ".ics");
 }BEGIN:VCALENDAR
 X-ORIGINAL-URL:@canonicalUrl
 X-WR-CALNAME;CHARSET=UTF-8:@Model.Metadata.PageTitle.Replace(",", @"\,") - Stoolball England
@@ -34,7 +35,7 @@ END:VTIMEZONE
 {
 @:BEGIN:VEVENT
 @:LOCATION;LANGUAGE=en;CHARSET=UTF-8:@(listing.MatchLocation?.NameAndLocalityOrTown())
-@:SUMMARY;LANGUAGE=en;CHARSET=UTF-8:@listing.MatchName.Replace(",", @"\,") - @(listing.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(listing.StartTime, true, false) : Model.DateTimeFormatter.FormatDate(listing.StartTime,true, false))
+@:SUMMARY;LANGUAGE=en;CHARSET=UTF-8:@listing.MatchName.Replace(",", @"\,") - @(listing.StartTimeIsKnown ? dateTimeFormatter.FormatDateTime(listing.StartTime, true, false) : dateTimeFormatter.FormatDate(listing.StartTime,true, false))
 @:UID:@(listing.MatchType == null ? Constants.EntityUriPrefixes.Tournament : Constants.EntityUriPrefixes.Match)@listing.MatchId
 @:DTSTART:@listing.StartTime.ToString("O").Substring(0,19).Replace("-",string.Empty).Replace(":", string.Empty)Z 
 @:DTEND:@listing.EstimatedEndTime().ToString("O").Substring(0,19).Replace("-",string.Empty).Replace(":", string.Empty)Z

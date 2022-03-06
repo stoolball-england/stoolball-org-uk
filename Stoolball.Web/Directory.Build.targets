@@ -29,4 +29,10 @@
 				DestinationFiles="$(ProjectDir)umbraco-cloud.json"
 				Condition="Exists('$(ProjectDir)..\.UmbracoCloud\src\UmbracoProject\umbraco-cloud.json')" />
 	</Target>
+
+	<Target Name="StoolballApplyWebConfigTransform" BeforeTargets="AfterBuild">
+		<!-- Testing for the existence of web.template.config ensures this task only runs on local builds.
+		     On Umbraco Cloud web.release.config runs automatically to transform the .net core web.config -->
+		<TransformXml Source="$(ProjectDir)web.template.config" Transform="$(ProjectDir)web.release.config" Destination="$(ProjectDir)web.config" StackTrace="true" Condition="Exists('$(ProjectDir)web.template.config')" />
+	</Target>
 </Project>

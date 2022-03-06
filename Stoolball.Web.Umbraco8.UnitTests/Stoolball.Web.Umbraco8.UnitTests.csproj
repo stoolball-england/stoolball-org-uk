@@ -63,10 +63,8 @@
     <Compile Include="Matches\EditTournamentMatchesControllerTests.cs" />
     <Compile Include="Matches\EditTrainingSessionControllerTests.cs" />
     <Compile Include="Matches\EditTournamentSeasonsControllerTests.cs" />
-    <Compile Include="Matches\MatchesCalendarControllerTests.cs" />
     <Compile Include="Matches\MatchValidatorTests.cs" />
     <Compile Include="Matches\TournamentsControllerTests.cs" />
-    <Compile Include="Matches\MatchesControllerTests.cs" />
     <Compile Include="Matches\CreateTrainingSessionControllerTests.cs" />
     <Compile Include="Matches\CreateKnockoutMatchControllerTests.cs" />
     <Compile Include="Matches\CreateFriendlyMatchControllerTests.cs" />
@@ -82,13 +80,10 @@
     <Compile Include="Matches\EditLeagueMatchControllerTests.cs" />
     <Compile Include="Matches\DeleteTournamentControllerTests.cs" />
     <Compile Include="Matches\DeleteMatchControllerTests.cs" />
-    <Compile Include="Matches\MatchActionsControllerTests.cs" />
     <Compile Include="Matches\CreateLeagueMatchControllerTests.cs" />
     <Compile Include="Matches\TournamentActionsControllerTests.cs" />
-    <Compile Include="Matches\MatchesRssControllerTests.cs" />
     <Compile Include="Matches\TournamentsRssControllerTests.cs" />
     <Compile Include="Matches\TournamentControllerTests.cs" />
-    <Compile Include="Matches\MatchControllerTests.cs" />
     <Compile Include="Statistics\BowlingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\BattingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\EconomyRateControllerTests.cs" />

@@ -14,6 +14,7 @@ using Polly.Caching.Memory;
 using Polly.Registry;
 using Stoolball.Caching;
 using Stoolball.Clubs;
+using Stoolball.Comments;
 using Stoolball.Competitions;
 using Stoolball.Data.Cache;
 using Stoolball.Data.SqlServer;
@@ -38,6 +39,7 @@ using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
 using Stoolball.Web.Logging;
+using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.MatchLocations.Models;
 using Stoolball.Web.Routing;
@@ -91,6 +93,7 @@ namespace Stoolball.Web
 
             // Utility classes
             services.AddTransient<IApiKeyProvider, ConfigApiKeyProvider>();
+            services.AddTransient<IBadLanguageFilter, BadLanguageFilter>();
             services.AddTransient<IBowlingFiguresCalculator, BowlingFiguresCalculator>();
             services.AddTransient<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>();
             services.AddTransient<IDataRedactor, DataRedactor>();
@@ -116,6 +119,7 @@ namespace Stoolball.Web
             services.AddTransient<IMatchFilterHumanizer, MatchFilterHumanizer>();
             services.AddTransient<IMatchFilterQueryStringParser, MatchFilterQueryStringParser>();
             services.AddTransient<IMatchFilterQueryStringSerializer, MatchFilterQueryStringSerializer>();
+            services.AddTransient<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
             services.AddTransient<IPlayerFilterSerializer, PlayerFilterQueryStringSerializer>();
             services.AddTransient<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
             services.AddTransient<IStatisticsFilterHumanizer, StatisticsFilterHumanizer>();
@@ -137,6 +141,9 @@ namespace Stoolball.Web
             services.AddTransient<ICacheableCompetitionDataSource, SqlServerCompetitionDataSource>();
             services.AddTransient<IMatchListingDataSource, CachedMatchListingDataSource>();
             services.AddTransient<ICacheableMatchListingDataSource, SqlServerMatchListingDataSource>();
+            services.AddTransient<IMatchDataSource, SqlServerMatchDataSource>();
+            services.AddTransient<ICommentsDataSource<Match>, CachedCommentsDataSource<Match>>();
+            services.AddTransient<ICacheableCommentsDataSource<Match>, SqlServerMatchCommentsDataSource>();
             services.AddTransient<IMatchLocationFilterSerializer, MatchLocationFilterQueryStringSerializer>();
             services.AddTransient<IMatchLocationDataSource, CachedMatchLocationDataSource>();
             services.AddTransient<ICacheableMatchLocationDataSource, SqlServerMatchLocationDataSource>();
@@ -147,6 +154,7 @@ namespace Stoolball.Web
             services.AddTransient<ITeamDataSource, SqlServerTeamDataSource>();
             services.AddTransient<ITeamListingDataSource, CachedTeamListingDataSource>();
             services.AddTransient<ICacheableTeamListingDataSource, SqlServerTeamListingDataSource>();
+            services.AddTransient<ITournamentDataSource, SqlServerTournamentDataSource>();
 
             // Statistics data sources
             services.AddTransient<IBestPerformanceInAMatchStatisticsDataSource, CachedBestPerformanceInAMatchStatisticsDataSource>();
@@ -200,6 +208,7 @@ namespace Stoolball.Web
             // Security checks
             services.AddTransient<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();
             services.AddTransient<IAuthorizationPolicy<Competition>, CompetitionAuthorizationPolicy>();
+            services.AddTransient<IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>();
             services.AddTransient<IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>();
             services.AddTransient<IAuthorizationPolicy<Team>, TeamAuthorizationPolicy>();
             services.AddScoped<DelegatedContentSecurityPolicyAttribute>();
@@ -241,6 +250,12 @@ namespace Stoolball.Web
             services.AddTransient<CreateCompetitionController>();
             services.AddTransient<EditCompetitionController>();
             services.AddTransient<DeleteCompetitionController>();
+
+            services.AddTransient<MatchesController>();
+            services.AddTransient<MatchesCalendarController>();
+            services.AddTransient<MatchesRssController>();
+            services.AddTransient<MatchController>();
+            services.AddTransient<MatchActionsController>();
 
             services.AddTransient<MatchLocationsController>();
             services.AddTransient<MatchLocationController>();

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Web;
 using Stoolball.Matches;
 using Stoolball.Teams;
 using Xunit;
@@ -15,7 +13,7 @@ namespace Stoolball.UnitTests.Matches
         {
             var parser = new MatchesRssQueryStringParser();
 
-            var result = parser.ParseFilterFromQueryString(new NameValueCollection());
+            var result = parser.ParseFilterFromQueryString(string.Empty);
 
             var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(Constants.UkTimeZone());
             var ukToday = new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date));
@@ -27,10 +25,9 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Today_filter_is_parsed_correctly_as_UK_date()
         {
-            var parsedQueryString = HttpUtility.ParseQueryString("?format=tweet&today=true");
             var parser = new MatchesRssQueryStringParser();
 
-            var result = parser.ParseFilterFromQueryString(parsedQueryString);
+            var result = parser.ParseFilterFromQueryString("?format=tweet&today=true");
 
             var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(Constants.UkTimeZone());
             var ukToday = new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date));
@@ -45,10 +42,9 @@ namespace Stoolball.UnitTests.Matches
         [InlineData("?from=2050-07-01&to=2050-07-31", 2050, 7, 1, 1, 2050, 7, 31, 1)]
         public void Date_filters_are_parsed_correctly_as_UK_dates(string queryString, int? fromYear, int? fromMonth, int? fromDate, int? fromOffsetHours, int? untilYear, int? untilMonth, int? untilDate, int? untilOffsetHours)
         {
-            var parsedQueryString = HttpUtility.ParseQueryString(queryString);
             var parser = new MatchesRssQueryStringParser();
 
-            var result = parser.ParseFilterFromQueryString(parsedQueryString);
+            var result = parser.ParseFilterFromQueryString(queryString);
 
             if (fromYear.HasValue && fromMonth.HasValue && fromDate.HasValue && fromOffsetHours.HasValue)
             {
@@ -67,10 +63,9 @@ namespace Stoolball.UnitTests.Matches
         [InlineData("?player=2", PlayerType.Ladies)]
         public void PlayerType_filter_is_parsed_correctly(string queryString, PlayerType? expectedPlayerType)
         {
-            var parsedQueryString = HttpUtility.ParseQueryString(queryString);
             var parser = new MatchesRssQueryStringParser();
 
-            var result = parser.ParseFilterFromQueryString(parsedQueryString);
+            var result = parser.ParseFilterFromQueryString(queryString);
 
             if (expectedPlayerType.HasValue)
             {
@@ -91,10 +86,9 @@ namespace Stoolball.UnitTests.Matches
         [InlineData("?type=5", MatchType.KnockoutMatch)]
         public void MatchType_filter_is_parsed_correctly(string queryString, MatchType? expectedMatchType)
         {
-            var parsedQueryString = HttpUtility.ParseQueryString(queryString);
             var parser = new MatchesRssQueryStringParser();
 
-            var result = parser.ParseFilterFromQueryString(parsedQueryString);
+            var result = parser.ParseFilterFromQueryString(queryString);
 
             if (expectedMatchType.HasValue)
             {
@@ -116,10 +110,9 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Tournament_filter_is_parsed_correctly()
         {
-            var parsedQueryString = HttpUtility.ParseQueryString("?type=1");
             var parser = new MatchesRssQueryStringParser();
 
-            var result = parser.ParseFilterFromQueryString(parsedQueryString);
+            var result = parser.ParseFilterFromQueryString("?type=1");
 
             Assert.False(result.IncludeMatches);
             Assert.True(result.IncludeTournaments);
@@ -130,10 +123,9 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void No_tweet_format_returns_no_match_result_filter()
         {
-            var parsedQueryString = HttpUtility.ParseQueryString(string.Empty);
             var parser = new MatchesRssQueryStringParser();
 
-            var result = parser.ParseFilterFromQueryString(parsedQueryString);
+            var result = parser.ParseFilterFromQueryString(string.Empty);
 
             Assert.Empty(result.MatchResultTypes);
         }
@@ -141,10 +133,9 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Tweets_should_only_return_matches_with_an_unknown_result()
         {
-            var parsedQueryString = HttpUtility.ParseQueryString("?format=tweet");
             var parser = new MatchesRssQueryStringParser();
 
-            var result = parser.ParseFilterFromQueryString(parsedQueryString);
+            var result = parser.ParseFilterFromQueryString("?format=tweet");
 
             Assert.Single(result.MatchResultTypes);
             Assert.Null(result.MatchResultTypes.First());

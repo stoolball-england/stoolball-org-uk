@@ -1,0 +1,43 @@
+﻿@inherits UmbracoViewPage<MatchListingViewModel>
+@inject Stoolball.Matches.IMatchFilterQueryStringSerializer serialiser
+@using Stoolball.Web.Matches.Models
+@section canonical {@await Html.PartialAsync("_CanonicalUrl", Array.Empty<string>())}
+@{ 
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
+
+    var queryString = serialiser.Serialize(Model.AppliedMatchFilter, Model.DefaultMatchFilter);
+}
+<div class="container-xl">
+    <h1>@Stoolball.Constants.Pages.Matches</h1>
+    
+    <ul class="nav nav-tabs nav-tabs-has-add">
+        <li class="nav-item">
+            <em class="nav-link active">Matches</em>
+        </li>
+        <li class="nav-item">
+            <a href="/tournaments@(queryString)" class="nav-link">Tournaments</a>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+    </ul>
+    @await Html.PartialAsync("_Filters", new MatchFilterViewModel {
+        FilterDescription = Model.FilterDescription,
+        from = Model.AppliedMatchFilter.FromDate,
+        to = Model.AppliedMatchFilter.UntilDate
+    })
+
+    @if (Model.Matches.Count > 0)
+    {
+        @await Html.PartialAsync("_MatchList", Model)
+    }
+    else
+    {
+        <p>There are no matches matching this filter.</p>
+        <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
+    }
+
+    @await Html.PartialAsync("_Paging", Model.AppliedMatchFilter.Paging)
+    @await Html.PartialAsync("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { DefaultMatchFilter = Model.DefaultMatchFilter, AppliedMatchFilter = Model.AppliedMatchFilter })
+</div>

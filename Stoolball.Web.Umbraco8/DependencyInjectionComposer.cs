@@ -4,7 +4,6 @@ using Stoolball.Comments;
 using Stoolball.Data.Cache;
 using Stoolball.Data.SqlServer;
 using Stoolball.Email;
-using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Web.Caching;
@@ -41,8 +40,6 @@ namespace Stoolball.Web
             composition.Register<IStatisticsFilterFactory, StatisticsFilterFactory>();
             composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
-            composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
-            composition.Register<IBadLanguageFilter, BadLanguageFilter>();
             composition.Register<IPlayerNameFormatter, PlayerNameFormatter>();
             composition.Register<IMatchInningsFactory, MatchInningsFactory>();
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
@@ -54,13 +51,9 @@ namespace Stoolball.Web
 
             // Data sources for stoolball data.
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();
-            composition.Register<IMatchDataSource, SqlServerMatchDataSource>();
-            composition.Register<ICommentsDataSource<Match>, CachedCommentsDataSource<Match>>();
             composition.Register<ICommentsDataSource<Tournament>, CachedCommentsDataSource<Tournament>>();
-            composition.Register<ICacheableCommentsDataSource<Match>, SqlServerMatchCommentsDataSource>();
             composition.Register<ICacheableCommentsDataSource<Tournament>, SqlServerTournamentCommentsDataSource>();
             composition.Register<IMatchRepository, SqlServerMatchRepository>();
-            composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
             composition.Register<IPlayerSummaryStatisticsDataSource, CachedPlayerSummaryStatisticsDataSource>();
@@ -71,7 +64,6 @@ namespace Stoolball.Web
             composition.Register<ICacheableBestPlayerAverageStatisticsDataSource, SqlServerBestPlayerAverageStatisticsDataSource>();
 
             // Security checks
-            composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>();
             composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>();
         }
     }

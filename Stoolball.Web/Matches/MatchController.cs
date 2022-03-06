@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Matches
 {
-    public class MatchController : RenderMvcControllerAsync
+    public class MatchController : RenderController, IRenderControllerAsync
     {
         private readonly IMatchDataSource _matchDataSource;
         private readonly ICommentsDataSource<Match> _commentsDataSource;
@@ -27,19 +27,16 @@ namespace Stoolball.Web.Matches
         private readonly IEmailProtector _emailProtector;
         private readonly IBadLanguageFilter _badLanguageFilter;
 
-        public MatchController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IMatchDataSource matchDataSource,
-           ICommentsDataSource<Match> commentsDataSource,
-           IAuthorizationPolicy<Match> authorizationPolicy,
-           IDateTimeFormatter dateFormatter,
-           IEmailProtector emailProtector,
-           IBadLanguageFilter badLanguageFilter)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public MatchController(ILogger<MatchController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IMatchDataSource matchDataSource,
+            ICommentsDataSource<Match> commentsDataSource,
+            IAuthorizationPolicy<Match> authorizationPolicy,
+            IDateTimeFormatter dateFormatter,
+            IEmailProtector emailProtector,
+            IBadLanguageFilter badLanguageFilter)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _commentsDataSource = commentsDataSource ?? throw new ArgumentNullException(nameof(commentsDataSource));
@@ -51,38 +48,32 @@ namespace Stoolball.Web.Matches
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new MatchViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new MatchViewModel(contentModel.Content, Services?.UserService)
-            {
-                Match = await _matchDataSource.ReadMatchByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
-                DateTimeFormatter = _dateFormatter
+                Match = await _matchDataSource.ReadMatchByRoute(Request.Path)
             };
 
             if (model.Match == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
-                model.Match.Comments = await _commentsDataSource.ReadComments(model.Match.MatchId.Value).ConfigureAwait(false);
+                model.Match.Comments = await _commentsDataSource.ReadComments(model.Match.MatchId!.Value).ConfigureAwait(false);
                 foreach (var comment in model.Match.Comments)
                 {
-                    comment.Comment = _emailProtector.ProtectEmailAddresses(comment.Comment, User.Identity.IsAuthenticated);
+                    comment.Comment = _emailProtector.ProtectEmailAddresses(comment.Comment, User.Identity?.IsAuthenticated ?? false);
                     comment.Comment = _badLanguageFilter.Filter(comment.Comment);
                 }
 
                 model.Metadata.PageTitle = model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false)) + " - stoolball match";
                 model.Metadata.Description = model.Match.Description();
 
-                model.Match.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Match.MatchNotes, User.Identity.IsAuthenticated);
+                model.Match.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Match.MatchNotes, User.Identity?.IsAuthenticated ?? false);
 
                 // If a team was all out, convert wickets to -1. This value is used by the view, and also by matches imported from the old website.
                 foreach (var innings in model.Match.MatchInnings)

@@ -3,26 +3,25 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Humanizer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Matches
 {
-    public class MatchesCalendarController : RenderMvcControllerAsync
+    public class MatchesCalendarController : RenderController, IRenderControllerAsync
     {
         private readonly IClubDataSource _clubDataSource;
         private readonly ITeamDataSource _teamDataSource;
@@ -35,23 +34,20 @@ namespace Stoolball.Web.Matches
         private readonly IMatchFilterQueryStringParser _matchFilterQueryStringParser;
         private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
-        public MatchesCalendarController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IClubDataSource clubDataSource,
-           ITeamDataSource teamDataSource,
-           ICompetitionDataSource competitionDataSource,
-           IMatchLocationDataSource matchLocationDataSource,
-           IMatchListingDataSource matchListingDataSource,
-           ITournamentDataSource tournamentDataSource,
-           IMatchDataSource matchDataSource,
-           IDateTimeFormatter dateFormatter,
-           IMatchFilterQueryStringParser matchFilterQueryStringParser,
-           IMatchFilterHumanizer matchFilterHumanizer)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public MatchesCalendarController(ILogger<MatchesCalendarController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IClubDataSource clubDataSource,
+            ITeamDataSource teamDataSource,
+            ICompetitionDataSource competitionDataSource,
+            IMatchLocationDataSource matchLocationDataSource,
+            IMatchListingDataSource matchListingDataSource,
+            ITournamentDataSource tournamentDataSource,
+            IMatchDataSource matchDataSource,
+            IDateTimeFormatter dateFormatter,
+            IMatchFilterQueryStringParser matchFilterQueryStringParser,
+            IMatchFilterHumanizer matchFilterHumanizer)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
@@ -67,14 +63,9 @@ namespace Stoolball.Web.Matches
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
-            {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
+            var model = new MatchListingViewModel(CurrentPage)
             {
                 DefaultMatchFilter = new MatchFilter
                 {
@@ -82,10 +73,9 @@ namespace Stoolball.Web.Matches
                     IncludeMatches = true,
                     IncludeTournaments = true,
                     IncludeTournamentMatches = false
-                },
-                DateTimeFormatter = _dateFormatter
+                }
             };
-            model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.Url.Query);
+            model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.QueryString.Value);
 
             // Don't allow matches in the past - this is a calendar for planning future events
             if (model.AppliedMatchFilter.FromDate < model.DefaultMatchFilter.FromDate)
@@ -94,14 +84,15 @@ namespace Stoolball.Web.Matches
             }
 
             var pageTitle = "Stoolball matches and tournaments";
-            var legacyTournamentsCalendarUrl = Regex.Match(Request.RawUrl, "/tournaments/(all|mixed|ladies|junior)/calendar.ics", RegexOptions.IgnoreCase);
+            var legacyTournamentsCalendarUrl = Regex.Match(Request.Path, "/tournaments/(all|mixed|ladies|junior)/calendar.ics", RegexOptions.IgnoreCase);
+            var path = Request.Path.HasValue ? Request.Path.Value!.ToString() : string.Empty;
 
-            if (Request.RawUrl.StartsWith("/matches.ics", StringComparison.OrdinalIgnoreCase))
+            if (path.StartsWith("/matches/ics", StringComparison.OrdinalIgnoreCase))
             {
                 model.AppliedMatchFilter.IncludeTournaments = false;
                 pageTitle = "Stoolball matches";
             }
-            else if (legacyTournamentsCalendarUrl.Success || Request.RawUrl.StartsWith("/tournaments.ics", StringComparison.OrdinalIgnoreCase))
+            else if (legacyTournamentsCalendarUrl.Success || path.StartsWith("/tournaments.ics", StringComparison.OrdinalIgnoreCase))
             {
                 model.AppliedMatchFilter.IncludeMatches = false;
                 pageTitle = "Stoolball tournaments";
@@ -126,50 +117,50 @@ namespace Stoolball.Web.Matches
                     }
                 }
             }
-            else if (Request.RawUrl.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase))
+            else if (path.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase))
             {
-                var tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false);
-                if (tournament == null) { return new HttpNotFoundResult(); }
+                var tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Path);
+                if (tournament == null) { return NotFound(); }
                 pageTitle = tournament.TournamentFullName(x => tournament.StartTimeIsKnown ? _dateFormatter.FormatDateTime(tournament.StartTime, true, false) : _dateFormatter.FormatDate(tournament.StartTime, true, false));
                 model.Matches.Add(tournament.ToMatchListing());
             }
-            else if (Request.RawUrl.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase))
+            else if (path.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase))
             {
-                var match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
-                if (match == null) { return new HttpNotFoundResult(); }
+                var match = await _matchDataSource.ReadMatchByRoute(Request.Path);
+                if (match == null) { return NotFound(); }
                 pageTitle = match.MatchFullName(x => match.StartTimeIsKnown ? _dateFormatter.FormatDateTime(match.StartTime, true, false) : _dateFormatter.FormatDate(match.StartTime, true, false));
                 model.Matches.Add(match.ToMatchListing());
             }
-            else if (Request.RawUrl.StartsWith("/clubs/", StringComparison.OrdinalIgnoreCase))
+            else if (path.StartsWith("/clubs/", StringComparison.OrdinalIgnoreCase))
             {
-                var club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false);
+                var club = await _clubDataSource.ReadClubByRoute(Request.Path);
                 if (club == null)
                 {
-                    return new HttpNotFoundResult();
+                    return NotFound();
                 }
                 pageTitle += " for " + club.ClubName;
-                model.AppliedMatchFilter.TeamIds.AddRange(club.Teams.Select(x => x.TeamId.Value));
+                model.AppliedMatchFilter.TeamIds.AddRange(club.Teams.Select(x => x.TeamId!.Value));
             }
-            else if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
+            else if (path.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                var team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl).ConfigureAwait(false);
-                if (team == null) { return new HttpNotFoundResult(); }
+                var team = await _teamDataSource.ReadTeamByRoute(Request.Path);
+                if (team == null) { return NotFound(); }
                 pageTitle += " for " + team.TeamName;
-                model.AppliedMatchFilter.TeamIds.Add(team.TeamId.Value);
+                model.AppliedMatchFilter.TeamIds.Add(team.TeamId!.Value);
             }
-            else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            else if (path.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
-                if (competition == null) { return new HttpNotFoundResult(); }
+                var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.Path);
+                if (competition == null) { return NotFound(); }
                 pageTitle += " in the " + competition.CompetitionName;
-                model.AppliedMatchFilter.CompetitionIds.Add(competition.CompetitionId.Value);
+                model.AppliedMatchFilter.CompetitionIds.Add(competition.CompetitionId!.Value);
             }
-            else if (Request.RawUrl.StartsWith("/locations/", StringComparison.OrdinalIgnoreCase))
+            else if (path.StartsWith("/locations/", StringComparison.OrdinalIgnoreCase))
             {
-                var location = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl).ConfigureAwait(false);
-                if (location == null) { return new HttpNotFoundResult(); }
+                var location = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Path);
+                if (location == null) { return NotFound(); }
                 pageTitle += " at " + location.NameAndLocalityOrTown();
-                model.AppliedMatchFilter.MatchLocationIds.Add(location.MatchLocationId.Value);
+                model.AppliedMatchFilter.MatchLocationIds.Add(location.MatchLocationId!.Value);
             }
 
             // Remove from date from filter if it's the default, and describe the remainder in the feed title.
@@ -185,7 +176,7 @@ namespace Stoolball.Web.Matches
             }
             if (!model.Matches.Any())
             {
-                model.Matches = await _matchListingDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
+                model.Matches = await _matchListingDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst);
             }
 
             return CurrentTemplate(model);

@@ -1,0 +1,82 @@
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Stoolball.Dates;
+using Stoolball.Matches;
+using Stoolball.Web.Matches;
+using Stoolball.Web.Matches.Models;
+using Xunit;
+
+namespace Stoolball.Web.UnitTests.Matches
+{
+    public class MatchesControllerTests : UmbracoBaseTest
+    {
+        private readonly Mock<IMatchListingDataSource> _matchesDataSource = new();
+        private readonly Mock<IMatchFilterQueryStringParser> _matchFilterQueryStringParser = new();
+        private readonly Mock<IMatchFilterHumanizer> _matchFilterHumanizer = new();
+
+        public MatchesControllerTests()
+        {
+            base.Setup();
+        }
+
+        private MatchesController CreateController()
+        {
+            return new MatchesController(
+                Mock.Of<ILogger<MatchesController>>(),
+                CompositeViewEngine.Object,
+                UmbracoContextAccessor.Object,
+                _matchesDataSource.Object,
+                Mock.Of<IDateTimeFormatter>(),
+                _matchFilterQueryStringParser.Object,
+                _matchFilterHumanizer.Object)
+            {
+                ControllerContext = ControllerContext
+            };
+        }
+
+        [Fact]
+        public async Task Returns_MatchListingViewModel()
+        {
+            _matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(new MatchFilter());
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                Assert.IsType<MatchListingViewModel>(((ViewResult)result).Model);
+            }
+        }
+
+        [Fact]
+        public async Task Assigns_MatchFilter_to_view_model()
+        {
+            var filter = new MatchFilter();
+            _matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(filter);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                Assert.Equal(filter, ((MatchListingViewModel)((ViewResult)result).Model).AppliedMatchFilter);
+            }
+        }
+
+        [Fact]
+        public async Task Page_title_is_set_to_humanized_filter()
+        {
+            var filter = new MatchFilter();
+            _matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(filter);
+            _matchFilterHumanizer.Setup(x => x.MatchesAndTournaments(filter)).Returns("matches");
+            _matchFilterHumanizer.Setup(x => x.MatchingFilter(filter)).Returns(" matching filter");
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                Assert.Equal("matches matching filter", ((MatchListingViewModel)((ViewResult)result).Model).Metadata.PageTitle);
+            }
+        }
+    }
+}

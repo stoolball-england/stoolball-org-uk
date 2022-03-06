@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
+using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Schools;
 using Stoolball.Web.Teams;
@@ -51,11 +52,11 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.DeleteSeason, typeof(DeleteSeasonController) },
             { StoolballRouteType.MatchesForSeason, typeof(MatchesForSeasonController) },
             { StoolballRouteType.SeasonResultsTable, typeof(SeasonResultsTableController) },
-            //{ StoolballRouteType.Matches, typeof(MatchesController) },
-            //{ StoolballRouteType.MatchesCalendar, typeof(MatchesCalendarController) },
-            //{ StoolballRouteType.MatchesRss, typeof(MatchesRssController) },
-            //{ StoolballRouteType.Match, typeof(MatchController) },
-            //{ StoolballRouteType.MatchActions, typeof(MatchActionsController) },
+            { StoolballRouteType.Matches, typeof(MatchesController) },
+            { StoolballRouteType.MatchesCalendar, typeof(MatchesCalendarController) },
+            { StoolballRouteType.MatchesRss, typeof(MatchesRssController) },
+            { StoolballRouteType.Match, typeof(MatchController) },
+            { StoolballRouteType.MatchActions, typeof(MatchActionsController) },
             //{ StoolballRouteType.CreateTrainingSession, typeof(CreateTrainingSessionController) },
             //{ StoolballRouteType.CreateFriendlyMatch, typeof(CreateFriendlyMatchController) },
             //{ StoolballRouteType.CreateKnockoutMatch, typeof(CreateKnockoutMatchController) },

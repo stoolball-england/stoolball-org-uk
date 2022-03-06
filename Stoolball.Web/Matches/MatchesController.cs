@@ -1,38 +1,35 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Matches
 {
-    public class MatchesController : RenderMvcControllerAsync
+    public class MatchesController : RenderController, IRenderControllerAsync
     {
         private readonly IMatchListingDataSource _matchesDataSource;
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IMatchFilterQueryStringParser _matchFilterQueryStringParser;
         private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
-        public MatchesController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IMatchListingDataSource matchesDataSource,
-           IDateTimeFormatter dateTimeFormatter,
-           IMatchFilterQueryStringParser matchFilterQueryStringParser,
-           IMatchFilterHumanizer matchFilterHumanizer)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public MatchesController(ILogger<MatchesController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IMatchListingDataSource matchesDataSource,
+            IDateTimeFormatter dateTimeFormatter,
+            IMatchFilterQueryStringParser matchFilterQueryStringParser,
+            IMatchFilterHumanizer matchFilterHumanizer)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _matchesDataSource = matchesDataSource ?? throw new ArgumentNullException(nameof(matchesDataSource));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
@@ -42,14 +39,9 @@ namespace Stoolball.Web.Matches
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
-            {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
+            var model = new MatchListingViewModel(CurrentPage)
             {
                 DefaultMatchFilter = new MatchFilter
                 {
@@ -59,14 +51,13 @@ namespace Stoolball.Web.Matches
                     IncludeTournaments = false,
                     Paging = new Paging
                     {
-                        PageNumber = int.TryParse(Request.QueryString["page"], out var pageNumber) ? pageNumber > 0 ? pageNumber : 1 : 1,
+                        PageNumber = int.TryParse(Request.Query["page"], out var pageNumber) ? pageNumber > 0 ? pageNumber : 1 : 1,
                         PageSize = Constants.Defaults.PageSize,
-                        PageUrl = Request.Url
+                        PageUrl = new Uri(Request.GetEncodedUrl())
                     }
-                },
-                DateTimeFormatter = _dateTimeFormatter
+                }
             };
-            model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.Url.Query);
+            model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.QueryString.Value);
             model.AppliedMatchFilter.Paging.Total = await _matchesDataSource.ReadTotalMatches(model.AppliedMatchFilter).ConfigureAwait(false);
             model.Matches = await _matchesDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
