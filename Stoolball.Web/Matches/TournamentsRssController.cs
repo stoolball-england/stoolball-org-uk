@@ -2,60 +2,46 @@
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Humanizer;
-using Stoolball.Dates;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Matches;
 using Stoolball.Teams;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Matches
 {
-    public class TournamentsRssController : RenderMvcControllerAsync
+    public class TournamentsRssController : RenderController, IRenderControllerAsync
     {
         private readonly IMatchListingDataSource _matchDataSource;
-        private readonly IDateTimeFormatter _dateFormatter;
         private readonly IMatchFilterQueryStringParser _matchFilterQueryStringParser;
         private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
-        public TournamentsRssController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IMatchListingDataSource matchDataSource,
-           IDateTimeFormatter dateFormatter,
-           IMatchFilterQueryStringParser matchFilterQueryStringParser,
-           IMatchFilterHumanizer matchFilterHumanizer)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public TournamentsRssController(ILogger<TournamentsRssController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IMatchListingDataSource matchDataSource,
+            IMatchFilterQueryStringParser matchFilterQueryStringParser,
+            IMatchFilterHumanizer matchFilterHumanizer)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
-            _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _matchFilterQueryStringParser = matchFilterQueryStringParser ?? throw new ArgumentNullException(nameof(matchFilterQueryStringParser));
             _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new MatchListingViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
-            {
-                AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(new MatchFilter(), Request.Url.Query),
-                DateTimeFormatter = _dateFormatter
+                AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(new MatchFilter(), Request.QueryString.Value)
             };
 
             model.AppliedMatchFilter.IncludeTournaments = true;
@@ -67,14 +53,14 @@ namespace Stoolball.Web.Matches
             }
             if (!model.AppliedMatchFilter.UntilDate.HasValue)
             {
-                if (!int.TryParse(Request.QueryString["days"], out var daysAhead))
+                if (!(Request.Query.ContainsKey("days") && int.TryParse(Request.Query["days"], out var daysAhead)))
                 {
                     daysAhead = 365;
                 }
                 model.AppliedMatchFilter.UntilDate = DateTimeOffset.UtcNow.AddDays(daysAhead);
             }
 
-            var playerType = Path.GetFileNameWithoutExtension(Request.RawUrl.ToUpperInvariant());
+            var playerType = Path.GetFileNameWithoutExtension(Request.Path.Value?.ToUpperInvariant());
             switch (playerType)
             {
                 case "MIXED":
@@ -104,9 +90,9 @@ namespace Stoolball.Web.Matches
                 model.Metadata.PageTitle = $"{playerType.ToLower(CultureInfo.CurrentCulture).Humanize(LetterCasing.Sentence)} {model.Metadata.PageTitle.ToLower(CultureInfo.CurrentCulture)}";
                 model.Metadata.Description = $"New or updated {playerType.Humanize(LetterCasing.LowerCase)} stoolball tournaments on the Stoolball England website";
             }
-            model.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
+            model.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst);
 
-            return View(Request.QueryString["format"] == "tweet" ? "TournamentTweets" : "TournamentsRss", model);
+            return View((Request.Query.ContainsKey("format") && Request.Query["format"] == "tweet") ? "TournamentTweets" : "TournamentsRss", model);
         }
     }
 }

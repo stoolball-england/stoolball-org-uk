@@ -1,14 +1,12 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchListingViewModel>
-@using ClientDependency.Core.Mvc
+﻿@inherits UmbracoViewPage<MatchListingViewModel>
+@inject IMatchFilterQueryStringSerializer serialiser
 @using Stoolball.Matches
-@using Stoolball.Web.Matches
-@using Umbraco.Core.Composing
-@section canonical {@Html.Partial("_CanonicalUrl", Array.Empty<string>())}
+@using Stoolball.Web.Matches.Models
+@section canonical {@await Html.PartialAsync("_CanonicalUrl", Array.Empty<string>())}
 @{
-    Html.RequiresJs("/js/filter.js");
-    Html.RequiresCss("/css/filter.min.css");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
 
-    var serialiser = Current.Factory.GetInstance<IMatchFilterQueryStringSerializer>();
     var queryString = serialiser.Serialize(Model.AppliedMatchFilter, Model.DefaultMatchFilter);
 }
 <div class="container-xl">
@@ -25,7 +23,7 @@
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
         </li>
     </ul>
-    @Html.Partial("_Filters", new MatchFilterViewModel
+    @await Html.PartialAsync("_Filters", new MatchFilterViewModel
     {
         FilterDescription = Model.FilterDescription,
         from = Model.AppliedMatchFilter.FromDate,
@@ -34,7 +32,7 @@
 
     @if (Model.Matches.Count > 0)
     {
-        @Html.Partial("_MatchList", Model)
+        @await Html.PartialAsync("_MatchList", Model)
     }
     else
     {
@@ -42,6 +40,9 @@
         <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
     }
 
-    @Html.Partial("_Paging", Model.AppliedMatchFilter.Paging)
-    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { DefaultMatchFilter = Model.DefaultMatchFilter, AppliedMatchFilter = Model.AppliedMatchFilter })
+    @await Html.PartialAsync("_Paging", Model.AppliedMatchFilter.Paging)
+    <ul class="list-unstyled">
+        <li><a type="text/calendar" href="webcal://@(Context.Request.Host.Host == "localhost" ? Context.Request.Host.Value : "www.stoolball.org.uk")/matches.ics@(queryString)" rel="nofollow">Add to calendar</a></li>
+        <li><a type="application/rss+xml" href="/tournaments.rss@(queryString)" rel="nofollow">Subscribe with RSS</a></li>
+    </ul>
 </div>

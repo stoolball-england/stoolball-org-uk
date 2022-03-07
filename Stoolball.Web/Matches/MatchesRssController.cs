@@ -110,7 +110,12 @@ namespace Stoolball.Web.Matches
                 model.Metadata.PageTitle = $"{model.AppliedMatchFilter.PlayerTypes.First().Humanize(LetterCasing.Sentence)} {model.Metadata.PageTitle.ToLower(CultureInfo.CurrentCulture)}";
                 model.Metadata.Description = $"New or updated {model.AppliedMatchFilter.PlayerTypes.First()} stoolball matches on the Stoolball England website";
             }
-            model.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
+
+
+            // TEMP:
+            model.AppliedMatchFilter.FromDate = DateTime.Now.AddYears(-2);
+
+            model.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst);
 
             return View(Request.Query["format"] == "tweet" ? "MatchTweets" : "MatchesRss", model);
         }

@@ -1,18 +1,18 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<TournamentViewModel>
+﻿@inherits UmbracoViewPage<TournamentViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
 @using Humanizer
 @using Innovative.SolarCalculator
 @using Stoolball.Matches
-@using ClientDependency.Core.Mvc
-@using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
 @using Stoolball.Security
 @{
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament];
-    Html.RequiresJs("~/js/show-all-competitions.js");
-    Html.RequiresCss("~/matches/match.min.css");
-    Html.RequiresCss("~/css/comments.min.css");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/show-all-competitions.js") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/match.min.css") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/comments.min.css") { Order = 100 });
 }
 <div class="container-xl">
-    <h1>@Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false))</h1>
+    <h1>@Html.TournamentFullNameAndPlayerType(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false))</h1>
 
     @* authorizedToEdit only needs to protect the last tab, but there's no point having only one tab *@
     @if (authorizedToEdit)
@@ -22,22 +22,22 @@
                 <em class="nav-link active">Summary</em>
             </li>
             <li class="nav-item nav-item-admin">
-                <a class="nav-link nav-link-edit" href="@Model.Tournament.TournamentRoute/edit">Edit tournament</a>
+                <a class="nav-link nav-link-edit" href="@Model.Tournament!.TournamentRoute/edit">Edit tournament</a>
             </li>
         </ul>
     }
 
     <p>
         When:
-        @(Model.Tournament.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Tournament.StartTime) : Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime))
+        @(Model.Tournament!.StartTimeIsKnown ? dateTimeFormatter.FormatDateTime(Model.Tournament.StartTime) : dateTimeFormatter.FormatDate(Model.Tournament.StartTime))
         @if (Model.Tournament.TournamentLocation?.Latitude != null && Model.Tournament.TournamentLocation?.Longitude != null)
         {
             var solarTimes = new SolarTimes(Model.Tournament.StartTime, Model.Tournament.TournamentLocation.Latitude, Model.Tournament.TournamentLocation.Longitude);
-            @: (sunset @Model.DateTimeFormatter.FormatTime(solarTimes.Sunset))
+            @: (sunset @dateTimeFormatter.FormatTime(solarTimes.Sunset))
         }
         @if (Model.Tournament.StartTime > DateTimeOffset.UtcNow)
         {
-            <a type="text/calendar" href="webcal://@(Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk")@(Model.Tournament.TournamentRoute).ics" rel="nofollow" class="calendar__inline">Add to calendar</a>
+            <a type="text/calendar" href="webcal://@(Context.Request.Host.Host == "localhost" ? Context.Request.Host.Value : "www.stoolball.org.uk")@(Model.Tournament.TournamentRoute).ics" rel="nofollow" class="calendar__inline">Add to calendar</a>
         }
     </p>
 
@@ -86,7 +86,7 @@
     }
     @if (Model.Tournament.Teams.Count > 0)
     {
-        @Html.Partial("_TeamList", Model.Tournament.Teams.Select(x => x.Team).ToList())
+        @await Html.PartialAsync("_TeamList", Model.Tournament.Teams.Select(x => x.Team).ToList())
     }
     @if (authorizedToEdit)
     {
@@ -96,7 +96,7 @@
     @if (Model.Matches.Matches.Count > 0 || Model.Tournament.DefaultOverSets.Any() || authorizedToEdit)
     {
         <h2>Matches</h2>
-        @Html.Partial("_MatchList", Model.Matches)
+        @await Html.PartialAsync("_MatchList", Model.Matches)
         if (Model.Tournament.DefaultOverSets.Any())
         {
             <p>Matches are @Model.Tournament.DefaultOverSets.Sum(x => x.Overs) overs.</p>
@@ -155,5 +155,5 @@
         <p><a class="btn btn-secondary" href="@Model.Tournament.TournamentRoute/edit/seasons">Edit where to list this tournament</a></p>
     }
 
-    @Html.Partial("_Comments", Model.Tournament.Comments)
+    @await Html.PartialAsync("_Comments", Model.Tournament.Comments)
 </div>

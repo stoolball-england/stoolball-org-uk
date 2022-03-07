@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Matches
 {
-    public class TournamentController : RenderMvcControllerAsync
+    public class TournamentController : RenderController, IRenderControllerAsync
     {
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
@@ -29,21 +29,18 @@ namespace Stoolball.Web.Matches
         private readonly IEmailProtector _emailProtector;
         private readonly IBadLanguageFilter _badLanguageFilter;
 
-        public TournamentController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           ITournamentDataSource tournamentDataSource,
-           IMatchListingDataSource matchDataSource,
-           IMatchFilterFactory matchFilterFactory,
-           ICommentsDataSource<Tournament> commentsDataSource,
-           IAuthorizationPolicy<Tournament> authorizationPolicy,
-           IDateTimeFormatter dateFormatter,
-           IEmailProtector emailProtector,
-           IBadLanguageFilter badLanguageFilter)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public TournamentController(ILogger<TournamentController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            ITournamentDataSource tournamentDataSource,
+            IMatchListingDataSource matchDataSource,
+            IMatchFilterFactory matchFilterFactory,
+            ICommentsDataSource<Tournament> commentsDataSource,
+            IAuthorizationPolicy<Tournament> authorizationPolicy,
+            IDateTimeFormatter dateFormatter,
+            IEmailProtector emailProtector,
+            IBadLanguageFilter badLanguageFilter)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -57,47 +54,40 @@ namespace Stoolball.Web.Matches
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new TournamentViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new TournamentViewModel(contentModel.Content, Services?.UserService)
-            {
-                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
-                DateTimeFormatter = _dateFormatter
+                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Path)
             };
 
             if (model.Tournament == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
-                model.Tournament.Comments = await _commentsDataSource.ReadComments(model.Tournament.TournamentId.Value).ConfigureAwait(false);
+                model.Tournament.Comments = await _commentsDataSource.ReadComments(model.Tournament.TournamentId!.Value);
                 foreach (var comment in model.Tournament.Comments)
                 {
-                    comment.Comment = _emailProtector.ProtectEmailAddresses(comment.Comment, User.Identity.IsAuthenticated);
+                    comment.Comment = _emailProtector.ProtectEmailAddresses(comment.Comment, User.Identity?.IsAuthenticated ?? false);
                     comment.Comment = _badLanguageFilter.Filter(comment.Comment);
                 }
 
                 var filter = _matchFilterFactory.MatchesForTournament(model.Tournament.TournamentId.Value);
-                model.Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
+                model.Matches = new MatchListingViewModel(CurrentPage)
                 {
-                    Matches = await _matchDataSource.ReadMatchListings(filter.filter, filter.sortOrder).ConfigureAwait(false),
+                    Matches = await _matchDataSource.ReadMatchListings(filter.filter, filter.sortOrder),
                     ShowMatchDate = false,
-                    HighlightNextMatch = false,
-                    DateTimeFormatter = _dateFormatter
+                    HighlightNextMatch = false
                 };
 
                 model.Metadata.PageTitle = model.Tournament.TournamentFullNameAndPlayerType(x => _dateFormatter.FormatDate(x, false, false, false));
                 model.Metadata.Description = model.Tournament.Description();
 
-                model.Tournament.TournamentNotes = _emailProtector.ProtectEmailAddresses(model.Tournament.TournamentNotes, User.Identity.IsAuthenticated);
+                model.Tournament.TournamentNotes = _emailProtector.ProtectEmailAddresses(model.Tournament.TournamentNotes, User.Identity?.IsAuthenticated ?? false);
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Tournaments, Url = new Uri(Constants.Pages.TournamentsUrl, UriKind.Relative) });
 

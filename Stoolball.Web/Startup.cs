@@ -144,6 +144,8 @@ namespace Stoolball.Web
             services.AddTransient<IMatchDataSource, SqlServerMatchDataSource>();
             services.AddTransient<ICommentsDataSource<Match>, CachedCommentsDataSource<Match>>();
             services.AddTransient<ICacheableCommentsDataSource<Match>, SqlServerMatchCommentsDataSource>();
+            services.AddTransient<ICommentsDataSource<Tournament>, CachedCommentsDataSource<Tournament>>();
+            services.AddTransient<ICacheableCommentsDataSource<Tournament>, SqlServerTournamentCommentsDataSource>();
             services.AddTransient<IMatchLocationFilterSerializer, MatchLocationFilterQueryStringSerializer>();
             services.AddTransient<IMatchLocationDataSource, CachedMatchLocationDataSource>();
             services.AddTransient<ICacheableMatchLocationDataSource, SqlServerMatchLocationDataSource>();
@@ -211,6 +213,7 @@ namespace Stoolball.Web
             services.AddTransient<IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>();
             services.AddTransient<IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>();
             services.AddTransient<IAuthorizationPolicy<Team>, TeamAuthorizationPolicy>();
+            services.AddTransient<IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>();
             services.AddScoped<DelegatedContentSecurityPolicyAttribute>();
 
             // Routing controllers for stoolball data pages.
@@ -279,6 +282,11 @@ namespace Stoolball.Web
             services.AddTransient<DeleteSeasonController>();
 
             services.AddTransient<SchoolsController>();
+
+            services.AddTransient<TournamentsController>();
+            services.AddTransient<TournamentsRssController>();
+            services.AddTransient<TournamentController>();
+            services.AddTransient<TournamentActionsController>();
 
             // Listings pages
             services.AddTransient<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();

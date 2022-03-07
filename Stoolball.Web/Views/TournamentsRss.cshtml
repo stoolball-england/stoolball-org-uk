@@ -1,12 +1,13 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchListingViewModel>
-@using Stoolball.Web.Matches
+﻿@inherits UmbracoViewPage<MatchListingViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@using Stoolball.Web.Matches.Models
 @using Humanizer
 @using Stoolball.Dates
 @{
     Layout = null;
-    Response.ContentType = "application/rss+xml";
-    var canonicalUrl = $"{Request.Url.Scheme}://www.stoolball.org.uk{Request.Url.AbsolutePath.Substring(0, Request.Url.AbsolutePath.Length - 4).Replace("/all", string.Empty)}.rss{Request.Url.Query}";
-    Response.Headers.Add("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
+    Context.Response.ContentType = "application/rss+xml";
+    var canonicalUrl = $"{Context.Request.Scheme}://www.stoolball.org.uk{Context.Request.Path.Value!.Substring(0, Context.Request.Path.Value.Length - 4).Replace("/all", string.Empty)}.rss{Context.Request.QueryString.Value}";
+    Context.Response.Headers.Add("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
 }<?xml version="1.0" encoding="utf-8" ?>
 <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
 <channel>
@@ -24,10 +25,10 @@
     @foreach (var tournament in Model.Matches)
     {
     @:<item>
-        <title><![CDATA[@tournament.MatchName, @Model.DateTimeFormatter.FormatDate(tournament.StartTime, true, false,false)]]></title>
+        <title><![CDATA[@tournament.MatchName, @dateTimeFormatter.FormatDate(tournament.StartTime, true, false,false)]]></title>
         <description><![CDATA[@tournament.Description()]]></description>
         <link>@:https://www.stoolball.org.uk@(tournament.MatchRoute)</link>
-        <pubDate>@tournament.LastAuditDate.Value.ToRFC822()</pubDate>
+        <pubDate>@(tournament.LastAuditDate.HasValue ? tournament.LastAuditDate.Value.ToRFC822() : DateTimeOffset.UtcNow.ToRFC822())</pubDate>
         <guid isPermaLink="false">@Stoolball.Constants.EntityUriPrefixes.Tournament@tournament.MatchId</guid>
 		<source url="@canonicalUrl" />
         <category>@tournament.PlayerType.Humanize(LetterCasing.LowerCase)</category>

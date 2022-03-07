@@ -1,6 +1,5 @@
 ﻿using System;
 using Stoolball.Caching;
-using Stoolball.Comments;
 using Stoolball.Data.Cache;
 using Stoolball.Data.SqlServer;
 using Stoolball.Email;
@@ -51,8 +50,6 @@ namespace Stoolball.Web
 
             // Data sources for stoolball data.
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();
-            composition.Register<ICommentsDataSource<Tournament>, CachedCommentsDataSource<Tournament>>();
-            composition.Register<ICacheableCommentsDataSource<Tournament>, SqlServerTournamentCommentsDataSource>();
             composition.Register<IMatchRepository, SqlServerMatchRepository>();
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
@@ -62,9 +59,6 @@ namespace Stoolball.Web
             composition.Register<ICacheablePlayerPerformanceStatisticsDataSource, SqlServerPlayerPerformanceStatisticsDataSource>();
             composition.Register<IBestPlayerAverageStatisticsDataSource, CachedBestPlayerAverageStatisticsDataSource>();
             composition.Register<ICacheableBestPlayerAverageStatisticsDataSource, SqlServerBestPlayerAverageStatisticsDataSource>();
-
-            // Security checks
-            composition.Register<Stoolball.Web.Security.IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>();
         }
     }
 }
