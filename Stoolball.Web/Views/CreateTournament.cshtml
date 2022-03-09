@@ -1,0 +1,38 @@
+﻿@inherits UmbracoViewPage<EditTournamentViewModel>
+@using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItem")
+@await Html.PartialAsync("_TinyMCE")
+@{
+    var h1 = string.Empty;
+    if (Model.Team != null)
+    {
+        h1 = $"Add a tournament for {Model.Team.TeamName}";
+    }
+    else if (Model.Season != null)
+    {
+        h1 = $"Add a tournament in the {Model.Season.SeasonFullName()}";
+    }
+}
+<div class="container-xl">
+    <h1>@h1</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.CreateTournament])
+    {
+        using (Html.BeginUmbracoForm<CreateTournamentSurfaceController>(nameof(CreateTournamentSurfaceController.CreateTournament)))
+        {
+            @await Html.PartialAsync("_CreateOrEditTournament")
+            <button class="btn btn-primary" type="submit">Save tournament</button>
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

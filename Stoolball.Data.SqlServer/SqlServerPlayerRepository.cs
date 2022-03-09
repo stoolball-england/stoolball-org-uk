@@ -17,12 +17,12 @@ namespace Stoolball.Data.SqlServer
     public class SqlServerPlayerRepository : IPlayerRepository
     {
         private readonly IAuditRepository _auditRepository;
-        private readonly ILogger _logger;
+        private readonly ILogger<SqlServerPlayerRepository> _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IStoolballEntityCopier _copier;
         private readonly IPlayerNameFormatter _playerNameFormatter;
 
-        public SqlServerPlayerRepository(IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, IStoolballEntityCopier copier,
+        public SqlServerPlayerRepository(IAuditRepository auditRepository, ILogger<SqlServerPlayerRepository> logger, IRouteGenerator routeGenerator, IStoolballEntityCopier copier,
             IPlayerNameFormatter playerNameFormatter)
         {
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -136,7 +136,7 @@ namespace Stoolball.Data.SqlServer
                 AuditDate = DateTime.UtcNow
             }, transaction).ConfigureAwait(false);
 
-            _logger.Info(GetType(), LoggingTemplates.Created, player, memberName, memberKey, GetType(), nameof(CreateOrMatchPlayerIdentity));
+            _logger.Info(LoggingTemplates.Created, player, memberName, memberKey, GetType(), nameof(CreateOrMatchPlayerIdentity));
 
             player.PlayerIdentities.Clear();
             auditablePlayerIdentity.Player = player;

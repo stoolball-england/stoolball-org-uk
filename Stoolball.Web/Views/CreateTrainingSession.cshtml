@@ -1,0 +1,40 @@
+﻿@inherits UmbracoViewPage<EditTrainingSessionViewModel>
+@using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItems")
+@await Html.PartialAsync("_TinyMCE")
+@{
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/related-item.js") { Order = 100 });
+
+    var h1 = string.Empty;
+    if (Model.Team != null)
+    {
+        h1 = $"Add a training session for {Model.Team.TeamName}";
+    }
+    else if (Model.Season != null)
+    {
+        h1 = $"Add a training session in the {Model.Season.SeasonFullName()}";
+    }
+}
+<div class="container-xl">
+    <h1>@h1</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.CreateMatch])
+    {
+        using (Html.BeginUmbracoForm<CreateTrainingSessionSurfaceController>(nameof(CreateTrainingSessionSurfaceController.CreateMatch)))
+        {
+            @await Html.PartialAsync("_CreateOrEditTrainingSession")
+            <button class="btn btn-primary" type="submit">Save training session</button>
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

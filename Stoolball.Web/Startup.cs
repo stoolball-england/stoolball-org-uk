@@ -94,17 +94,27 @@ namespace Stoolball.Web
             // Utility classes
             services.AddTransient<IApiKeyProvider, ConfigApiKeyProvider>();
             services.AddTransient<IBadLanguageFilter, BadLanguageFilter>();
+            services.AddTransient<IBattingScorecardComparer, BattingScorecardComparer>();
             services.AddTransient<IBowlingFiguresCalculator, BowlingFiguresCalculator>();
+            services.AddTransient<IBowlingScorecardComparer, BowlingScorecardComparer>();
             services.AddTransient<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>();
             services.AddTransient<IDataRedactor, DataRedactor>();
             services.AddTransient<IDateTimeFormatter, DateTimeFormatter>();
+            services.AddTransient<IEditMatchHelper, EditMatchHelper>();
             services.AddTransient<IEmailProtector, EmailProtector>();
             services.AddTransient<IEmailFormatter, EmailFormatter>();
             services.AddTransient<IHtmlFormatter, Stoolball.Html.HtmlFormatter>();
             services.AddTransient<Ganss.XSS.IHtmlSanitizer, Ganss.XSS.HtmlSanitizer>();
             services.AddTransient<Stoolball.Html.IHtmlSanitizer, Stoolball.Html.HtmlSanitizer>();
             services.AddTransient(typeof(Stoolball.Logging.ILogger<>), typeof(LogWrapper<>));
+            services.AddTransient<IMatchInningsFactory, MatchInningsFactory>();
+            services.AddTransient<IMatchNameBuilder, MatchNameBuilder>();
+            services.AddTransient<IMatchValidator, MatchValidator>();
             services.AddTransient<IOversHelper, OversHelper>();
+            services.AddTransient<IPlayerIdentityFinder, PlayerIdentityFinder>();
+            services.AddTransient<IPlayerInMatchStatisticsBuilder, PlayerInMatchStatisticsBuilder>();
+            services.AddTransient<IPlayerNameFormatter, PlayerNameFormatter>();
+            services.AddTransient<IPlayerTypeSelector, PlayerTypeSelector>();
             services.AddTransient<ISeasonEstimator, SeasonEstimator>();
             services.AddTransient<ISocialMediaAccountFormatter, SocialMediaAccountFormatter>();
             services.AddTransient<IStoolballEntityCopier, StoolballEntityCopier>();
@@ -175,7 +185,7 @@ namespace Stoolball.Web
             {
                 var registry = new PolicyRegistry();
                 var asyncMemoryCacheProvider = serviceProvider.GetService<IAsyncCacheProvider>();
-                var logger = serviceProvider.GetService<Microsoft.Extensions.Logging.ILogger>();
+                var logger = serviceProvider.GetService<Microsoft.Extensions.Logging.ILogger<Policy>>();
                 var cachePolicy = Policy.CacheAsync(asyncMemoryCacheProvider, TimeSpan.FromMinutes(120), (context, key, ex) =>
                 {
                     logger!.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
@@ -197,15 +207,22 @@ namespace Stoolball.Web
                 return registry;
 
             });
+            services.AddTransient<ICacheClearer<Tournament>, TournamentCacheClearer>();
+            services.AddTransient<ICacheClearer<Match>, MatchCacheClearer>();
+            services.AddTransient<IClearableCache, ClearableCacheWrapper>();
 
             // Repositories
             services.AddTransient<IAuditRepository, SqlServerAuditRepository>();
             services.AddTransient<IClubRepository, SqlServerClubRepository>();
             services.AddTransient<ICompetitionRepository, SqlServerCompetitionRepository>();
+            services.AddTransient<IMatchRepository, SqlServerMatchRepository>();
             services.AddTransient<IMatchLocationRepository, SqlServerMatchLocationRepository>();
+            services.AddTransient<IPlayerRepository, SqlServerPlayerRepository>();
             services.AddTransient<IRedirectsRepository, SkybrudRedirectsRepository>();
             services.AddTransient<ISeasonRepository, SqlServerSeasonRepository>();
+            services.AddTransient<IStatisticsRepository, SqlServerStatisticsRepository>();
             services.AddTransient<ITeamRepository, SqlServerTeamRepository>();
+            services.AddTransient<ITournamentRepository, SqlServerTournamentRepository>();
 
             // Security checks
             services.AddTransient<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();
@@ -259,6 +276,10 @@ namespace Stoolball.Web
             services.AddTransient<MatchesRssController>();
             services.AddTransient<MatchController>();
             services.AddTransient<MatchActionsController>();
+            services.AddTransient<CreateFriendlyMatchController>();
+            services.AddTransient<CreateKnockoutMatchController>();
+            services.AddTransient<CreateLeagueMatchController>();
+            services.AddTransient<CreateTrainingSessionController>();
 
             services.AddTransient<MatchLocationsController>();
             services.AddTransient<MatchLocationController>();
@@ -287,6 +308,7 @@ namespace Stoolball.Web
             services.AddTransient<TournamentsRssController>();
             services.AddTransient<TournamentController>();
             services.AddTransient<TournamentActionsController>();
+            services.AddTransient<CreateTournamentController>();
 
             // Listings pages
             services.AddTransient<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();

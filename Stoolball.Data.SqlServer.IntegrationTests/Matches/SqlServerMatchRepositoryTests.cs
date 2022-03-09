@@ -44,7 +44,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             var repo = new SqlServerMatchRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerMatchRepository>>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 sanitizer.Object,

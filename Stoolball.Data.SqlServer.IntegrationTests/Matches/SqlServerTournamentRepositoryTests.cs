@@ -43,7 +43,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             var repo = new SqlServerTournamentRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger>(),
+                Mock.Of<ILogger<SqlServerTournamentRepository>>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<ITeamRepository>(),

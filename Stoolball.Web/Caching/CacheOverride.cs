@@ -17,13 +17,13 @@ namespace Stoolball.Web.Caching
         public CacheOverride(IReadOnlyPolicyRegistry<string> policyRegistry, ISyncCacheProvider cacheProvider, IMemberManager memberManager)
         {
             _policyRegistry = policyRegistry ?? throw new ArgumentNullException(nameof(policyRegistry));
-            _cacheProvider = cacheProvider ?? throw new System.ArgumentNullException(nameof(cacheProvider));
+            _cacheProvider = cacheProvider ?? throw new ArgumentNullException(nameof(cacheProvider));
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
         }
 
         public async Task OverrideCacheForCurrentMember(string cacheKeyPrefix)
         {
-            var currentMember = await _memberManager.GetCurrentMemberAsync().ConfigureAwait(false);
+            var currentMember = await _memberManager.GetCurrentMemberAsync();
             if (currentMember == null) { throw new InvalidOperationException("No member is logged in."); }
 
             var cachePolicy = _policyRegistry.Get<ISyncPolicy>(CacheConstants.MemberOverridePolicy);
@@ -33,7 +33,7 @@ namespace Stoolball.Web.Caching
 
         public async Task<bool> IsCacheOverriddenForCurrentMember(string cacheKeyPrefix)
         {
-            var currentMember = await _memberManager.GetCurrentMemberAsync().ConfigureAwait(false);
+            var currentMember = await _memberManager.GetCurrentMemberAsync();
             if (currentMember == null) { return false; }
 
             return _cacheProvider.TryGet(CacheConstants.MemberOverridePolicy + cacheKeyPrefix + currentMember.Key).Item1;

@@ -23,7 +23,7 @@ namespace Stoolball.Data.SqlServer
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
-        private readonly ILogger _logger;
+        private readonly ILogger<SqlServerTournamentRepository> _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
         private readonly ITeamRepository _teamRepository;
@@ -31,7 +31,7 @@ namespace Stoolball.Data.SqlServer
         private readonly IHtmlSanitizer _htmlSanitiser;
         private readonly IDataRedactor _dataRedactor;
 
-        public SqlServerTournamentRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
+        public SqlServerTournamentRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger<SqlServerTournamentRepository> logger, IRouteGenerator routeGenerator,
             IRedirectsRepository redirectsRepository, ITeamRepository teamRepository, IMatchRepository matchRepository, IHtmlSanitizer htmlSanitiser, IDataRedactor dataRedactor)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
@@ -201,7 +201,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.CreateTournament));
+                    _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.CreateTournament));
                 }
             }
 
@@ -410,7 +410,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.UpdateTournament));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.UpdateTournament));
                 }
             }
 
@@ -504,7 +504,7 @@ namespace Stoolball.Data.SqlServer
                                     AuditDate = DateTime.UtcNow
                                 }, transaction).ConfigureAwait(false);
 
-                                _logger.Info(GetType(), LoggingTemplates.Created, team, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.UpdateTeams));
+                                _logger.Info(LoggingTemplates.Created, team, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.UpdateTeams));
                             }
 
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
@@ -568,7 +568,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateTeams));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateTeams));
                 }
             }
 
@@ -651,7 +651,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateSeasons));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateSeasons));
                 }
             }
 
@@ -739,7 +739,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateMatches));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateMatches));
                 }
             }
 
@@ -818,7 +818,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.DeleteTournament));
+                    _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.DeleteTournament));
                 }
             }
         }
