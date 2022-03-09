@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Matches
 {
     public class DeleteTournamentSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchListingDataSource _matchListingDataSource;
         private readonly ITournamentRepository _tournamentRepository;
@@ -27,11 +33,12 @@ namespace Stoolball.Web.Matches
         private readonly IDateTimeFormatter _dateTimeFormatter;
 
         public DeleteTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITournamentDataSource tournamentDataSource,
-            IMatchListingDataSource matchListingDataSource, ITournamentRepository tournamentRepository, ICacheClearer<Tournament> cacheClearer,
-           ICommentsDataSource<Tournament> matchCommentsDataSource, IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            ITournamentDataSource tournamentDataSource, IMatchListingDataSource matchListingDataSource, ITournamentRepository tournamentRepository, ICommentsDataSource<Tournament> matchCommentsDataSource,
+            ICacheClearer<Tournament> cacheClearer, IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _matchListingDataSource = matchListingDataSource ?? throw new ArgumentNullException(nameof(matchListingDataSource));
             _tournamentRepository = tournamentRepository ?? throw new ArgumentNullException(nameof(tournamentRepository));
@@ -45,7 +52,7 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteTournament([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] Stoolball.Security.MatchingTextConfirmation postedModel)
+        public async Task<IActionResult> DeleteTournament([Bind("RequiredText", "ConfirmationText", Prefix = "ConfirmDeleteRequest")] MatchingTextConfirmation postedModel)
         {
             if (postedModel is null)
             {
@@ -54,21 +61,20 @@ namespace Stoolball.Web.Matches
 
             var model = new DeleteTournamentViewModel(CurrentPage, Services.UserService)
             {
-                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false),
-                DateTimeFormatter = _dateTimeFormatter
+                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Path)
             };
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
+            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
-            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.DeleteTournament] && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.DeleteTournament] && ModelState.IsValid)
             {
-                var currentMember = Members.GetCurrentMember();
-                await _tournamentRepository.DeleteTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(model.Tournament).ConfigureAwait(false);
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
+                await _tournamentRepository.DeleteTournament(model.Tournament, currentMember.Key, currentMember.Name);
+                await _cacheClearer.ClearCacheFor(model.Tournament);
                 model.Deleted = true;
             }
             else
             {
-                model.TotalComments = await _commentsDataSource.ReadTotalComments(model.Tournament.TournamentId.Value).ConfigureAwait(false);
+                model.TotalComments = await _commentsDataSource.ReadTotalComments(model.Tournament.TournamentId!.Value);
 
                 model.Matches = new MatchListingViewModel(CurrentPage, Services?.UserService)
                 {
@@ -77,7 +83,7 @@ namespace Stoolball.Web.Matches
                         TournamentId = model.Tournament.TournamentId,
                         IncludeTournamentMatches = true,
                         IncludeTournaments = false
-                    }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false)
+                    }, MatchSortOrder.MatchDateEarliestFirst)
                 };
             }
 

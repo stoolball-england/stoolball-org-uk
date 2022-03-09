@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Matches
 {
     public class DeleteMatchSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly IMatchDataSource _matchDataSource;
         private readonly IMatchRepository _matchRepository;
         private readonly ICommentsDataSource<Match> _matchCommentsDataSource;
@@ -26,10 +32,12 @@ namespace Stoolball.Web.Matches
         private readonly ICacheClearer<Match> _cacheClearer;
 
         public DeleteMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource, IMatchRepository matchRepository,
-           ICommentsDataSource<Match> matchCommentsDataSource, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, ICacheClearer<Match> cacheClearer)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            IMatchDataSource matchDataSource, IMatchRepository matchRepository, ICommentsDataSource<Match> matchCommentsDataSource,
+            IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, ICacheClearer<Match> cacheClearer)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
             _matchCommentsDataSource = matchCommentsDataSource ?? throw new ArgumentNullException(nameof(matchCommentsDataSource));
@@ -42,7 +50,7 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteMatch([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] Stoolball.Security.MatchingTextConfirmation postedModel)
+        public async Task<ActionResult> DeleteMatch([Bind("RequiredText", "ConfirmationText", Prefix = "ConfirmDeleteRequest")] MatchingTextConfirmation postedModel)
         {
             if (postedModel is null)
             {
@@ -51,21 +59,20 @@ namespace Stoolball.Web.Matches
 
             var model = new DeleteMatchViewModel(CurrentPage, Services.UserService)
             {
-                Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
-                DateTimeFormatter = _dateTimeFormatter
+                Match = await _matchDataSource.ReadMatchByRoute(Request.Path)
             };
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
+            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
-            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.DeleteMatch] && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.DeleteMatch] && ModelState.IsValid)
             {
-                var currentMember = Members.GetCurrentMember();
-                await _matchRepository.DeleteMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(model.Match).ConfigureAwait(false);
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
+                await _matchRepository.DeleteMatch(model.Match, currentMember.Key, currentMember.Name);
+                await _cacheClearer.ClearCacheFor(model.Match);
                 model.Deleted = true;
             }
             else
             {
-                model.TotalComments = await _matchCommentsDataSource.ReadTotalComments(model.Match.MatchId.Value).ConfigureAwait(false);
+                model.TotalComments = await _matchCommentsDataSource.ReadTotalComments(model.Match.MatchId!.Value);
             }
 
             model.Metadata.PageTitle = "Delete " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x, false, false, false)) + " - stoolball match";

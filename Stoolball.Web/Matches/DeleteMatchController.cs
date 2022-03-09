@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
 using Stoolball.Statistics;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Matches
 {
-    public class DeleteMatchController : RenderMvcControllerAsync
+    public class DeleteMatchController : RenderController, IRenderControllerAsync
     {
         private readonly IMatchDataSource _matchDataSource;
         private readonly IPlayerDataSource _playerDataSource;
@@ -27,21 +27,18 @@ namespace Stoolball.Web.Matches
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
 
-        public DeleteMatchController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IMatchDataSource matchDataSource,
-           IPlayerDataSource playerDataSource,
-           IPlayerIdentityFinder playerIdentityFinder,
-           ICommentsDataSource<Match> matchCommentsDataSource,
-           IAuthorizationPolicy<Match> authorizationPolicy,
-           IDateTimeFormatter dateFormatter)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public DeleteMatchController(ILogger<DeleteMatchController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IMatchDataSource matchDataSource,
+            IPlayerDataSource playerDataSource,
+            IPlayerIdentityFinder playerIdentityFinder,
+            ICommentsDataSource<Match> matchCommentsDataSource,
+            IAuthorizationPolicy<Match> authorizationPolicy,
+            IDateTimeFormatter dateFormatter)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
-            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
+            _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
             _matchCommentsDataSource = matchCommentsDataSource ?? throw new ArgumentNullException(nameof(matchCommentsDataSource));
@@ -51,26 +48,20 @@ namespace Stoolball.Web.Matches
 
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new DeleteMatchViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new DeleteMatchViewModel(contentModel.Content, Services?.UserService)
-            {
-                Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
-                DateTimeFormatter = _dateFormatter
+                Match = await _matchDataSource.ReadMatchByRoute(Request.Path)
             };
 
             if (model.Match == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
-                model.TotalComments = await _matchCommentsDataSource.ReadTotalComments(model.Match.MatchId.Value).ConfigureAwait(false);
+                model.TotalComments = await _matchCommentsDataSource.ReadTotalComments(model.Match.MatchId!.Value);
 
                 // Find the player identities in the match, then reselect them with details of how many matches they've played
                 model.PlayerIdentities = _playerIdentityFinder.PlayerIdentitiesInMatch(model.Match).ToList();
@@ -79,14 +70,14 @@ namespace Stoolball.Web.Matches
                     model.PlayerIdentities = await _playerDataSource.ReadPlayerIdentities(
                         new PlayerFilter
                         {
-                            PlayerIdentityIds = model.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList()
+                            PlayerIdentityIds = model.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList()
                         }
-                    ).ConfigureAwait(false);
+                    );
                 }
 
                 model.ConfirmDeleteRequest.RequiredText = model.Match.MatchName;
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.Metadata.PageTitle = "Delete " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false)) + " - stoolball match";
 

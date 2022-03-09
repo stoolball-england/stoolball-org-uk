@@ -1,29 +1,24 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.DeleteTournamentViewModel>
+﻿@inherits UmbracoViewPage<Stoolball.Web.Matches.Models.DeleteTournamentViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
 @using Humanizer
-@using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
 @using Stoolball.Teams
 @using Stoolball.Security
 @using Constants = Stoolball.Constants
-@{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-}
+@await Html.PartialAsync("_JQueryValidate")
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>Delete @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false))</h1>
+    <h1>Delete @Html.TournamentFullNameAndPlayerType(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
     {
         if (!Model.Deleted)
         {
-            <p>If you delete @Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false)) you will:</p>
+            <p>If you delete @Html.TournamentFullName(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false)) you will:</p>
             <ul>
-                @if (Model.Tournament.Teams.Count > 0)
+                @if (Model.Tournament!.Teams.Count > 0)
                 {
                     var transientTeams = Model.Tournament.Teams.Where(x => x.Team.TeamType == TeamType.Transient);
                     var longLivedTeams = Model.Tournament.Teams.Where(x => x.Team.TeamType != TeamType.Transient);
@@ -67,11 +62,8 @@
             </ul>
             <p><strong><strong>You cannot undo this.</strong></strong></p>
 
-            using (Html.BeginUmbracoForm<DeleteTournamentSurfaceController>
-                       ("DeleteTournament"))
+            using (Html.BeginUmbracoForm<DeleteTournamentSurfaceController>(nameof(DeleteTournamentSurfaceController.DeleteTournament)))
             {
-                @Html.AntiForgeryToken()
-
                 @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
                 <div class="form-group">
                     @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Tournament.TournamentName}' into this box:")
@@ -79,17 +71,17 @@
                     @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
                 </div>
 
-                <button class="btn btn-danger btn-delete">Delete @Model.Tournament.TournamentName</button>
+                <button class="btn btn-danger btn-delete" type="submit">Delete @Model.Tournament.TournamentName</button>
             }
         }
         else
         {
-            <p>@Model.Tournament.TournamentName has been deleted.</p>
+            <p>@Model.Tournament!.TournamentName has been deleted.</p>
             <p><a class="btn btn-primary btn-back" href="@Constants.Pages.TournamentsUrl">Back to @Constants.Pages.Tournaments</a></p>
         }
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

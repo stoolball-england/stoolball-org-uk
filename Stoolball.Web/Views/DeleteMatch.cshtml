@@ -1,28 +1,23 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.DeleteMatchViewModel>
+﻿@inherits UmbracoViewPage<Stoolball.Web.Matches.Models.DeleteMatchViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
 @using Humanizer
-@using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
 @using Stoolball.Security
 @using Constants = Stoolball.Constants
-@{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-}
+@await Html.PartialAsync("_JQueryValidate")
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>Delete @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</h1>
+    <h1>Delete @Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.DeleteMatch])
     {
         if (!Model.Deleted)
         {
-            <p>If you delete @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false)) you will:</p>
+            <p>If you delete @Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false)) you will:</p>
             <ul>
-                @if (Model.Match.Teams.Count > 0)
+                @if (Model.Match!.Teams.Count > 0)
                 {
                     <li>remove this @Model.Match.MatchType.Humanize(LetterCasing.LowerCase) from match listings for @Model.Match.Teams.Humanize(x => x.Team.TeamName)</li>
                 }
@@ -81,11 +76,8 @@
             <p><strong><strong>You cannot undo this.</strong></strong></p>
 
 
-            using (Html.BeginUmbracoForm<DeleteMatchSurfaceController>
-                       ("DeleteMatch"))
+            using (Html.BeginUmbracoForm<DeleteMatchSurfaceController>(nameof(DeleteMatchSurfaceController.DeleteMatch)))
             {
-                @Html.AntiForgeryToken()
-
                 @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
                 <div class="form-group">
                     @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Match.MatchName}' into this box:")
@@ -93,12 +85,12 @@
                     @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
                 </div>
 
-                <button class="btn btn-danger btn-delete">Delete @Model.Match.MatchName</button>
+                <button class="btn btn-danger btn-delete" type="submit">Delete @Model.Match.MatchName</button>
             }
         }
         else
         {
-            <p>@Model.Match.MatchName has been deleted.</p>
+            <p>@Model.Match!.MatchName has been deleted.</p>
             if (Model.Match.Season != null)
             {
                 <p><a class="btn btn-primary btn-back" href="@Model.Match.Season.SeasonRoute">Back to @Model.Match.Season.SeasonFullName()</a></p>
@@ -115,6 +107,6 @@
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

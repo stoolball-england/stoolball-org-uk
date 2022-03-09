@@ -921,12 +921,6 @@
     <Compile Include="Matches\EditLeagueMatchController.cs" />
     <Compile Include="Matches\EditKnockoutMatchViewModel.cs" />
     <Compile Include="Matches\EditLeagueMatchViewModel.cs" />
-    <Compile Include="Matches\DeleteTournamentSurfaceController.cs" />
-    <Compile Include="Matches\DeleteMatchSurfaceController.cs" />
-    <Compile Include="Matches\DeleteTournamentController.cs" />
-    <Compile Include="Matches\DeleteMatchController.cs" />
-    <Compile Include="Matches\DeleteMatchViewModel.cs" />
-    <Compile Include="Matches\DeleteTournamentViewModel.cs" />
     <Compile Include="Matches\ExtrasRowViewModel.cs" />
     <Compile Include="Matches\IEditMatchHelper.cs" />
     <Compile Include="Matches\TeamComparer.cs" />
@@ -952,16 +946,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BowlingFigures.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DeleteMatch.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DeleteMatch.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DeleteTournament.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DeleteTournament.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditBattingScorecard.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1067,14 +1051,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\DeleteMatch.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>DeleteMatch.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\DeleteTournament.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>DeleteTournament.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\EditLeagueMatch.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>EditLeagueMatch.generated.cs</LastGenOutput>

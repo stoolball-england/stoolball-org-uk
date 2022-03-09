@@ -280,6 +280,7 @@ namespace Stoolball.Web
             services.AddTransient<CreateKnockoutMatchController>();
             services.AddTransient<CreateLeagueMatchController>();
             services.AddTransient<CreateTrainingSessionController>();
+            services.AddTransient<DeleteMatchController>();
 
             services.AddTransient<MatchLocationsController>();
             services.AddTransient<MatchLocationController>();
@@ -309,6 +310,7 @@ namespace Stoolball.Web
             services.AddTransient<TournamentController>();
             services.AddTransient<TournamentActionsController>();
             services.AddTransient<CreateTournamentController>();
+            services.AddTransient<DeleteTournamentController>();
 
             // Listings pages
             services.AddTransient<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();
