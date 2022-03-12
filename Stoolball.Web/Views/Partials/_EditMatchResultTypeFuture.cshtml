@@ -1,21 +1,12 @@
 ﻿@model IEditMatchViewModel
 @using Stoolball.Matches
-@using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
 @using Humanizer
 @{
-    object noResultAttributes;
-    if (Model.Match.MatchResultType.HasValue)
-    {
-        noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes" };
-    }
-    else
-    {
-        noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes", @checked = "checked" };
-    }
     <fieldset class="form-group">
         <legend>Will the match happen?</legend>
         <div class="custom-control custom-radio">
-            @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, noResultAttributes)
+            @Html.RadioButtonFor(m => Model.Match!.MatchResultType, -1, (Model.Match!.MatchResultType.HasValue) ? new { @class = "custom-control-input", @id = "MatchResultTypeYes" } : new { @class = "custom-control-input", @id = "MatchResultTypeYes", @checked = "checked" })
             <label for="MatchResultTypeYes" class="custom-control-label">The match will happen</label>
         </div>
         <div class="custom-control custom-radio">

@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Web.Matches;
+using Stoolball.Web.Matches.Models;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Matches

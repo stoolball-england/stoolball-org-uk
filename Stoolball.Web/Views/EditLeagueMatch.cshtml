@@ -1,0 +1,47 @@
+﻿@inherits UmbracoViewPage<EditLeagueMatchViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItem")
+@await Html.PartialAsync("_TinyMCE")
+<div class="container-xl">
+    <h1>Edit @Html.MatchFullName(Model.Match, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatch])
+    {
+        if (Model.Match.Season == null || Model.Match.Season.Teams.Count > 1)
+        {
+            using (Html.BeginUmbracoForm<EditLeagueMatchSurfaceController>(nameof(EditLeagueMatchSurfaceController.UpdateMatch)))
+            {
+                @await Html.PartialAsync("_CreateOrEditLeagueMatch")
+                @await Html.PartialAsync("_EditMatchResultTypeFuture")
+                <button class="btn btn-primary" type="submit">Save match</button>
+            }
+        }
+        else
+        {
+            <p>You need at least two teams in the @Model.Season!.SeasonFullName() to edit a league match.</p>
+            if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
+            {
+                <p><a href="@Model.Season.SeasonRoute/edit/teams" class="btn btn-secondary">Edit teams</a></p>
+            }
+            else
+            {
+                <p>
+                    <a href="@Model.Season.Competition.CompetitionRoute">Contact the administrators of the @Model.Season.Competition.CompetitionName</a>
+                    and ask them to add the teams playing in the @Model.Season.SeasonName(), so that you can edit this match.
+                </p>
+            }
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

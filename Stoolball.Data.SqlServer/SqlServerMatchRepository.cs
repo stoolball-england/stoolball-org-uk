@@ -330,6 +330,10 @@ namespace Stoolball.Data.SqlServer
                     awayMatchTeamId = Guid.NewGuid();
                     matchTeamId = awayMatchTeamId.Value;
                 }
+                else if (team.TeamRole == TeamRole.Training)
+                {
+                    matchTeamId = Guid.NewGuid();
+                }
 
                 team.MatchTeamId = matchTeamId;
 

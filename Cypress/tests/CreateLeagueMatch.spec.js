@@ -1,6 +1,6 @@
 import { logToConsole } from "./functions/logging";
 
-describe("Create season", () => {
+describe("Create league match", () => {
   describe("When signed out", () => {
     beforeEach(() => {
       cy.visit("/competitions/mid-sussex-mixed-league/2021/matches/add/league");

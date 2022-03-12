@@ -10,8 +10,8 @@ namespace Stoolball.Web.Matches
 {
     public interface IEditMatchHelper
     {
-        List<SelectListItem> PossibleTeamsAsListItems(IEnumerable<TeamInSeason> teams);
-        List<SelectListItem> PossibleSeasonsAsListItems(IEnumerable<Season> seasons);
+        List<SelectListItem> PossibleTeamsAsListItems(IEnumerable<TeamInSeason>? teams);
+        List<SelectListItem> PossibleSeasonsAsListItems(IEnumerable<Season>? seasons);
         Task ConfigureModelPossibleTeams(IEditMatchViewModel model, IEnumerable<Season> possibleSeasons);
         void ConfigureAddMatchModelMetadata(IEditMatchViewModel model);
         void ConfigureModelFromRequestData(IEditMatchViewModel model, IFormCollection formData, ModelStateDictionary modelState);

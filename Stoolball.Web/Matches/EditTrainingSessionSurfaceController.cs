@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Matches
 {
-    public class EditFriendlyMatchSurfaceController : SurfaceController
+    public class EditTrainingSessionSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly IMatchDataSource _matchDataSource;
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IMatchRepository _matchRepository;
@@ -27,12 +33,13 @@ namespace Stoolball.Web.Matches
         private readonly IMatchValidator _matchValidator;
         private readonly ICacheClearer<Match> _cacheClearer;
 
-        public EditFriendlyMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource,
-            IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IEditMatchHelper editMatchHelper,
-            IMatchValidator matchValidator, ICacheClearer<Match> cacheClearer)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+        public EditTrainingSessionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource, IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy,
+            IDateTimeFormatter dateTimeFormatter, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator, ICacheClearer<Match> cacheClearer)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
@@ -47,30 +54,24 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
-        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "Match", Include = "Season,MatchResultType")] Match postedMatch)
+        public async Task<IActionResult> UpdateMatch([Bind("Season", "Teams", "MatchResultType", Prefix = "Match")] Match postedMatch)
         {
             if (postedMatch is null)
             {
                 throw new ArgumentNullException(nameof(postedMatch));
             }
 
-            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path);
 
-            // This controller is only for matches in the future
-            if (beforeUpdate.StartTime <= DateTime.UtcNow)
+            var model = new EditTrainingSessionViewModel(CurrentPage, Services.UserService)
             {
-                return new HttpNotFoundResult();
-            }
-
-            var model = new EditFriendlyMatchViewModel(CurrentPage, Services.UserService)
-            {
-                Match = postedMatch,
-                DateFormatter = _dateTimeFormatter
+                Match = postedMatch
             };
             model.Match.MatchId = beforeUpdate.MatchId;
+            model.Match.MatchType = MatchType.TrainingSession;
             model.Match.MatchRoute = beforeUpdate.MatchRoute;
             model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
-            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
+            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Form, ModelState);
 
             if (model.Match.Season != null && !model.Match.Season.SeasonId.HasValue)
             {
@@ -79,22 +80,28 @@ namespace Stoolball.Web.Matches
             else if (model.Match.Season != null)
             {
                 // Get the season, to support validation against season dates
-                model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId.Value).ConfigureAwait(false);
+                model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId!.Value);
             }
 
             _matchValidator.DateIsValidForSqlServer(model.MatchDate, ModelState, "MatchDate", "match");
             _matchValidator.DateIsWithinTheSeason(model.MatchDate, model.Match.Season, ModelState, "MatchDate", "match");
-            _matchValidator.AtLeastOneTeamId(model, ModelState);
+            _matchValidator.AtLeastOneTeamInMatch(model.Match.Teams, ModelState);
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
+            foreach (var team in model.Match.Teams)
+            {
+                team.TeamRole = TeamRole.Training;
+            }
 
-            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.EditMatch] && ModelState.IsValid)
+            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
+
+            if (model.IsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid &&
+               (model.Season == null || model.Season.MatchTypes.Contains(MatchType.TrainingSession)))
             {
                 if ((int?)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
 
-                var currentMember = Members.GetCurrentMember();
-                var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(updatedMatch).ConfigureAwait(false);
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
+                var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name);
+                await _cacheClearer.ClearCacheFor(updatedMatch);
 
                 return Redirect(updatedMatch.MatchRoute);
             }
@@ -114,7 +121,7 @@ namespace Stoolball.Web.Matches
             }
             model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.MatchName, Url = new Uri(model.Match.MatchRoute, UriKind.Relative) });
 
-            return View("EditFriendlyMatch", model);
+            return View("EditTrainingSession", model);
         }
     }
 }

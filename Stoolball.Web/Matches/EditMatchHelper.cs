@@ -23,7 +23,7 @@ namespace Stoolball.Web.Matches
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
         }
 
-        public List<SelectListItem> PossibleSeasonsAsListItems(IEnumerable<Season> seasons)
+        public List<SelectListItem> PossibleSeasonsAsListItems(IEnumerable<Season>? seasons)
         {
             if (seasons != null && seasons.Any())
             {
@@ -35,7 +35,7 @@ namespace Stoolball.Web.Matches
             }
         }
 
-        public List<SelectListItem> PossibleTeamsAsListItems(IEnumerable<TeamInSeason> teams)
+        public List<SelectListItem> PossibleTeamsAsListItems(IEnumerable<TeamInSeason>? teams)
         {
             if (teams != null && teams.Any())
             {

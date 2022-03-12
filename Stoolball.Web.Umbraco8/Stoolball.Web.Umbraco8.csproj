@@ -678,10 +678,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MostRunOuts.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\EditTrainingSession.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditTrainingSession.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\EditTournamentMatches.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>EditTournamentMatches.generated.cs</LastGenOutput>
@@ -753,17 +749,11 @@
     <Compile Include="Matches\EditMatchFormatSurfaceController.cs" />
     <Compile Include="Matches\EditTournamentMatchesController.cs" />
     <Compile Include="Matches\EditTournamentMatchesSurfaceController.cs" />
-    <Compile Include="Matches\EditTrainingSessionSurfaceController.cs" />
-    <Compile Include="Matches\EditTrainingSessionController.cs" />
     <Compile Include="Matches\EditTournamentSeasonsController.cs" />
     <Compile Include="Matches\EditTournamentSeasonsSurfaceController.cs" />
     <Compile Include="Matches\IEditMatchViewModel.cs" />
     <Compile Include="Matches\IMatchValidator.cs" />
-    <Compile Include="Matches\MatchFilterViewModel.cs" />
-    <Compile Include="Matches\MatchListSubscriptionsViewModel.cs" />
-    <Compile Include="Matches\MatchValidator.cs" />
     <Compile Include="Matches\OnlySportCsvExportComponent.cs" />
-    <Compile Include="Matches\EditTrainingSessionViewModel.cs" />
     <Compile Include="Matches\OnlySportCsvExportTask.cs" />
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
@@ -832,11 +822,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EditTournamentSeasons.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditTrainingSession.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditTrainingSession.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\MostCatches.generated.cs">
       <AutoGen>True</AutoGen>
@@ -911,19 +896,8 @@
     <Compile Include="Matches\EditTournamentSurfaceController.cs" />
     <Compile Include="Matches\EditTournamentController.cs" />
     <Compile Include="Matches\EditTournamentViewModel.cs" />
-    <Compile Include="Matches\EditFriendlyMatchController.cs" />
-    <Compile Include="Matches\EditFriendlyMatchSurfaceController.cs" />
-    <Compile Include="Matches\EditKnockoutMatchSurfaceController.cs" />
-    <Compile Include="Matches\EditKnockoutMatchController.cs" />
-    <Compile Include="Matches\EditMatchHelper.cs" />
-    <Compile Include="Matches\EditLeagueMatchSurfaceController.cs" />
-    <Compile Include="Matches\EditFriendlyMatchViewModel.cs" />
-    <Compile Include="Matches\EditLeagueMatchController.cs" />
-    <Compile Include="Matches\EditKnockoutMatchViewModel.cs" />
-    <Compile Include="Matches\EditLeagueMatchViewModel.cs" />
     <Compile Include="Matches\ExtrasRowViewModel.cs" />
     <Compile Include="Matches\IEditMatchHelper.cs" />
-    <Compile Include="Matches\TeamComparer.cs" />
     <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
     <Compile Include="Metadata\IHasViewMetadata.cs" />
     <Compile Include="Routing\IPostSaveRedirector.cs" />
@@ -962,21 +936,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EditCloseOfPlay.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EditFriendlyMatch.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditFriendlyMatch.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditKnockoutMatch.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditKnockoutMatch.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditLeagueMatch.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditLeagueMatch.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\EditStartOfPlay.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1007,11 +966,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Stoolball-England-Email.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\_EditMatchResultTypeFuture.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_EditMatchResultTypeFuture.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\_StatisticsBasis.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1028,8 +982,6 @@
       <DependentUpon>Statistics.cshtml</DependentUpon>
     </Compile>
     <Compile Include="WebApi\ProgressResult.cs" />
-    <Compile Include="Matches\MatchListingViewModel.cs" />
-    <Compile Include="Matches\TournamentViewModel.cs" />
     <Compile Include="App_Data\Models\ApproveMember.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
     <Compile Include="App_Data\Models\Folder.generated.cs" />
@@ -1051,22 +1003,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\EditLeagueMatch.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditLeagueMatch.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\EditKnockoutMatch.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditKnockoutMatch.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_EditMatchResultTypeFuture.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_EditMatchResultTypeFuture.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\EditFriendlyMatch.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditFriendlyMatch.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\EditTournament.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>EditTournament.generated.cs</LastGenOutput>

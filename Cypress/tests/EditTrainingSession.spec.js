@@ -1,12 +1,11 @@
 import { logToConsole } from "./functions/logging";
 
-describe("Create knockout match", () => {
+describe("Edit training session", () => {
   describe("When signed out", () => {
     beforeEach(() => {
       cy.visit(
-        "/competitions/mid-sussex-mixed-league/2021/matches/add/knockout"
+        "/matches/maresfield-mixed-maresfield-mixed-6apr2017/edit/training"
       );
-      cy.injectAxe();
     });
 
     it("Validates", () => {
@@ -14,6 +13,7 @@ describe("Create knockout match", () => {
     });
 
     it("Passes AXE", () => {
+      cy.injectAxe();
       cy.checkA11y(null, null, logToConsole);
     });
 

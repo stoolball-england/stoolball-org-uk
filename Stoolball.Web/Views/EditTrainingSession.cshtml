@@ -1,51 +1,33 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditTrainingSessionViewModel>
-@using ClientDependency.Core.Mvc
+﻿@inherits UmbracoViewPage<EditTrainingSessionViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
 @using Stoolball.Matches
 @using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
 @using Stoolball.Security
 @using Humanizer
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItems")
+@await Html.PartialAsync("_TinyMCE")
 @{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-
-    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
-    Html.RequiresCss("~/css/autocomplete.min.css");
-
-    Html.RequiresCss("~/css/related-items.min.css");
-    Html.RequiresJs("~/js/related-items.js");
-    Html.RequiresJs("~/js/related-item.js");
-
-    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
-    Html.RequiresJs("/js/tinymce.js");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/related-item.js") { Order = 100 });
 }
 <div class="container-xl">
-    <h1>Edit @Html.MatchFullName(Model.Match, x => Model.DateFormatter.FormatDate(x, false, false, false))</h1>
+    <h1>Edit @Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditMatch])
     {
-        using (Html.BeginUmbracoForm<EditTrainingSessionSurfaceController>
-            ("UpdateMatch"))
+        using (Html.BeginUmbracoForm<EditTrainingSessionSurfaceController>(nameof(EditTrainingSessionSurfaceController.UpdateMatch)))
         {
-            @Html.Partial("_CreateOrEditTrainingSession")
+            @await Html.PartialAsync("_CreateOrEditTrainingSession")
             
-            object noResultAttributes;
-            if (Model.Match.MatchResultType.HasValue)
-            {
-                noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes" };
-            }
-            else
-            {
-                noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes", @checked = "checked" };
-            }
             <fieldset class="form-group">
                 <legend>@(Model.Match.StartTime >= DateTimeOffset.UtcNow ? "Will" : "Did") the training session happen?</legend>
                 <div class="custom-control custom-radio">
-                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, noResultAttributes)
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, (Model.Match!.MatchResultType.HasValue) ? new { @class = "custom-control-input", @id = "MatchResultTypeYes" } : new { @class = "custom-control-input", @id = "MatchResultTypeYes", @checked = "checked" })
                     <label for="MatchResultTypeYes" class="custom-control-label">The training session @(Model.Match.StartTime >= DateTimeOffset.UtcNow ? "will happen" : "happened")</label>
                 </div>
                 <div class="custom-control custom-radio">
@@ -59,6 +41,6 @@
     }
     else
     {
-    @Html.Partial("_Login")
+    @await Html.PartialAsync("_Login")
     }
 </div>

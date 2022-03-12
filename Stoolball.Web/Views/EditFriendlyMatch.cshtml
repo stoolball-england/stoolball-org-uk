@@ -1,0 +1,29 @@
+﻿@inherits UmbracoViewPage<EditFriendlyMatchViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItem")
+@await Html.PartialAsync("_TinyMCE")
+<div class="container-xl">
+    <h1>Edit @Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatch])
+    {
+        using (Html.BeginUmbracoForm<EditFriendlyMatchSurfaceController>(nameof(EditFriendlyMatchSurfaceController.UpdateMatch)))
+        {
+            @await Html.PartialAsync("_CreateOrEditFriendlyMatch")
+            @await Html.PartialAsync("_EditMatchResultTypeFuture")
+            <button class="btn btn-primary" type="submit">Save match</button>
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

@@ -1,12 +1,11 @@
 import { logToConsole } from "./functions/logging";
 
-describe("Create season", () => {
+describe("Create training session", () => {
   describe("When signed out", () => {
     beforeEach(() => {
       cy.visit(
         "/competitions/mid-sussex-mixed-league/2021/matches/add/training"
       );
-      cy.injectAxe();
     });
 
     it("Validates", () => {
@@ -14,6 +13,7 @@ describe("Create season", () => {
     });
 
     it("Passes AXE", () => {
+      cy.injectAxe();
       cy.checkA11y(null, null, logToConsole);
     });
 

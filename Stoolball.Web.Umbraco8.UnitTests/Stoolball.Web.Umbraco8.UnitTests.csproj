@@ -61,18 +61,13 @@
   <ItemGroup>
     <Compile Include="Matches\EditMatchFormatControllerTests.cs" />
     <Compile Include="Matches\EditTournamentMatchesControllerTests.cs" />
-    <Compile Include="Matches\EditTrainingSessionControllerTests.cs" />
     <Compile Include="Matches\EditTournamentSeasonsControllerTests.cs" />
-    <Compile Include="Matches\MatchValidatorTests.cs" />
     <Compile Include="Matches\EditBattingScorecardControllerTests.cs" />
     <Compile Include="Matches\EditBowlingScorecardControllerTests.cs" />
-    <Compile Include="Matches\EditFriendlyMatchControllerTests.cs" />
     <Compile Include="Matches\EditCloseOfPlayControllerTests.cs" />
     <Compile Include="Matches\EditStartOfPlayControllerTests.cs" />
     <Compile Include="Matches\EditTournamentTeamsControllerTests.cs" />
     <Compile Include="Matches\EditTournamentControllerTests.cs" />
-    <Compile Include="Matches\EditKnockoutMatchControllerTests.cs" />
-    <Compile Include="Matches\EditLeagueMatchControllerTests.cs" />
     <Compile Include="Statistics\BowlingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\BattingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\EconomyRateControllerTests.cs" />

@@ -1,6 +1,6 @@
 import { logToConsole } from "./functions/logging";
 
-describe("Create season", () => {
+describe("Create friendly match", () => {
   describe("When signed out", () => {
     beforeEach(() => {
       cy.visit(
