@@ -284,6 +284,7 @@ namespace Stoolball.Web
             services.AddTransient<EditKnockoutMatchController>();
             services.AddTransient<EditLeagueMatchController>();
             services.AddTransient<EditTrainingSessionController>();
+            services.AddTransient<EditMatchFormatController>();
             services.AddTransient<DeleteMatchController>();
 
             services.AddTransient<MatchLocationsController>();

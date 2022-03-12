@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Stoolball.Web.Matches
+namespace Stoolball.Web.Matches.Models
 {
     public class EditMatchFormatFormData
     {

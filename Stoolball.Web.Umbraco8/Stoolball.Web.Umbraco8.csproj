@@ -694,10 +694,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>BowlingStrikeRate.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\EditMatchFormat.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditMatchFormat.generated.cs</LastGenOutput>
-    </Content>
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -735,10 +731,6 @@
     <Compile Include="Filtering\FilterViewModel.cs" />
     <Compile Include="HtmlHelpers\LabelExtensions.cs" />
     <Compile Include="HtmlHelpers\RequiredFieldStatus.cs" />
-    <Compile Include="Matches\EditMatchFormatFormData.cs" />
-    <Compile Include="Matches\EditMatchFormatViewModel.cs" />
-    <Compile Include="Matches\EditMatchFormatController.cs" />
-    <Compile Include="Matches\EditMatchFormatSurfaceController.cs" />
     <Compile Include="Matches\IEditMatchViewModel.cs" />
     <Compile Include="Matches\IMatchValidator.cs" />
     <Compile Include="Matches\OnlySportCsvExportComponent.cs" />
@@ -795,11 +787,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EconomyRate.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditMatchFormat.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditMatchFormat.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\MostCatches.generated.cs">
       <AutoGen>True</AutoGen>

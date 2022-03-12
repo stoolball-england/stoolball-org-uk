@@ -1,21 +1,27 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Matches
 {
     public class EditMatchFormatSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly IMatchDataSource _matchDataSource;
         private readonly IMatchRepository _matchRepository;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
@@ -23,10 +29,12 @@ namespace Stoolball.Web.Matches
         private readonly IMatchInningsFactory _matchInningsFactory;
 
         public EditMatchFormatSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource,
-            IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchInningsFactory matchInningsFactory)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            IMatchDataSource matchDataSource, IMatchRepository matchRepository,
+            IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchInningsFactory matchInningsFactory)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
@@ -38,24 +46,23 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "FormData")] EditMatchFormatFormData postedData)
+        public async Task<IActionResult> UpdateMatch([Bind(Prefix = "FormData")] EditMatchFormatFormData postedData)
         {
             if (postedData is null)
             {
                 throw new ArgumentNullException(nameof(postedData));
             }
 
-            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path);
 
             if (beforeUpdate == null || beforeUpdate.Tournament != null || beforeUpdate.MatchType == MatchType.TrainingSession)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
 
             var model = new EditMatchFormatViewModel(CurrentPage, Services.UserService)
             {
                 Match = beforeUpdate,
-                DateFormatter = _dateTimeFormatter,
                 FormData = postedData
             };
 
@@ -111,12 +118,12 @@ namespace Stoolball.Web.Matches
                 }
             }
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
+            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.EditMatch] && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid)
             {
-                var currentMember = Members.GetCurrentMember();
-                var updatedMatch = await _matchRepository.UpdateMatchFormat(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
+                var updatedMatch = await _matchRepository.UpdateMatchFormat(model.Match, currentMember.Key, currentMember.Name);
 
                 return Redirect(updatedMatch.MatchRoute + "/edit");
             }

@@ -1,65 +1,55 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Matches
 {
-    public class EditMatchFormatController : RenderMvcControllerAsync
+    public class EditMatchFormatController : RenderController, IRenderControllerAsync
     {
         private readonly IMatchDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
 
-        public EditMatchFormatController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IMatchDataSource matchDataSource,
-           IAuthorizationPolicy<Match> authorizationPolicy,
-           IDateTimeFormatter dateFormatter)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public EditMatchFormatController(ILogger<EditMatchFormatController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IMatchDataSource matchDataSource,
+            IAuthorizationPolicy<Match> authorizationPolicy,
+            IDateTimeFormatter dateFormatter)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
         }
 
-        [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new EditMatchFormatViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new EditMatchFormatViewModel(contentModel.Content, Services?.UserService)
-            {
-                Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
-                DateFormatter = _dateFormatter
+                Match = await _matchDataSource.ReadMatchByRoute(Request.Path)
             };
 
             if (model.Match == null || model.Match.Tournament != null || model.Match.MatchType == MatchType.TrainingSession)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false));
 

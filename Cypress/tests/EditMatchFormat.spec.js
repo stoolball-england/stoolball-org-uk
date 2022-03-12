@@ -1,9 +1,9 @@
 import { logToConsole } from "./functions/logging";
 
-describe("Edit match location", () => {
+describe("Edit match format", () => {
   describe("When signed out", () => {
     beforeEach(() => {
-      cy.visit("/locations/maresfield-recreation-ground/edit/location");
+      cy.visit("/matches/maresfield-mixed-education-12jun2014/edit/format");
     });
 
     it("Validates", () => {

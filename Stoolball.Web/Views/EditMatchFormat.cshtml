@@ -1,27 +1,21 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditMatchFormatViewModel>
-@using ClientDependency.Core.Mvc
+﻿@inherits UmbracoViewPage<EditMatchFormatViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
 @using Stoolball.Web.HtmlHelpers
 @using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
 @using Stoolball.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
-@{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-}
+@await Html.PartialAsync("_JQueryValidate")
 <div class="container-xl">
-    <h1>Edit @Html.MatchFullName(Model.Match, x => Model.DateFormatter.FormatDate(x, false, false, false))</h1>
+    <h1>Edit @Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditMatch])
     {
-        using (Html.BeginUmbracoForm<EditMatchFormatSurfaceController>("UpdateMatch"))
+        using (Html.BeginUmbracoForm<EditMatchFormatSurfaceController>(nameof(EditMatchFormatSurfaceController.UpdateMatch)))
         {
-            @Html.AntiForgeryToken()
-
-            if (Model.Match.StartTime <= DateTimeOffset.UtcNow)
+            if (Model.Match!.StartTime <= DateTimeOffset.UtcNow)
             {
                 <p class="alert alert-info alert-tip">You can add extra innings and overs but you cannot reduce them, because this match has already happened.</p>
             }
@@ -39,11 +33,11 @@
                 @Html.ValidationMessageFor(m => Model.FormData.Overs, null, new { id = "overs-validation" })
             </div>
 
-            <button class="btn btn-primary">Save match</button>
+            <button class="btn btn-primary" type="submit">Save match</button>
         }
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>
