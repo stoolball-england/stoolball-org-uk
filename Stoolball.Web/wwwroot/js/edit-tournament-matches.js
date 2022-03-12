@@ -78,76 +78,82 @@
     // When 'Add match' is clicked add a row to the table and update the indexes.
     const addButton = document.querySelector(".select-teams-in-match__add");
     const thisEditor = document.querySelector(".related-items");
-    addButton.addEventListener("click", function () {
-      const template = document.getElementById(
-        this.getAttribute("data-template")
-      ).innerHTML;
+    if (addButton) {
+      addButton.addEventListener("click", function () {
+        const template = document.getElementById(
+          this.getAttribute("data-template")
+        ).innerHTML;
 
-      const tbody = thisEditor.querySelector("tbody");
-      tbody.insertAdjacentHTML(
-        "beforeend",
-        thisEditor.relatedItems.populateTemplate(template, {
-          value: "",
-          data: {},
-        })
-      );
+        const tbody = thisEditor.querySelector("tbody");
+        tbody.insertAdjacentHTML(
+          "beforeend",
+          thisEditor.relatedItems.populateTemplate(template, {
+            value: "",
+            data: {},
+          })
+        );
 
-      thisEditor.relatedItems.resetEmpty(thisEditor);
-      thisEditor.relatedItems.resetIndexes(thisEditor.lastChild);
+        thisEditor.relatedItems.resetEmpty(thisEditor);
+        thisEditor.relatedItems.resetIndexes(thisEditor.lastChild);
 
-      let rows = thisEditor.querySelectorAll("tr");
-      const fields = rows[rows.length - 1].querySelectorAll(
-        ".select-teams-in-match select"
-      );
+        let rows = thisEditor.querySelectorAll("tr");
+        const fields = rows[rows.length - 1].querySelectorAll(
+          ".select-teams-in-match select"
+        );
 
-      // Watch for the blur event on the select elements and update validation.
-      fields[0].addEventListener("blur", onBlur);
-      fields[1].addEventListener("blur", onBlur);
+        // Watch for the blur event on the select elements and update validation.
+        fields[0].addEventListener("blur", onBlur);
+        fields[1].addEventListener("blur", onBlur);
 
-      // Watch for click event on drag handle
-      rows[rows.length - 1]
-        .querySelector(".select-teams-in-match__sort")
-        .addEventListener("click", onDrag);
+        // Watch for click event on drag handle
+        rows[rows.length - 1]
+          .querySelector(".select-teams-in-match__sort")
+          .addEventListener("click", onDrag);
 
-      // alert assistive technology
-      thisEditor.relatedItems.alertAssistiveTechnology(
-        document,
-        thisEditor,
-        "new match"
-      );
+        // alert assistive technology
+        thisEditor.relatedItems.alertAssistiveTechnology(
+          document,
+          thisEditor,
+          "new match"
+        );
 
-      // set focus back to the first dropdown
-      fields[fields.length - 2].focus();
-    });
+        // set focus back to the first dropdown
+        fields[fields.length - 2].focus();
+      });
+    }
 
     // If we've hit server-side validation for some reason, there could be select lists already in the table, so wire up the blur event
-    var selects = thisEditor.querySelectorAll("select");
-    for (let i = 0; i < selects.length; i++) {
-      selects[i].addEventListener("blur", onBlur);
+    if (thisEditor) {
+      var selects = thisEditor.querySelectorAll("select");
+      for (let i = 0; i < selects.length; i++) {
+        selects[i].addEventListener("blur", onBlur);
+      }
     }
 
     // When 'Save' is clicked, make sure there are no errors
     const form = document.querySelector("main form");
-    form.addEventListener("submit", function (e) {
-      if (this.querySelector("[aria-invalid='true']")) {
-        e.preventDefault();
-        return false;
-      }
-      return true;
-    });
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        if (this.querySelector("[aria-invalid='true']")) {
+          e.preventDefault();
+          return false;
+        }
+        return true;
+      });
+    }
 
     // Pointer-based drag-and-drop
     if (typeof Sortable !== "undefined") {
-      Sortable.create(
-        document.querySelector(".select-teams-in-match__matches"),
-        {
+      const toSort = document.querySelector(".select-teams-in-match__matches");
+      if (toSort) {
+        Sortable.create(toSort, {
           handle: ".select-teams-in-match__sort",
           animation: 150,
           onEnd: function () {
             thisEditor.relatedItems.resetIndexes(thisEditor.lastChild);
           },
-        }
-      );
+        });
+      }
     }
 
     // Let go of any items grabbed for drag & drop and release any drag handle
@@ -199,11 +205,6 @@
       setApplicationRole(e.target, pressed);
     }
 
-    let draggable = thisEditor.querySelectorAll(".select-teams-in-match__sort");
-    for (let i = 0; i < draggable.length; i++) {
-      draggable[i].addEventListener("click", onDrag);
-    }
-
     function setStatus(text) {
       const status = document.querySelector("[role='status']");
       status.innerHTML = text;
@@ -220,47 +221,58 @@
       return index;
     }
 
-    // Handle key presses for keyboard drag and drop
-    thisEditor.addEventListener("keydown", function (e) {
-      const grabbed = thisEditor.querySelector("[aria-grabbed='true']");
-      if (grabbed) {
-        const tab = 9,
-          esc = 27,
-          upArrow = 38,
-          downArrow = 40;
-        if (e.keyCode === tab || e.keyCode == esc) {
-          resetGrabbed(null);
-          setApplicationRole(grabbed, false);
-        } else if (e.keyCode === upArrow) {
-          if (grabbed !== grabbed.parentElement.firstElementChild) {
-            const previousSibling = grabbed.previousElementSibling;
-            grabbed.parentElement.removeChild(grabbed);
-            previousSibling.parentElement.insertBefore(
-              grabbed,
-              previousSibling
-            );
-            grabbed.querySelector("[aria-pressed='true']").focus();
-            thisEditor.relatedItems.resetIndexes(thisEditor.lastChild);
-            setStatus("Moved up to position " + (getElementIndex(grabbed) + 1));
-          }
-        } else if (e.keyCode === downArrow) {
-          if (grabbed !== grabbed.parentElement.lastElementChild) {
-            let nextSibling = grabbed.nextElementSibling;
-            grabbed.parentElement.removeChild(grabbed);
-            if (nextSibling.nextElementSibling) {
-              nextSibling = nextSibling.nextElementSibling;
-              nextSibling.parentElement.insertBefore(grabbed, nextSibling);
-            } else {
-              nextSibling.parentElement.appendChild(grabbed);
+    if (thisEditor) {
+      let draggable = thisEditor.querySelectorAll(
+        ".select-teams-in-match__sort"
+      );
+      for (let i = 0; i < draggable.length; i++) {
+        draggable[i].addEventListener("click", onDrag);
+      }
+
+      // Handle key presses for keyboard drag and drop
+      thisEditor.addEventListener("keydown", function (e) {
+        const grabbed = thisEditor.querySelector("[aria-grabbed='true']");
+        if (grabbed) {
+          const tab = 9,
+            esc = 27,
+            upArrow = 38,
+            downArrow = 40;
+          if (e.keyCode === tab || e.keyCode == esc) {
+            resetGrabbed(null);
+            setApplicationRole(grabbed, false);
+          } else if (e.keyCode === upArrow) {
+            if (grabbed !== grabbed.parentElement.firstElementChild) {
+              const previousSibling = grabbed.previousElementSibling;
+              grabbed.parentElement.removeChild(grabbed);
+              previousSibling.parentElement.insertBefore(
+                grabbed,
+                previousSibling
+              );
+              grabbed.querySelector("[aria-pressed='true']").focus();
+              thisEditor.relatedItems.resetIndexes(thisEditor.lastChild);
+              setStatus(
+                "Moved up to position " + (getElementIndex(grabbed) + 1)
+              );
             }
-            grabbed.querySelector("[aria-pressed='true']").focus();
-            thisEditor.relatedItems.resetIndexes(thisEditor.lastChild);
-            setStatus(
-              "Moved down to position " + (getElementIndex(grabbed) + 1)
-            );
+          } else if (e.keyCode === downArrow) {
+            if (grabbed !== grabbed.parentElement.lastElementChild) {
+              let nextSibling = grabbed.nextElementSibling;
+              grabbed.parentElement.removeChild(grabbed);
+              if (nextSibling.nextElementSibling) {
+                nextSibling = nextSibling.nextElementSibling;
+                nextSibling.parentElement.insertBefore(grabbed, nextSibling);
+              } else {
+                nextSibling.parentElement.appendChild(grabbed);
+              }
+              grabbed.querySelector("[aria-pressed='true']").focus();
+              thisEditor.relatedItems.resetIndexes(thisEditor.lastChild);
+              setStatus(
+                "Moved down to position " + (getElementIndex(grabbed) + 1)
+              );
+            }
           }
         }
-      }
-    });
+      });
+    }
   });
 })();

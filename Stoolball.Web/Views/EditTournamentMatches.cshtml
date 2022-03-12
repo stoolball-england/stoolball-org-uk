@@ -1,24 +1,22 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditTournamentViewModel>
-@using ClientDependency.Core.Mvc
+﻿@inherits UmbracoViewPage<EditTournamentViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
 @using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
 @using Stoolball.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+@await Html.PartialAsync("_RelatedItems")
 @{
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresCss("~/css/related-items.min.css");
-    Html.RequiresCss("~/matches/edit-tournament-matches.min.css");
-    Html.RequiresJs("~/js/libs/sortable.1.13.0.min.js", 80);
-    Html.RequiresJs("~/js/related-items.js", 90);
-    Html.RequiresJs("~/matches/edit-tournament-matches.js");
+    SmidgeHelper.RequiresCss(new CssFile("~/css/edit-tournament-matches.min.css") { Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/sortable.1.13.0.min.js") { Order = 80 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/edit-tournament-matches.js") { Order = 100 });
 
-    var teamOptions = Model.Tournament.Teams.Select(x => new SelectListItem { Text = x.Team.TeamName, Value = x.TournamentTeamId.ToString() });
+    var teamOptions = Model.Tournament!.Teams.Select(x => new SelectListItem { Text = x.Team.TeamName, Value = x.TournamentTeamId.ToString() });
 }
 
 <div class="container-xl">
-    <h1>Matches in the @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateFormatter.FormatDate(x, false, false, false))</h1>
+    <h1>Matches in the @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
     {
@@ -30,10 +28,8 @@
         }
         else
         {
-            using (Html.BeginUmbracoForm<EditTournamentMatchesSurfaceController>
-                ("UpdateMatches"))
+            using (Html.BeginUmbracoForm<EditTournamentMatchesSurfaceController>(nameof(EditTournamentMatchesSurfaceController.UpdateMatches)))
             {
-                @Html.AntiForgeryToken()
                 @Html.ValidationSummary(false)
 
                 @Html.HiddenFor(m => Model.UrlReferrer)
@@ -76,7 +72,7 @@
                                         @Html.Hidden($"Tournament.Matches[{i}].MatchName", Model.Tournament.Matches[i].MatchName, new { @class = "related-item__data select-teams-in-match__match-name", data_item = Model.Tournament.Matches[i].MatchId })
                                         @Html.Hidden($"Tournament.Matches[{i}].Teams[0].TournamentTeamId", Model.Tournament.Matches[i].Teams.Count > 0 ? Model.Tournament.Matches[i].Teams[0].TournamentTeamId : null, new { @class = "related-item__data", data_item = Model.Tournament.Matches[i].MatchId })
                                         @Html.Hidden($"Tournament.Matches[{i}].Teams[1].TournamentTeamId", Model.Tournament.Matches[i].Teams.Count > 1 ? Model.Tournament.Matches[i].Teams[1].TournamentTeamId : null, new { @class = "related-item__data", data_item = Model.Tournament.Matches[i].MatchId })
-                                        <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Tournament.Matches[i].MatchName} from this tournament")</button>
+                                        <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Remove {Model.Tournament.Matches[i].MatchName} from this tournament")</button>
                                     </div>
                                 </td>
                             </tr>
@@ -107,19 +103,19 @@
                             <td class="related-item__delete related-item__selected__section">
                                 <div class="related-item__animate">
                                     <input name="Tournament.Matches[0].MatchName" class="related-item__data select-teams-in-match__match-name" type="hidden" value="{{value}}" data-item="{{id}}" />
-                                    <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove this match from the tournament")</button>
+                                    <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove this match from the tournament")</button>
                                 </div>
                             </td>
                         </tr>
                     </table>
                 </script>
 
-                <button class="btn btn-primary">Save matches</button>
+                <button class="btn btn-primary" type="submit">Save matches</button>
             }
         }
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

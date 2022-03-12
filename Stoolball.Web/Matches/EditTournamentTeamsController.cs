@@ -1,36 +1,34 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Matches
 {
-    public class EditTournamentTeamsController : RenderMvcControllerAsync
+    public class EditTournamentTeamsController : RenderController, IRenderControllerAsync
     {
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
 
-        public EditTournamentTeamsController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           ITournamentDataSource tournamentDataSource,
-           IAuthorizationPolicy<Tournament> authorizationPolicy,
-           IDateTimeFormatter dateFormatter)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public EditTournamentTeamsController(ILogger<EditTournamentTeamsController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            ITournamentDataSource tournamentDataSource,
+            IAuthorizationPolicy<Tournament> authorizationPolicy,
+            IDateTimeFormatter dateFormatter)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
@@ -39,27 +37,21 @@ namespace Stoolball.Web.Matches
 
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new EditTournamentViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new EditTournamentViewModel(contentModel.Content, Services?.UserService)
-            {
-                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false),
-                DateFormatter = _dateFormatter,
-                UrlReferrer = Request.UrlReferrer
+                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Path),
+                UrlReferrer = Request.GetTypedHeaders().Referer
             };
 
             if (model.Tournament == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
+                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.TournamentDate = model.Tournament.StartTime;
                 model.Metadata.PageTitle = "Teams in the " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x, false, false, false));

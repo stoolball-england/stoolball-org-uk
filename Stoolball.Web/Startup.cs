@@ -315,6 +315,10 @@ namespace Stoolball.Web
             services.AddTransient<TournamentActionsController>();
             services.AddTransient<CreateTournamentController>();
             services.AddTransient<DeleteTournamentController>();
+            services.AddTransient<EditTournamentController>();
+            services.AddTransient<EditTournamentMatchesController>();
+            services.AddTransient<EditTournamentSeasonsController>();
+            services.AddTransient<EditTournamentTeamsController>();
 
             // Listings pages
             services.AddTransient<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();

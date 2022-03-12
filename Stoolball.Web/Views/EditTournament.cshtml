@@ -1,0 +1,28 @@
+﻿@inherits UmbracoViewPage<EditTournamentViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItem")
+@await Html.PartialAsync("_TinyMCE")
+<div class="container-xl">
+    <h1>Edit @Html.TournamentFullNameAndPlayerType(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
+    {
+        using (Html.BeginUmbracoForm<EditTournamentSurfaceController>(nameof(EditTournamentSurfaceController.UpdateTournament)))
+        {
+            @await Html.PartialAsync("_CreateOrEditTournament")
+            <button class="btn btn-primary" type="submit">Save tournament</button>
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

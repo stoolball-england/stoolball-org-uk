@@ -2,24 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Matches
 {
     public class EditTournamentMatchesSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly ICacheClearer<Tournament> _cacheClearer;
         private readonly ITournamentRepository _tournamentRepository;
@@ -28,10 +34,12 @@ namespace Stoolball.Web.Matches
         private readonly IPostSaveRedirector _postSaveRedirector;
 
         public EditTournamentMatchesSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITournamentDataSource tournamentDataSource, ICacheClearer<Tournament> cacheClearer,
-            ITournamentRepository tournamentRepository, IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IPostSaveRedirector postSaveRedirector)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            ITournamentDataSource tournamentDataSource, ITournamentRepository tournamentRepository, ICacheClearer<Tournament> cacheClearer,
+            IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IPostSaveRedirector postSaveRedirector)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
             _tournamentRepository = tournamentRepository ?? throw new ArgumentNullException(nameof(tournamentRepository));
@@ -44,24 +52,23 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateMatches([Bind(Prefix = "Tournament", Include = "Matches")] Tournament postedTournament)
+        public async Task<IActionResult> UpdateMatches([Bind("Matches", Prefix = "Tournament")] Tournament postedTournament)
         {
-            var beforeUpdate = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _tournamentDataSource.ReadTournamentByRoute(Request.Path);
 
             var model = new EditTournamentViewModel(CurrentPage, Services.UserService)
             {
-                Tournament = beforeUpdate,
-                DateFormatter = _dateTimeFormatter
+                Tournament = beforeUpdate
             };
             model.Tournament.Matches = postedTournament?.Matches ?? new List<MatchInTournament>();
 
             // We're not interested in validating anything with a data annotation attribute
             foreach (var key in ModelState.Keys)
             {
-                ModelState[key].Errors.Clear();
+                ModelState.Remove(key);
             }
 
-            var teamsInTournament = model.Tournament.Teams.Select(x => x.TournamentTeamId.Value);
+            var teamsInTournament = model.Tournament.Teams.Select(x => x.TournamentTeamId!.Value);
             foreach (var added in model.Tournament.Matches.Where(x => !x.MatchId.HasValue))
             {
                 if (added.Teams.Count < 2 || !added.Teams[0].TournamentTeamId.HasValue || !added.Teams[1].TournamentTeamId.HasValue || added.Teams[0].TournamentTeamId == added.Teams[1].TournamentTeamId)
@@ -75,7 +82,7 @@ namespace Stoolball.Web.Matches
                 {
                     foreach (var team in added.Teams)
                     {
-                        if (!teamsInTournament.Contains(team.TournamentTeamId.Value))
+                        if (!teamsInTournament.Contains(team.TournamentTeamId!.Value))
                         {
                             ModelState.AddModelError(string.Empty, $"Please remove '{added.MatchName}'. We cannot add a match for a team that's not in the tournament.");
                         }
@@ -83,13 +90,13 @@ namespace Stoolball.Web.Matches
                 }
             }
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
+            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.EditTournament] && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.EditTournament] && ModelState.IsValid)
             {
-                var currentMember = Members.GetCurrentMember();
-                var updatedTournament = await _tournamentRepository.UpdateMatches(model.Tournament, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(updatedTournament).ConfigureAwait(false);
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
+                var updatedTournament = await _tournamentRepository.UpdateMatches(model.Tournament, currentMember.Key, currentMember.UserName, currentMember.Name);
+                await _cacheClearer.ClearCacheFor(updatedTournament);
 
                 // Use a regex to prevent part 4 of the journey Edit Matches > Edit Teams > Edit Matches > Edit Teams
                 return _postSaveRedirector.WorkOutRedirect(model.Tournament.TournamentRoute, updatedTournament.TournamentRoute, "/edit", Request.Form["UrlReferrer"], $"^({updatedTournament.TournamentRoute}|{updatedTournament.TournamentRoute}/edit)$");

@@ -1,9 +1,9 @@
 import { logToConsole } from "./functions/logging";
 
-describe("Edit transient team", () => {
+describe("Edit tournament teams", () => {
   describe("When signed out", () => {
     beforeEach(() => {
-      cy.visit("/teams/maresfield-mixed/edit/team");
+      cy.visit("/tournaments/slsa-tournament-23jun2013/edit/teams");
     });
 
     it("Validates", () => {

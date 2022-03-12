@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
+using Stoolball.Security;
+using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Mvc;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Infrastructure.Persistence;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Matches
 {
     public class EditTournamentSurfaceController : SurfaceController
     {
+        private readonly IMemberManager _memberManager;
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly ICacheClearer<Tournament> _cacheClearer;
         private readonly ITournamentRepository _tournamentRepository;
@@ -27,10 +33,12 @@ namespace Stoolball.Web.Matches
         private readonly IMatchValidator _matchValidator;
 
         public EditTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITournamentDataSource tournamentDataSource, ICacheClearer<Tournament> cacheClearer,
-            ITournamentRepository tournamentRepository, IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchValidator matchValidator)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            ITournamentDataSource tournamentDataSource, ITournamentRepository tournamentRepository, ICacheClearer<Tournament> cacheClearer,
+            IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchValidator matchValidator)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
+            _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
             _tournamentRepository = tournamentRepository ?? throw new ArgumentNullException(nameof(tournamentRepository));
@@ -43,20 +51,19 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
-        public async Task<ActionResult> UpdateTournament([Bind(Prefix = "Tournament", Include = "TournamentName,QualificationType,PlayerType,PlayersPerTeam,DefaultOverSets")] Tournament postedTournament)
+        public async Task<IActionResult> UpdateTournament([Bind("TournamentName", "QualificationType", "PlayerType", "PlayersPerTeam", "DefaultOverSets", Prefix = "Tournament")] Tournament postedTournament)
         {
             if (postedTournament is null)
             {
                 throw new ArgumentNullException(nameof(postedTournament));
             }
 
-            var beforeUpdate = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _tournamentDataSource.ReadTournamentByRoute(Request.Path);
 
             postedTournament.DefaultOverSets.RemoveAll(x => !x.Overs.HasValue);
             var model = new EditTournamentViewModel(CurrentPage, Services.UserService)
             {
-                Tournament = beforeUpdate,
-                DateFormatter = _dateTimeFormatter
+                Tournament = beforeUpdate
             };
             model.Tournament.TournamentName = postedTournament.TournamentName;
             model.Tournament.QualificationType = postedTournament.QualificationType;
@@ -64,8 +71,8 @@ namespace Stoolball.Web.Matches
             model.Tournament.PlayersPerTeam = postedTournament.PlayersPerTeam;
             model.Tournament.DefaultOverSets = postedTournament.DefaultOverSets;
 
-            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
-            model.Tournament.TournamentNotes = Request.Unvalidated.Form["Tournament.TournamentNotes"];
+            // get this from the form instead of via modelbinding so that HTML can be allowed
+            model.Tournament.TournamentNotes = Request.Form["Tournament.TournamentNotes"];
 
             if (!string.IsNullOrEmpty(Request.Form["TournamentDate"]) && DateTimeOffset.TryParse(Request.Form["TournamentDate"], out var parsedDate))
             {
@@ -117,11 +124,11 @@ namespace Stoolball.Web.Matches
                 };
             }
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
+            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[Stoolball.Security.AuthorizedAction.EditTournament] && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.EditTournament] && ModelState.IsValid)
             {
-                var currentMember = Members.GetCurrentMember();
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTournament = await _tournamentRepository.UpdateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 await _cacheClearer.ClearCacheFor(updatedTournament).ConfigureAwait(false);
 
