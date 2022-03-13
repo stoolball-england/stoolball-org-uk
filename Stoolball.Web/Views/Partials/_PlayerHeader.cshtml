@@ -1,0 +1,14 @@
+﻿@model BasePlayerViewModel
+@using Stoolball.Web.Statistics
+@using Humanizer
+@{ 
+    var totalMatches = Model.Player!.PlayerIdentities.Sum(x => x.TotalMatches);
+    var firstMatch = Model.Player!.PlayerIdentities.Min(x => x.FirstPlayed)!.Value;
+    var lastMatch = Model.Player!.PlayerIdentities.Min(x => x.LastPlayed)!.Value;
+    var matchYears = (firstMatch.Year == lastMatch.Year) ? $"in {firstMatch.Year}" : $"from {firstMatch.Year} to {lastMatch.Year}";
+}
+<h1>@(Model.Player?.PlayerName())</h1>
+<p>
+    @(Model.Player?.PlayerName()) played @totalMatches
+    @(totalMatches > 1 ? "matches" : "match") for @Html.Raw(Model.Player!.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
+</p>

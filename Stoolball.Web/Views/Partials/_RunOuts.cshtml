@@ -1,12 +1,9 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
+﻿@inherits UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
 @using Humanizer
 @using Stoolball.Dates
 @using Stoolball.Matches
-@using Stoolball.Web.Statistics
-@using Umbraco.Core.Composing
-@{
-    var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
-}
+@using Stoolball.Web.Statistics.Models
 @if (Model.Results.Any())
 {
     <table class="statistics table-as-cards table-as-cards-reset-sm">
@@ -60,7 +57,7 @@
                         }
                         @if (Model.Results[i].Result.RunsScored.HasValue)
                         {
-                            <td data-stackable="true" class="numeric-sm"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.Results[i].Result.RunsScored.Value</td>
+                            <td data-stackable="true" class="numeric-sm"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.Results[i].Result.RunsScored!.Value</td>
                         }
                         else
                         {
@@ -71,5 +68,5 @@
             }
         </tbody>
     </table>
-    @Html.Partial("_Paging", Model.AppliedFilter.Paging)
+    @await Html.PartialAsync("_Paging", Model.AppliedFilter.Paging)
 }

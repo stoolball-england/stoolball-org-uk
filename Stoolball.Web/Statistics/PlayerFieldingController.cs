@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Humanizer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Stoolball.Web.Statistics.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Statistics
 {
-    public class PlayerFieldingController : RenderMvcControllerAsync
+    public class PlayerFieldingController : RenderController, IRenderControllerAsync
     {
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IPlayerSummaryStatisticsDataSource _summaryStatisticsDataSource;
@@ -24,18 +23,15 @@ namespace Stoolball.Web.Statistics
         private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
-        public PlayerFieldingController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IPlayerDataSource playerDataSource,
-           IPlayerSummaryStatisticsDataSource summaryStatisticsDataSource,
-           IPlayerPerformanceStatisticsDataSource playerPerformanceStatisticsDataSource,
-           IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
-           IStatisticsFilterHumanizer statisticsFilterHumanizer)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public PlayerFieldingController(ILogger<PlayerFieldingController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IPlayerDataSource playerDataSource,
+            IPlayerSummaryStatisticsDataSource summaryStatisticsDataSource,
+            IPlayerPerformanceStatisticsDataSource playerPerformanceStatisticsDataSource,
+            IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+            IStatisticsFilterHumanizer statisticsFilterHumanizer)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _summaryStatisticsDataSource = summaryStatisticsDataSource ?? throw new ArgumentNullException(nameof(summaryStatisticsDataSource));
@@ -46,38 +42,33 @@ namespace Stoolball.Web.Statistics
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new PlayerFieldingViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new PlayerFieldingViewModel(contentModel.Content, Services?.UserService)
-            {
-                Player = await _playerDataSource.ReadPlayerByRoute(Request.RawUrl).ConfigureAwait(false),
+                Player = await _playerDataSource.ReadPlayerByRoute(Request.Path),
             };
 
             if (model.Player == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
                 model.DefaultFilter = new StatisticsFilter { Player = model.Player, Paging = new Paging { PageSize = 5 } };
-                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.Url.Query);
-                model.FieldingStatistics = await _summaryStatisticsDataSource.ReadFieldingStatistics(model.AppliedFilter).ConfigureAwait(false);
+                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
+                model.FieldingStatistics = await _summaryStatisticsDataSource.ReadFieldingStatistics(model.AppliedFilter);
 
                 var catchesFilter = model.AppliedFilter.Clone();
                 catchesFilter.Player = null;
-                catchesFilter.CaughtByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList();
+                catchesFilter.CaughtByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList();
 
-                model.Catches = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(catchesFilter).ConfigureAwait(false)).ToList();
+                model.Catches = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(catchesFilter)).ToList();
 
                 var runOutsFilter = model.AppliedFilter.Clone();
                 runOutsFilter.Player = null;
-                runOutsFilter.RunOutByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList();
-                model.RunOuts = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(runOutsFilter).ConfigureAwait(false)).ToList();
+                runOutsFilter.RunOutByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList();
+                model.RunOuts = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(runOutsFilter)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
 

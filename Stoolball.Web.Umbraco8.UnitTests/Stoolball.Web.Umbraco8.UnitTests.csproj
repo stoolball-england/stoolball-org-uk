@@ -71,12 +71,9 @@
     <Compile Include="Statistics\RunOutsControllerTests.cs" />
     <Compile Include="Statistics\CatchesControllerTests.cs" />
     <Compile Include="Statistics\BowlingFiguresControllerTests.cs" />
-    <Compile Include="Statistics\PlayerFieldingControllerTests.cs" />
-    <Compile Include="Statistics\PlayerBowlingControllerTests.cs" />
     <Compile Include="Statistics\StatisticsFilterFactoryTests.cs" />
     <Compile Include="Statistics\StatisticsControllerTests.cs" />
     <Compile Include="Statistics\IndividualScoresControllerTests.cs" />
-    <Compile Include="Statistics\PlayerControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UmbracoBaseTest.cs" />
   </ItemGroup>

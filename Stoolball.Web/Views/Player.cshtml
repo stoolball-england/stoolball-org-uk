@@ -1,16 +1,15 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<PlayerBattingViewModel>
-@using ClientDependency.Core.Mvc
-@using Umbraco.Core.Composing
+﻿@inherits UmbracoViewPage<PlayerBattingViewModel>
+@inject IStatisticsFilterQueryStringSerializer serialiser
 @using Stoolball.Statistics
-@using Stoolball.Web.Statistics
+@using Stoolball.Web.Statistics.Models
 @using Stoolball.Matches
 @using Stoolball.Web.Filtering
 @{
-    Html.RequiresCss("/statistics/statistics.min.css");
-    Html.RequiresJs("/js/filter.js");
-    Html.RequiresCss("/css/filter.min.css");
+    SmidgeHelper.RequiresCss(new CssFile("/css/statistics.min.css") { Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
 
-    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) 
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model) 
     { 
         ShowCaption = true, 
         ShowPlayerColumn = false,  
@@ -19,18 +18,17 @@
     };
     individualScores.Results.AddRange(Model.PlayerInnings);
 
-    var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
     var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 }
 <div class="container-xl">
-    @Html.Partial("_PlayerHeader")
+    @await Html.PartialAsync("_PlayerHeader")
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <em class="nav-link active">Batting</em>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Player.PlayerRoute/bowling@(queryString)">Bowling</a>
+            <a class="nav-link" href="@Model.Player!.PlayerRoute/bowling@(queryString)">Bowling</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="@Model.Player.PlayerRoute/fielding@(queryString)">Fielding</a>
@@ -39,18 +37,18 @@
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
         </li>
     </ul>
-    @Html.Partial("_Filters", new FilterViewModel
-{
-    FilteredItemTypeSingular = "Statistics",
-    FilteredItemTypePlural = "Statistics",
-    FilterDescription = Model.FilterDescription,
-    from = Model.AppliedFilter.FromDate,
-    to = Model.AppliedFilter.UntilDate
-})
+    @await Html.PartialAsync("_Filters", new FilterViewModel
+    {
+        FilteredItemTypeSingular = "Statistics",
+        FilteredItemTypePlural = "Statistics",
+        FilterDescription = Model.FilterDescription,
+        from = Model.AppliedFilter.FromDate,
+        to = Model.AppliedFilter.UntilDate
+    })
 
     @if (Model.BattingStatistics.TotalInnings == 0)
     {
-        @Html.Partial("_NoData")
+        @await Html.PartialAsync("_NoData")
     }
     else
     {
@@ -98,6 +96,6 @@
 
         }
 
-        @Html.Partial("_IndividualScores", individualScores)
+        @await Html.PartialAsync("_IndividualScores", individualScores)
     }
 </div>

@@ -1,8 +1,8 @@
 import { logToConsole } from "./functions/logging";
 
-describe("Club", () => {
+describe("Player bowling", () => {
   beforeEach(() => {
-    cy.visit("/clubs/maresfield");
+    cy.visit("/players/rick-mason/bowling");
   });
 
   it("Validates", () => {

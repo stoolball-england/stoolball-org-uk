@@ -45,6 +45,7 @@ using Stoolball.Web.MatchLocations.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Schools;
 using Stoolball.Web.Security;
+using Stoolball.Web.Statistics;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
 using Umbraco.Cms.Core.DependencyInjection;
@@ -165,6 +166,10 @@ namespace Stoolball.Web
             services.AddTransient<ICacheableMatchLocationDataSource, SqlServerMatchLocationDataSource>();
             services.AddTransient<IPlayerDataSource, CachedPlayerDataSource>();
             services.AddTransient<ICacheablePlayerDataSource, SqlServerPlayerDataSource>();
+            services.AddTransient<IPlayerSummaryStatisticsDataSource, CachedPlayerSummaryStatisticsDataSource>();
+            services.AddTransient<ICacheablePlayerSummaryStatisticsDataSource, SqlServerPlayerSummaryStatisticsDataSource>();
+            services.AddTransient<IPlayerPerformanceStatisticsDataSource, CachedPlayerPerformanceStatisticsDataSource>();
+            services.AddTransient<ICacheablePlayerPerformanceStatisticsDataSource, SqlServerPlayerPerformanceStatisticsDataSource>();
             services.AddTransient<ISchoolDataSource, SqlServerSchoolDataSource>();
             services.AddTransient<ISeasonDataSource, SqlServerSeasonDataSource>();
             services.AddTransient<ITeamDataSource, SqlServerTeamDataSource>();
@@ -315,6 +320,10 @@ namespace Stoolball.Web
             services.AddTransient<EditSeasonResultsTableController>();
             services.AddTransient<EditSeasonTeamsController>();
             services.AddTransient<DeleteSeasonController>();
+
+            services.AddTransient<PlayerController>();
+            services.AddTransient<PlayerBowlingController>();
+            services.AddTransient<PlayerFieldingController>();
 
             services.AddTransient<SchoolsController>();
 

@@ -734,7 +734,6 @@
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Routing\RenderMvcControllerAsync.cs" />
-    <Compile Include="Statistics\BasePlayerViewModel.cs" />
     <Compile Include="Statistics\BowlingStrikeRateController.cs" />
     <Compile Include="Statistics\BattingStrikeRateController.cs" />
     <Compile Include="Statistics\EconomyRateController.cs" />
@@ -746,10 +745,6 @@
     <Compile Include="Statistics\MostRunsController.cs" />
     <Compile Include="Statistics\RunOutsController.cs" />
     <Compile Include="Statistics\CatchesController.cs" />
-    <Compile Include="Statistics\PlayerFieldingViewModel.cs" />
-    <Compile Include="Statistics\PlayerFieldingController.cs" />
-    <Compile Include="Statistics\PlayerBowlingViewModel.cs" />
-    <Compile Include="Statistics\PlayerBowlingController.cs" />
     <Compile Include="Teams\SpogoCsvExportComponent.cs" />
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
@@ -803,31 +798,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MostWickets.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\_PlayerHeader.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_PlayerHeader.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Partials\_RunOuts.generated.cs">
-      <DependentUpon>_RunOuts.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\Partials\_Catches.generated.cs">
-      <DependentUpon>_Catches.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Views\PlayerBowling.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PlayerBowling.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PlayerFielding.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PlayerFielding.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\RunOuts.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -841,7 +811,6 @@
     <Compile Include="Statistics\StatisticsSummaryViewModel.cs" />
     <Compile Include="Statistics\StatisticsController.cs" />
     <Compile Include="Statistics\IndividualScoresController.cs" />
-    <Compile Include="Statistics\PlayerController.cs" />
     <Compile Include="Statistics\MemoryCacheBackgroundTaskTracker.cs" />
     <Compile Include="Statistics\EditStatisticsSurfaceController.cs" />
     <Compile Include="Statistics\IBackgroundTaskTracker.cs" />
@@ -849,7 +818,6 @@
     <Compile Include="Statistics\EditStatisticsViewModel.cs" />
     <Compile Include="Statistics\EditStatisticsController.cs" />
     <Compile Include="Statistics\EditStatisticsApiController.cs" />
-    <Compile Include="Statistics\PlayerBattingViewModel.cs" />
     <Compile Include="Views\BowlingFigures.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -874,11 +842,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>_StatisticsBasis.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Player.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Player.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Statistics.generated.cs">
       <AutoGen>True</AutoGen>
@@ -907,10 +870,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\Player.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Player.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Statistics.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Statistics.generated.cs</LastGenOutput>
@@ -919,29 +878,9 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_StatisticsBasis.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\PlayerBowling.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>PlayerBowling.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_PlayerHeader.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_PlayerHeader.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\PlayerFielding.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>PlayerFielding.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_Catches.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_Catches.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\RunOuts.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>RunOuts.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_RunOuts.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_RunOuts.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textarea.cshtml" />

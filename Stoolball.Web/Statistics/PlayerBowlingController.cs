@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Humanizer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Stoolball.Web.Statistics.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Statistics
 {
-    public class PlayerBowlingController : RenderMvcControllerAsync
+    public class PlayerBowlingController : RenderController, IRenderControllerAsync
     {
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IPlayerSummaryStatisticsDataSource _summaryStatisticsDataSource;
@@ -24,18 +23,15 @@ namespace Stoolball.Web.Statistics
         private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
-        public PlayerBowlingController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IPlayerDataSource playerDataSource,
-           IPlayerSummaryStatisticsDataSource summaryStatisticsDataSource,
-           IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
-           IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
-           IStatisticsFilterHumanizer statisticsFilterHumanizer)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public PlayerBowlingController(ILogger<PlayerBowlingController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IPlayerDataSource playerDataSource,
+            IPlayerSummaryStatisticsDataSource summaryStatisticsDataSource,
+            IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
+            IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+            IStatisticsFilterHumanizer statisticsFilterHumanizer)
+           : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _summaryStatisticsDataSource = summaryStatisticsDataSource ?? throw new ArgumentNullException(nameof(summaryStatisticsDataSource));
@@ -46,28 +42,23 @@ namespace Stoolball.Web.Statistics
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
+            var model = new PlayerBowlingViewModel(CurrentPage)
             {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
-
-            var model = new PlayerBowlingViewModel(contentModel.Content, Services?.UserService)
-            {
-                Player = await _playerDataSource.ReadPlayerByRoute(Request.RawUrl).ConfigureAwait(false),
+                Player = await _playerDataSource.ReadPlayerByRoute(Request.Path)
             };
 
             if (model.Player == null)
             {
-                return new HttpNotFoundResult();
+                return NotFound();
             }
             else
             {
                 model.DefaultFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5, Player = model.Player };
-                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.Url.Query);
-                model.BowlingStatistics = await _summaryStatisticsDataSource.ReadBowlingStatistics(model.AppliedFilter).ConfigureAwait(false);
-                model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
+                model.BowlingStatistics = await _summaryStatisticsDataSource.ReadBowlingStatistics(model.AppliedFilter);
+                model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.AppliedFilter, StatisticsSortOrder.BestFirst)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
 
