@@ -1,9 +1,11 @@
 import { logToConsole } from "./functions/logging";
 
-describe("Edit season", () => {
+describe("Edit close of play", () => {
   describe("When signed out", () => {
     beforeEach(() => {
-      cy.visit("/competitions/mid-sussex-mixed-league/2021/edit/season");
+      cy.visit(
+        "/matches/maresfield-mixed-education-12jun2014/edit/close-of-play"
+      );
     });
 
     it("Validates", () => {

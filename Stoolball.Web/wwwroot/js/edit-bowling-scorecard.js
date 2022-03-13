@@ -1,6 +1,9 @@
 (function () {
   window.addEventListener("DOMContentLoaded", function () {
     const editor = document.querySelector(".bowling-scorecard-editor");
+    if (!editor) {
+      return;
+    }
 
     function disableFollowingRows(row) {
       while (row.nextElementSibling) {

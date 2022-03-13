@@ -729,16 +729,11 @@
     <Compile Include="App_Data\Models\YouTubeVideo.generated.cs" />
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="Filtering\FilterViewModel.cs" />
-    <Compile Include="HtmlHelpers\LabelExtensions.cs" />
-    <Compile Include="HtmlHelpers\RequiredFieldStatus.cs" />
-    <Compile Include="Matches\IEditMatchViewModel.cs" />
-    <Compile Include="Matches\IMatchValidator.cs" />
     <Compile Include="Matches\OnlySportCsvExportComponent.cs" />
     <Compile Include="Matches\OnlySportCsvExportTask.cs" />
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Routing\RenderMvcControllerAsync.cs" />
-    <Compile Include="Security\IAuthorizationPolicy.cs" />
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
     <Compile Include="Statistics\BowlingStrikeRateController.cs" />
     <Compile Include="Statistics\BattingStrikeRateController.cs" />
@@ -839,28 +834,7 @@
       <DependentUpon>RunOuts.cshtml</DependentUpon>
     </Compile>
     <Compile Include="WebApi\CsvHandler.cs" />
-    <Compile Include="Matches\EditCloseOfPlayFormData.cs" />
-    <Compile Include="Matches\MatchAwardViewModel.cs" />
-    <Compile Include="Matches\MatchHtmlHelpers.cs" />
-    <Compile Include="Matches\MatchInningsViewModel.cs" />
-    <Compile Include="Matches\OverViewModel.cs" />
-    <Compile Include="Matches\PlayerInningsViewModel.cs" />
-    <Compile Include="Matches\EditBattingScorecardController.cs" />
-    <Compile Include="Matches\EditBowlingScorecardController.cs" />
-    <Compile Include="Matches\EditBattingScorecardSurfaceController.cs" />
-    <Compile Include="Matches\EditCloseOfPlayController.cs" />
-    <Compile Include="Matches\EditBowlingScorecardSurfaceController.cs" />
-    <Compile Include="Matches\EditCloseOfPlaySurfaceController.cs" />
-    <Compile Include="Matches\EditScorecardViewModel.cs" />
-    <Compile Include="Matches\EditCloseOfPlayViewModel.cs" />
-    <Compile Include="Matches\EditStartOfPlayViewModel.cs" />
-    <Compile Include="Matches\EditStartOfPlayController.cs" />
-    <Compile Include="Matches\EditStartOfPlaySurfaceController.cs" />
-    <Compile Include="Matches\ExtrasRowViewModel.cs" />
-    <Compile Include="Matches\IEditMatchHelper.cs" />
-    <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
     <Compile Include="Metadata\IHasViewMetadata.cs" />
-    <Compile Include="Routing\IPostSaveRedirector.cs" />
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
     <Compile Include="Statistics\BowlingFiguresController.cs" />
     <Compile Include="Statistics\StatisticsFilterFactory.cs" />
@@ -880,26 +854,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BowlingFigures.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditBattingScorecard.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditBattingScorecard.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditBowlingScorecard.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditBowlingScorecard.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditCloseOfPlay.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditCloseOfPlay.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditStartOfPlay.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditStartOfPlay.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditStatistics.generated.cs">
       <AutoGen>True</AutoGen>
@@ -953,24 +907,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\EditStartOfPlay.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditStartOfPlay.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\EditCloseOfPlay.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditCloseOfPlay.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\EditBowlingScorecard.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditBowlingScorecard.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\EditBattingScorecard.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditBattingScorecard.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_EditBattingScorecard.cshtml" />
-    <Content Include="Views\Partials\_EditBowlingScorecard.cshtml" />
     <Content Include="Views\Player.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Player.generated.cs</LastGenOutput>

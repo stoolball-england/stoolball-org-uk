@@ -1,0 +1,163 @@
+﻿@inherits UmbracoViewPage<EditCloseOfPlayViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@using Stoolball.Matches
+@using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
+@using Stoolball.Security
+@using Humanizer
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItems")
+@{
+    SmidgeHelper.RequiresCss(new CssFile("~/css/steps.min.css") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/match.min.css") { Order = 100 });
+}
+<div class="container-xl">
+    <h1>Edit @Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
+    {
+        using (Html.BeginUmbracoForm<EditCloseOfPlaySurfaceController>(nameof(EditCloseOfPlaySurfaceController.UpdateMatch), null, new { id = "calling-it-search-disables-contact-managers" }))
+        {
+            @Html.ValidationSummary(true)
+
+            <ol class="steps">
+                <li class="steps__completed"><em class="sr-only">Start of play</em></li>
+                @for (var i = 0; i < Model.Match!.MatchInnings.Count; i++)
+                {
+                    <li class="steps__completed"><span class="sr-only">@((i+1).Ordinalize()) innings batting</span></li>
+                    <li class="steps__completed"><span class="sr-only">@((i+1).Ordinalize()) innings bowling</span></li>
+                }
+                <li aria-current="step"><span class="sr-only">Result</span></li>
+            </ol>
+
+            <fieldset class="form-group">
+                <legend>Who won?</legend>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.FormData.MatchResultType, -1, Model.FormData.MatchResultType.HasValue ? new { @class = "custom-control-input", @id = "MatchResultTypeUnknown", aria_describedby = "result-type-validation" } : new { @class = "custom-control-input", @id = "MatchResultTypeUnknown", @checked = "checked", aria_describedby = "result-type-validation" })
+                    <label for="MatchResultTypeUnknown" class="custom-control-label">Don't know</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.FormData.MatchResultType, MatchResultType.HomeWin, new { @class = "custom-control-input", @id = MatchResultType.HomeWin.ToString(), aria_describedby = "result-type-validation" })
+                    <label for="@MatchResultType.HomeWin.ToString()" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName)</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.FormData.MatchResultType, MatchResultType.AwayWin, new { @class = "custom-control-input", @id = MatchResultType.AwayWin.ToString(), aria_describedby = "result-type-validation" })
+                    <label for="@MatchResultType.AwayWin.ToString()" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName)</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.FormData.MatchResultType, MatchResultType.Tie, new { @class = "custom-control-input", @id = MatchResultType.Tie.ToString(), aria_describedby = "result-type-validation" })
+                    <label for="@MatchResultType.Tie.ToString()" class="custom-control-label">@MatchResultType.Tie.ToString().Humanize()</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.FormData.MatchResultType, MatchResultType.AbandonedDuringPlayAndPostponed, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndPostponed.ToString(), aria_describedby = "result-type-validation" })
+                    <label for="@MatchResultType.AbandonedDuringPlayAndPostponed.ToString()" class="custom-control-label">@MatchResultType.AbandonedDuringPlayAndPostponed.ToString().Humanize()</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.FormData.MatchResultType, MatchResultType.AbandonedDuringPlayAndCancelled, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndCancelled.ToString(), aria_describedby = "result-type-validation" })
+                    <label for="@MatchResultType.AbandonedDuringPlayAndCancelled.ToString()" class="custom-control-label">@MatchResultType.AbandonedDuringPlayAndCancelled.ToString().Humanize()</label>
+                </div>
+                @Html.ValidationMessageFor(m => Model.FormData.MatchResultType, null, new { id = "result-type-validation" })
+            </fieldset>
+
+            <table class="table table-hover related-items related-items-as-cards related-items-as-cards-reset-md">
+                <thead class="thead-dark">
+                    <tr><th scope="col" class="award-editor-award">Player of the match</th><th scope="col" class="award-editor-team"><span class="related-items__if-not-empty">Team</span></th><th scope="col" colspan="2"><span class="related-items__if-not-empty">Reason</span></th></tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.FormData.Awards.Count; i++)
+                    {
+                        <tr class="related-item__selected">
+                            <td class="related-item__selected__section" data-stackable="true">
+                                <div class="related-item__animate">
+                                    <span class="related-items-as-cards__label" aria-hidden="true" data-item="@Model.FormData.Awards[i].MatchAwardId">Player of the match</span>
+                                    @Model.FormData.Awards[i].PlayerSearch
+                                </div>
+                            </td>
+                            <td class="related-item__selected__section" data-stackable="true">
+                                <div class="related-item__animate">
+                                    <span class="related-items-as-cards__label" aria-hidden="true" data-item="@Model.FormData.Awards[i].MatchAwardId">Team</span>
+                                    @Model.Match.Teams.First(team => team.Team.TeamId == Model.FormData.Awards[i].TeamId).Team.TeamName
+                                </div>
+                            </td>
+                            <td class="related-item__selected__section" data-stackable="true">
+                                <div class="related-item__animate">
+                                    @Html.LabelFor(m => Model.FormData.Awards[i].Reason, new { @class = "related-items-as-cards__label", aria_hidden = "true", data_item = Model.FormData.Awards[i].MatchAwardId })
+                                    @Html.TextBoxFor(m => Model.FormData.Awards[i].Reason, new { @class = "form-control related-item__data", data_item = Model.FormData.Awards[i].MatchAwardId })
+                                </div>
+                            </td>
+                            <td class="related-item__delete related-item__selected__section">
+                                <div class="related-item__animate">
+                                    @Html.HiddenFor(m => Model.FormData.Awards[i].MatchAwardId, new { @class = "related-item__data related-item__id", data_item = Model.FormData.Awards[i].MatchAwardId })
+                                    @Html.HiddenFor(m => Model.FormData.Awards[i].PlayerSearch, new { @class = "related-item__data", data_item = Model.FormData.Awards[i].MatchAwardId }) @* Redisplayed if !ModelState.IsValid *@
+                                    @Html.HiddenFor(m => Model.FormData.Awards[i].TeamId, new { @class = "related-item__data", data_item = Model.FormData.Awards[i].MatchAwardId })@* Redisplayed if !ModelState.IsValid *@
+                                    <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Remove the player of the match award for {Model.FormData.Awards[i].PlayerSearch}")</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td colspan="4">
+                            @Html.Label("award-autocomplete", "Add a player of the match", new { @class = "sr-only" })
+                            @Html.TextBox("award-autocomplete", string.Empty, new
+                            {
+                                @class = "form-control related-item__search",
+                                placeholder = "Add a player of the match",
+                                autocomplete = "off",
+                                data_lpignore = "true",
+                                type = "search",
+                                data_url = $"/api/players/autocomplete?teams={string.Join("&teams=", Model.Match.Teams.Select(x => x.Team.TeamId).ToArray())}",
+                                data_template = "award-template",
+                                data_value_template = "{{data.playerIdentityName}} ({{data.teamName}})",
+                                data_suggestion_template = "{{data.playerIdentityName}} ({{data.playerRecord}})",
+                                aria_label = "Type a player name and press down arrow to select the player"
+                            })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <script type="text/x-template" id="award-template">
+                <table>
+                    <tr class="related-item__selected">
+                        <td class="related-item__selected__section" data-stackable="true">
+                            <div class="related-item__animate">
+                                <span class="related-items-as-cards__label" aria-hidden="true" data-item="{{id}}">Player of the match</span>
+                                {{data.playerIdentityName}}
+                            </div>
+                        </td>
+                        <td class="related-item__selected__section" data-stackable="true">
+                            <div class="related-item__animate">
+                                <span class="related-items-as-cards__label" aria-hidden="true" data-item="{{id}}">Team</span>
+                                {{data.teamName}}
+                            </div>
+                        </td>
+                        <td class="related-item__selected__section" data-stackable="true">
+                            <div class="related-item__animate">
+                                <label aria-hidden="true" class="related-items-as-cards__label" data-item="{{id}}" for="FormData_Awards_[0]__Reason">Reason</label>
+                                <input class="form-control related-item__data" data-item="{{id}}" id="FormData_Awards_[0]__Reason" name="FormData.Awards[0].Reason" type="text" value="">
+                            </div>
+                        </td>
+                        <td class="related-item__delete related-item__selected__section">
+                            <div class="related-item__animate">
+                                <input class="related-item__data related-item__id" data-item="{{id}}" name="FormData.Awards[0].MatchAwardId" type="hidden" value="{{id}}">
+                                <input class="related-item__data" data-item="{{id}}" name="FormData.Awards[0].PlayerSearch" type="hidden" value="{{data.playerIdentityName}}">
+                                <input class="related-item__data" data-item="{{id}}" name="FormData.Awards[0].TeamId" type="hidden" value="{{data.teamId}}">
+                                <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove the player of the match award for {{data.playerIdentityName}}")</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </script>
+
+            <p><small>Match scorecards are publicly available and will be kept indefinitely as a historical archive of stoolball matches. Please read our <a href="/privacy/privacy-notice-match-results-and-comments" target="_blank">privacy notice</a>.</small></p>
+            <button class="btn btn-primary" type="submit">Save match</button>
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

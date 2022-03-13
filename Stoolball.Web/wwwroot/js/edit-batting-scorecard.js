@@ -1,6 +1,10 @@
 (function () {
   window.addEventListener("DOMContentLoaded", function () {
     const editor = document.querySelector(".batting-scorecard-editor");
+    if (!editor) {
+      return;
+    }
+
     const playerInningsRowClass = "batting-scorecard-editor__player-innings";
     const playerNameFieldClass = "scorecard__player-name";
     const dismissalTypeFieldClass = "scorecard__dismissal";

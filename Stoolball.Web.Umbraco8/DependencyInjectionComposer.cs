@@ -2,7 +2,6 @@
 using Stoolball.Data.Cache;
 using Stoolball.Data.SqlServer;
 using Stoolball.Email;
-using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
 using Umbraco.Core;
@@ -20,11 +19,7 @@ namespace Stoolball.Web
             }
 
             // Utility classes
-            composition.Register<IMatchResultEvaluator, MatchResultEvaluator>();
-            composition.Register<IMatchInningsUrlParser, MatchInningsUrlParser>();
-            composition.Register<IPlayerInningsScaffolder, PlayerInningsScaffolder>();
             composition.Register<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>();
-            composition.Register<IOverSetScaffolder, OverSetScaffolder>();
             composition.Register<IStatisticsFilterFactory, StatisticsFilterFactory>();
             composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();

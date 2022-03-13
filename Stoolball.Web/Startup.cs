@@ -108,11 +108,15 @@ namespace Stoolball.Web
             services.AddTransient<Stoolball.Html.IHtmlSanitizer, Stoolball.Html.HtmlSanitizer>();
             services.AddTransient(typeof(Stoolball.Logging.ILogger<>), typeof(LogWrapper<>));
             services.AddTransient<IMatchInningsFactory, MatchInningsFactory>();
+            services.AddTransient<IMatchInningsUrlParser, MatchInningsUrlParser>();
             services.AddTransient<IMatchNameBuilder, MatchNameBuilder>();
+            services.AddTransient<IMatchResultEvaluator, MatchResultEvaluator>();
             services.AddTransient<IMatchValidator, MatchValidator>();
+            services.AddTransient<IOverSetScaffolder, OverSetScaffolder>();
             services.AddTransient<IOversHelper, OversHelper>();
             services.AddTransient<IPlayerIdentityFinder, PlayerIdentityFinder>();
             services.AddTransient<IPlayerInMatchStatisticsBuilder, PlayerInMatchStatisticsBuilder>();
+            services.AddTransient<IPlayerInningsScaffolder, PlayerInningsScaffolder>();
             services.AddTransient<IPlayerNameFormatter, PlayerNameFormatter>();
             services.AddTransient<IPlayerTypeSelector, PlayerTypeSelector>();
             services.AddTransient<ISeasonEstimator, SeasonEstimator>();
@@ -285,6 +289,10 @@ namespace Stoolball.Web
             services.AddTransient<EditLeagueMatchController>();
             services.AddTransient<EditTrainingSessionController>();
             services.AddTransient<EditMatchFormatController>();
+            services.AddTransient<EditStartOfPlayController>();
+            services.AddTransient<EditBattingScorecardController>();
+            services.AddTransient<EditBowlingScorecardController>();
+            services.AddTransient<EditCloseOfPlayController>();
             services.AddTransient<DeleteMatchController>();
 
             services.AddTransient<MatchLocationsController>();

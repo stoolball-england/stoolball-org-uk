@@ -1,9 +1,11 @@
 import { logToConsole } from "./functions/logging";
 
-describe("Edit season", () => {
+describe("Edit batting scorecard", () => {
   describe("When signed out", () => {
     beforeEach(() => {
-      cy.visit("/competitions/mid-sussex-mixed-league/2021/edit/season");
+      cy.visit(
+        "/matches/maresfield-mixed-education-12jun2014/edit/innings/1/batting"
+      );
     });
 
     it("Validates", () => {

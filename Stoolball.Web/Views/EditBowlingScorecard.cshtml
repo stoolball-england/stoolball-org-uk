@@ -1,0 +1,60 @@
+﻿@inherits UmbracoViewPage<EditScorecardViewModel>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@using Stoolball.Web.Matches
+@using Stoolball.Web.Matches.Models
+@using Stoolball.Security
+@using Humanizer
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryAutocomplete")
+@{
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/player-autocomplete.js") { Order = 70 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/edit-bowling-scorecard.js") { Order = 100 });
+
+    SmidgeHelper.RequiresCss(new CssFile("~/css/steps.min.css") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("~/css/scorecards.min.css") { Order = 100 });
+}
+<div class="container-xl">
+    <h1>Edit @Html.MatchFullName(Model.Match, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
+    {
+        using (Html.BeginUmbracoForm<EditBowlingScorecardSurfaceController>(nameof(EditBowlingScorecardSurfaceController.UpdateMatch), null, new { id = "calling-it-search-disables-contact-managers" }))
+        {
+            <ol class="steps">
+                <li class="steps__completed"><em class="sr-only">Start of play</em></li>
+                @{
+                    for (var i = 0; i < Model.Match.MatchInnings.Count; i++)
+                    {
+                        if (Model.InningsOrderInMatch < (i + 1))
+                        {
+                            <li><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
+                            <li><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
+                        }
+                        else if (Model.InningsOrderInMatch == (i + 1))
+                        {
+                            <li class="steps__completed"><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
+                            <li aria-current="step"><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
+                        }
+                        else if (Model.InningsOrderInMatch > (i + 1))
+                        {
+                            <li class="steps__completed"><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
+                            <li class="steps__completed"><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
+                        }
+                    }
+                }
+                <li><span class="sr-only">Result</span></li>
+            </ol>
+
+            @await Html.PartialAsync("_EditBowlingScorecard")
+
+            <p><small>Match scorecards are publicly available and will be kept indefinitely as a historical archive of stoolball matches. Please read our <a href="/privacy/privacy-notice-match-results-and-comments" target="_blank">privacy notice</a>.</small></p>
+            <button class="btn btn-primary" type="submit">Save and continue</button>
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

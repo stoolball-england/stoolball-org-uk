@@ -59,10 +59,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Matches\EditBattingScorecardControllerTests.cs" />
-    <Compile Include="Matches\EditBowlingScorecardControllerTests.cs" />
-    <Compile Include="Matches\EditCloseOfPlayControllerTests.cs" />
-    <Compile Include="Matches\EditStartOfPlayControllerTests.cs" />
     <Compile Include="Statistics\BowlingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\BattingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\EconomyRateControllerTests.cs" />
