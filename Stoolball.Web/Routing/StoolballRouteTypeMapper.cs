@@ -82,7 +82,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.EditTournamentTeams, typeof(EditTournamentTeamsController) },
             { StoolballRouteType.EditTournamentSeasons, typeof(EditTournamentSeasonsController) },
             { StoolballRouteType.DeleteTournament, typeof(DeleteTournamentController) },
-            //{ StoolballRouteType.Statistics, typeof(StatisticsController) },
+            { StoolballRouteType.Statistics, typeof(StatisticsController) },
             //{ StoolballRouteType.EditStatistics, typeof(EditStatisticsController) },
             { StoolballRouteType.Player, typeof(PlayerController) },
             { StoolballRouteType.PlayerBowling, typeof(PlayerBowlingController) },

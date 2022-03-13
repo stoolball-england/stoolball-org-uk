@@ -11,11 +11,11 @@
 @await Html.PartialAsync("_RelatedItem")
 @await Html.PartialAsync("_TinyMCE")
 <div class="container-xl">
-    <h1>Edit @Html.MatchFullName(Model.Match, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
+    <h1>Edit @Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditMatch])
     {
-        if (Model.Match.Season == null || Model.Match.Season.Teams.Count > 1)
+        if (Model.Match!.Season == null || Model.Match.Season.Teams.Count > 1)
         {
             using (Html.BeginUmbracoForm<EditLeagueMatchSurfaceController>(nameof(EditLeagueMatchSurfaceController.UpdateMatch)))
             {

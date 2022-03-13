@@ -51,7 +51,7 @@
                 if (listing.MatchType == MatchType.TrainingSession)
                 {
                     matchType = "training session";
-                    tweetTitle = listing.MatchLocation?.NameAndLocalityOrTownIfDifferent();
+                    tweetTitle = listing.MatchLocation?.NameAndLocalityOrTownIfDifferent() ?? matchType;
                 }
                 else
                 {

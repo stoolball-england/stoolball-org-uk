@@ -808,8 +808,6 @@
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
     <Compile Include="Statistics\BowlingFiguresController.cs" />
     <Compile Include="Statistics\StatisticsFilterFactory.cs" />
-    <Compile Include="Statistics\StatisticsSummaryViewModel.cs" />
-    <Compile Include="Statistics\StatisticsController.cs" />
     <Compile Include="Statistics\IndividualScoresController.cs" />
     <Compile Include="Statistics\MemoryCacheBackgroundTaskTracker.cs" />
     <Compile Include="Statistics\EditStatisticsSurfaceController.cs" />
@@ -838,16 +836,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Stoolball-England-Email.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\_StatisticsBasis.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_StatisticsBasis.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Statistics.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Statistics.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="WebApi\ProgressResult.cs" />
     <Compile Include="App_Data\Models\ApproveMember.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
@@ -870,14 +858,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\Statistics.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Statistics.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\Partials\_StatisticsBasis.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_StatisticsBasis.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\RunOuts.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>RunOuts.generated.cs</LastGenOutput>
