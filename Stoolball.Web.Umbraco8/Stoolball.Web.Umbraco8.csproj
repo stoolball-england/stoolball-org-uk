@@ -654,10 +654,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>BowlingFigures.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Catches.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Catches.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\MostRuns.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MostRuns.generated.cs</LastGenOutput>
@@ -665,14 +661,6 @@
     <Content Include="Views\MostWickets.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MostWickets.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\MostCatches.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>MostCatches.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\MostRunOuts.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>MostRunOuts.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\BattingAverage.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -738,13 +726,9 @@
     <Compile Include="Statistics\BattingStrikeRateController.cs" />
     <Compile Include="Statistics\EconomyRateController.cs" />
     <Compile Include="Statistics\BowlingAverageController.cs" />
-    <Compile Include="Statistics\MostRunOutsController.cs" />
-    <Compile Include="Statistics\MostCatchesController.cs" />
     <Compile Include="Statistics\BattingAverageController.cs" />
     <Compile Include="Statistics\MostWicketsController.cs" />
     <Compile Include="Statistics\MostRunsController.cs" />
-    <Compile Include="Statistics\RunOutsController.cs" />
-    <Compile Include="Statistics\CatchesController.cs" />
     <Compile Include="Teams\SpogoCsvExportComponent.cs" />
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
@@ -768,25 +752,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>BowlingStrikeRate.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Catches.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Catches.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\EconomyRate.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EconomyRate.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MostCatches.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MostCatches.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MostRunOuts.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MostRunOuts.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\MostRuns.generated.cs">
       <AutoGen>True</AutoGen>
@@ -798,16 +767,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MostWickets.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RunOuts.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>RunOuts.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="WebApi\CsvHandler.cs" />
     <Compile Include="Metadata\IHasViewMetadata.cs" />
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
     <Compile Include="Statistics\BowlingFiguresController.cs" />
-    <Compile Include="Statistics\StatisticsFilterFactory.cs" />
     <Compile Include="Statistics\IndividualScoresController.cs" />
     <Compile Include="Statistics\MemoryCacheBackgroundTaskTracker.cs" />
     <Compile Include="Statistics\EditStatisticsSurfaceController.cs" />
@@ -858,10 +821,6 @@
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\RunOuts.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>RunOuts.generated.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textfield.cshtml" />

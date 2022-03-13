@@ -20,10 +20,7 @@ namespace Stoolball.Web
 
             // Utility classes
             composition.Register<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>();
-            composition.Register<IStatisticsFilterFactory, StatisticsFilterFactory>();
-            composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
-            composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
 
             // Data sources for stoolball data.
             composition.Register<IBestPlayerAverageStatisticsDataSource, CachedBestPlayerAverageStatisticsDataSource>();

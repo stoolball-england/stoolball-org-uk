@@ -122,7 +122,10 @@ namespace Stoolball.Web
             services.AddTransient<IPlayerTypeSelector, PlayerTypeSelector>();
             services.AddTransient<ISeasonEstimator, SeasonEstimator>();
             services.AddTransient<ISocialMediaAccountFormatter, SocialMediaAccountFormatter>();
+            services.AddTransient<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
+            services.AddTransient<IStatisticsFilterFactory, StatisticsFilterFactory>();
             services.AddTransient<IStoolballEntityCopier, StoolballEntityCopier>();
+            services.AddTransient<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
             services.AddTransient<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
             services.AddTransient<IUrlFormatter, UrlFormatter>();
             services.AddTransient<IVerificationToken, VerificationToken>();
@@ -328,6 +331,10 @@ namespace Stoolball.Web
             services.AddTransient<SchoolsController>();
 
             services.AddTransient<StatisticsController>();
+            services.AddTransient<CatchesController>();
+            services.AddTransient<MostCatchesController>();
+            services.AddTransient<RunOutsController>();
+            services.AddTransient<MostRunOutsController>();
 
             services.AddTransient<TournamentsController>();
             services.AddTransient<TournamentsRssController>();

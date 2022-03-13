@@ -5,10 +5,9 @@ using Stoolball.Competitions;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Routing;
-using Stoolball.Statistics;
 using Stoolball.Teams;
 
-namespace Stoolball.Web.Statistics
+namespace Stoolball.Statistics
 {
     public class StatisticsFilterFactory : IStatisticsFilterFactory
     {
