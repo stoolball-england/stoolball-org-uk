@@ -646,26 +646,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>EditStatistics.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\BowlingFigures.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>BowlingFigures.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\MostWickets.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>MostWickets.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\BowlingAverage.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>BowlingAverage.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\EconomyRate.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EconomyRate.generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Views\BowlingStrikeRate.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>BowlingStrikeRate.generated.cs</LastGenOutput>
-    </Content>
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -706,49 +686,18 @@
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Routing\RenderMvcControllerAsync.cs" />
-    <Compile Include="Statistics\BowlingStrikeRateController.cs" />
-    <Compile Include="Statistics\EconomyRateController.cs" />
-    <Compile Include="Statistics\BowlingAverageController.cs" />
-    <Compile Include="Statistics\MostWicketsController.cs" />
     <Compile Include="Teams\SpogoCsvExportComponent.cs" />
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
-    <Compile Include="Views\BowlingAverage.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BowlingAverage.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\BowlingStrikeRate.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BowlingStrikeRate.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EconomyRate.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EconomyRate.cshtml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MostWickets.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MostWickets.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="WebApi\CsvHandler.cs" />
     <Compile Include="Metadata\IHasViewMetadata.cs" />
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
-    <Compile Include="Statistics\BowlingFiguresController.cs" />
     <Compile Include="Statistics\MemoryCacheBackgroundTaskTracker.cs" />
     <Compile Include="Statistics\EditStatisticsSurfaceController.cs" />
     <Compile Include="Statistics\IBackgroundTaskTracker.cs" />
-    <Compile Include="Statistics\StatisticsViewModel.cs" />
     <Compile Include="Statistics\EditStatisticsViewModel.cs" />
     <Compile Include="Statistics\EditStatisticsController.cs" />
     <Compile Include="Statistics\EditStatisticsApiController.cs" />
-    <Compile Include="Views\BowlingFigures.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BowlingFigures.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\EditStatistics.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -1,20 +1,18 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BowlingFigures>>
+﻿@inherits UmbracoViewPage<StatisticsViewModel<BowlingFigures>>
+@inject IStatisticsFilterHumanizer humanizer
 @using Stoolball.Web.Filtering
-@using Stoolball.Web.Statistics
+@using Stoolball.Web.Statistics.Models
 @using Stoolball.Statistics
-@using ClientDependency.Core.Mvc
-@using Umbraco.Core.Composing
 @{
-    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
-    Html.RequiresCss("/statistics/statistics.min.css");
-    Html.RequiresJs("/js/filter.js");
-    Html.RequiresCss("/css/filter.min.css");
+    SmidgeHelper.RequiresCss(new CssFile("/css/statistics.min.css") { Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
     if (Model.AppliedFilter.Player != null)
     {
         Model.ShowPlayerColumn = false;
     }
 }
-@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
+@section canonical {@await Html.PartialAsync("_CanonicalUrl", new[] { "page" })}
 @section head {
     @if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
@@ -33,7 +31,7 @@
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
         </li>
     </ul>
-    @Html.Partial("_Filters", new FilterViewModel
+    @await Html.PartialAsync("_Filters", new FilterViewModel
     {
         FilteredItemTypeSingular = "Bowling figures",
         FilteredItemTypePlural = "Bowling figures",
@@ -44,11 +42,11 @@
 
     @if (Model.Results.Any())
     {
-        @Html.Partial("_StatisticsBasis")
+        @await Html.PartialAsync("_StatisticsBasis")
     }
     else
     {
-        @Html.Partial("_NoData")
+        @await Html.PartialAsync("_NoData")
     }
-    @Html.Partial("_BowlingFigures")
+    @await Html.PartialAsync("_BowlingFigures")
 </div>

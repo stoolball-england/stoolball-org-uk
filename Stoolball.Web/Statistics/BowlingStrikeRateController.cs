@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using Umbraco.Core.Cache;
-using Umbraco.Core.Configuration;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Services;
-using Umbraco.Web;
-using Umbraco.Web.Models;
+using Stoolball.Web.Statistics.Models;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Statistics
 {
-    public class BowlingStrikeRateController : RenderMvcControllerAsync
+    public class BowlingStrikeRateController : RenderController, IRenderControllerAsync
     {
         private readonly IStatisticsFilterFactory _statisticsFilterFactory;
         private readonly IBestPlayerAverageStatisticsDataSource _statisticsDataSource;
@@ -22,18 +22,15 @@ namespace Stoolball.Web.Statistics
         private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
-        public BowlingStrikeRateController(IGlobalSettings globalSettings,
-           IUmbracoContextAccessor umbracoContextAccessor,
-           ServiceContext serviceContext,
-           AppCaches appCaches,
-           IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IStatisticsFilterFactory statisticsFilterFactory,
-           IBestPlayerAverageStatisticsDataSource statisticsDataSource,
-           IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
-           IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
-           IStatisticsFilterHumanizer statisticsFilterHumanizer)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        public BowlingStrikeRateController(ILogger<BowlingStrikeRateController> logger,
+            ICompositeViewEngine compositeViewEngine,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            IStatisticsFilterFactory statisticsFilterFactory,
+            IBestPlayerAverageStatisticsDataSource statisticsDataSource,
+            IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
+            IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+            IStatisticsFilterHumanizer statisticsFilterHumanizer)
+            : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _statisticsFilterFactory = statisticsFilterFactory ?? throw new ArgumentNullException(nameof(statisticsFilterFactory));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
@@ -44,17 +41,12 @@ namespace Stoolball.Web.Statistics
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public async new Task<IActionResult> Index()
         {
-            if (contentModel is null)
-            {
-                throw new ArgumentNullException(nameof(contentModel));
-            }
+            var model = new StatisticsViewModel<BestStatistic>(CurrentPage) { ShowCaption = false };
 
-            var model = new StatisticsViewModel<BestStatistic>(contentModel.Content, Services?.UserService) { ShowCaption = false };
-
-            model.DefaultFilter = await _statisticsFilterFactory.FromRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
-            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.Url.Query);
+            model.DefaultFilter = await _statisticsFilterFactory.FromRoute(Request.Path);
+            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
             if (model.AppliedFilter.Team != null) { model.ShowTeamsColumn = false; }
             model.AppliedFilter.MinimumQualifyingInnings = 10;
             if (model.AppliedFilter.Team != null ||
@@ -63,10 +55,10 @@ namespace Stoolball.Web.Statistics
                 model.AppliedFilter.Season != null ||
                 model.AppliedFilter.MatchLocation != null) { model.AppliedFilter.MinimumQualifyingInnings = 5; }
 
-            model.Results = (await _statisticsDataSource.ReadBestBowlingStrikeRate(model.AppliedFilter).ConfigureAwait(false)).ToList();
+            model.Results = (await _statisticsDataSource.ReadBestBowlingStrikeRate(model.AppliedFilter)).ToList();
 
-            model.AppliedFilter.Paging.PageUrl = Request.Url;
-            model.AppliedFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayersWithBowlingStrikeRate(model.AppliedFilter).ConfigureAwait(false);
+            model.AppliedFilter.Paging.PageUrl = new Uri(Request.GetEncodedUrl());
+            model.AppliedFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayersWithBowlingStrikeRate(model.AppliedFilter);
 
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
 

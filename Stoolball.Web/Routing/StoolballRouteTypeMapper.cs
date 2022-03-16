@@ -94,18 +94,18 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.CompetitionStatistics, typeof(CompetitionStatisticsController) },
             { StoolballRouteType.SeasonStatistics, typeof(SeasonStatisticsController) },
             { StoolballRouteType.IndividualScores, typeof(IndividualScoresController) },
-            //{ StoolballRouteType.BowlingFigures, typeof(BowlingFiguresController) },
+            { StoolballRouteType.BowlingFigures, typeof(BowlingFiguresController) },
             { StoolballRouteType.Catches, typeof(CatchesController) },
             { StoolballRouteType.RunOuts, typeof(RunOutsController) },
             { StoolballRouteType.MostRuns, typeof(MostRunsController) },
-            //{ StoolballRouteType.MostWickets, typeof(MostWicketsController) },
+            { StoolballRouteType.MostWickets, typeof(MostWicketsController) },
             { StoolballRouteType.MostCatches, typeof(MostCatchesController) },
             { StoolballRouteType.MostRunOuts, typeof(MostRunOutsController) },
             { StoolballRouteType.BattingAverage, typeof(BattingAverageController) },
-            //{ StoolballRouteType.BowlingAverage, typeof(BowlingAverageController) },
-            //{ StoolballRouteType.EconomyRate, typeof(EconomyRateController) },
+            { StoolballRouteType.BowlingAverage, typeof(BowlingAverageController) },
+            { StoolballRouteType.EconomyRate, typeof(EconomyRateController) },
             { StoolballRouteType.BattingStrikeRate, typeof(BattingStrikeRateController) },
-            //{ StoolballRouteType.BowlingStrikeRate, typeof(BowlingStrikeRateController) },
+            { StoolballRouteType.BowlingStrikeRate, typeof(BowlingStrikeRateController) },
             { StoolballRouteType.Schools, typeof(SchoolsController) }
         };
 
