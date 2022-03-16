@@ -1,6 +1,5 @@
 ﻿using System;
 using Stoolball.Email;
-using Stoolball.Web.Statistics;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
 
@@ -16,7 +15,6 @@ namespace Stoolball.Web
             }
 
             // Utility classes
-            composition.Register<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
         }
     }

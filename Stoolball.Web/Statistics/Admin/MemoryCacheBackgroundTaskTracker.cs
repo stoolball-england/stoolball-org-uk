@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Caching;
 
-namespace Stoolball.Web.Statistics
+namespace Stoolball.Web.Statistics.Admin
 {
     public class MemoryCacheBackgroundTaskTracker : IBackgroundTaskTracker
     {

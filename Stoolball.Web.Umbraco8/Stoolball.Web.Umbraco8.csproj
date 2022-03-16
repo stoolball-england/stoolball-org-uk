@@ -642,10 +642,6 @@
     <None Include="Secret-Email.Web.development.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
-    <Content Include="Views\EditStatistics.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>EditStatistics.generated.cs</LastGenOutput>
-    </Content>
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -679,36 +675,19 @@
     <Compile Include="App_Data\Models\StyleGuide.generated.cs" />
     <Compile Include="App_Data\Models\Tip.generated.cs" />
     <Compile Include="App_Data\Models\YouTubeVideo.generated.cs" />
-    <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
-    <Compile Include="Filtering\FilterViewModel.cs" />
     <Compile Include="Matches\OnlySportCsvExportComponent.cs" />
     <Compile Include="Matches\OnlySportCsvExportTask.cs" />
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
-    <Compile Include="Routing\RenderMvcControllerAsync.cs" />
     <Compile Include="Teams\SpogoCsvExportComponent.cs" />
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
     <Compile Include="WebApi\CsvHandler.cs" />
-    <Compile Include="Metadata\IHasViewMetadata.cs" />
-    <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
-    <Compile Include="Statistics\MemoryCacheBackgroundTaskTracker.cs" />
-    <Compile Include="Statistics\EditStatisticsSurfaceController.cs" />
-    <Compile Include="Statistics\IBackgroundTaskTracker.cs" />
-    <Compile Include="Statistics\EditStatisticsViewModel.cs" />
-    <Compile Include="Statistics\EditStatisticsController.cs" />
-    <Compile Include="Statistics\EditStatisticsApiController.cs" />
-    <Compile Include="Views\EditStatistics.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditStatistics.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Partials\Forms\Emails\Stoolball-England-Email.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Stoolball-England-Email.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="WebApi\ProgressResult.cs" />
     <Compile Include="App_Data\Models\ApproveMember.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
     <Compile Include="App_Data\Models\Folder.generated.cs" />
@@ -719,7 +698,6 @@
     <Compile Include="App_Data\Models\MyAccount.generated.cs" />
     <Compile Include="DependencyInjectionComposer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Routing\BaseViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="config\imageprocessor\security.config" />

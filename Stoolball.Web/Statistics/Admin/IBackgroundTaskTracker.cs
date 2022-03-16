@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Stoolball.Web.Statistics
+namespace Stoolball.Web.Statistics.Admin
 {
     public interface IBackgroundTaskTracker
     {

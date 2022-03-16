@@ -46,6 +46,7 @@ using Stoolball.Web.Routing;
 using Stoolball.Web.Schools;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics;
+using Stoolball.Web.Statistics.Admin;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
 using Umbraco.Cms.Core.DependencyInjection;
@@ -363,6 +364,15 @@ namespace Stoolball.Web
             services.AddTransient<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>, ListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
             services.AddTransient<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>, ListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();
             services.AddTransient<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>, ListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>>();
+
+            // Async processing (update statistics - capacity 1 should be fine)
+            services.AddTransient<EditStatisticsController>();
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue>(ctx =>
+            {
+                return new BackgroundTaskQueue(1);
+            });
+            services.AddTransient<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>();
         }
 
         /// <summary>

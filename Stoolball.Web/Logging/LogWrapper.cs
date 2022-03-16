@@ -24,10 +24,14 @@ namespace Stoolball.Web.Logging
 
         }
 
-        [Obsolete]
-        public void Info(T reporting, string messageTemplate, params object[] propertyValues)
+        public void Warn(string messageTemplate, params object[] propertyValues)
         {
-            _logger.LogInformation(messageTemplate, propertyValues);
+            _logger.LogWarning(messageTemplate, propertyValues);
+        }
+
+        public void Error(string messageTemplate, params object[] propertyValues)
+        {
+            _logger.LogError(messageTemplate, propertyValues);
         }
     }
 }

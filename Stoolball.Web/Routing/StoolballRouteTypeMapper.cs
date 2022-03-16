@@ -6,6 +6,7 @@ using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Schools;
 using Stoolball.Web.Statistics;
+using Stoolball.Web.Statistics.Admin;
 using Stoolball.Web.Teams;
 
 namespace Stoolball.Web.Routing
@@ -83,7 +84,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.EditTournamentSeasons, typeof(EditTournamentSeasonsController) },
             { StoolballRouteType.DeleteTournament, typeof(DeleteTournamentController) },
             { StoolballRouteType.Statistics, typeof(StatisticsController) },
-            //{ StoolballRouteType.EditStatistics, typeof(EditStatisticsController) },
+            { StoolballRouteType.EditStatistics, typeof(EditStatisticsController) },
             { StoolballRouteType.Player, typeof(PlayerController) },
             { StoolballRouteType.PlayerBowling, typeof(PlayerBowlingController) },
             { StoolballRouteType.PlayerFielding, typeof(PlayerFieldingController) },

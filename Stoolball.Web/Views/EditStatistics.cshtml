@@ -1,9 +1,8 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditStatisticsViewModel>
-@using Stoolball.Web.Statistics
+﻿@inherits UmbracoViewPage<EditStatisticsViewModel>
+@using Stoolball.Web.Statistics.Admin
 @using Stoolball.Security
-@using ClientDependency.Core.Mvc
 @{ 
-    Html.RequiresJs("~/js/progress.js");
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/progress.js") { Order = 100 });
 }
 <div class="container-xl">
     <h1>Update statistics</h1>
@@ -17,16 +16,14 @@
         }
         else
         {
-            using (Html.BeginUmbracoForm<EditStatisticsSurfaceController>
-                ("UpdateStatistics"))
+            using (Html.BeginUmbracoForm<EditStatisticsSurfaceController>(nameof(EditStatisticsSurfaceController.UpdateStatistics)))
             {
-                @Html.AntiForgeryToken()
-                <button class="btn btn-primary">Update statistics for all matches</button>
+                <button class="btn btn-primary" type="submit">Update statistics for all matches</button>
             }
         }
     }
     else
     {
-        @Html.Partial("_Login")
+        @await Html.PartialAsync("_Login")
     }
 </div>

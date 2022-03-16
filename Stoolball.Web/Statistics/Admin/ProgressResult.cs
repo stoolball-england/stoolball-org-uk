@@ -1,4 +1,4 @@
-﻿namespace Stoolball.Web.WebApi
+﻿namespace Stoolball.Web.Statistics.Admin
 {
     public class ProgressResult
     {
