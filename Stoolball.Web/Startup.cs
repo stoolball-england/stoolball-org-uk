@@ -181,6 +181,8 @@ namespace Stoolball.Web
             services.AddTransient<ITournamentDataSource, SqlServerTournamentDataSource>();
 
             // Statistics data sources
+            services.AddTransient<IBestPlayerAverageStatisticsDataSource, CachedBestPlayerAverageStatisticsDataSource>();
+            services.AddTransient<ICacheableBestPlayerAverageStatisticsDataSource, SqlServerBestPlayerAverageStatisticsDataSource>();
             services.AddTransient<IBestPerformanceInAMatchStatisticsDataSource, CachedBestPerformanceInAMatchStatisticsDataSource>();
             services.AddTransient<ICacheableBestPerformanceInAMatchStatisticsDataSource, SqlServerBestPerformanceInAMatchStatisticsDataSource>();
             services.AddTransient<IBestPlayerTotalStatisticsDataSource, CachedBestPlayerTotalStatisticsDataSource>();
@@ -335,6 +337,10 @@ namespace Stoolball.Web
             services.AddTransient<MostCatchesController>();
             services.AddTransient<RunOutsController>();
             services.AddTransient<MostRunOutsController>();
+            services.AddTransient<BattingAverageController>();
+            services.AddTransient<BattingStrikeRateController>();
+            services.AddTransient<IndividualScoresController>();
+            services.AddTransient<MostRunsController>();
 
             services.AddTransient<TournamentsController>();
             services.AddTransient<TournamentsRssController>();

@@ -1,8 +1,5 @@
 ﻿using System;
-using Stoolball.Data.Cache;
-using Stoolball.Data.SqlServer;
 using Stoolball.Email;
-using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -21,10 +18,6 @@ namespace Stoolball.Web
             // Utility classes
             composition.Register<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
-
-            // Data sources for stoolball data.
-            composition.Register<IBestPlayerAverageStatisticsDataSource, CachedBestPlayerAverageStatisticsDataSource>();
-            composition.Register<ICacheableBestPlayerAverageStatisticsDataSource, SqlServerBestPlayerAverageStatisticsDataSource>();
         }
     }
 }

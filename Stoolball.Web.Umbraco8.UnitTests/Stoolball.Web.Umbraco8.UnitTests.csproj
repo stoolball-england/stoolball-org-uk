@@ -60,14 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Statistics\BowlingStrikeRateControllerTests.cs" />
-    <Compile Include="Statistics\BattingStrikeRateControllerTests.cs" />
     <Compile Include="Statistics\EconomyRateControllerTests.cs" />
     <Compile Include="Statistics\BowlingAverageControllerTests.cs" />
-    <Compile Include="Statistics\BattingAverageControllerTests.cs" />
     <Compile Include="Statistics\MostWicketsControllerTests.cs" />
-    <Compile Include="Statistics\MostRunsControllerTests.cs" />
     <Compile Include="Statistics\BowlingFiguresControllerTests.cs" />
-    <Compile Include="Statistics\IndividualScoresControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UmbracoBaseTest.cs" />
   </ItemGroup>

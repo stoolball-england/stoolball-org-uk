@@ -1,16 +1,14 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestStatistic>>
+﻿@inherits UmbracoViewPage<StatisticsViewModel<BestStatistic>>
+@inject IStatisticsFilterHumanizer humanizer
 @using Stoolball.Web.Filtering
 @using Stoolball.Statistics
-@using Stoolball.Web.Statistics
-@using ClientDependency.Core.Mvc
-@using Umbraco.Core.Composing
+@using Stoolball.Web.Statistics.Models
 @{
-    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
-    Html.RequiresCss("/statistics/statistics.min.css");
-    Html.RequiresJs("/js/filter.js");
-    Html.RequiresCss("/css/filter.min.css");
+    SmidgeHelper.RequiresCss(new CssFile("/css/statistics.min.css") { Order = 100 });
+    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
 }
-@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
+@section canonical {@await Html.PartialAsync("_CanonicalUrl", new[] { "page" })}
 @section head {
     @if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
@@ -29,7 +27,7 @@
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
         </li>
     </ul>
-    @Html.Partial("_Filters", new FilterViewModel
+    @await Html.PartialAsync("_Filters", new FilterViewModel
     {
         FilteredItemTypeSingular = "Innings",
         FilteredItemTypePlural = "Innings",
@@ -40,12 +38,12 @@
 
     @if (Model.Results.Any())
     {
-        @Html.Partial("_StatisticsBasis")
+        @await Html.PartialAsync("_StatisticsBasis")
     }
     else
     {
-        @Html.Partial("_NoData")
+        @await Html.PartialAsync("_NoData")
     }
     <p>Players must have runs and balls faced recorded in at least <strong>@Model.AppliedFilter.MinimumQualifyingInnings innings</strong> to appear in this list.</p>
-    @Html.Partial("_BattingStrikeRate")
+    @await Html.PartialAsync("_BattingStrikeRate")
 </div>
