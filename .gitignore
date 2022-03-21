@@ -446,3 +446,4 @@ umbraco-cloud.json
 
 # Cypress 
 **/cypress/videos
+cypress.env.json

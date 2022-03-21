@@ -1,6 +1,6 @@
 ﻿using CsvHelper.Configuration.Attributes;
 
-namespace Stoolball.Web.Matches
+namespace Stoolball.Web.Export
 {
     public class OnlySportCsvRecord
     {
@@ -8,7 +8,7 @@ namespace Stoolball.Web.Matches
         public int MatchId { get; set; }
 
         [Name("Title"), Index(2)]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [Name("Start time"), Index(3)]
         public long StartTime { get; set; }
@@ -20,9 +20,9 @@ namespace Stoolball.Web.Matches
         public double? Longitude { get; set; }
 
         [Name("Website"), Index(6)]
-        public string Website { get; set; }
+        public string? Website { get; set; }
 
         [Name("Description"), Index(7)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

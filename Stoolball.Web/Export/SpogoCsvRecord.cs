@@ -1,6 +1,6 @@
 ﻿using CsvHelper.Configuration.Attributes;
 
-namespace Stoolball.Web.Teams
+namespace Stoolball.Web.Export
 {
     public class SpogoCsvRecord
     {
@@ -9,31 +9,31 @@ namespace Stoolball.Web.Teams
         public int TeamId { get; set; }
 
         [Name("Team name"), Index(2)]
-        public string TeamName { get; set; }
+        public string? TeamName { get; set; }
 
         [Name("Player type"), Index(3)]
-        public string PlayerType { get; set; }
+        public string? PlayerType { get; set; }
 
         [Name("Home ground name"), Index(4)]
-        public string HomeGroundName { get; set; }
+        public string? HomeGroundName { get; set; }
 
         [Name("Street name"), Index(5)]
-        public string StreetName { get; set; }
+        public string? StreetName { get; set; }
 
         [Name("Locality"), Index(6)]
-        public string Locality { get; set; }
+        public string? Locality { get; set; }
 
         [Name("Town"), Index(7)]
-        public string Town { get; set; }
+        public string? Town { get; set; }
 
         [Name("Administrative area"), Index(8)]
-        public string AdministrativeArea { get; set; }
+        public string? AdministrativeArea { get; set; }
 
         [Name("Postcode"), Index(9)]
-        public string Postcode { get; set; }
+        public string? Postcode { get; set; }
 
         [Name("Country"), Index(10)]
-        public string Country { get; set; }
+        public string? Country { get; set; }
 
         [Name("Latitude"), Index(11)]
         public double? Latitude { get; set; }
@@ -42,15 +42,15 @@ namespace Stoolball.Web.Teams
         public double? Longitude { get; set; }
 
         [Name("Contact phone"), Index(13)]
-        public string ContactPhone { get; set; }
+        public string? ContactPhone { get; set; }
 
         [Name("Contact email"), Index(14)]
-        public string ContactEmail { get; set; }
+        public string? ContactEmail { get; set; }
 
         [Name("Website"), Index(15)]
-        public string Website { get; set; }
+        public string? Website { get; set; }
 
         [Name("Description"), Index(16)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

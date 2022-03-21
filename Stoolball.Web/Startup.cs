@@ -37,6 +37,7 @@ using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Competitions.Models;
 using Stoolball.Web.Configuration;
+using Stoolball.Web.Export;
 using Stoolball.Web.Forms;
 using Stoolball.Web.Logging;
 using Stoolball.Web.Matches;
@@ -89,6 +90,7 @@ namespace Stoolball.Web
                 .AddBackOffice()
                 .AddWebsite()
                 .AddComposers()
+                .AddCsvExport()
                 .AddNotificationHandler<MemberDeletingNotification, DisableMemberDeleteNotificationHandler>()
                 .Build();
 #pragma warning restore IDE0022 // Use expression body for methods
@@ -404,6 +406,8 @@ namespace Stoolball.Web
 
                 await next();
             });
+
+            app.UseCsvExport();
 
             app.UseUmbraco()
                 .WithMiddleware(u =>

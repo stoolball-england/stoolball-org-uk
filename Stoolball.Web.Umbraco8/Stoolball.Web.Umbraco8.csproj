@@ -641,7 +641,6 @@
     <Content Include="Secret-InstrumentationKey.ApplicationInsights.live.xdt.config" />
     <None Include="Secret-Email.Web.development.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
-    <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -675,14 +674,7 @@
     <Compile Include="App_Data\Models\StyleGuide.generated.cs" />
     <Compile Include="App_Data\Models\Tip.generated.cs" />
     <Compile Include="App_Data\Models\YouTubeVideo.generated.cs" />
-    <Compile Include="Matches\OnlySportCsvExportComponent.cs" />
-    <Compile Include="Matches\OnlySportCsvExportTask.cs" />
-    <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
-    <Compile Include="Teams\SpogoCsvExportComponent.cs" />
-    <Compile Include="Teams\SpogoCsvExportTask.cs" />
-    <Compile Include="Teams\SpogoCsvRecord.cs" />
-    <Compile Include="WebApi\CsvHandler.cs" />
     <Compile Include="Views\Partials\Forms\Emails\Stoolball-England-Email.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -696,7 +688,6 @@
     <Compile Include="App_Data\Models\Member.generated.cs" />
     <Compile Include="App_Data\Models\Metadata.generated.cs" />
     <Compile Include="App_Data\Models\MyAccount.generated.cs" />
-    <Compile Include="DependencyInjectionComposer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

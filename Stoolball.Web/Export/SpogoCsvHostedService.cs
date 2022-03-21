@@ -1,44 +1,68 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Hosting;
 using CsvHelper;
 using Humanizer;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using Stoolball.Email;
 using Stoolball.Teams;
-using Umbraco.Core.Logging;
-using Umbraco.Web.Scheduling;
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Sync;
+using Umbraco.Cms.Infrastructure.HostedServices;
 
-namespace Stoolball.Web.Teams
+namespace Stoolball.Web.Export
 {
-    internal class SpogoCsvExportTask : RecurringTaskBase
+    public class SpogoCsvHostedService : RecurringHostedServiceBase
     {
-        private readonly IProfilingLogger _logger;
+        private readonly IRuntimeState _runtimeState;
+        private readonly IContentService _contentService;
+        private readonly IServerRoleAccessor _serverRoleAccessor;
+        private readonly IProfilingLogger _profilingLogger;
+        private readonly ILogger<OnlySportCsvHostedService> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ITeamDataSource _teamDataSource;
         private readonly IContactDetailsParser _contactDetailsParser;
 
-        public SpogoCsvExportTask(IBackgroundTaskRunner<RecurringTaskBase> runner, int delayBeforeWeStart, int howOftenWeRepeat, IProfilingLogger logger, ITeamDataSource teamDataSource,
+        private static TimeSpan HowOftenWeRepeat => TimeSpan.FromDays(1);
+        private static TimeSpan DelayBeforeWeStart => TimeSpan.FromMinutes(1);
+
+        public SpogoCsvHostedService(
+            IRuntimeState runtimeState,
+            IContentService contentService,
+            IServerRoleAccessor serverRoleAccessor,
+            IProfilingLogger profilingLogger,
+            ILogger<OnlySportCsvHostedService> logger,
+            IWebHostEnvironment webHostEnvironment,
+            ITeamDataSource teamDataSource,
             IContactDetailsParser contactDetailsParser)
-            : base(runner, delayBeforeWeStart, howOftenWeRepeat)
+            : base(HowOftenWeRepeat, DelayBeforeWeStart)
         {
-            _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
-            _teamDataSource = teamDataSource ?? throw new System.ArgumentNullException(nameof(teamDataSource));
-            _contactDetailsParser = contactDetailsParser ?? throw new System.ArgumentNullException(nameof(contactDetailsParser));
+            _runtimeState = runtimeState ?? throw new ArgumentNullException(nameof(runtimeState));
+            _contentService = contentService ?? throw new ArgumentNullException(nameof(contentService));
+            _serverRoleAccessor = serverRoleAccessor ?? throw new ArgumentNullException(nameof(serverRoleAccessor));
+            _profilingLogger = profilingLogger ?? throw new ArgumentNullException(nameof(profilingLogger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _contactDetailsParser = contactDetailsParser ?? throw new ArgumentNullException(nameof(contactDetailsParser));
         }
 
-        public async override Task<bool> PerformRunAsync(CancellationToken cancellationToken)
+        public async override Task PerformExecuteAsync(object state)
         {
-            if (cancellationToken.IsCancellationRequested)
+            // Don't do anything if the site is not running.
+            if (_runtimeState.Level != RuntimeLevel.Run)
             {
-                _logger.Warn(GetType(), "Background task cancellation requested in {Type:l}.", GetType());
-                return false;
+                return;
             }
 
-            _logger.Info<SpogoCsvExportTask>(nameof(SpogoCsvExportTask) + " running");
+            _logger.LogInformation(nameof(SpogoCsvHostedService) + " running");
 
             var teams = (await _teamDataSource.ReadTeams(new TeamFilter
             {
@@ -46,7 +70,7 @@ namespace Stoolball.Web.Teams
                 TeamTypes = new List<TeamType?> { TeamType.Regular }
             }).ConfigureAwait(false)).Select(x => new SpogoCsvRecord
             {
-                TeamId = x.TeamId.Value.GetHashCode() > 0 ? x.TeamId.Value.GetHashCode() : x.TeamId.Value.GetHashCode() * -1,
+                TeamId = x.TeamId!.Value.GetHashCode() > 0 ? x.TeamId.Value.GetHashCode() : x.TeamId.Value.GetHashCode() * -1,
                 TeamName = x.TeamName + " Stoolball Club",
                 Description = FormatTeamDescription(x),
                 PlayerType = x.PlayerType.Humanize(),
@@ -64,7 +88,8 @@ namespace Stoolball.Web.Teams
                 ContactPhone = _contactDetailsParser.ParseFirstPhoneNumber(x.PublicContactDetails)
             }).Where(x => !string.IsNullOrEmpty(x.ContactEmail) || !string.IsNullOrEmpty(x.ContactPhone)).ToList();
 
-            var path = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, @"App_Data\csv");
+
+            var path = Path.Combine(_webHostEnvironment.ContentRootPath, @"App_Data\csv");
             if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
             using (var writer = new StreamWriter(Path.Combine(path, "spogo-protected.csv")))
             {
@@ -73,18 +98,6 @@ namespace Stoolball.Web.Teams
                     csv.WriteRecords(teams);
                 }
             }
-
-            foreach (var team in teams) { team.ContactEmail = team.ContactPhone = string.Empty; }
-            using (var writer = new StreamWriter(Path.Combine(path, "spogo.csv")))
-            {
-                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-                {
-                    csv.WriteRecords(teams);
-                }
-            }
-
-            // Keep repeating
-            return true;
         }
 
         private static string FormatTeamDescription(Team team)
@@ -94,7 +107,5 @@ namespace Stoolball.Web.Teams
 
             return Regex.Replace(Regex.Replace(html, "<.*?>", " ").Replace("&nbsp;", " ").Replace("&amp;", "&"), @"\s+", " ").Trim();
         }
-
-        public override bool IsAsync => true;
     }
 }
