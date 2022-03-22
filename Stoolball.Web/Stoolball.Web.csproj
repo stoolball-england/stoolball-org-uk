@@ -14,13 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\js\tests\**" />
-    <Content Remove="wwwroot\js\tests\**" />
-    <EmbeddedResource Remove="wwwroot\js\tests\**" />
-    <None Remove="wwwroot\js\tests\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="compilerconfig.json" />
     <Content Remove="wwwroot\css\account.scss" />
     <Content Remove="wwwroot\css\autocomplete.scss" />

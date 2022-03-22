@@ -634,7 +634,6 @@
     <Content Include="config\tinyMceConfig.development.xdt.config" />
     <Content Include="config\umbracoSettings.development.xdt.config" />
     <None Include="config\uSync8.local.xdt.config" />
-    <Content Include="js\tests\related-items.test.js" />
     <Content Include="Directory.Build.targets" />
     <Content Include="config\uSync8.config" />
     <Content Include="ApplicationInsights.xdt.template.config" />
