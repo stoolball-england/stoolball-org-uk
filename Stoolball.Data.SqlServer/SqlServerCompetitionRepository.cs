@@ -169,7 +169,7 @@ namespace Stoolball.Data.SqlServer
                     auditableCompetition.CompetitionRoute = await _routeGenerator.GenerateUniqueRoute(
                         competition.CompetitionRoute,
                         "/competitions", auditableCompetition.CompetitionName, NoiseWords.CompetitionRoute,
-                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { auditableCompetition.CompetitionRoute }, transaction).ConfigureAwait(false)
+                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { CompetitionRoute = route }, transaction).ConfigureAwait(false)
                     ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(
