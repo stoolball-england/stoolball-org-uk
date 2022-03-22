@@ -69,7 +69,7 @@ namespace Stoolball.Web.Competitions
                 return new StatusCodeResult(400);
             }
 
-            if (!season.MatchTypes.Any())
+            if (!season.MatchTypes.Any() && !season.EnableTournaments)
             {
                 ModelState.AddModelError("Season.MatchTypes", $"Please select at least one type of match");
             }
