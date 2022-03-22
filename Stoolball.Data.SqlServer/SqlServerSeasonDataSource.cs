@@ -177,7 +177,8 @@ namespace Stoolball.Data.SqlServer
                 if (seasonToReturn != null)
                 {
                     seasonToReturn.MatchTypes = seasons
-                        .Select(season => season.MatchTypes.FirstOrDefault())
+                        .Where(season => season.MatchTypes.Any())
+                        .Select(season => season.MatchTypes.First())
                         .OfType<MatchType>()
                         .Distinct()
                         .ToList();
@@ -250,7 +251,8 @@ namespace Stoolball.Data.SqlServer
                 if (seasonToReturn != null)
                 {
                     seasonToReturn.MatchTypes = seasons
-                        .Select(season => season.MatchTypes.FirstOrDefault())
+                        .Where(season => season.MatchTypes.Any())
+                        .Select(season => season.MatchTypes.First())
                         .OfType<MatchType>()
                         .Distinct()
                         .ToList();
