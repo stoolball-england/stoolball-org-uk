@@ -640,10 +640,6 @@
     <Content Include="Secret-InstrumentationKey.ApplicationInsights.live.xdt.config" />
     <None Include="Secret-Email.Web.development.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
-    <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
-    </None>
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -674,11 +670,6 @@
     <Compile Include="App_Data\Models\Tip.generated.cs" />
     <Compile Include="App_Data\Models\YouTubeVideo.generated.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
-    <Compile Include="Views\Partials\Forms\Emails\Stoolball-England-Email.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Stoolball-England-Email.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="App_Data\Models\ApproveMember.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
     <Compile Include="App_Data\Models\Folder.generated.cs" />
@@ -765,6 +756,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Partials\BlockList\" />
+    <Folder Include="Views\Partials\Forms\Emails\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

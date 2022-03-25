@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
+    <Content Remove="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Remove="wwwroot\css\account.scss" />
     <Content Remove="wwwroot\css\autocomplete.scss" />
     <Content Remove="wwwroot\css\base.scss" />
@@ -106,6 +107,7 @@
 
   <ItemGroup>
     <None Include="compilerconfig.json" />
+    <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <None Include="wwwroot\css\account.scss" />
     <None Include="wwwroot\css\autocomplete.scss" />
     <None Include="wwwroot\css\base.scss" />

@@ -1,7 +1,8 @@
-﻿@inherits UmbracoViewPage<Umbraco.Forms.Core.Models.FormsHtmlModel>
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Forms.Core.Models.FormsHtmlModel>
+@inject Umbraco.Forms.Core.Services.IFormService formService
+@inject Ganss.XSS.IHtmlSanitizer htmlSanitiser
 @{ 
-    var form = global::Umbraco.Web.Composing.Current.Factory.GetInstance<Umbraco.Forms.Core.Services.IFormService>().Get(Model.FormId);
-    var htmlSanitiser = global::Umbraco.Web.Composing.Current.Factory.GetInstance<Ganss.XSS.IHtmlSanitizer>();
+    var form = formService.Get(Model.FormId);
     htmlSanitiser.AllowedTags.Clear();
     htmlSanitiser.AllowedTags.Add("p");
     htmlSanitiser.AllowedTags.Add("h2");
@@ -127,7 +128,7 @@
                                 switch (field.FieldType)
                                 {
                                     case "FieldType.FileUpload.cshtml":
-                                        <p style="margin-top: 0;"><a href="@HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority)/@field.GetValue()" target="_blank" style="color: #00AEA2;">@field.GetValue()</a></p>
+                                        <p style="margin-top: 0;"><a href="https://@Context.Request.Host.Value/@field.GetValue()" target="_blank" style="color: #00AEA2;">@field.GetValue()</a></p>
                                         break;
 
                                     case "FieldType.DatePicker.cshtml":
