@@ -240,11 +240,6 @@
     <TransformXml Source="$(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="$(OriginalWebConfig)" StackTrace="true" />
     <Delete Files="$(TempWebConfig)" />
 
-    <Copy SourceFiles="$(OriginalWebConfig)" DestinationFiles="$(TempWebConfig)" Condition="Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')" />
-    <TransformXml Source="$(TempWebConfig)" Transform="$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config" Destination="$(OriginalWebConfig)" StackTrace="true" Condition="Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')" />
-    <Delete Files="$(TempWebConfig)" Condition="Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')" />
-    <Warning Text="$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config not found. Google maps will not load. This is probably because you're using an Umbraco Cloud trial account." Condition="!Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')"/>
-
     <!-- Replace tokens that appear in the generated Web.config, to avoid duplication in the XDT file -->
     <ReplaceFileText
       InputFilename="$(OriginalWebConfig)"

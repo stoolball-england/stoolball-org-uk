@@ -605,8 +605,6 @@
     <Content Include="App_Plugins\UmbracoForms\Data\Templates\commentform.json" />
     <Content Include="config\BackOfficeTours\getting-started.json" />
     <Content Include="Directory.Build.targets" />
-    <None Include="Secret-Email.Web.development.xdt.config" />
-    <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -653,9 +651,6 @@
     <Content Include="config\imageprocessor\cache.config" />
     <None Include="packages.config" />
     <Content Include="Views\Web.config" />
-    <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
-    <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
-    <None Include="Secret-Email.Web.live.xdt.config" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textfield.cshtml" />
