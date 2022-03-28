@@ -95,6 +95,8 @@ namespace Stoolball.Web
                 .Build();
 #pragma warning restore IDE0022 // Use expression body for methods
 
+            services.AddApplicationInsightsTelemetry();
+
             // Utility classes
             services.AddTransient<IApiKeyProvider, ConfigApiKeyProvider>();
             services.AddTransient<IBadLanguageFilter, BadLanguageFilter>();

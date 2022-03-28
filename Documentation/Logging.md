@@ -8,4 +8,12 @@ Query the logs with `StartsWith(SourceContext, 'Stoolball')` to see just the log
 
 ## Set up Application Insights locally
 
-To set up reporting to Application Insights from your development machine, copy `ApplicationInsights.xdt.template.config` to `Secret-InstrumentationKey.ApplicationInsights.local.xdt.config` and add your instrumentation key.
+To set up reporting to Application Insights from your development machine, add your instrumentation key to `appSettings.Development.json` as follows:
+
+```json
+{
+  "ApplicationInsights": {
+    "InstrumentationKey": "your_key_here"
+  }
+}
+```

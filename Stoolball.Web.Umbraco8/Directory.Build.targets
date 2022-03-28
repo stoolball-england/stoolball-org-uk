@@ -235,8 +235,6 @@
       <TemplateProductionTransform>$(ProjectDir)Web.live.xdt.template.config</TemplateProductionTransform>
       <ActualProductionTransform>$(ProjectDir)Web.live.xdt.config</ActualProductionTransform>
       <PermissionsPolicy>accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),cross-origin-isolated=(),display-capture=(),document-domain=(),encrypted-media=(),execution-while-not-rendered=(),execution-while-out-of-viewport=(),fullscreen=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),navigation-override=(),payment=(),picture-in-picture=(),publickey-credentials-get=(),screen-wake-lock=(),sync-xhr=(),usb=(),web-share=(),xr-spatial-tracking=()</PermissionsPolicy>
-      <TemplateAppInsightsConfig>$(ProjectDir)ApplicationInsights.template.config</TemplateAppInsightsConfig>
-      <ActualAppInsightsConfig>$(ProjectDir)ApplicationInsights.config</ActualAppInsightsConfig>
     </PropertyGroup>
     <Copy SourceFiles="$(OriginalWebConfig)" DestinationFiles="$(TempWebConfig)" />
     <TransformXml Source="$(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="$(OriginalWebConfig)" StackTrace="true" />
@@ -246,8 +244,6 @@
     <TransformXml Source="$(TempWebConfig)" Transform="$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config" Destination="$(OriginalWebConfig)" StackTrace="true" Condition="Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')" />
     <Delete Files="$(TempWebConfig)" Condition="Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')" />
     <Warning Text="$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config not found. Google maps will not load. This is probably because you're using an Umbraco Cloud trial account." Condition="!Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')"/>
-
-    <TransformXml Source="$(TemplateAppInsightsConfig)" Transform="$(ProjectDir)\Secret-InstrumentationKey.ApplicationInsights.local.xdt.config" Destination="$(ActualAppInsightsConfig)" StackTrace="true" Condition="Exists('$(ProjectDir)\Secret-InstrumentationKey.ApplicationInsights.local.xdt.config')"  />
 
     <!-- Replace tokens that appear in the generated Web.config, to avoid duplication in the XDT file -->
     <ReplaceFileText
