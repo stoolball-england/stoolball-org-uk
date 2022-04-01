@@ -34,5 +34,6 @@
 		<!-- Testing for the existence of web.template.config ensures this task only runs on local builds.
 		     On Umbraco Cloud web.release.config runs automatically to transform the .net core web.config -->
 		<TransformXml Source="$(ProjectDir)web.template.config" Transform="$(ProjectDir)web.release.config" Destination="$(ProjectDir)web.config" StackTrace="true" Condition="Exists('$(ProjectDir)web.template.config')" />
+		<TransformXml Source="$(ProjectDir)web.config" Transform="$(ProjectDir)web.local.config" Destination="$(ProjectDir)web.config" StackTrace="true" Condition="Exists('$(ProjectDir)web.local.config')" />
 	</Target>
 </Project>
