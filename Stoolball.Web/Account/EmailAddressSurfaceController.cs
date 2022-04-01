@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Email;
 using Stoolball.Logging;
+using Stoolball.Metadata;
 using Stoolball.Security;
 using Stoolball.Web.Models;
 using Stoolball.Web.Security;
@@ -59,20 +60,20 @@ namespace Stoolball.Web.Account
         [ValidateAntiForgeryToken()]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<IActionResult> UpdateEmailAddress([Bind(Prefix = "formData")] EmailAddressFormData model)
+        public async Task<IActionResult> UpdateEmailAddress([Bind(Prefix = "formData")] EmailAddressFormData postedData)
         {
-            if (model == null)
+            if (postedData == null)
             {
                 return new StatusCodeResult(400);
             }
 
             var member = await _memberManager.GetCurrentMemberAsync();
-            if (!await _memberManager.CheckPasswordAsync(member, model?.Password?.Trim()))
+            if (!await _memberManager.CheckPasswordAsync(member, postedData?.Password?.Trim()))
             {
-                ModelState.AddModelError("formData." + nameof(model.Password), "Your password is incorrect or your account is locked.");
+                ModelState.AddModelError("formData." + nameof(postedData.Password), "Your password is incorrect or your account is locked.");
             }
 
-            if (ModelState.IsValid && model != null)
+            if (ModelState.IsValid && postedData != null)
             {
 
                 // Create an requested email token including the id so we can find the member.
@@ -82,10 +83,10 @@ namespace Stoolball.Web.Account
 
                 // It's OK to save the token for an invalid situation as the token will not be sent to the requester,
                 // and in any case the check for an existing member would happen again at confirmation time.
-                var token = SaveConfirmationTokenForMember(model.Requested!, Convert.ToInt32(member.Id));
+                var token = SaveConfirmationTokenForMember(postedData.Requested!, Convert.ToInt32(member.Id));
 
                 // Check whether the requested email already belongs to another account
-                var alreadyTaken = Services.MemberService.GetByEmail(model.Requested?.Trim());
+                var alreadyTaken = Services.MemberService.GetByEmail(postedData.Requested?.Trim());
                 if (alreadyTaken != null && alreadyTaken.Key != member.Key)
                 {
                     // Send the address already in use email
@@ -96,10 +97,10 @@ namespace Stoolball.Web.Account
                         new Dictionary<string, string>
                         {
                         {"name", alreadyTaken.Name},
-                        {"email", model.Requested!},
+                        {"email", postedData.Requested!},
                         {"domain", GetRequestUrlAuthority()}
                         });
-                    await _emailSender.SendAsync(new EmailMessage(null, model.Requested?.Trim(), subject, body, true), null);
+                    await _emailSender.SendAsync(new EmailMessage(null, postedData.Requested?.Trim(), subject, body, true), null);
 
                     _logger.Info(LoggingTemplates.MemberRequestedEmailAddressAlreadyInUse, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
                 }
@@ -114,11 +115,11 @@ namespace Stoolball.Web.Account
                         new Dictionary<string, string>
                         {
                         {"name", member.Name},
-                        {"email", model.Requested!},
+                        {"email", postedData.Requested!},
                         {"domain", GetRequestUrlAuthority()},
                         {"token", token }
                         });
-                    await _emailSender.SendAsync(new EmailMessage(null, model.Requested?.Trim(), subject, body, true), null);
+                    await _emailSender.SendAsync(new EmailMessage(null, postedData.Requested?.Trim(), subject, body, true), null);
 
                     _logger.Info(LoggingTemplates.MemberRequestedEmailAddress, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
                 }
@@ -127,7 +128,13 @@ namespace Stoolball.Web.Account
             }
             else
             {
-                return View("EmailAddress", new EmailAddress(CurrentPage, new PublishedValueFallback(Services, _variationContextAccessor)) { FormData = model! });
+                var model = new EmailAddress(CurrentPage, new PublishedValueFallback(Services, _variationContextAccessor)) { FormData = postedData! };
+                model.Metadata = new ViewMetadata
+                {
+                    PageTitle = model.Name,
+                    Description = model.Description
+                };
+                return View("EmailAddress", model);
             }
         }
 
