@@ -92,12 +92,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.12" />
     <PackageReference Include="SolarCalculator" Version="3.1.0" />
     <PackageReference Include="Umbraco.Cloud.Identity.Cms" Version="4.0.51" />
-    <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="4.0.0" />
-    <PackageReference Include="Umbraco.Cms" Version="9.3.0" />
-    <PackageReference Include="Umbraco.Deploy.Cloud" Version="9.2.2" />
-    <PackageReference Include="Umbraco.Deploy.Contrib" Version="9.0.0" />
-    <PackageReference Include="Umbraco.Deploy.Forms" Version="9.2.2" />
-    <PackageReference Include="Umbraco.Forms" Version="9.2.1" />
+    <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="4.1.0" />
+    <PackageReference Include="Umbraco.Cms" Version="9.4.1" />
+    <PackageReference Include="Umbraco.Deploy.Cloud" Version="9.3.1" />
+    <PackageReference Include="Umbraco.Deploy.Contrib" Version="9.0.1" />
+    <PackageReference Include="Umbraco.Deploy.Forms" Version="9.3.1" />
+    <PackageReference Include="Umbraco.Forms" Version="9.3.0" />
     <PackageReference Include="uSync" Version="9.1.0" />
   </ItemGroup>
 
