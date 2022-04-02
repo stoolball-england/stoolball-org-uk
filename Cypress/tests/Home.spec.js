@@ -3,7 +3,6 @@ import { logToConsole } from "./functions/logging";
 describe("Home page", () => {
   beforeEach(() => {
     cy.visit("/");
-    cy.injectAxe();
   });
 
   it("Validates", () => {
@@ -11,6 +10,7 @@ describe("Home page", () => {
   });
 
   it("Passes AXE", () => {
+    cy.injectAxe();
     cy.checkA11y(null, null, logToConsole);
   });
 
