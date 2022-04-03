@@ -391,6 +391,7 @@ namespace Stoolball.Web
             }
 
             app.UseHttpsRedirection();
+            app.UseBareDomainRedirect();
             app.UseSecurityHeaders();
 
             app.UseStaticFileCaching();
