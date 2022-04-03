@@ -128,7 +128,7 @@ namespace Stoolball.Data.SqlServer
             // Create a route. Generally {team.teamRoute} will be blank, but allowing a pre-populated prefix is useful for transient teams
             auditableTeam.TeamRoute = await _routeGenerator.GenerateUniqueRoute(
                 $"{auditableTeam.TeamRoute}/teams", auditableTeam.TeamName, NoiseWords.TeamRoute,
-                async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { auditableTeam.TeamRoute }, transaction).ConfigureAwait(false)
+                async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { TeamRoute = route }, transaction).ConfigureAwait(false)
             ).ConfigureAwait(false);
 
             // Create an owner group
@@ -223,7 +223,7 @@ namespace Stoolball.Data.SqlServer
                     auditableTeam.TeamRoute = await _routeGenerator.GenerateUniqueRoute(
                         team.TeamRoute,
                         "/teams", auditableTeam.TeamName, NoiseWords.TeamRoute,
-                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { auditableTeam.TeamRoute }, transaction).ConfigureAwait(false)
+                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { TeamRoute = route }, transaction).ConfigureAwait(false)
                     ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(
@@ -361,7 +361,7 @@ namespace Stoolball.Data.SqlServer
                     auditableTeam.TeamRoute = await _routeGenerator.GenerateUniqueRoute(
                         team.TeamRoute,
                         routePrefix, auditableTeam.TeamName, NoiseWords.TeamRoute,
-                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { auditableTeam.TeamRoute }, transaction).ConfigureAwait(false)
+                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { TeamRoute = route }, transaction).ConfigureAwait(false)
                     ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(
