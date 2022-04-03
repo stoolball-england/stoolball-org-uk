@@ -223,28 +223,4 @@
     <TransformXml Source="$(TempTinyMceConfig)" Transform="$(ProjectDir)\config\tinyMceConfig.local.xdt.config" Destination="$(OriginalTinyMceConfig)" StackTrace="true" />
     <Delete Files="$(TempTinyMceConfig)" />
   </Target>
-
-  <Target Name="StoolballTransformWebConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud" Condition="'$(REQUIRE_CLOUD_REPO)' != 'false'">
-    <!-- Applies changes to Web.config on build from XDT transforms so that the unaltered Web.config 
-         can always be copied from the Umbraco Cloud repository. -->
-    <PropertyGroup>
-      <OriginalWebConfig>$(ProjectDir)Web.config</OriginalWebConfig>
-      <TempWebConfig>$(ProjectDir)Web.temp.config</TempWebConfig>
-      <TemplateDevelopmentTransform>$(ProjectDir)Web.development.xdt.template.config</TemplateDevelopmentTransform>
-      <ActualDevelopmentTransform>$(ProjectDir)Web.development.xdt.config</ActualDevelopmentTransform>
-      <TemplateProductionTransform>$(ProjectDir)Web.live.xdt.template.config</TemplateProductionTransform>
-      <ActualProductionTransform>$(ProjectDir)Web.live.xdt.config</ActualProductionTransform>
-    </PropertyGroup>
-    <Copy SourceFiles="$(OriginalWebConfig)" DestinationFiles="$(TempWebConfig)" />
-    <TransformXml Source="$(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="$(OriginalWebConfig)" StackTrace="true" />
-    <Delete Files="$(TempWebConfig)" />
-
-    <!-- Create $(ActualDevelopmentTransform) file from $(TemplateDevelopmentTransform), 
-         replacing tokens in the template, again to avoid duplication in the XDT file -->
-    <Copy SourceFiles="$(TemplateDevelopmentTransform)" DestinationFiles="$(ActualDevelopmentTransform)" />
-
-    <!-- Create $(ActualProductionTransform) file from $(TemplateProductionTransform), 
-         replacing tokens in the template, again to avoid duplication in the XDT file -->
-    <Copy SourceFiles="$(TemplateProductionTransform)" DestinationFiles="$(ActualProductionTransform)" />
-  </Target>
 </Project>

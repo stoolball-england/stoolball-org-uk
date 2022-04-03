@@ -37,9 +37,9 @@ namespace Stoolball.Data.SqlServer
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
 							([Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
-							 [DestinationUrl], [Created], [Updated], [IsPermanent], [IsRegex], [ForwardQueryString])
+							 [DestinationUrl], [Created], [Updated], [IsPermanent], [ForwardQueryString], [DestinationQuery], [DestinationFragment])
 							 VALUES (@Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
-                             @Created, @Updated, @IsPermanent, @IsRegex, @ForwardQueryString)",
+                             @Created, @Updated, @IsPermanent, @ForwardQueryString, @DestinationQuery, @DestinationFragment)",
                                          new
                                          {
                                              Key = Guid.NewGuid().ToString(),
@@ -47,15 +47,16 @@ namespace Stoolball.Data.SqlServer
                                              RootKey = "00000000-0000-0000-0000-000000000000",
                                              Url = "/" + originalRoute.TrimStart('/') + routeSuffix,
                                              QueryString = string.Empty,
-                                             DestinationType = "url",
+                                             DestinationType = "Url",
                                              DestinationId = 0,
                                              DestinationKey = "00000000-0000-0000-0000-000000000000",
                                              DestinationUrl = "/" + revisedRoute.TrimStart('/') + routeSuffix,
                                              Created = DateTime.UtcNow,
                                              Updated = DateTime.UtcNow,
                                              IsPermanent = true,
-                                             IsRegex = false,
-                                             ForwardQueryString = true
+                                             ForwardQueryString = true,
+                                             DestinationQuery = string.Empty,
+                                             DestinationFragment = string.Empty
                                          },
                                         transaction).ConfigureAwait(false);
         }
@@ -74,9 +75,9 @@ namespace Stoolball.Data.SqlServer
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
 							([Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
-							 [DestinationUrl], [Created], [Updated], [IsPermanent], [IsRegex], [ForwardQueryString])
+							 [DestinationUrl], [Created], [Updated], [IsPermanent], [ForwardQueryString], [DestinationQuery], [DestinationFragment])
 							 VALUES (@Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
-                             @Created, @Updated, @IsPermanent, @IsRegex, @ForwardQueryString)",
+                             @Created, @Updated, @IsPermanent, @IsRegex, @ForwardQueryString, @DestinationQuery, @DestinationFragment)",
                  new
                  {
                      Key = Guid.NewGuid().ToString(),
@@ -84,15 +85,16 @@ namespace Stoolball.Data.SqlServer
                      RootKey = "00000000-0000-0000-0000-000000000000",
                      Url = "/" + originalRoute?.TrimStart('/'),
                      QueryString = string.Empty,
-                     DestinationType = "url",
+                     DestinationType = "Content",
                      DestinationId = umbracoContentNodeId,
                      DestinationKey = umbracoContentNodeKey,
                      DestinationUrl = umbracoContentNodeUrl.ToString(),
                      Created = DateTime.UtcNow,
                      Updated = DateTime.UtcNow,
                      IsPermanent = true,
-                     IsRegex = false,
-                     ForwardQueryString = false
+                     ForwardQueryString = false,
+                     DestinationQuery = string.Empty,
+                     DestinationFragment = string.Empty
                  },
                  transaction).ConfigureAwait(false);
         }

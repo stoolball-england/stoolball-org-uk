@@ -687,12 +687,9 @@
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <None Include="Web.development.xdt.template.config" />
-    <None Include="Web.live.xdt.template.config" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <None Include="Web.local.xdt.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stoolball.Data.Cache\Stoolball.Data.Cache.csproj">
