@@ -98,7 +98,7 @@ namespace Stoolball.Data.SqlServer
             player.PlayerIdentities.Add(auditablePlayerIdentity);
 
             player.PlayerRoute = await _routeGenerator.GenerateUniqueRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute,
-               async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { player.PlayerRoute }, transaction).ConfigureAwait(false)
+               async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { PlayerRoute = route }, transaction).ConfigureAwait(false)
             ).ConfigureAwait(false);
 
             await transaction.Connection.ExecuteAsync(

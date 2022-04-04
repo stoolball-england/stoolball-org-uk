@@ -63,7 +63,7 @@ namespace Stoolball.Data.SqlServer
                 {
                     auditableMatchLocation.MatchLocationRoute = await _routeGenerator.GenerateUniqueRoute(
                         "/locations", auditableMatchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute,
-                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { auditableMatchLocation.MatchLocationRoute }, transaction).ConfigureAwait(false)
+                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { MatchLocationRoute = route }, transaction).ConfigureAwait(false)
                     ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(
@@ -138,7 +138,7 @@ namespace Stoolball.Data.SqlServer
                     auditableMatchLocation.MatchLocationRoute = await _routeGenerator.GenerateUniqueRoute(
                         matchLocation.MatchLocationRoute,
                         "/locations", auditableMatchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute,
-                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { auditableMatchLocation.MatchLocationRoute }, transaction).ConfigureAwait(false)
+                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { MatchLocationRoute = route }, transaction).ConfigureAwait(false)
                     ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(
