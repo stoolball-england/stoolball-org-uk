@@ -36,4 +36,14 @@
 		<TransformXml Source="$(ProjectDir)web.template.config" Transform="$(ProjectDir)web.release.config" Destination="$(ProjectDir)web.config" StackTrace="true" Condition="Exists('$(ProjectDir)web.template.config')" />
 		<TransformXml Source="$(ProjectDir)web.config" Transform="$(ProjectDir)web.local.config" Destination="$(ProjectDir)web.config" StackTrace="true" Condition="Exists('$(ProjectDir)web.local.config')" />
 	</Target>
+
+	<Target Name="StoolballTriggerUmbracoDeploySync" BeforeTargets="AfterBuild" Condition="!Exists('$(ProjectDir)umbraco/deploy/deploy')">
+		<!-- Create a 0-byte file that Umbraco Deploy looks for to trigger a sync of 
+         the *.uda files on disk into the Umbraco database -->
+		<Touch Files="$(ProjectDir)umbraco/deploy/deploy" AlwaysCreate="true" Condition="Exists('$(ProjectDir)umbraco/deploy')">
+			<Output
+				TaskParameter="TouchedFiles"
+				ItemName="FilesTouched"/>
+		</Touch>
+	</Target>
 </Project>

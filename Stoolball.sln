@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball", "Stoolball\Stoo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.UnitTests", "Stoolball.UnitTests\Stoolball.UnitTests.csproj", "{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Web.Umbraco8", "Stoolball.Web.Umbraco8\Stoolball.Web.Umbraco8.csproj", "{F66102A7-55A0-423A-AAD3-19D89147B5C7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.SqlServer", "Stoolball.Data.SqlServer\Stoolball.Data.SqlServer.csproj", "{99803072-9098-430A-A2F5-20EFAC92134D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.SqlServer.IntegrationTests", "Stoolball.Data.SqlServer.IntegrationTests\Stoolball.Data.SqlServer.IntegrationTests.csproj", "{6D674132-E075-4A6E-86E5-88771B6E3A25}"
@@ -43,10 +41,6 @@ Global
 		{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F66102A7-55A0-423A-AAD3-19D89147B5C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F66102A7-55A0-423A-AAD3-19D89147B5C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F66102A7-55A0-423A-AAD3-19D89147B5C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F66102A7-55A0-423A-AAD3-19D89147B5C7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{99803072-9098-430A-A2F5-20EFAC92134D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{99803072-9098-430A-A2F5-20EFAC92134D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99803072-9098-430A-A2F5-20EFAC92134D}.Release|Any CPU.ActiveCfg = Release|Any CPU
