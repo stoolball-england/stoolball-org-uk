@@ -56,7 +56,7 @@ stoolball.autocompletePlayer = function (input) {
     // are missing from later lookups on the same page.
     noCache: true,
     containerClass: "autocomplete-suggestions player-suggestions",
-    params: { teams: input.getAttribute("data-team").split(",") },
+    params: { teams: input.getAttribute("data-team").split(",").join("&teams=") },
     formatResult: function (suggestion, currentValue) {
       // As the result is displayed, separate the value to be selected from the metadata informing its selection.
       // Cache the suggested value so that we can check on blur whether the entered value was one of the suggestions.
