@@ -7,11 +7,11 @@
 {
     var orientation = content.Image.Value<int>("umbracoWidth") >= content.Image.Value<int>("umbracoHeight") ? "landscape" : "portrait";
 <figure class="block__images @orientation">
-    <img srcset="@content.Image.MediaUrl()?width=150&height=150&mode=max&upscale=false 576w,
-                @content.Image.MediaUrl()?width=300&height=300&mode=max&upscale=false 768w,
-                @content.Image.MediaUrl()?width=400&height=400&mode=max&upscale=false 992w,
-                @content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false 1200w"
-                src="@content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false"
+    <img srcset="@content.Image.MediaUrl()?width=150&height=150&rmode=max&upscale=false 576w,
+                @content.Image.MediaUrl()?width=300&height=300&rmode=max&upscale=false 768w,
+                @content.Image.MediaUrl()?width=400&height=400&rmode=max&upscale=false 992w,
+                @content.Image.MediaUrl()?width=500&height=500&rmode=max&upscale=false 1200w"
+                src="@content.Image.MediaUrl()?width=500&height=500&rmode=max&upscale=false"
                 sizes="100vw" 
                 alt="@content.Image.Name" 
                 width="@(content.Image.Value<int>("umbracoWidth"))" height="@(content.Image.Value<int>("umbracoHeight"))" />
