@@ -36,9 +36,9 @@ namespace Stoolball.Data.SqlServer
             }
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
-							([Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
+							([Id], [Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
 							 [DestinationUrl], [Created], [Updated], [IsPermanent], [ForwardQueryString], [DestinationQuery], [DestinationFragment])
-							 VALUES (@Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
+							 VALUES ((SELECT MAX(Id)+1 FROM SkybrudRedirects), @Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
                              @Created, @Updated, @IsPermanent, @ForwardQueryString, @DestinationQuery, @DestinationFragment)",
                                          new
                                          {
@@ -74,10 +74,10 @@ namespace Stoolball.Data.SqlServer
             }
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
-							([Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
+							([Id], [Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
 							 [DestinationUrl], [Created], [Updated], [IsPermanent], [ForwardQueryString], [DestinationQuery], [DestinationFragment])
-							 VALUES (@Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
-                             @Created, @Updated, @IsPermanent, @IsRegex, @ForwardQueryString, @DestinationQuery, @DestinationFragment)",
+							 VALUES ((SELECT MAX(Id)+1 FROM SkybrudRedirects), @Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
+                             @Created, @Updated, @IsPermanent, @ForwardQueryString, @DestinationQuery, @DestinationFragment)",
                  new
                  {
                      Key = Guid.NewGuid().ToString(),
