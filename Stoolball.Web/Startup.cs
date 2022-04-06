@@ -1,12 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Caching;
 using Polly.Caching.Memory;
@@ -195,21 +193,21 @@ namespace Stoolball.Web
             services.AddTransient<ICacheableInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
 
             // Caching with Polly
-            services.AddSingleton<IMemoryCache, MemoryCache>();
-            services.AddSingleton<IOptions<MemoryCacheOptions>, MemoryCacheOptions>();
+            services.AddMemoryCache();
             services.AddSingleton<IAsyncCacheProvider, MemoryCacheProvider>();
             services.AddSingleton<ISyncCacheProvider, MemoryCacheProvider>();
-            services.AddSingleton<IReadOnlyPolicyRegistry<string>>((serviceProvider) =>
+            services.AddSingleton<IReadOnlyPolicyRegistry<string>, PolicyRegistry>((serviceProvider) =>
             {
                 var registry = new PolicyRegistry();
-                var asyncMemoryCacheProvider = serviceProvider.GetService<IAsyncCacheProvider>();
-                var logger = serviceProvider.GetService<Microsoft.Extensions.Logging.ILogger<Policy>>();
+
+                var asyncMemoryCacheProvider = serviceProvider.GetRequiredService<IAsyncCacheProvider>();
+                var logger = serviceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<Policy>>();
                 var cachePolicy = Policy.CacheAsync(asyncMemoryCacheProvider, TimeSpan.FromMinutes(120), (context, key, ex) =>
                 {
                     logger!.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
                 });
 
-                var syncMemoryCacheProvider = serviceProvider.GetService<ISyncCacheProvider>();
+                var syncMemoryCacheProvider = serviceProvider.GetRequiredService<ISyncCacheProvider>();
                 var slidingPolicy = Policy.Cache(syncMemoryCacheProvider, new SlidingTtl(TimeSpan.FromMinutes(120)), (context, key, ex) =>
                 {
                     logger!.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
@@ -227,7 +225,6 @@ namespace Stoolball.Web
             });
             services.AddTransient<ICacheClearer<Tournament>, TournamentCacheClearer>();
             services.AddTransient<ICacheClearer<Match>, MatchCacheClearer>();
-            services.AddTransient<IClearableCache, ClearableCacheWrapper>();
 
             // Repositories
             services.AddTransient<IAuditRepository, SqlServerAuditRepository>();

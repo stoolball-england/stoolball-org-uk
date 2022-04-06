@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Stoolball.Caching;
 using Stoolball.Clubs;
 
@@ -12,10 +13,10 @@ namespace Stoolball.Matches
         private readonly IClubDataSource _clubDataSource;
         private readonly IMatchFilterFactory _matchFilterFactory;
         private readonly IMatchFilterQueryStringSerializer _matchFilterSerializer;
-        private readonly IClearableCache _cache;
+        private readonly IMemoryCache _cache;
 
         public TournamentCacheClearer(IClubDataSource clubDataSource,
-            IMatchFilterFactory matchFilterFactory, IMatchFilterQueryStringSerializer matchFilterSerializer, IClearableCache cache)
+            IMatchFilterFactory matchFilterFactory, IMatchFilterQueryStringSerializer matchFilterSerializer, IMemoryCache cache)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));
