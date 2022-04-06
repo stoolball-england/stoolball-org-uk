@@ -93,7 +93,7 @@ namespace Stoolball.Web.Matches
 
             if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
-                if ((int)model.Match.MatchResultType!.Value == -1) { model.Match.MatchResultType = null; }
+                if (model.Match.MatchResultType.HasValue && (int)model.Match.MatchResultType.Value == -1) { model.Match.MatchResultType = null; }
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedMatch = await _matchRepository.UpdateCloseOfPlay(model.Match, currentMember.Key, currentMember.Name);
