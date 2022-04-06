@@ -32,6 +32,14 @@
 @using (Html.BeginUmbracoForm<LoginMemberSurfaceController>(nameof(LoginMemberSurfaceController.Login)))
 {
     @Html.HiddenFor(m => loginModel.RedirectUrl)
+
+    // When requesting permissions on another page, the error message gets lost. 
+    // Add the same error message the built in controller does, in time for Html.ValidationSummary() to display it.
+    if (ViewContext.ModelState.ErrorCount > 0 && ViewContext.ModelState.ContainsKey("loginModel") && !ViewContext.ModelState.Values.Any(x => x.Errors.Any()))
+    {
+        ViewContext.ModelState.AddModelError("loginModel", "Invalid username or password");
+    }
+
     @Html.ValidationSummary("loginModel", true)
 
     <div class="form-group">
