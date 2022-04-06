@@ -53,3 +53,13 @@ You can run [Cypress](https://www.cypress.io/) from the root of the repository u
 ```pwsh
 npx cypress open
 ```
+
+To ensure all tests pass create a `cypress.env.json` file in the root of this repository with the following format. It will be ignored by git.
+
+```json
+{
+    "CsvExportApiKey": "xxx"
+}
+```
+
+Make sure `xxx` is the same as the API key specified in `Stoolball.Web/appsettings.Development.json`. See [configuration](Configuration.md).

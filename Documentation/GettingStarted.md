@@ -25,6 +25,7 @@ Follow these steps to clone and run the project. You will need the git repositor
 4. Open `Stoolball.sln` in Visual Studio
 5. Right-click `compiler-config.json` in the `Stoolball.Web` project and select `Web Compiler > Re-compile all files`.
 6. Select the solution in Solution Explorer and press Alt+Enter (or right-click, Properties). In the Properties dialog select "Single startup project" and choose Stoolball.Web. Click OK.
+8. Set up the [configuration](Configuration.md) for your environment.
 7. Press Ctrl+F5 to run without debugging using IIS Express. This will open the Umbraco home page for a blank site. Click 'Open Umbraco' to open the login screen for the Umbraco back office. Login using your Umbraco.io account.
 8. Go to the 'Settings' section and select 'uSync'. Click the dropdown next to the 'Import' button and select 'Import Content/Media'. This will load the standard content into the site. Optionally go to the 'Content' section, right-click the 'Content' node and select 'Reload nodes' to see the content.
 9. Go to the 'Settings' section and select 'Languages'. Delete 'English (United States)'.
@@ -46,12 +47,6 @@ You need to run Visual Studio (or the equivalent MSBuild command) at least once 
 ```
 
 You can now use `View > Command Palette > IIS Express: Start Website` to open the Umbraco back office.
-
-## Managing secrets in config files
-
-`*.config` files sometimes need to contain secrets. You can use XDT transforms to add these to the relevant config file at deploy time using the [Umbraco Cloud per-environment naming convention](https://our.umbraco.com/documentation/Umbraco-Cloud/Set-Up/Config-Transforms/).
-
-Begin the filename with `Secret-` (for example `Secret-MyPassword.{config file name}.{environment}.xdt.config`) and commit it to the `.UmbracoCloud` repository, which is private. It will be copied into this application when you build.
 
 ## Managing redirects
 

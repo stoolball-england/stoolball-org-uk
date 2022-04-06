@@ -7,6 +7,7 @@
 This is a rebuild of the Stoolball England website at www.stoolball.org.uk using .NET Framework and Umbraco Cloud.
 
 - [Getting started](Documentation/GettingStarted.md)
+- [Configuration](Documentation/Configuration.md)
 - [Testing](Documentation/Testing.md)
 - [Stoolball data model](Documentation/DataModel.md)
 - [Working with stoolball data](Documentation/Database.md)
