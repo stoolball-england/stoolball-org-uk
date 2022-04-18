@@ -9,8 +9,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Umbraco.Cms.Core" Version="9.4.1" />
-    <PackageReference Include="Umbraco.Cms.Infrastructure" Version="9.4.1" />
+    <PackageReference Include="Umbraco.Cms.Core" Version="9.4.3" />
+    <PackageReference Include="Umbraco.Cms.Infrastructure" Version="9.4.3" />
   </ItemGroup>
 
   <ItemGroup>
