@@ -10,6 +10,7 @@ using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
+using Stoolball.Web.Matches;
 using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -29,6 +30,7 @@ namespace Stoolball.Web.Teams
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
         private readonly IMatchFilterQueryStringParser _matchFilterQueryStringParser;
         private readonly IMatchFilterHumanizer _matchFilterHumanizer;
+        private readonly IAddMatchMenuViewModelFactory _addMatchMenuViewModelFactory;
 
         public MatchesForTeamController(ILogger<MatchesForTeamController> logger,
             ICompositeViewEngine compositeViewEngine,
@@ -40,7 +42,8 @@ namespace Stoolball.Web.Teams
             ICreateMatchSeasonSelector createMatchSeasonSelector,
             IAuthorizationPolicy<Team> authorizationPolicy,
             IMatchFilterQueryStringParser matchFilterQueryStringParser,
-            IMatchFilterHumanizer matchFilterHumanizer)
+            IMatchFilterHumanizer matchFilterHumanizer,
+            IAddMatchMenuViewModelFactory addMatchMenuViewModelFactory)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
@@ -51,6 +54,7 @@ namespace Stoolball.Web.Teams
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _matchFilterQueryStringParser = matchFilterQueryStringParser ?? throw new ArgumentNullException(nameof(matchFilterQueryStringParser));
             _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
+            _addMatchMenuViewModelFactory = addMatchMenuViewModelFactory ?? throw new ArgumentNullException(nameof(addMatchMenuViewModelFactory));
         }
 
         [HttpGet]
@@ -72,12 +76,15 @@ namespace Stoolball.Web.Teams
                     DefaultMatchFilter = filter.filter,
                     Matches = new MatchListingViewModel(CurrentPage)
                 };
+
                 model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.QueryString.Value);
                 model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, filter.sortOrder);
 
                 model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
                 model.IsInACurrentLeague = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.LeagueMatch).Any();
                 model.IsInACurrentKnockoutCompetition = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.KnockoutMatch).Any();
+
+                model.AddMatchMenu = _addMatchMenuViewModelFactory.CreateModel(model.Team.TeamRoute, false, true, true, model.IsInACurrentKnockoutCompetition, model.IsInACurrentLeague, true);
 
                 var userFilter = _matchFilterHumanizer.MatchingFilter(model.AppliedMatchFilter);
                 if (!string.IsNullOrWhiteSpace(userFilter))

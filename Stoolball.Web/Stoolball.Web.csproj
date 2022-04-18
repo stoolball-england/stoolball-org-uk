@@ -26,7 +26,6 @@
     <Content Remove="wwwroot\css\filter.scss" />
     <Content Remove="wwwroot\css\home.scss" />
     <Content Remove="wwwroot\css\match.scss" />
-    <Content Remove="wwwroot\css\matches.scss" />
     <Content Remove="wwwroot\css\news.scss" />
     <Content Remove="wwwroot\css\related-items.scss" />
     <Content Remove="wwwroot\css\rules.page.scss" />
@@ -120,7 +119,6 @@
     <None Include="wwwroot\css\filter.scss" />
     <None Include="wwwroot\css\home.scss" />
     <None Include="wwwroot\css\match.scss" />
-    <None Include="wwwroot\css\matches.scss" />
     <None Include="wwwroot\css\news.scss" />
     <None Include="wwwroot\css\related-items.scss" />
     <None Include="wwwroot\css\rules.page.scss" />

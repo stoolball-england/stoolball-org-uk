@@ -4,27 +4,12 @@
 @{
     SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
     SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
-    SmidgeHelper.RequiresCss(new CssFile("~/css/matches.min.css") { Order = 100 });
-}
-@{
-    var matchMenu = new AddMatchMenuViewModel { BaseRoute = Model.Team!.TeamRoute, EnableTournaments = true };
-
-    if (Model.IsInACurrentLeague)
-    {
-        matchMenu.MatchTypes.Add(MatchType.LeagueMatch);
-    }
-    if (Model.IsInACurrentKnockoutCompetition)
-    {
-        matchMenu.MatchTypes.Add(MatchType.KnockoutMatch);
-    }
-    matchMenu.MatchTypes.Add(MatchType.TrainingSession);
-    matchMenu.MatchTypes.Add(MatchType.FriendlyMatch);
 }
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
+    <h1>@Model.Team!.TeamNameLocationAndPlayerType()</h1>
 
     @if (Model.Team.UntilYear.HasValue)
     {
@@ -46,10 +31,10 @@
         <li class="nav-item">
             <a class="nav-link" href="@Model.Team.TeamRoute/statistics">Statistics</a>
         </li>
-        <li class="nav-item nav-item-admin nav-item-admin-md-first">
+        <li class="nav-item nav-item-admin nav-item-admin-md-first nav-item-admin-lg-first">
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
         </li>
-        @await Html.PartialAsync("_AddMatchMenu", matchMenu)
+        @await Html.PartialAsync("_AddMatchMenu", Model.AddMatchMenu)
     </ul>
     @await Html.PartialAsync("_Filters", new MatchFilterViewModel
 {

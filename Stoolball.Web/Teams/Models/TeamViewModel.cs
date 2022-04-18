@@ -16,6 +16,7 @@ namespace Stoolball.Web.Teams.Models
         }
         public Team? Team { get; set; }
         public MatchListingViewModel Matches { get; set; } = new MatchListingViewModel();
+        public AddMatchMenuViewModel AddMatchMenu { get; set; } = new AddMatchMenuViewModel();
         public MatchFilter DefaultMatchFilter { get; set; } = new MatchFilter();
         public MatchFilter AppliedMatchFilter { get; set; } = new MatchFilter();
         public string? FilterDescription { get; set; }

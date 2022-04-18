@@ -9,6 +9,7 @@ using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Teams;
+using Stoolball.Web.Matches;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
 using Xunit;
@@ -40,7 +41,8 @@ namespace Stoolball.Web.UnitTests.Teams
                 _createMatchSeasonSelector.Object,
                 Mock.Of<IAuthorizationPolicy<Team>>(),
                 _matchFilterQueryStringParser.Object,
-                Mock.Of<IMatchFilterHumanizer>())
+                Mock.Of<IMatchFilterHumanizer>(),
+                Mock.Of<IAddMatchMenuViewModelFactory>())
             {
                 ControllerContext = ControllerContext
             };

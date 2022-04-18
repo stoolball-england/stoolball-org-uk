@@ -2,17 +2,11 @@
 @using Stoolball.Web.Competitions.Models
 @using Stoolball.Web.Matches.Models
 @using Stoolball.Matches
-@{ 
-    SmidgeHelper.RequiresCss(new CssFile("~/css/matches.min.css") { Order = 100 });
-
-    var matchMenu = new AddMatchMenuViewModel { BaseRoute = Model.Season!.SeasonRoute, EnableTournaments = Model.Season.EnableTournaments, IsFirstAdminButton = true };
-    matchMenu.MatchTypes.AddRange(Model.Season.MatchTypes);
-}
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
+    <h1>@Model.Season!.SeasonFullNameAndPlayerType()</h1>
 
     <ul class="nav nav-tabs nav-tabs-has-add">
         <li class="nav-item">
@@ -36,7 +30,7 @@
         <li class="nav-item">
             <a class="nav-link" href="@Model.Season.SeasonRoute/statistics">Statistics</a>
         </li>
-        @await Html.PartialAsync("_AddMatchMenu", matchMenu)
+        @await Html.PartialAsync("_AddMatchMenu", Model.AddMatchMenu)
     </ul>
 
 

@@ -71,13 +71,6 @@ $tabs-min-height: (1rem * $line-height-base) + $spacer;
     right: 0;
 }
 
-@include media-breakpoint-only(md) {
-    body .nav-tabs > .nav-item-admin-md-last .nav-link {
-        padding-right: $grid-gutter-width/2;
-        margin-right: -($grid-gutter-width/2);
-    }
-}
-
 // Hide the text of admin items (and ensure it doesn't wrap when hidden), leaving a minimum-clickable-size button with a background icon.
 // Remove the hidden left/right border of ordinary tabs, so that it lines up closer to a dropdown menu when there is one. Keep the bottom
 // border because it keeps spacing consistent with tabs, but ensure it remains transparent.
@@ -143,7 +136,7 @@ $tabs-min-height: (1rem * $line-height-base) + $spacer;
         position: static;
     }
 
-    .nav-item-admin, .nav-item-admin + .nav-item-admin.nav-item-admin-md-first {
+    .nav-item-admin, .nav-item.nav-item-admin.nav-item-admin-md-first {
         flex-grow: 1;
         display: flex;
         justify-content: flex-end;
@@ -164,10 +157,11 @@ $tabs-min-height: (1rem * $line-height-base) + $spacer;
         border-radius: $border-radius;
     }
     // Spill into the .container-xl margin so that the button content rather than its border can align to the right edge
-    .nav-item-admin:last-child .nav-link {
+    .nav-item-admin:last-child .nav-link, .nav-tabs > .nav-item-admin-md-last .nav-link {
         padding-right: $spacer/2;
         margin-right: -($spacer/2);
     }
+
     // Change the image colours
     .nav-item-admin .nav-link-add {
         background-image: url(/images/icons/add-grey-24dp.svg);
@@ -208,6 +202,26 @@ $tabs-min-height: (1rem * $line-height-base) + $spacer;
         color: $white;
         background-color: $black;
         background-image: url(/images/icons/iconmonstr-filter-1-white.svg);
+    }
+}
+
+// Undo the extra space for the first item at lg unless it is re-applied, since an extra item may be revealed at the breakpoint
+@include media-breakpoint-up(lg) {
+    .nav-item.nav-item-admin.nav-item-admin-md-first {
+        flex-grow: initial;
+    }
+
+    .nav-item.nav-item-admin.nav-item-admin-lg-first {
+        flex-grow: 1;
+    }
+
+    .nav-tabs > .nav-item-admin-lg-last .nav-link {
+        padding-right: $grid-gutter-width/2;
+    }
+    // If nav-item-admin-md-last but not nav-item-admin-lg-last, reset the changes from md
+    .nav-tabs > .nav-item-admin-lg-reset-last .nav-link {
+        padding-right: $spacer;
+        margin-right: 0;
     }
 }
 

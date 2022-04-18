@@ -95,6 +95,7 @@ namespace Stoolball.Web
             services.AddApplicationInsightsTelemetry();
 
             // Utility classes
+            services.AddTransient<IAddMatchMenuViewModelFactory, AddMatchMenuViewModelFactory>();
             services.AddTransient<IApiKeyProvider, ConfigApiKeyProvider>();
             services.AddTransient<IBadLanguageFilter, BadLanguageFilter>();
             services.AddTransient<IBattingScorecardComparer, BattingScorecardComparer>();

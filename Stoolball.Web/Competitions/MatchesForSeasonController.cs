@@ -8,6 +8,7 @@ using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Competitions.Models;
+using Stoolball.Web.Matches;
 using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -21,6 +22,7 @@ namespace Stoolball.Web.Competitions
         private readonly IMatchFilterFactory _matchFilterFactory;
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAddMatchMenuViewModelFactory _addMatchMenuViewModelFactory;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public MatchesForSeasonController(ILogger<MatchesForSeasonController> logger,
@@ -29,12 +31,14 @@ namespace Stoolball.Web.Competitions
             IMatchFilterFactory matchFilterFactory,
             ISeasonDataSource seasonDataSource,
             IMatchListingDataSource matchDataSource,
+            IAddMatchMenuViewModelFactory addMatchMenuViewModelFactory,
             IAuthorizationPolicy<Competition> authorizationPolicy)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _addMatchMenuViewModelFactory = addMatchMenuViewModelFactory ?? throw new ArgumentNullException(nameof(addMatchMenuViewModelFactory));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
@@ -63,6 +67,13 @@ namespace Stoolball.Web.Competitions
                 {
                     model.Matches.MatchTypesToLabel.Add(MatchType.FriendlyMatch);
                 }
+
+                model.AddMatchMenu = _addMatchMenuViewModelFactory.CreateModel(model.Season.SeasonRoute, true,
+                    model.Season.MatchTypes.Contains(MatchType.TrainingSession),
+                    model.Season.MatchTypes.Contains(MatchType.FriendlyMatch),
+                    model.Season.MatchTypes.Contains(MatchType.KnockoutMatch),
+                    model.Season.MatchTypes.Contains(MatchType.LeagueMatch),
+                    model.Season.EnableTournaments);
 
                 model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
 

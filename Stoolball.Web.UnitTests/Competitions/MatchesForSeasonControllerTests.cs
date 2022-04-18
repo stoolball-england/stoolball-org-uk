@@ -9,6 +9,7 @@ using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Competitions.Models;
+using Stoolball.Web.Matches;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Competitions
@@ -32,6 +33,7 @@ namespace Stoolball.Web.UnitTests.Competitions
                 Mock.Of<IMatchFilterFactory>(),
                 _seasonDataSource.Object,
                 _matchListingDataSource.Object,
+                Mock.Of<IAddMatchMenuViewModelFactory>(),
                 Mock.Of<IAuthorizationPolicy<Competition>>()
                 )
             {

@@ -14,6 +14,7 @@ namespace Stoolball.Web.Competitions.Models
         }
         public Season? Season { get; set; }
         public MatchListingViewModel Matches { get; set; } = new MatchListingViewModel();
+        public AddMatchMenuViewModel AddMatchMenu { get; set; } = new AddMatchMenuViewModel();
         public Uri? UrlReferrer { get; set; }
         public string? GoogleMapsApiKey { get; set; }
     }

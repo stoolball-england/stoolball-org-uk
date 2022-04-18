@@ -1,4 +1,6 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<StyleGuide>
+@using Stoolball.Matches
+@using Stoolball.Web.Matches
 @using Stoolball.Web.Matches.Models
 @{
     SmidgeHelper.RequiresCss(new CssFile("~/css/news.min.css"){ Order = 100 });
@@ -58,6 +60,126 @@
     {
         FilterDescription = "a description of the applied filter"
     })
+
+    @{
+        var addMatchTabClasses = "nav nav-tabs nav-tabs-has-add";
+        Func<object,object> addMatchTabs =
+        @<text><li class="nav-item"><a class="nav-link" href="https://example.org">Summary</a></li>
+               <li class="nav-item"><a class="nav-link" href="https://example.org">Matches</a></li>
+               <li class="nav-item"><a class="nav-link" href="https://example.org">Map</a></li>
+               <li class="nav-item"><a class="nav-link" href="https://example.org">Table</a></li>
+               <li class="nav-item"><a class="nav-link" href="https://example.org">Statistics</a></li>
+               </text>;
+        Func<object,object> filterButton = @<text><li class="nav-item nav-item-admin"><button type="button" class="nav-link nav-link-filter">Edit filter</button></li></text>
+        ;
+        var menuFactory = new AddMatchMenuViewModelFactory();
+    }
+    
+    <h2>'Add match' variations - single buttons</h2>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, true, false, false, false, false))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, false, false, false, true, false))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, false, true, true, true, false))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, false, false, false, false, true))
+    </ul>
+   <h2>'Add match' variations - two buttons</h2>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, true, false, false, true, false))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, true, true, false, true, false))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, true, false, false, false, true))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, false, false, false, true, true))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, false, true, false, true, true))
+    </ul>
+     <h2>'Add match' variations - three buttons</h2>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, true, false, false, true, true))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, true, true, true, false, true, true))
+    </ul>
+   <h2>'Add match' variations with filter - single buttons</h2>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, true, false, false, false, false))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, false, false, false, true, false))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, false, true, true, true, false))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, false, false, false, false, true))
+    </ul>
+    <h2>'Add match' variations with filter - two buttons</h2>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, true, false, false, true, false))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, true, true, false, true, false))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, true, false, false, false, true))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, false, false, false, true, true))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, false, true, false, true, true))
+    </ul>
+    <h2>'Add match' variations with filter - three buttons</h2>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, true, false, false, true, true))
+    </ul>
+    <ul class="@addMatchTabClasses">
+        @(addMatchTabs(new object()))
+        @(filterButton(new object()))
+        @await Html.PartialAsync("_AddMatchMenu", menuFactory.CreateModel(null, false, true, true, false, true, true))
+    </ul>
     @Html.GetBlockListHtml(Model, "blockList")
     <p>A paragraph followed by a table.</p>
     <table>
