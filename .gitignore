@@ -408,6 +408,7 @@ Secret-*
 # Exclude generated files
 Stoolball.Web/Web.development.xdt.config
 Stoolball.Web/Web.live.xdt.config
+Stoolball.Web/media/
 umbracoSettings.config
 tinyMceConfig.config
 ApplicationInsights.config
