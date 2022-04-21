@@ -1,4 +1,6 @@
 {
+  "Name": "Delete Tournament",
+  "Alias": "deleteTournament",
   "File": "umb://template-file/deleteTournament.cshtml",
   "Master": null,
   "Udi": "umb://template/7dd8ace8ec06495394a3325d64bfebea",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Delete Tournament",
-  "Alias": "deleteTournament",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

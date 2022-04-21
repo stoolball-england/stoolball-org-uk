@@ -1,4 +1,6 @@
 {
+  "Name": "Bowling Figures",
+  "Alias": "BowlingFigures",
   "File": "umb://template-file/BowlingFigures.cshtml",
   "Master": null,
   "Udi": "umb://template/917c57f6ad7a441fb59797bf2150afb9",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Bowling Figures",
-  "Alias": "BowlingFigures",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.5.3"
+  "__version": "4.4.4"
 }

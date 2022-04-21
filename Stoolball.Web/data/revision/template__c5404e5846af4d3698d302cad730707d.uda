@@ -1,4 +1,6 @@
 {
+  "Name": "Matches for Match Location",
+  "Alias": "matchesForMatchLocation",
   "File": "umb://template-file/matchesForMatchLocation.cshtml",
   "Master": null,
   "Udi": "umb://template/c5404e5846af4d3698d302cad730707d",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Matches for Match Location",
-  "Alias": "matchesForMatchLocation",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.3.1"
+  "__version": "4.4.4"
 }

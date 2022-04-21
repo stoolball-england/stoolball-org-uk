@@ -1,4 +1,6 @@
 {
+  "Name": "Matches for Season",
+  "Alias": "matchesForSeason",
   "File": "umb://template-file/matchesForSeason.cshtml",
   "Master": null,
   "Udi": "umb://template/1c17d796ea8b4a8888fc6a3b082749b3",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Matches for Season",
-  "Alias": "matchesForSeason",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.3.1"
+  "__version": "4.4.4"
 }

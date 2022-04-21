@@ -1,4 +1,6 @@
 {
+  "Name": "YouTube video",
+  "Alias": "youTubeVideo",
   "DefaultTemplate": null,
   "AllowedTemplates": [],
   "Icon": "icon-video color-black",
@@ -19,6 +21,8 @@
       "Key": "33b8f20a-dd4c-4c20-a913-870d9b45d8a2",
       "Name": "Content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "b6476d60-7e5d-4abe-bbaf-186e1c2c2f7c",
@@ -30,7 +34,11 @@
           "SortOrder": 0,
           "Validation": "https?://[a-zA-Z0-9-.]+.[a-zA-Z]{2,}",
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -49,8 +57,6 @@
       "Mode": 0
     }
   ],
-  "Name": "YouTube video",
-  "Alias": "youTubeVideo",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "4.4.4"
 }

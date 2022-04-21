@@ -1,4 +1,6 @@
 {
+  "Name": "Confirm Email Address",
+  "Alias": "confirmEmailAddress",
   "DefaultTemplate": "umb://template/3d736c7583b641e6abb6a534efcd456d",
   "AllowedTemplates": [
     "umb://template/3d736c7583b641e6abb6a534efcd456d"
@@ -24,6 +26,8 @@
       "Key": "aa9b2686-1dbb-431a-aeb2-0d7dd8e2c9a6",
       "Name": "Page content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "pageContent",
       "PropertyTypes": [
         {
           "Key": "45e8edde-dbaa-4810-81eb-9852344dd3db",
@@ -89,8 +93,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Confirm Email Address",
-  "Alias": "confirmEmailAddress",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

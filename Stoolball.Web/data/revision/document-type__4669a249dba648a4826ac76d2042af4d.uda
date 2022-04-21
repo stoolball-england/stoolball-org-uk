@@ -1,4 +1,6 @@
 {
+  "Name": "_Design",
+  "Alias": "design",
   "DefaultTemplate": null,
   "AllowedTemplates": [],
   "Icon": "icon-document",
@@ -19,6 +21,8 @@
       "Key": "a9949d8c-655b-4ad2-95ec-b54ec318a877",
       "Name": "Design",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "design",
       "PropertyTypes": [
         {
           "Key": "250ab4a7-cd87-4ff6-aa4c-2e0634971391",
@@ -30,7 +34,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "ad6eae9f-1634-4678-ac6e-da4f4e31bdfa",
@@ -42,7 +50,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -66,8 +78,6 @@
       "Mode": 0
     }
   ],
-  "Name": "_Design",
-  "Alias": "design",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "4.4.4"
 }

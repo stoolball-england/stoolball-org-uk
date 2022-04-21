@@ -1,4 +1,6 @@
 {
+  "Name": "Run-Outs",
+  "Alias": "RunOuts",
   "File": "umb://template-file/RunOuts.cshtml",
   "Master": null,
   "Udi": "umb://template/e9b4fa9d0ea141d28d2ce3f033cc6a59",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Run-Outs",
-  "Alias": "RunOuts",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.2"
+  "__version": "4.4.4"
 }

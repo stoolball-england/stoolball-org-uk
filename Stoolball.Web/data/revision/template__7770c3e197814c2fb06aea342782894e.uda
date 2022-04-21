@@ -1,4 +1,6 @@
 {
+  "Name": "Create Season",
+  "Alias": "createSeason",
   "File": "umb://template-file/createSeason.cshtml",
   "Master": null,
   "Udi": "umb://template/7770c3e197814c2fb06aea342782894e",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Create Season",
-  "Alias": "createSeason",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

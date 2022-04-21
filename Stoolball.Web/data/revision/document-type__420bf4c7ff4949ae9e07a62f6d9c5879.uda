@@ -1,4 +1,6 @@
 {
+  "Name": "Getty image",
+  "Alias": "gettyImage",
   "DefaultTemplate": null,
   "AllowedTemplates": [],
   "Icon": "icon-movie color-black",
@@ -19,6 +21,8 @@
       "Key": "a29fc1bf-7c4d-4935-9958-bb1143ab9ac4",
       "Name": "Content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "378db78a-3ad2-4536-ac40-53c95734d0bd",
@@ -30,7 +34,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "e06a6fc3-9f98-4fe2-b847-3156a6db9b7e",
@@ -42,7 +50,11 @@
           "SortOrder": 0,
           "Validation": "//embed.gettyimages.com/embed/.*",
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -61,8 +73,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Getty image",
-  "Alias": "gettyImage",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.5.2"
+  "__version": "4.4.4"
 }

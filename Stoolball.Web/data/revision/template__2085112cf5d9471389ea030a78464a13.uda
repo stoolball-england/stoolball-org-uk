@@ -1,4 +1,6 @@
 {
+  "Name": "Personal Details",
+  "Alias": "PersonalDetails",
   "File": "umb://template-file/PersonalDetails.cshtml",
   "Master": null,
   "Udi": "umb://template/2085112cf5d9471389ea030a78464a13",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Personal Details",
-  "Alias": "PersonalDetails",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

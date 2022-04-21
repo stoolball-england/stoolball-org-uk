@@ -1,4 +1,6 @@
 {
+  "Name": "Edit Match Format",
+  "Alias": "EditMatchFormat",
   "File": "umb://template-file/EditMatchFormat.cshtml",
   "Master": null,
   "Udi": "umb://template/0622a0f5f57140e1b80417d9724f7b28",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Edit Match Format",
-  "Alias": "EditMatchFormat",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.2"
+  "__version": "4.4.4"
 }

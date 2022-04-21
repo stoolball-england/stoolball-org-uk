@@ -1,4 +1,6 @@
 {
+  "Name": "Competition Statistics",
+  "Alias": "CompetitionStatistics",
   "File": "umb://template-file/CompetitionStatistics.cshtml",
   "Master": null,
   "Udi": "umb://template/7e2209f722e043f78946bd091b0f3ece",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Competition Statistics",
-  "Alias": "CompetitionStatistics",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.5.3"
+  "__version": "4.4.4"
 }

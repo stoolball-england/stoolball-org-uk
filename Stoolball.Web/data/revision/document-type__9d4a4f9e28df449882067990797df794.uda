@@ -1,4 +1,6 @@
 {
+  "Name": "Personal Details",
+  "Alias": "personalDetails",
   "DefaultTemplate": "umb://template/2085112cf5d9471389ea030a78464a13",
   "AllowedTemplates": [
     "umb://template/2085112cf5d9471389ea030a78464a13"
@@ -24,6 +26,8 @@
       "Key": "4790350e-9469-4276-aa49-bd7670450fa1",
       "Name": "Page content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "pageContent",
       "PropertyTypes": [
         {
           "Key": "7be523ae-e4b4-478c-b540-ef35ce1f7d47",
@@ -94,8 +98,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Personal Details",
-  "Alias": "personalDetails",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

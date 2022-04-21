@@ -1,4 +1,6 @@
 {
+  "Name": "Home",
+  "Alias": "home",
   "DefaultTemplate": "umb://template/efeee16ea1be47c891a7501c7f598ade",
   "AllowedTemplates": [
     "umb://template/efeee16ea1be47c891a7501c7f598ade"
@@ -64,8 +66,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Home",
-  "Alias": "home",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

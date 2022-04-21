@@ -1,12 +1,12 @@
 {
+  "Name": "Page Stylesheet Picker",
+  "Alias": null,
   "EditorAlias": "Stoolball.StylesheetPicker",
   "DatabaseType": 0,
   "Configuration": {"filter":"\\.page$"},
   "Parent": null,
   "Udi": "umb://data-type/24968824d2ac4a91b12c5eaa44f6f129",
   "Dependencies": [],
-  "Name": "Page Stylesheet Picker",
-  "Alias": null,
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "4.4.4"
 }

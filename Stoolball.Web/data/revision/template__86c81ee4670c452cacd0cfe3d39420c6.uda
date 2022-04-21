@@ -1,4 +1,6 @@
 {
+  "Name": "News Story",
+  "Alias": "NewsStory",
   "File": "umb://template-file/NewsStory.cshtml",
   "Master": null,
   "Udi": "umb://template/86c81ee4670c452cacd0cfe3d39420c6",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "News Story",
-  "Alias": "NewsStory",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.5.2"
+  "__version": "4.4.4"
 }

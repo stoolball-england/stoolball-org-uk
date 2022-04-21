@@ -1,4 +1,6 @@
 {
+  "Name": "Season",
+  "Alias": "season",
   "File": "umb://template-file/season.cshtml",
   "Master": null,
   "Udi": "umb://template/6e0724f7aa52495d9b0e5e17fb2c729a",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Season",
-  "Alias": "season",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.3.1"
+  "__version": "4.4.4"
 }

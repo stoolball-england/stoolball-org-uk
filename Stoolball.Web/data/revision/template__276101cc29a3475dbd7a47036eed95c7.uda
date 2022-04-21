@@ -1,4 +1,6 @@
 {
+  "Name": "Player Bowling",
+  "Alias": "PlayerBowling",
   "File": "umb://template-file/PlayerBowling.cshtml",
   "Master": null,
   "Udi": "umb://template/276101cc29a3475dbd7a47036eed95c7",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Player Bowling",
-  "Alias": "PlayerBowling",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.2"
+  "__version": "4.4.4"
 }

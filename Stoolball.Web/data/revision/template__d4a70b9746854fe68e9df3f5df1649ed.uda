@@ -1,4 +1,6 @@
 {
+  "Name": "Create Knockout Match",
+  "Alias": "createKnockoutMatch",
   "File": "umb://template-file/createKnockoutMatch.cshtml",
   "Master": null,
   "Udi": "umb://template/d4a70b9746854fe68e9df3f5df1649ed",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Create Knockout Match",
-  "Alias": "createKnockoutMatch",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

@@ -1,4 +1,6 @@
 {
+  "Name": "Header photo",
+  "Alias": "headerPhoto",
   "Icon": "icon-picture",
   "Thumbnail": "folder.png",
   "Description": null,
@@ -17,6 +19,8 @@
       "Key": "93846d50-a9ea-42ea-ac6e-d06a159a8da0",
       "Name": "Image",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "image",
       "PropertyTypes": [
         {
           "Key": "4b1e986a-64fd-4d83-9c97-5c3a4aac6693",
@@ -28,7 +32,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "4bcd93c1-7f3f-434b-9c81-24c5723ea940",
@@ -40,7 +48,11 @@
           "SortOrder": 4,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "5c219ad3-3a56-492a-8aeb-15100fcae022",
@@ -52,7 +64,11 @@
           "SortOrder": 3,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "5e5ed6de-dba0-4c8d-bab7-8846a56930f7",
@@ -64,7 +80,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "e54c5295-d1e7-4c40-8921-4e86cd81e4d8",
@@ -76,7 +96,11 @@
           "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -105,8 +129,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Header photo",
-  "Alias": "headerPhoto",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.MediaTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

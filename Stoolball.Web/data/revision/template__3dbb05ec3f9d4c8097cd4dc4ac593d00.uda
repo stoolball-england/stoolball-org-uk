@@ -1,4 +1,6 @@
 {
+  "Name": "Delete Match Location",
+  "Alias": "deleteMatchLocation",
   "File": "umb://template-file/deleteMatchLocation.cshtml",
   "Master": null,
   "Udi": "umb://template/3dbb05ec3f9d4c8097cd4dc4ac593d00",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Delete Match Location",
-  "Alias": "deleteMatchLocation",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

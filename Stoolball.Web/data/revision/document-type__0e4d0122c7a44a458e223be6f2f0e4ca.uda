@@ -1,4 +1,6 @@
 {
+  "Name": "Login Member",
+  "Alias": "loginMember",
   "DefaultTemplate": "umb://template/efab32b5766643a4b4fd55e0d2b00e27",
   "AllowedTemplates": [
     "umb://template/efab32b5766643a4b4fd55e0d2b00e27"
@@ -24,6 +26,8 @@
       "Key": "34ad7e5c-194a-4b9a-b492-8f4c43cd6ef7",
       "Name": "'Approve member' email (re-sent if a member attempts to login but is not approved)",
       "SortOrder": 1,
+      "Type": 0,
+      "Alias": "approveMemberEmailReSentIfAMemberAttemptsToLoginButIsNotApproved",
       "PropertyTypes": [
         {
           "Key": "013dd7c3-b0da-44df-a705-2c7ef6add1d1",
@@ -35,7 +39,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "07181917-bcf9-4ff3-bfa5-46bbbb344fb2",
@@ -47,7 +55,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     },
@@ -55,6 +67,8 @@
       "Key": "ce46aa63-4b12-4c9f-855b-b62bc2a4b04a",
       "Name": "Page content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "pageContent",
       "PropertyTypes": [
         {
           "Key": "1cee3b15-db72-4ea1-ac57-946eba2c30ef",
@@ -66,7 +80,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "42a5814f-7fc5-4c9c-9228-eb0697292777",
@@ -78,7 +96,11 @@
           "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "7dbc9537-6ae4-437a-a34d-2528147bbc90",
@@ -90,7 +112,11 @@
           "SortOrder": 4,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "c658e086-b6e3-4afd-996c-b6564aaddb08",
@@ -102,7 +128,11 @@
           "SortOrder": 5,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "d67d27b8-89cd-4cd8-9531-3b59875d4954",
@@ -114,7 +144,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "f5ca4e12-ff76-42fb-bd86-9da09be78550",
@@ -126,7 +160,11 @@
           "SortOrder": 3,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     },
@@ -134,6 +172,8 @@
       "Key": "dc18782f-88b7-4840-bc90-be0bc59c5e03",
       "Name": "'Reset password' email (sent if a member attempts to login but is locked out)",
       "SortOrder": 2,
+      "Type": 0,
+      "Alias": "resetPasswordEmailSentIfAMemberAttemptsToLoginButIsLockedOut",
       "PropertyTypes": [
         {
           "Key": "8ffefb86-525f-4e04-a320-ba44b4a42f9d",
@@ -145,7 +185,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "fe6aba03-e36a-4fe6-93d1-83d69bbcde85",
@@ -157,7 +201,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -201,8 +249,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Login Member",
-  "Alias": "loginMember",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

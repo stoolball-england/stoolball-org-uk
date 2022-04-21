@@ -1,4 +1,6 @@
 {
+  "Name": "Match",
+  "Alias": "match",
   "File": "umb://template-file/match.cshtml",
   "Master": null,
   "Udi": "umb://template/48d897f9994c4e4289143de314187730",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Match",
-  "Alias": "match",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.3.1"
+  "__version": "4.4.4"
 }

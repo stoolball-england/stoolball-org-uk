@@ -1,4 +1,6 @@
 {
+  "Name": "Team",
+  "Alias": "team",
   "File": "umb://template-file/team.cshtml",
   "Master": null,
   "Udi": "umb://template/3665664f1024441fb4dd184d3e2eb7d7",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Team",
-  "Alias": "team",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.3.1"
+  "__version": "4.4.4"
 }

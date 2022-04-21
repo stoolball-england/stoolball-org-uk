@@ -1,4 +1,6 @@
 {
+  "Name": "Content",
+  "Alias": "content",
   "DefaultTemplate": "umb://template/14a24e1e79ac4d579b3632fc5460446e",
   "AllowedTemplates": [
     "umb://template/14a24e1e79ac4d579b3632fc5460446e"
@@ -28,6 +30,8 @@
       "Key": "dcbd3ef8-74a9-4e7b-baad-55b6b3b2df81",
       "Name": "Content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "89ef9c3e-79d3-48eb-85e0-e52718bb7d88",
@@ -39,7 +43,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -83,8 +91,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Content",
-  "Alias": "content",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.5.1"
+  "__version": "4.4.4"
 }

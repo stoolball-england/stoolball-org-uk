@@ -1,4 +1,6 @@
 {
+  "Name": "Create Team",
+  "Alias": "createTeam",
   "File": "umb://template-file/createTeam.cshtml",
   "Master": null,
   "Udi": "umb://template/58890656a2d64ddca2679308bb7ffe42",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Create Team",
-  "Alias": "createTeam",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

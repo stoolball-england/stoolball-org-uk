@@ -1,4 +1,6 @@
 {
+  "Name": "Cookies",
+  "Alias": "cookies",
   "DefaultTemplate": "umb://template/14a24e1e79ac4d579b3632fc5460446e",
   "AllowedTemplates": [
     "umb://template/14a24e1e79ac4d579b3632fc5460446e"
@@ -27,6 +29,8 @@
       "Key": "1e6d774e-a189-499b-827a-160047d72bdf",
       "Name": "Content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "9122f5c8-af8d-484c-8560-711a67a1de8f",
@@ -38,7 +42,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -77,8 +85,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Cookies",
-  "Alias": "cookies",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.5.1"
+  "__version": "4.4.4"
 }

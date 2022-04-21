@@ -1,4 +1,6 @@
 {
+  "Name": "Image",
+  "Alias": "imageElementType",
   "DefaultTemplate": null,
   "AllowedTemplates": [],
   "Icon": "icon-umb-media color-black",
@@ -19,6 +21,8 @@
       "Key": "fe8f509d-1436-466a-b496-919fdbe7e74d",
       "Name": "Image",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "image",
       "PropertyTypes": [
         {
           "Key": "afbcee78-d61f-4bd0-a5e2-647847d73d21",
@@ -30,7 +34,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "cf6b1a5c-0aef-495f-b090-bbabe083183e",
@@ -42,7 +50,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -66,8 +78,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Image",
-  "Alias": "imageElementType",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "4.4.4"
 }

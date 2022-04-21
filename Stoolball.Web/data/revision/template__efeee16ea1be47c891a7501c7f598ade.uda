@@ -1,4 +1,6 @@
 {
+  "Name": "Home",
+  "Alias": "Home",
   "File": "umb://template-file/Home.cshtml",
   "Master": null,
   "Udi": "umb://template/efeee16ea1be47c891a7501c7f598ade",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Home",
-  "Alias": "Home",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.3.0"
+  "__version": "4.4.4"
 }

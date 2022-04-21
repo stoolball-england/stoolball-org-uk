@@ -1,4 +1,6 @@
 {
+  "Name": "Delete Club",
+  "Alias": "deleteClub",
   "File": "umb://template-file/deleteClub.cshtml",
   "Master": null,
   "Udi": "umb://template/007d4a7a068f4dd8b8a693271d5bb5f4",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Delete Club",
-  "Alias": "deleteClub",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

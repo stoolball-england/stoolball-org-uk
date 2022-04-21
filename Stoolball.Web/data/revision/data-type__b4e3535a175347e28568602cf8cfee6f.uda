@@ -1,0 +1,12 @@
+{
+  "Name": "Multi URL Picker",
+  "Alias": null,
+  "EditorAlias": "Umbraco.MultiUrlPicker",
+  "DatabaseType": 0,
+  "Configuration": {"minNumber":0,"maxNumber":0,"overlaySize":null,"ignoreUserStartNodes":false,"hideAnchor":false},
+  "Parent": null,
+  "Udi": "umb://data-type/b4e3535a175347e28568602cf8cfee6f",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
+  "__version": "4.4.4"
+}

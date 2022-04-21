@@ -1,0 +1,12 @@
+{
+  "Name": "Approved Color",
+  "Alias": null,
+  "EditorAlias": "Umbraco.ColorPicker",
+  "DatabaseType": 1,
+  "Configuration": {"useLabel":false,"items":[]},
+  "Parent": null,
+  "Udi": "umb://data-type/0225af17b30249cb9176b9f35cab9c17",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
+  "__version": "4.4.4"
+}

@@ -1,4 +1,6 @@
 {
+  "Name": "Formatted text",
+  "Alias": "formattedText",
   "DefaultTemplate": null,
   "AllowedTemplates": [],
   "Icon": "icon-font color-black",
@@ -19,6 +21,8 @@
       "Key": "9b1eb17d-5d30-40ac-85a1-89e1fef4acf6",
       "Name": "Content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "9f23c736-6325-4474-88f3-960adab84673",
@@ -30,7 +34,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -49,8 +57,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Formatted text",
-  "Alias": "formattedText",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "4.4.4"
 }

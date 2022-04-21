@@ -1,4 +1,6 @@
 {
+  "Name": "Product List",
+  "Alias": "productList",
   "DefaultTemplate": "umb://template/520b9d197f634809b7e6cf313decde0a",
   "AllowedTemplates": [
     "umb://template/520b9d197f634809b7e6cf313decde0a"
@@ -24,6 +26,8 @@
       "Key": "87c1d333-54d3-4909-b922-4bb5a20d3602",
       "Name": "Content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "0180dd55-6948-4a4d-bb93-ab1f685d52fa",
@@ -35,7 +39,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "223f2815-2628-46fa-89e7-9bed430ade07",
@@ -47,7 +55,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "2588fcea-6b44-4577-a8ed-26964677a10b",
@@ -59,7 +71,11 @@
           "SortOrder": 3,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "63f0607c-c89e-4d81-80b2-30a95a9969a6",
@@ -71,7 +87,11 @@
           "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -110,8 +130,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Product List",
-  "Alias": "productList",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.5.1"
+  "__version": "4.4.4"
 }

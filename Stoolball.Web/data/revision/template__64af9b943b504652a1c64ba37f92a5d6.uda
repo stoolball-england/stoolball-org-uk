@@ -1,4 +1,6 @@
 {
+  "Name": "Email Address",
+  "Alias": "EmailAddress",
   "File": "umb://template-file/EmailAddress.cshtml",
   "Master": null,
   "Udi": "umb://template/64af9b943b504652a1c64ba37f92a5d6",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Email Address",
-  "Alias": "EmailAddress",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

@@ -1,4 +1,6 @@
 {
+  "Name": "_Metadata",
+  "Alias": "metadata",
   "DefaultTemplate": null,
   "AllowedTemplates": [],
   "Icon": "icon-document",
@@ -19,6 +21,8 @@
       "Key": "75780a9e-91ec-4d6a-bceb-ca4f9ce9064e",
       "Name": "Metadata",
       "SortOrder": 100,
+      "Type": 0,
+      "Alias": "metadata",
       "PropertyTypes": [
         {
           "Key": "8e12b846-881b-444f-830f-ef14ee2483c7",
@@ -30,7 +34,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "b61b217d-a2c4-4334-98b0-b61b31be4a55",
@@ -42,7 +50,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "c18311e9-36ac-4490-9bfc-ae90a200fddd",
@@ -54,7 +66,11 @@
           "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -83,8 +99,6 @@
       "Mode": 0
     }
   ],
-  "Name": "_Metadata",
-  "Alias": "metadata",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "4.4.4"
 }

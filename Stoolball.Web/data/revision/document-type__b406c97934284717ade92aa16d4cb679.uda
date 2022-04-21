@@ -1,4 +1,6 @@
 {
+  "Name": "Stoolball router",
+  "Alias": "stoolballRouter",
   "DefaultTemplate": "umb://template/f2724e57d127459a81b0cc293e1304b3",
   "AllowedTemplates": [
     "umb://template/007d4a7a068f4dd8b8a693271d5bb5f4",
@@ -597,8 +599,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Stoolball router",
-  "Alias": "stoolballRouter",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

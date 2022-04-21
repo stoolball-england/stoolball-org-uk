@@ -1,4 +1,6 @@
 {
+  "Name": "Most Runs",
+  "Alias": "MostRuns",
   "File": "umb://template-file/MostRuns.cshtml",
   "Master": null,
   "Udi": "umb://template/0e91f8c950fc49bdb885c844dc58e6ca",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Most Runs",
-  "Alias": "MostRuns",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.2"
+  "__version": "4.4.4"
 }

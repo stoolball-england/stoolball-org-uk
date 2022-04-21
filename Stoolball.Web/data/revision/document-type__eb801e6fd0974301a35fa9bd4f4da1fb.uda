@@ -1,4 +1,6 @@
 {
+  "Name": "My Account",
+  "Alias": "myAccount",
   "DefaultTemplate": "umb://template/f1f9344ae8b446d38234a58036379504",
   "AllowedTemplates": [
     "umb://template/f1f9344ae8b446d38234a58036379504"
@@ -33,6 +35,8 @@
       "Key": "af44ff4f-efa9-4069-b8cc-afd9a8faaa59",
       "Name": "Content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "62770a74-e12c-4be2-8ca1-f20869cdb39d",
@@ -143,8 +147,6 @@
       "Mode": 0
     }
   ],
-  "Name": "My Account",
-  "Alias": "myAccount",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

@@ -1,4 +1,6 @@
 {
+  "Name": "Edit Season Teams",
+  "Alias": "editSeasonTeams",
   "File": "umb://template-file/editSeasonTeams.cshtml",
   "Master": null,
   "Udi": "umb://template/260f8197aafc40029e4336247233a05d",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Edit Season Teams",
-  "Alias": "editSeasonTeams",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

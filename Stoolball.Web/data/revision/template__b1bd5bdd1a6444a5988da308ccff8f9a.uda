@@ -1,4 +1,6 @@
 {
+  "Name": "Batting Average",
+  "Alias": "BattingAverage",
   "File": "umb://template-file/BattingAverage.cshtml",
   "Master": null,
   "Udi": "umb://template/b1bd5bdd1a6444a5988da308ccff8f9a",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Batting Average",
-  "Alias": "BattingAverage",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.2"
+  "__version": "4.4.4"
 }

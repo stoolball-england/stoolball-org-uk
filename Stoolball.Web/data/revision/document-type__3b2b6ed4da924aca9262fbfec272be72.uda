@@ -1,4 +1,6 @@
 {
+  "Name": "News Story Settings",
+  "Alias": "newsStorySettings",
   "DefaultTemplate": null,
   "AllowedTemplates": [],
   "Icon": "icon-settings color-grey",
@@ -19,6 +21,8 @@
       "Key": "813ad4a8-4eab-461f-962a-f5f49c4c2184",
       "Name": "Content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "4dd7510b-c8ac-44d2-b308-9c367298c7bd",
@@ -30,7 +34,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -49,8 +57,6 @@
       "Mode": 0
     }
   ],
-  "Name": "News Story Settings",
-  "Alias": "newsStorySettings",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.5.2"
+  "__version": "4.4.4"
 }

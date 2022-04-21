@@ -1,4 +1,6 @@
 {
+  "Name": "Transient Team",
+  "Alias": "transientTeam",
   "File": "umb://template-file/transientTeam.cshtml",
   "Master": null,
   "Udi": "umb://template/db0381783ee94b348eb8a42c2ea95ced",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Transient Team",
-  "Alias": "transientTeam",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.3.1"
+  "__version": "4.4.4"
 }

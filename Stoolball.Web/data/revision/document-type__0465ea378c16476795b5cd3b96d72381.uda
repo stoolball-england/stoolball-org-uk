@@ -1,4 +1,6 @@
 {
+  "Name": "Reset Password",
+  "Alias": "resetPassword",
   "DefaultTemplate": "umb://template/4072232af3ee4ffc9d2204bd3f9dcb11",
   "AllowedTemplates": [
     "umb://template/289a8b84d4584034a788a70fc734316d",
@@ -26,6 +28,8 @@
       "Key": "074aebc4-e6a5-4354-aee9-61c79d8abbed",
       "Name": "'Reset password' email",
       "SortOrder": 1,
+      "Type": 0,
+      "Alias": "resetPasswordEmail",
       "PropertyTypes": [
         {
           "Key": "1b8bdb29-8b12-4cc9-9a84-5a14cd2e1ff1",
@@ -65,6 +69,8 @@
       "Key": "2175d96d-1b9f-4d14-be1f-1409c1688bda",
       "Name": "'Approve member' email (re-sent if member is not approved)",
       "SortOrder": 3,
+      "Type": 0,
+      "Alias": "approveMemberEmailReSentIfMemberIsNotApproved",
       "PropertyTypes": [
         {
           "Key": "30215f7b-d1a3-4769-91ce-3fd77d75c99e",
@@ -104,6 +110,8 @@
       "Key": "a6282563-16ff-480a-841d-b82e89a59023",
       "Name": "'Create member' email (sent if no member matches the email address)",
       "SortOrder": 2,
+      "Type": 0,
+      "Alias": "createMemberEmailSentIfNoMemberMatchesTheEmailAddress",
       "PropertyTypes": [
         {
           "Key": "052b1ce7-8f72-480c-aaa0-a6a49f0dec9a",
@@ -143,6 +151,8 @@
       "Key": "b2d32c5a-296e-4243-a1b4-47471e712367",
       "Name": "Page content - Request a password reset",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "pageContentRequestAPasswordReset",
       "PropertyTypes": [
         {
           "Key": "16d79713-9e0d-4a43-85db-79f4f283c868",
@@ -198,6 +208,8 @@
       "Key": "f5dc18be-f72c-423d-a490-6d55284faaf0",
       "Name": "Page content - Update your password",
       "SortOrder": 4,
+      "Type": 0,
+      "Alias": "pageContentUpdateYourPassword",
       "PropertyTypes": [
         {
           "Key": "7856d58d-d63f-4b4a-ac5e-1364493ce858",
@@ -347,8 +359,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Reset Password",
-  "Alias": "resetPassword",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

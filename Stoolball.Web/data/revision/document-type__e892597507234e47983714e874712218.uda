@@ -1,4 +1,6 @@
 {
+  "Name": "Consent",
+  "Alias": "consent",
   "DefaultTemplate": null,
   "AllowedTemplates": [],
   "Icon": "icon-checkbox-dotted-active color-black",
@@ -19,6 +21,8 @@
       "Key": "47abc8c8-1010-4e07-a427-4cd60ed25722",
       "Name": "Settings",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "settings",
       "PropertyTypes": [
         {
           "Key": "b2dfae9f-fc4a-4911-a380-1cdebf6c2d50",
@@ -30,7 +34,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "c053d40c-d2cf-450d-9490-ee4c1f41016f",
@@ -42,7 +50,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -61,8 +73,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Consent",
-  "Alias": "consent",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.5.1"
+  "__version": "4.4.4"
 }

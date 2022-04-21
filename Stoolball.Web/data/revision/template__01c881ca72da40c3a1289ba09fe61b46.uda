@@ -1,4 +1,6 @@
 {
+  "Name": "Most Run-Outs",
+  "Alias": "MostRunOuts",
   "File": "umb://template-file/MostRunOuts.cshtml",
   "Master": null,
   "Udi": "umb://template/01c881ca72da40c3a1289ba09fe61b46",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Most Run-Outs",
-  "Alias": "MostRunOuts",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.2"
+  "__version": "4.4.4"
 }

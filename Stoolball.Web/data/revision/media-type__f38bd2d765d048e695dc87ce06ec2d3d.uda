@@ -1,4 +1,6 @@
 {
+  "Name": "Folder",
+  "Alias": "Folder",
   "Icon": "icon-folder",
   "Thumbnail": "icon-folder",
   "Description": null,
@@ -42,8 +44,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Folder",
-  "Alias": "Folder",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.MediaTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

@@ -1,4 +1,6 @@
 {
+  "Name": "News Story",
+  "Alias": "newsStory",
   "DefaultTemplate": "umb://template/86c81ee4670c452cacd0cfe3d39420c6",
   "AllowedTemplates": [
     "umb://template/86c81ee4670c452cacd0cfe3d39420c6"
@@ -24,6 +26,8 @@
       "Key": "651831be-346b-4fa0-87e2-d64bce77aa3f",
       "Name": "Content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "273a1d96-f97d-4dd0-b378-36a2d4f582c5",
@@ -35,7 +39,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "4a66598e-4b46-4729-b07f-30cf8ad7375b",
@@ -47,7 +55,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -86,8 +98,6 @@
       "Mode": 0
     }
   ],
-  "Name": "News Story",
-  "Alias": "newsStory",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.5.2"
+  "__version": "4.4.4"
 }

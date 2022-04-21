@@ -1,4 +1,6 @@
 {
+  "Name": "Product preview",
+  "Alias": "productPreview",
   "DefaultTemplate": null,
   "AllowedTemplates": [],
   "Icon": "icon-sweatshirt color-black",
@@ -19,6 +21,8 @@
       "Key": "f9a9b224-3ee6-4d35-ab33-58e57d9970d8",
       "Name": "Product details",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "productDetails",
       "PropertyTypes": [
         {
           "Key": "13175fda-8327-428b-873c-8071d80dd0ea",
@@ -153,8 +157,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Product preview",
-  "Alias": "productPreview",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "4.1.2"
+  "__version": "4.4.4"
 }

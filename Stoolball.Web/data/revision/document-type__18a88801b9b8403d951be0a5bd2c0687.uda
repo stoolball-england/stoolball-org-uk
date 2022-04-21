@@ -1,4 +1,6 @@
 {
+  "Name": "Approve Member",
+  "Alias": "approveMember",
   "DefaultTemplate": "umb://template/8d0a05fab2954537b655c91e25f51a62",
   "AllowedTemplates": [
     "umb://template/8d0a05fab2954537b655c91e25f51a62"
@@ -24,6 +26,8 @@
       "Key": "b5056add-30c7-4cf9-a4ef-d7ab44e90876",
       "Name": "Page content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "pageContent",
       "PropertyTypes": [
         {
           "Key": "396d5158-e54d-4d9b-ab15-b34f143379a7",
@@ -89,8 +93,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Approve Member",
-  "Alias": "approveMember",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

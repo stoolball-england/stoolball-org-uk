@@ -1,4 +1,6 @@
 {
+  "Name": "Schools",
+  "Alias": "Schools",
   "File": "umb://template-file/Schools.cshtml",
   "Master": null,
   "Udi": "umb://template/15aeb712cd3d498cb575bb381c342f9c",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Schools",
-  "Alias": "Schools",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

@@ -1,4 +1,6 @@
 {
+  "Name": "Email Address",
+  "Alias": "emailAddress",
   "DefaultTemplate": "umb://template/64af9b943b504652a1c64ba37f92a5d6",
   "AllowedTemplates": [
     "umb://template/64af9b943b504652a1c64ba37f92a5d6"
@@ -24,6 +26,8 @@
       "Key": "4d77903a-9385-4b11-b950-c0c0fcc36ce0",
       "Name": "'Email address belongs to another member' email",
       "SortOrder": 1,
+      "Type": 0,
+      "Alias": "emailAddressBelongsToAnotherMemberEmail",
       "PropertyTypes": [
         {
           "Key": "9a1948fd-e556-4749-a884-54ed405670a8",
@@ -63,6 +67,8 @@
       "Key": "adb1ed8e-0453-4b99-8155-0a2157395d39",
       "Name": "'Confirm your email address' email",
       "SortOrder": 2,
+      "Type": 0,
+      "Alias": "confirmYourEmailAddressEmail",
       "PropertyTypes": [
         {
           "Key": "21d0b123-ba45-44aa-9a55-a35e4f49de70",
@@ -102,6 +108,8 @@
       "Key": "e02ed2e2-df25-4bbb-bd88-41645ba66a7c",
       "Name": "Page content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "pageContent",
       "PropertyTypes": [
         {
           "Key": "15c74224-0369-411b-afe1-66eb9bc8e6db",
@@ -193,8 +201,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Email Address",
-  "Alias": "emailAddress",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

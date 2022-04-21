@@ -1,4 +1,6 @@
 {
+  "Name": "Edit Tournament Teams",
+  "Alias": "editTournamentTeams",
   "File": "umb://template-file/editTournamentTeams.cshtml",
   "Master": null,
   "Udi": "umb://template/4a426e53b59d47ff8f520d3eedac3be0",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Edit Tournament Teams",
-  "Alias": "editTournamentTeams",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

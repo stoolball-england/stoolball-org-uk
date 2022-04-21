@@ -1,4 +1,6 @@
 {
+  "Name": "Logout Member",
+  "Alias": "logoutMember",
   "DefaultTemplate": "umb://template/a91a6a71f4b24298932d850354b762fb",
   "AllowedTemplates": [
     "umb://template/a91a6a71f4b24298932d850354b762fb"
@@ -24,6 +26,8 @@
       "Key": "3886e9a7-c2d1-44bd-9eec-e6971ff36d01",
       "Name": "Page content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "pageContent",
       "PropertyTypes": [
         {
           "Key": "11e4be85-24ce-4b58-afff-3b84bc6cfb8a",
@@ -35,7 +39,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "1916f534-5af8-4680-8d86-dc73556283a3",
@@ -47,7 +55,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "94e53313-90aa-4754-8cc2-5487ef8a0e97",
@@ -59,7 +71,11 @@
           "SortOrder": 3,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "db6f85d4-7f03-42d3-8b37-d552b772060b",
@@ -71,7 +87,11 @@
           "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -110,8 +130,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Logout Member",
-  "Alias": "logoutMember",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.5.3"
+  "__version": "4.4.4"
 }

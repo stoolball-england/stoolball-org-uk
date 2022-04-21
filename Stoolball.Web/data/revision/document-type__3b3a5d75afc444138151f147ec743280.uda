@@ -1,4 +1,6 @@
 {
+  "Name": "Tip",
+  "Alias": "tip",
   "DefaultTemplate": null,
   "AllowedTemplates": [],
   "Icon": "icon-lightbulb-active color-black",
@@ -19,6 +21,8 @@
       "Key": "5a2cb502-56e8-49fb-8b1a-e49d1bac46ba",
       "Name": "Content",
       "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "90e1a487-81b5-49f9-ba79-7c2808dbc6a7",
@@ -30,7 +34,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -49,8 +57,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Tip",
-  "Alias": "tip",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.5.3"
+  "__version": "4.4.4"
 }

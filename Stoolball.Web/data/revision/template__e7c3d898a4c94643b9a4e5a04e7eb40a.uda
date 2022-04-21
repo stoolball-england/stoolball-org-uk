@@ -1,4 +1,6 @@
 {
+  "Name": "Create Club",
+  "Alias": "createClub",
   "File": "umb://template-file/createClub.cshtml",
   "Master": null,
   "Udi": "umb://template/e7c3d898a4c94643b9a4e5a04e7eb40a",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Create Club",
-  "Alias": "createClub",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

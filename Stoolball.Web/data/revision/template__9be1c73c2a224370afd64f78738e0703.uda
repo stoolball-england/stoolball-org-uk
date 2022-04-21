@@ -1,4 +1,6 @@
 {
+  "Name": "Tournament Actions",
+  "Alias": "tournamentActions",
   "File": "umb://template-file/tournamentActions.cshtml",
   "Master": null,
   "Udi": "umb://template/9be1c73c2a224370afd64f78738e0703",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Tournament Actions",
-  "Alias": "tournamentActions",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

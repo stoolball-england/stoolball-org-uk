@@ -1,4 +1,6 @@
 {
+  "Name": "Bowling Strike Rate",
+  "Alias": "BowlingStrikeRate",
   "File": "umb://template-file/BowlingStrikeRate.cshtml",
   "Master": null,
   "Udi": "umb://template/c5cb13825b654f7c8e31fd5291e7a10e",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Bowling Strike Rate",
-  "Alias": "BowlingStrikeRate",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.2"
+  "__version": "4.4.4"
 }

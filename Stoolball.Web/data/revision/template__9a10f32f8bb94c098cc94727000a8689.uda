@@ -1,4 +1,6 @@
 {
+  "Name": "Season Actions",
+  "Alias": "seasonActions",
   "File": "umb://template-file/seasonActions.cshtml",
   "Master": null,
   "Udi": "umb://template/9a10f32f8bb94c098cc94727000a8689",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Season Actions",
-  "Alias": "seasonActions",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

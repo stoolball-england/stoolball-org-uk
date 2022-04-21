@@ -1,0 +1,12 @@
+{
+  "Name": "Label (bigint)",
+  "Alias": null,
+  "EditorAlias": "Umbraco.Label",
+  "DatabaseType": 1,
+  "Configuration": {"umbracoDataValueType":"BIGINT"},
+  "Parent": null,
+  "Udi": "umb://data-type/930861bfe2624eada704f99453565708",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
+  "__version": "4.4.4"
+}

@@ -1,4 +1,6 @@
 {
+  "Name": "Season Results Table",
+  "Alias": "seasonResultsTable",
   "File": "umb://template-file/seasonResultsTable.cshtml",
   "Master": null,
   "Udi": "umb://template/460618542cda4d8999844dbc3d4c3a5a",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Season Results Table",
-  "Alias": "seasonResultsTable",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.5.3"
+  "__version": "4.4.4"
 }

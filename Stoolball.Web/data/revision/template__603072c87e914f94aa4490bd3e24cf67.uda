@@ -1,4 +1,6 @@
 {
+  "Name": "Player",
+  "Alias": "Player",
   "File": "umb://template-file/Player.cshtml",
   "Master": null,
   "Udi": "umb://template/603072c87e914f94aa4490bd3e24cf67",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Player",
-  "Alias": "Player",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.5.3"
+  "__version": "4.4.4"
 }

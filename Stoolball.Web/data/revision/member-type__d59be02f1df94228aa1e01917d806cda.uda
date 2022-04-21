@@ -1,4 +1,6 @@
 {
+  "Name": "Member",
+  "Alias": "Member",
   "Icon": "icon-user",
   "Thumbnail": "icon-user",
   "Description": null,
@@ -17,6 +19,8 @@
       "Key": "0756729d-d665-46e3-b84a-37aceaa614f8",
       "Name": "Membership",
       "SortOrder": 1,
+      "Type": 0,
+      "Alias": "membership",
       "PropertyTypes": [
         {
           "Key": "0000001c-0000-0000-0000-000000000000",
@@ -354,8 +358,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Member",
-  "Alias": "Member",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.MemberTypeArtifact",
-  "__version": "4.1.4"
+  "__version": "4.4.4"
 }

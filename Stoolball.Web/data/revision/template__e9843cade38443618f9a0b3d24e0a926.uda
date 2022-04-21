@@ -1,4 +1,6 @@
 {
+  "Name": "Delete Competition",
+  "Alias": "deleteCompetition",
   "File": "umb://template-file/deleteCompetition.cshtml",
   "Master": null,
   "Udi": "umb://template/e9843cade38443618f9a0b3d24e0a926",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Delete Competition",
-  "Alias": "deleteCompetition",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

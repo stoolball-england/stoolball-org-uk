@@ -1,0 +1,12 @@
+{
+  "Name": "Checkbox list",
+  "Alias": null,
+  "EditorAlias": "Umbraco.CheckBoxList",
+  "DatabaseType": 1,
+  "Configuration": {"items":[]},
+  "Parent": null,
+  "Udi": "umb://data-type/fbaf13a8403641f293a3974f678c312a",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
+  "__version": "4.4.4"
+}

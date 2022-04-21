@@ -1,4 +1,6 @@
 {
+  "Name": "Catches",
+  "Alias": "Catches",
   "File": "umb://template-file/Catches.cshtml",
   "Master": null,
   "Udi": "umb://template/68f5f9c1538d43a58fd137f68893de0a",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Catches",
-  "Alias": "Catches",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "4.1.2"
+  "__version": "4.4.4"
 }

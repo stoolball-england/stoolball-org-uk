@@ -1,4 +1,6 @@
 {
+  "Name": "Edit Friendly Match",
+  "Alias": "editFriendlyMatch",
   "File": "umb://template-file/editFriendlyMatch.cshtml",
   "Master": null,
   "Udi": "umb://template/2183e1e287844d96b2c4676607c4a30e",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Edit Friendly Match",
-  "Alias": "editFriendlyMatch",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

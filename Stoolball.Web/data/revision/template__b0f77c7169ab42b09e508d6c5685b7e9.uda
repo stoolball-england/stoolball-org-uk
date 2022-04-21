@@ -1,4 +1,6 @@
 {
+  "Name": "Match Tweets",
+  "Alias": "MatchTweets",
   "File": "umb://template-file/MatchTweets.cshtml",
   "Master": null,
   "Udi": "umb://template/b0f77c7169ab42b09e508d6c5685b7e9",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Match Tweets",
-  "Alias": "MatchTweets",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.5.4"
+  "__version": "4.4.4"
 }

@@ -1,4 +1,6 @@
 {
+  "Name": "Matches for Club",
+  "Alias": "matchesForClub",
   "File": "umb://template-file/matchesForClub.cshtml",
   "Master": null,
   "Udi": "umb://template/8cfc82c459294e15b572081a5a782caf",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Matches for Club",
-  "Alias": "matchesForClub",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.3.1"
+  "__version": "4.4.4"
 }

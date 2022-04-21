@@ -1,4 +1,6 @@
 {
+  "Name": "Competitions",
+  "Alias": "competitions",
   "File": "umb://template-file/competitions.cshtml",
   "Master": null,
   "Udi": "umb://template/5db4f021a31442d88d43a31474980ebf",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Competitions",
-  "Alias": "competitions",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }

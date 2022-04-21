@@ -1,4 +1,6 @@
 {
+  "Name": "Style guide",
+  "Alias": "StyleGuide",
   "File": "umb://template-file/StyleGuide.cshtml",
   "Master": null,
   "Udi": "umb://template/edb47a3c34b0473b8473a2ebcbf05a00",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Style guide",
-  "Alias": "StyleGuide",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.3.0"
+  "__version": "4.4.4"
 }

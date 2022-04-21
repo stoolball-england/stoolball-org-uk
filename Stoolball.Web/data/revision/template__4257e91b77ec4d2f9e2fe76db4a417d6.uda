@@ -1,4 +1,6 @@
 {
+  "Name": "Edit Team",
+  "Alias": "editTeam",
   "File": "umb://template-file/editTeam.cshtml",
   "Master": null,
   "Udi": "umb://template/4257e91b77ec4d2f9e2fe76db4a417d6",
@@ -9,8 +11,6 @@
       "Mode": 0
     }
   ],
-  "Name": "Edit Team",
-  "Alias": "editTeam",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
-  "__version": "3.4.4"
+  "__version": "4.4.4"
 }
