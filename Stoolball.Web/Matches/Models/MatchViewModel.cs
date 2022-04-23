@@ -11,5 +11,6 @@ namespace Stoolball.Web.Matches.Models
         {
         }
         public Match? Match { get; set; }
+        public string? GoogleMapsApiKey { get; set; }
     }
 }

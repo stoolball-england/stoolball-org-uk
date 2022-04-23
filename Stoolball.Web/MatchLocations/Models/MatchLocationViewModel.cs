@@ -19,5 +19,6 @@ namespace Stoolball.Web.MatchLocations.Models
         public MatchFilter DefaultMatchFilter { get; set; } = new MatchFilter();
         public MatchFilter AppliedMatchFilter { get; set; } = new MatchFilter();
         public string? FilterDescription { get; set; }
+        public int HeadingLevel { get; set; } = 2;
     }
 }

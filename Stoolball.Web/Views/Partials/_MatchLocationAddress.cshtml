@@ -1,0 +1,50 @@
+﻿@using System.Globalization
+@model Stoolball.MatchLocations.MatchLocation
+@{
+    var addressLines = new List<string>();
+    if (!string.IsNullOrWhiteSpace(Model.SecondaryAddressableObjectName))
+    {
+        addressLines.Add(Model.SecondaryAddressableObjectName);
+    }
+    if (!string.IsNullOrWhiteSpace(Model.PrimaryAddressableObjectName))
+    {
+        addressLines.Add(Model.PrimaryAddressableObjectName);
+    }
+    if (!string.IsNullOrWhiteSpace(Model.StreetDescription))
+    {
+        addressLines.Add(Model.StreetDescription);
+    }
+
+    if (!string.IsNullOrWhiteSpace(Model.Locality))
+    {
+        addressLines.Add(Model.Locality);
+    }
+    if (!string.IsNullOrWhiteSpace(Model.Town))
+    {
+        addressLines.Add(Model.Town);
+    }
+    if (!string.IsNullOrWhiteSpace(Model.AdministrativeArea))
+    {
+        addressLines.Add(Model.AdministrativeArea);
+    }
+    if (!string.IsNullOrWhiteSpace(Model.Postcode))
+    {
+        if (addressLines.Count > 0)
+        {
+            addressLines[addressLines.Count - 1] += " " + Model.Postcode.ToUpper(CultureInfo.CurrentCulture);
+        }
+        else
+        {
+            addressLines.Add(Model.Postcode.ToUpper(CultureInfo.CurrentCulture));
+        }
+    }
+    if (addressLines.Count > 0)
+    {
+        <p>
+            @foreach (var line in addressLines)
+            {
+                @line<br />
+            }
+        </p>
+    }
+}

@@ -1,5 +1,6 @@
 ﻿@inherits UmbracoViewPage<MatchViewModel>
 @inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@using Stoolball.Web.MatchLocations.Models
 @using Stoolball.Web.Matches
 @using Stoolball.Web.Matches.Models
 @using Stoolball.Matches
@@ -86,7 +87,17 @@
 
     @if (Model.Match.MatchLocation != null)
     {
-        <p>Where: <a href="@Model.Match.MatchLocation.MatchLocationRoute">@Model.Match.MatchLocation.NameAndLocalityOrTown()</a></p>
+        if (Model.Match.StartTime > DateTimeOffset.UtcNow)
+        {
+            <h2>Where to go</h2>
+            @await Html.PartialAsync("_MatchLocationAddress", Model.Match.MatchLocation)
+            @await Html.PartialAsync("_MatchLocationMap", new MatchLocationViewModel { MatchLocation = Model.Match.MatchLocation, GoogleMapsApiKey = Model.GoogleMapsApiKey, HeadingLevel = 3 })
+            @Html.Raw(Model.Match.MatchLocation.MatchLocationNotes)
+        }
+        else
+        {
+            <p>Where: <a href="@Model.Match.MatchLocation.MatchLocationRoute">@Model.Match.MatchLocation.NameAndLocalityOrTown()</a></p>
+        }
     }
 
     @if (Model.Match.StartTime <= DateTimeOffset.UtcNow && Model.Match.MatchType != MatchType.TrainingSession)

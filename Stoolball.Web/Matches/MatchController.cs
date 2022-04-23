@@ -10,6 +10,7 @@ using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Web.Configuration;
 using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -24,6 +25,7 @@ namespace Stoolball.Web.Matches
         private readonly ICommentsDataSource<Match> _commentsDataSource;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
+        private readonly IApiKeyProvider _apiKeyProvider;
         private readonly IEmailProtector _emailProtector;
         private readonly IBadLanguageFilter _badLanguageFilter;
 
@@ -34,6 +36,7 @@ namespace Stoolball.Web.Matches
             ICommentsDataSource<Match> commentsDataSource,
             IAuthorizationPolicy<Match> authorizationPolicy,
             IDateTimeFormatter dateFormatter,
+            IApiKeyProvider apiKeyProvider,
             IEmailProtector emailProtector,
             IBadLanguageFilter badLanguageFilter)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
@@ -42,6 +45,7 @@ namespace Stoolball.Web.Matches
             _commentsDataSource = commentsDataSource ?? throw new ArgumentNullException(nameof(commentsDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
+            _apiKeyProvider = apiKeyProvider ?? throw new ArgumentNullException(nameof(apiKeyProvider));
             _emailProtector = emailProtector ?? throw new ArgumentNullException(nameof(emailProtector));
             _badLanguageFilter = badLanguageFilter ?? throw new ArgumentNullException(nameof(badLanguageFilter));
         }
@@ -52,7 +56,8 @@ namespace Stoolball.Web.Matches
         {
             var model = new MatchViewModel(CurrentPage)
             {
-                Match = await _matchDataSource.ReadMatchByRoute(Request.Path)
+                Match = await _matchDataSource.ReadMatchByRoute(Request.Path),
+                GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")
             };
 
             if (model.Match == null)

@@ -10,6 +10,7 @@ using Stoolball.Email;
 using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.Security;
+using Stoolball.Web.Configuration;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Matches.Models;
 using Xunit;
@@ -36,6 +37,7 @@ namespace Stoolball.Web.UnitTests.Matches
                 _commentsDataSource.Object,
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
                 Mock.Of<IDateTimeFormatter>(),
+                Mock.Of<IApiKeyProvider>(),
                 Mock.Of<IEmailProtector>(),
                 Mock.Of<IBadLanguageFilter>())
             {

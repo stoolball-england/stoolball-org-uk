@@ -71,8 +71,8 @@ namespace Stoolball.Data.SqlServer
                             tourney.TournamentId, tourney.TournamentRoute, tourney.TournamentName, tourney.MemberKey,
                             mt.MatchTeamId, mt.TeamRole, mt.WonToss,
                             t.TeamId, t.TeamRoute, tn.TeamName, t.MemberGroupName, t.ClubId,
-                            ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
-                            ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
+                            ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.StreetDescription,
+                            ml.Locality, ml.Town, ml.AdministrativeArea, ml.Postcode, ml.Latitude, ml.Longitude, ml.GeoPrecision, ml.MatchLocationNotes,
                             s.SeasonId, s.SeasonRoute, s.FromYear, s.UntilYear,
                             co.CompetitionId, cv.CompetitionName, co.MemberGroupName, co.CompetitionRoute
                             FROM {Tables.Match} AS m

@@ -1,12 +1,8 @@
 ﻿@inherits UmbracoViewPage<Stoolball.Web.MatchLocations.Models.MatchLocationViewModel>
 @using System.Globalization
-@using System.Net
 @using Stoolball.MatchLocations
 @using Stoolball.Security
 @{
-    SmidgeHelper.RequiresJs(new JavaScriptFile("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey){Order = 50});
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/maps.js"){Order = 90});
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/match-location.js"){Order = 100});
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/show-all-teams.js"){Order = 100});
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation];
 }
@@ -31,54 +27,7 @@
         }
     </ul>
 
-    @{
-        var addressLines = new List<string>();
-        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.SecondaryAddressableObjectName))
-        {
-            addressLines.Add(Model.MatchLocation.SecondaryAddressableObjectName);
-        }
-        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.PrimaryAddressableObjectName))
-        {
-            addressLines.Add(Model.MatchLocation.PrimaryAddressableObjectName);
-        }
-        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.StreetDescription))
-        {
-            addressLines.Add(Model.MatchLocation.StreetDescription);
-        }
-
-        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.Locality))
-        {
-            addressLines.Add(Model.MatchLocation.Locality);
-        }
-        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.Town))
-        {
-            addressLines.Add(Model.MatchLocation.Town);
-        }
-        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.AdministrativeArea))
-        {
-            addressLines.Add(Model.MatchLocation.AdministrativeArea);
-        }
-        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.Postcode))
-        {
-            if (addressLines.Count > 0)
-            {
-                addressLines[addressLines.Count - 1] += " " + Model.MatchLocation.Postcode.ToUpper(CultureInfo.CurrentCulture);
-            }
-            else
-            {
-                addressLines.Add(Model.MatchLocation.Postcode.ToUpper(CultureInfo.CurrentCulture));
-            }
-        }
-        if (addressLines.Count > 0)
-        {
-            <p>
-                @foreach (var line in addressLines)
-                {
-                    @line<br />
-                }
-            </p>
-        }
-    }
+    @await Html.PartialAsync("_MatchLocationAddress", Model.MatchLocation)
     @if (Model.MatchLocation.Teams?.Count > 0)
     {
         var currentTeams = Model.MatchLocation.Teams.Where(x => !x.UntilYear.HasValue).ToList();
@@ -97,37 +46,7 @@
         }
     }
 
-    @if (Model.MatchLocation.Latitude.HasValue && Model.MatchLocation.Longitude.HasValue)
-    {
-        var mapTitle = string.Empty;
-        var precisionWarning = string.Empty;
-        switch (Model.MatchLocation.GeoPrecision)
-        {
-            case GeoPrecision.Exact:
-                mapTitle = Model.MatchLocation.NameAndLocalityOrTownIfDifferent();
-                break;
-            case GeoPrecision.Postcode:
-                mapTitle = Model.MatchLocation.Postcode;
-                precisionWarning = "Note: This map shows the nearest postcode. The ground or sports centre should be nearby.";
-                break;
-            case GeoPrecision.Street:
-                mapTitle = Model.MatchLocation.StreetDescription + ", " + Model.MatchLocation.Town;
-                precisionWarning = "Note: This map shows the nearest road. The ground or sports centre should be nearby.";
-                break;
-            case GeoPrecision.Town:
-                mapTitle = Model.MatchLocation.Town;
-                precisionWarning = "Note: This map shows the town or village. Contact the home team to find the ground or sports centre.";
-                break;
-        }
-        <h2>Map of @mapTitle</h2>
-        if (!string.IsNullOrEmpty(precisionWarning))
-        {
-            <p>@precisionWarning</p>
-        }
-        <div id="location-map" data-latitude="@Model.MatchLocation.Latitude" data-longitude="@Model.MatchLocation.Longitude" data-precision="@Model.MatchLocation.GeoPrecision?.ToString().ToLowerInvariant()">
-            <p><a href="https://maps.google.co.uk/?z=16&amp;q=@WebUtility.UrlEncode(Model.MatchLocation.NameAndLocalityOrTown())@("@")@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude&amp;ll=@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude">Map of @mapTitle on Google Maps</a></p>
-        </div>
-    }
+    @await Html.PartialAsync("_MatchLocationMap")
 
     @Html.Raw(Model.MatchLocation.MatchLocationNotes)
 </div>
