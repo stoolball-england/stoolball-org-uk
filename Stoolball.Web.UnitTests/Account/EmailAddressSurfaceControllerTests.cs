@@ -67,6 +67,7 @@ namespace Stoolball.Web.UnitTests.Account
             _emailFormatter.Setup(x => x.FormatEmailContent(CONFIRM_EMAIL_SUBJECT, CONFIRM_EMAIL_BODY, It.IsAny<Dictionary<string, string>>()))
                .Returns((CONFIRM_EMAIL_SUBJECT, CONFIRM_EMAIL_BODY));
 
+            SetupPropertyValue(CurrentPage, "description", string.Empty);
             SetupPropertyValue(CurrentPage, "emailTakenSubject", EMAIL_TAKEN_SUBJECT);
             SetupPropertyValue(CurrentPage, "emailTakenBody", EMAIL_TAKEN_BODY);
             SetupPropertyValue(CurrentPage, "confirmEmailSubject", CONFIRM_EMAIL_SUBJECT);
