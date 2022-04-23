@@ -43,8 +43,8 @@ namespace Stoolball.Data.SqlServer
                             tt.TournamentTeamId, tt.TeamRole,
                             t.TeamId, t.TeamRoute, t.TeamType, tn.TeamName,
                             os.OverSetId, os.Overs, os.BallsPerOver,
-                            ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
-                            ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
+                            ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.StreetDescription,
+                            ml.Locality, ml.Town, ml.AdministrativeArea, ml.Postcode, ml.Latitude, ml.Longitude, ml.GeoPrecision, ml.MatchLocationNotes,
                             s.SeasonId, s.SeasonRoute, s.FromYear, s.UntilYear,
                             cv.CompetitionName
                             FROM {Tables.Tournament} AS tourney

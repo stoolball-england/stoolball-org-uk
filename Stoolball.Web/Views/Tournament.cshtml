@@ -3,6 +3,7 @@
 @using Humanizer
 @using Innovative.SolarCalculator
 @using Stoolball.Matches
+@using Stoolball.Web.MatchLocations.Models
 @using Stoolball.Web.Matches.Models
 @using Stoolball.Security
 @{
@@ -44,7 +45,17 @@
 
     @if (Model.Tournament.TournamentLocation != null)
     {
-        <p>Where: <a href="@Model.Tournament.TournamentLocation.MatchLocationRoute">@Model.Tournament.TournamentLocation.NameAndLocalityOrTown()</a></p>
+        if (Model.Tournament.StartTime > DateTimeOffset.UtcNow.Date)
+        {
+            <h2>Where to go</h2>
+            @await Html.PartialAsync("_MatchLocationAddress", Model.Tournament.TournamentLocation)
+            @await Html.PartialAsync("_MatchLocationMap", new MatchLocationViewModel { MatchLocation = Model.Tournament.TournamentLocation, GoogleMapsApiKey = Model.GoogleMapsApiKey, HeadingLevel = 3 })
+            @Html.Raw(Model.Tournament.TournamentLocation.MatchLocationNotes)
+        }
+        else
+        {
+            <p>Where: <a href="@Model.Tournament.TournamentLocation.MatchLocationRoute">@Model.Tournament.TournamentLocation.NameAndLocalityOrTown()</a></p>
+        }
     }
 
     @{

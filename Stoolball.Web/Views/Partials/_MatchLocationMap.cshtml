@@ -7,6 +7,8 @@
     SmidgeHelper.RequiresJs(new JavaScriptFile("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey){Order = 50});
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/maps.js"){Order = 90});
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/match-location.js"){Order = 100});
+    var openHeadingElement = $"<h{Model.HeadingLevel}>";
+    var closeHeadingElement = $"</h{Model.HeadingLevel}>";
 }
 @if (Model.MatchLocation.Latitude.HasValue && Model.MatchLocation.Longitude.HasValue)
 {
@@ -30,7 +32,7 @@
             precisionWarning = "Note: This map shows the town or village. Contact the home team to find the ground or sports centre.";
             break;
     }
-    <h@(Model.HeadingLevel)>Map of @mapTitle</h@(Model.HeadingLevel)>
+    @Html.Raw(openHeadingElement)@:Map of @mapTitle@Html.Raw(closeHeadingElement)
     if (!string.IsNullOrEmpty(precisionWarning))
     {
         <p>@precisionWarning</p>

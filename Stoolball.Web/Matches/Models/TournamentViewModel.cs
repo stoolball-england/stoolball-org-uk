@@ -12,5 +12,6 @@ namespace Stoolball.Web.Matches.Models
         }
         public Tournament? Tournament { get; set; }
         public MatchListingViewModel Matches { get; set; } = new MatchListingViewModel();
+        public string? GoogleMapsApiKey { get; set; }
     }
 }

@@ -116,10 +116,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.MatchLocationRoute, result.TournamentLocation.MatchLocationRoute);
             Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.SecondaryAddressableObjectName, result.TournamentLocation.SecondaryAddressableObjectName);
             Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.PrimaryAddressableObjectName, result.TournamentLocation.PrimaryAddressableObjectName);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.StreetDescription, result.TournamentLocation.StreetDescription);
             Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.Locality, result.TournamentLocation.Locality);
             Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.Town, result.TournamentLocation.Town);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.AdministrativeArea, result.TournamentLocation.AdministrativeArea);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.Postcode, result.TournamentLocation.Postcode);
             Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.Latitude, result.TournamentLocation.Latitude);
             Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.Longitude, result.TournamentLocation.Longitude);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.GeoPrecision, result.TournamentLocation.GeoPrecision);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.MatchLocationNotes, result.TournamentLocation.MatchLocationNotes);
         }
 
         [Fact]
