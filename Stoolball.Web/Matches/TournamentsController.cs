@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
@@ -48,7 +49,7 @@ namespace Stoolball.Web.Matches
                     {
                         PageNumber = (Request.Query.ContainsKey("page") && int.TryParse(Request.Query["page"], out var pageNumber)) ? pageNumber > 0 ? pageNumber : 1 : 1,
                         PageSize = Constants.Defaults.PageSize,
-                        PageUrl = new Uri(Request.Path, UriKind.Relative)
+                        PageUrl = new Uri(Request.GetEncodedUrl())
                     }
                 }
             };
