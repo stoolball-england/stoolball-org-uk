@@ -382,17 +382,17 @@
     <Reference Include="Umbraco.Examine, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UmbracoCms.Web.8.17.2\lib\net472\Umbraco.Examine.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Forms.Core, Version=8.10.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.10.3\lib\net472\Umbraco.Forms.Core.dll</HintPath>
+    <Reference Include="Umbraco.Forms.Core, Version=8.12.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UmbracoForms.Core.8.12.0\lib\net472\Umbraco.Forms.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Forms.Core.Providers, Version=8.10.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.10.3\lib\net472\Umbraco.Forms.Core.Providers.dll</HintPath>
+    <Reference Include="Umbraco.Forms.Core.Providers, Version=8.12.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UmbracoForms.Core.8.12.0\lib\net472\Umbraco.Forms.Core.Providers.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Forms.Web, Version=8.10.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.10.3\lib\net472\Umbraco.Forms.Web.dll</HintPath>
+    <Reference Include="Umbraco.Forms.Web, Version=8.12.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UmbracoForms.Core.8.12.0\lib\net472\Umbraco.Forms.Web.dll</HintPath>
     </Reference>
     <Reference Include="Umbraco.Licensing, Version=2.0.33.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.10.3\lib\net472\Umbraco.Licensing.dll</HintPath>
+      <HintPath>..\packages\UmbracoForms.Core.8.12.0\lib\net472\Umbraco.Licensing.dll</HintPath>
     </Reference>
     <Reference Include="Umbraco.ModelsBuilder.Embedded, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UmbracoCms.Web.8.17.2\lib\net472\Umbraco.ModelsBuilder.Embedded.dll</HintPath>
@@ -467,7 +467,7 @@
     <Content Include="ApplicationInsights.template.config" />
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js" />
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html" />
-    <Content Include="App_Plugins\UmbracoForms\Assets\aspnet-validation\dist\aspnet-validation.min.js" />
+    <Content Include="App_Plugins\UmbracoForms\Assets\aspnet-client-validation\dist\aspnet-validation.min.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\BaremetricsCalendar\public\css\application.css" />
     <Content Include="App_Plugins\UmbracoForms\Assets\BaremetricsCalendar\public\js\Calendar.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\datepicker.init.js" />
@@ -478,6 +478,7 @@
     <Content Include="App_Plugins\UmbracoForms\Assets\pikaday\pikaday.css" />
     <Content Include="App_Plugins\UmbracoForms\Assets\pikaday\pikaday.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\promise-polyfill\dist\polyfill.min.js" />
+    <Content Include="App_Plugins\UmbracoForms\Assets\recaptcha.v3.init.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\themes\default\style.css" />
     <Content Include="App_Plugins\UmbracoForms\Assets\themes\default\umbracoforms.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\umbracoforms-conditions.js" />
@@ -719,6 +720,8 @@
     <Content Include="App_Plugins\UmbracoForms\Data\Web.config" />
     <Content Include="App_Plugins\UmbracoForms\Data\Templates\contactform.json" />
     <Content Include="App_Plugins\UmbracoForms\Data\Templates\commentform.json" />
+    <Content Include="Forms\Secret-RecaptchaKeys.UmbracoForms.live.xdt.config" />
+    <None Include="Forms\Secret-RecaptchaKeys.UmbracoForms.local.xdt.config" />
     <None Include="config\uSync8.local.xdt.config" />
     <Content Include="css\rules.page.css">
       <DependentUpon>rules.page.scss</DependentUpon>
@@ -3209,9 +3212,10 @@
       <LastGenOutput>ResetPasswordComplete.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Schools.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Submitted.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\ScrollToFormScript.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Script.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\DatePicker.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Submitted.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Render.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Form.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textfield.cshtml" />
@@ -3228,7 +3232,6 @@
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.DataConsent.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.CheckBoxList.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.CheckBox.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\DatePicker.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textfield.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Text.cshtml" />

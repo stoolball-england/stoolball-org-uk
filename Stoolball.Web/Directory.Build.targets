@@ -233,6 +233,8 @@
     </PropertyGroup>
     <Copy SourceFiles="$(OriginalUmbracoFormsConfig)" DestinationFiles="$(TempUmbracoFormsConfig)" />
     <TransformXml Source="$(TempUmbracoFormsConfig)" Transform="$(ProjectDir)\Forms\UmbracoForms.local.xdt.config" Destination="$(OriginalUmbracoFormsConfig)" StackTrace="true" />
+	<Copy SourceFiles="$(OriginalUmbracoFormsConfig)" DestinationFiles="$(TempUmbracoFormsConfig)" Condition="Exists('$(ProjectDir)\Forms\Secret-RecaptchaKeys.UmbracoForms.local.xdt.config')" />
+	<TransformXml Source="$(TempUmbracoFormsConfig)" Transform="$(ProjectDir)\Forms\Secret-RecaptchaKeys.UmbracoForms.local.xdt.config" Destination="$(OriginalUmbracoFormsConfig)" StackTrace="true" Condition="Exists('$(ProjectDir)\Forms\Secret-RecaptchaKeys.UmbracoForms.local.xdt.config')" />
     <Delete Files="$(TempUmbracoFormsConfig)" />
   </Target>
 

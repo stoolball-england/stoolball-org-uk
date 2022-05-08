@@ -846,11 +846,13 @@ WriteLiteral(" class=\"btn btn-secondary next\"");
 
 WriteLiteral(" name=\"__next\"");
 
+WriteLiteral(" type=\"button\"");
+
 WriteLiteral(">");
 
             
             #line 135 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                                                    Write(Model.NextCaption);
+                                                                                  Write(Model.NextCaption);
 
             
             #line default
@@ -873,11 +875,13 @@ WriteLiteral(" class=\"btn btn-primary\"");
 
 WriteLiteral(" name=\"__next\"");
 
+WriteLiteral(" type=\"submit\"");
+
 WriteLiteral(">");
 
             
             #line 140 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                                             Write(Model.SubmitCaption);
+                                                                           Write(Model.SubmitCaption);
 
             
             #line default
@@ -900,11 +904,13 @@ WriteLiteral(" class=\"btn btn-primary\"");
 
 WriteLiteral(" name=\"__next\"");
 
+WriteLiteral(" type=\"submit\"");
+
 WriteLiteral(">");
 
             
             #line 145 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                                         Write(Model.SubmitCaption);
+                                                                       Write(Model.SubmitCaption);
 
             
             #line default
