@@ -97,7 +97,7 @@
     <PackageReference Include="Umbraco.Deploy.Cloud" Version="9.3.1" />
     <PackageReference Include="Umbraco.Deploy.Contrib" Version="9.0.1" />
     <PackageReference Include="Umbraco.Deploy.Forms" Version="9.3.1" />
-    <PackageReference Include="Umbraco.Forms" Version="9.3.0" />
+    <PackageReference Include="Umbraco.Forms" Version="9.4.0" />
     <PackageReference Include="uSync" Version="9.1.0" />
   </ItemGroup>
 
