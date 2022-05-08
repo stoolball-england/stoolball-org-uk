@@ -156,6 +156,12 @@ namespace Stoolball.Web.Security
 
             // For style="display: none" used in conditions
             AddSource(STYLE_SRC, "'unsafe-inline'");
+
+            // For reCAPTCHA
+            AddSource(SCRIPT_SRC, "https://www.google.com");
+            AddSource(SCRIPT_SRC, "https://www.gstatic.com");
+            AddSource(SCRIPT_SRC, "'unsafe-inline'");
+            AddSource(FRAME_SRC, "https://www.google.com");
         }
 
         private void SetupTrustedTypes()
