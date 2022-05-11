@@ -11,7 +11,7 @@
 <div class="container-xl">
     <h1>Delete @Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false))</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.DeleteMatch])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteMatch])
     {
         if (!Model.Deleted)
         {

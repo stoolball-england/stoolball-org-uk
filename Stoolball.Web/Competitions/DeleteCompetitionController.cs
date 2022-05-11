@@ -68,7 +68,7 @@ namespace Stoolball.Web.Competitions
 
                 model.ConfirmDeleteRequest.RequiredText = model.Competition.CompetitionName;
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Competition);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Competition);
 
                 model.Metadata.PageTitle = "Delete " + model.Competition.CompetitionName;
 

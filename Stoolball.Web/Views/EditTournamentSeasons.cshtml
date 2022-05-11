@@ -10,7 +10,7 @@
 <div class="container-xl">
     <h1>Where to list @Html.TournamentFullNameAndPlayerType(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTournament])
     {
         if (Model.PossibleSeasons.Any())
         {

@@ -15,7 +15,7 @@
 <div class="container-xl">
     <h1>Edit @Model.MatchLocation!.NameAndLocalityOrTownIfDifferent()</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchLocation])
     {
         using (Html.BeginUmbracoForm<EditMatchLocationSurfaceController>(nameof(EditMatchLocationSurfaceController.UpdateMatchLocation)))
         {

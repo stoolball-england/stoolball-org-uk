@@ -126,9 +126,9 @@ namespace Stoolball.Web.Matches
                 };
             }
 
-            model.IsAuthorized[AuthorizedAction.CreateTournament] = User.Identity?.IsAuthenticated ?? false;
+            model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateTournament] = User.Identity?.IsAuthenticated ?? false;
 
-            if (model.IsAuthorized[AuthorizedAction.CreateTournament] && ModelState.IsValid &&
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateTournament] && ModelState.IsValid &&
                 (model.Team != null ||
                 (model.Season != null && model.Season.EnableTournaments)))
             {

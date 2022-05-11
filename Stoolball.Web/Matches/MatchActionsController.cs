@@ -49,7 +49,11 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
+                model.Authorization.AuthorizedAction = "edit or delete";
+                model.Authorization.AuthorizationFor = "this match";
+                model.Authorization.Note = model.Match.StartTime <= DateTime.UtcNow && model.Match.Tournament == null ? "Anyone can edit the result." : null;
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
+                model.Authorization.AuthorizedMemberNames = await _authorizationPolicy.AuthorizedMemberNames(model.Match);
 
                 model.Metadata.PageTitle = model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false)) + " - stoolball match";
 

@@ -14,7 +14,7 @@
 <div class="container-xl">
     <h1>Teams in the @Html.TournamentFullNameAndPlayerType(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTournament])
     {
         using (Html.BeginUmbracoForm<EditTournamentTeamsSurfaceController>(nameof(EditTournamentTeamsSurfaceController.UpdateTeams)))
         {

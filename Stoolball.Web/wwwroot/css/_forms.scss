@@ -265,6 +265,28 @@ svg {
     }
 }
 
+
+.security {
+    display: block;
+    padding-left: 16px;
+    position: relative;
+    border-top: 1px solid #ccc;
+    padding-top: $spacer;
+}
+
+.security::before {
+    content: ' ';
+    width: 12px;
+    height: 12px;
+    background-image: url(/images/icons/iconmonstr-lock-1.svg);
+    background-repeat: no-repeat;
+    background-size: 12px;
+    opacity: .5;
+    position: absolute;
+    left: 0;
+    top: $spacer*1.1;
+}
+
 /* Umbraco Forms margin support uses Bootstrap, but does not expect the container margins already to be in place, so offset them */
 .umbraco-forms-page {
     margin: $spacer (-$grid-gutter-width/2)

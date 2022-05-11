@@ -54,7 +54,7 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
                 model.Metadata.PageTitle = model.MatchLocation.NameAndLocalityOrTown();
                 model.Metadata.Description = model.MatchLocation.Description();

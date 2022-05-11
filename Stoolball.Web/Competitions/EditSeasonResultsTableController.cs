@@ -50,7 +50,7 @@ namespace Stoolball.Web.Competitions
             {
                 model.Season.PointsRules.AddRange(await _seasonDataSource.ReadPointsRules(model.Season.SeasonId!.Value).ConfigureAwait(false));
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 model.Metadata.PageTitle = "Edit results table for " + model.Season.SeasonFullNameAndPlayerType();
 

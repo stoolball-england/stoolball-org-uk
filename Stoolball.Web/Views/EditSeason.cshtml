@@ -10,7 +10,7 @@
 <div class="container-xl">
     <h1>Edit @Model.Season!.SeasonFullName()</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditCompetition])
     {
         using (Html.BeginUmbracoForm<EditSeasonSurfaceController>(nameof(EditSeasonSurfaceController.UpdateSeason)))
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Stoolball.Metadata;
 using Stoolball.Navigation;
-using Stoolball.Security;
+using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
@@ -42,7 +42,7 @@ namespace Stoolball.Web.Models
         /// </summary>
         public IPublishedContent HeaderPhotoWithInheritance() => _contentModel.Value<IPublishedContent>("headerPhoto", fallback: Fallback.ToAncestors) as IPublishedContent;
 
-        public Dictionary<AuthorizedAction, bool> IsAuthorized { get; internal set; } = new Dictionary<AuthorizedAction, bool>();
+        public AuthorizedMembersViewModel Authorization { get; set; } = new();
 
         /// <summary>
         /// Gets the custom stylesheet that should be applied to the page (minus the .css extension)

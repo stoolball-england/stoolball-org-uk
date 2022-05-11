@@ -63,7 +63,7 @@ namespace Stoolball.Web.Matches
                     return NotFound();
                 }
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.MatchName = model.Match.UpdateMatchNameAutomatically ? string.Empty : model.Match.MatchName;
                 if (model.Match.Season != null)

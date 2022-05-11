@@ -18,7 +18,7 @@
 <div class="container-xl">
     <h1>Edit @Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditMatch])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatch])
     {
         using (Html.BeginUmbracoForm<EditTrainingSessionSurfaceController>(nameof(EditTrainingSessionSurfaceController.UpdateMatch)))
         {

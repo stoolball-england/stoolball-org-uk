@@ -66,7 +66,7 @@ namespace Stoolball.Web.MatchLocations
                 model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.QueryString.Value);
                 model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, filter.sortOrder).ConfigureAwait(false);
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
                 var userFilter = _matchFilterHumanizer.MatchingFilter(model.AppliedMatchFilter);
                 if (!string.IsNullOrWhiteSpace(userFilter))

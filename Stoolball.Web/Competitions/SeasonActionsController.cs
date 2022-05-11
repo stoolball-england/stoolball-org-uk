@@ -45,7 +45,10 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
+                model.Authorization.AuthorizationFor = model.Season.Competition.CompetitionName;
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
+                model.Authorization.AuthorizedGroupNames = _authorizationPolicy.AuthorizedGroupNames(model.Season.Competition);
+                model.Authorization.AuthorizedMemberNames = await _authorizationPolicy.AuthorizedMemberNames(model.Season.Competition);
 
                 model.Metadata.PageTitle = "Edit " + model.Season.SeasonFullNameAndPlayerType();
 

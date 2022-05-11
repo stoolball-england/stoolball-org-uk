@@ -23,7 +23,7 @@
 <div class="container-xl">
     <h1>@h1</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.CreateMatch])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch])
     {
         if (Model.Season == null || Model.Season.Teams.Count > 1)
         {
@@ -36,7 +36,7 @@
         else
         {
             <p>You need at least two teams in the @Model.Season.SeasonFullName() to add a league match.</p>
-            if ( Model.IsAuthorized[AuthorizedAction.EditCompetition])
+            if ( Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditCompetition])
             {
                 <p><a href="@Model.Season.SeasonRoute/edit/teams" class="btn btn-secondary">Edit teams</a></p>
             }

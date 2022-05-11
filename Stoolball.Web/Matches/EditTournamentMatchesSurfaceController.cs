@@ -90,9 +90,9 @@ namespace Stoolball.Web.Matches
                 }
             }
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[AuthorizedAction.EditTournament] && ModelState.IsValid)
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTournament] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTournament = await _tournamentRepository.UpdateMatches(model.Tournament, currentMember.Key, currentMember.UserName, currentMember.Name);

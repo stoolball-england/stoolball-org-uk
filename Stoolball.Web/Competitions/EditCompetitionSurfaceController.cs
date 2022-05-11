@@ -78,7 +78,7 @@ namespace Stoolball.Web.Competitions
                 Competition = competition,
                 UrlReferrer = string.IsNullOrEmpty(Request.Form["UrlReferrer"]) ? null : new Uri(Request.Form["UrlReferrer"])
             };
-            viewModel.IsAuthorized = isAuthorized;
+            viewModel.Authorization.CurrentMemberIsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Edit {competition.CompetitionName}";
 
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });

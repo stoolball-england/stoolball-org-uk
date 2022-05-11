@@ -72,7 +72,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.Tournament.Comments = await _commentsDataSource.ReadComments(model.Tournament.TournamentId!.Value);
                 foreach (var comment in model.Tournament.Comments)

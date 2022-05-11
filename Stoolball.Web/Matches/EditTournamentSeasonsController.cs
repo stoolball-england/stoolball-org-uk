@@ -85,7 +85,7 @@ namespace Stoolball.Web.Matches
                 }
                 model.PossibleSeasons.Sort(new SeasonComparer());
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.TournamentDate = model.Tournament.StartTime;
                 model.Metadata.PageTitle = "Where to list " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x, false, false, false));

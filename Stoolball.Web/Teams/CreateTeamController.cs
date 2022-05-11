@@ -41,7 +41,7 @@ namespace Stoolball.Web.Teams
                 }
             };
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
 
             model.Metadata.PageTitle = "Add a team";
 

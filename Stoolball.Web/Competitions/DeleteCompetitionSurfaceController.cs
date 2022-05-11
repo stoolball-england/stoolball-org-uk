@@ -62,9 +62,9 @@ namespace Stoolball.Web.Competitions
             {
                 Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.Path).ConfigureAwait(false),
             };
-            viewModel.IsAuthorized = await _authorizationPolicy.IsAuthorized(viewModel.Competition);
+            viewModel.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(viewModel.Competition);
 
-            if (viewModel.IsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
+            if (viewModel.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
             {
                 var memberGroup = Services.MemberGroupService.GetById(viewModel.Competition.MemberGroupKey!.Value);
                 if (memberGroup != null)

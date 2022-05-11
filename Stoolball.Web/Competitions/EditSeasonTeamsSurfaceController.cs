@@ -75,7 +75,7 @@ namespace Stoolball.Web.Competitions
             {
                 Season = season,
             };
-            viewModel.IsAuthorized = isAuthorized;
+            viewModel.Authorization.CurrentMemberIsAuthorized = isAuthorized;
             season.Competition = beforeUpdate.Competition;
             season.FromYear = beforeUpdate.FromYear;
             season.UntilYear = beforeUpdate.UntilYear;

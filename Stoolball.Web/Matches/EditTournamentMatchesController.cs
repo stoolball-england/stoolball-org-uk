@@ -55,7 +55,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.Tournament.Matches = (await _matchDataSource.ReadMatchListings(new MatchFilter
                 {

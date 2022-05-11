@@ -112,11 +112,11 @@ namespace Stoolball.Web.Matches
                 }
             }
 
-            model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity?.IsAuthenticated ?? false;
+            model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch] = User.Identity?.IsAuthenticated ?? false;
             if (model.Season != null && model.Season.Teams.Count <= 1 && model.Season.Competition != null)
             {
                 (await _competitionAuthorizationPolicy.IsAuthorized(model.Season.Competition)).TryGetValue(AuthorizedAction.EditCompetition, out var canEditCompetition);
-                model.IsAuthorized[AuthorizedAction.EditCompetition] = canEditCompetition;
+                model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditCompetition] = canEditCompetition;
             }
 
             _editMatchHelper.ConfigureAddMatchModelMetadata(model);

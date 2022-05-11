@@ -6,7 +6,7 @@
 @using Humanizer
 @using Stoolball.Web.Competitions.Models
 @{
-    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam];
+    var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam];
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/show-all-competitions.js") { Order = 100 });
 }
 <div class="container-xl">

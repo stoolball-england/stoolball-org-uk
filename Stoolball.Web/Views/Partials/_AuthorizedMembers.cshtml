@@ -1,0 +1,7 @@
+﻿@using Humanizer
+@using Stoolball.Web.Security
+@model AuthorizedMembersViewModel
+@if (Model.AuthorizedMemberNames.Any())
+{
+    <small class="security">@Model.AuthorizedMemberNames.Humanize() can @Model.AuthorizedAction @Model.AuthorizationFor too. @Model.Note</small>
+}

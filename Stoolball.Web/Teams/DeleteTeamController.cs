@@ -68,7 +68,7 @@ namespace Stoolball.Web.Teams
 
                 model.ConfirmDeleteRequest.RequiredText = model.Team.TeamName;
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
 
                 model.Metadata.PageTitle = "Delete " + model.Team.TeamName;
 

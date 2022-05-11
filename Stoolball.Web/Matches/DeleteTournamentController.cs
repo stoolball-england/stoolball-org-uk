@@ -70,7 +70,7 @@ namespace Stoolball.Web.Matches
 
                 model.ConfirmDeleteRequest.RequiredText = model.Tournament.TournamentName;
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.Metadata.PageTitle = "Delete " + model.Tournament.TournamentFullNameAndPlayerType(x => _dateFormatter.FormatDate(x, false, false, false));
 

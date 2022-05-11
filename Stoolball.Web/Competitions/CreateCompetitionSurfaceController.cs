@@ -105,7 +105,7 @@ namespace Stoolball.Web.Competitions
             {
                 Competition = competition,
             };
-            viewModel.IsAuthorized = isAuthorized;
+            viewModel.Authorization.CurrentMemberIsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Add a competition";
 
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });

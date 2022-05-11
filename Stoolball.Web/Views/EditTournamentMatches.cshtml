@@ -18,7 +18,7 @@
 <div class="container-xl">
     <h1>Matches in the @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTournament])
     {
         if (Model.Tournament.Teams.Count < 2)
         {

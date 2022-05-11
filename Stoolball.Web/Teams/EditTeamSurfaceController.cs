@@ -96,7 +96,7 @@ namespace Stoolball.Web.Teams
             {
                 Team = team,
             };
-            model.IsAuthorized = isAuthorized;
+            model.Authorization.CurrentMemberIsAuthorized = isAuthorized;
             model.Metadata.PageTitle = $"Edit {team.TeamName}";
 
             model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });

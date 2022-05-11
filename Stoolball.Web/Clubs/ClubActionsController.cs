@@ -44,7 +44,10 @@ namespace Stoolball.Web.Clubs
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Club);
+                model.Authorization.AuthorizationFor = model.Club.ClubName;
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Club);
+                model.Authorization.AuthorizedMemberNames = await _authorizationPolicy.AuthorizedMemberNames(model.Club);
+                model.Authorization.AuthorizedGroupNames = _authorizationPolicy.AuthorizedGroupNames(model.Club);
 
                 model.Metadata.PageTitle = "Edit " + model.Club.ClubName;
 

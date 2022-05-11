@@ -57,7 +57,7 @@ namespace Stoolball.Web.Competitions
                 model.Season.FromYear = model.Season.FromYear == default ? DateTime.Today.Year : model.Season.FromYear + 1;
                 model.Season.UntilYear = summerSeason ? 0 : 1;
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
                 model.Metadata.PageTitle = $"Add a season in {the}{model.Season.Competition.CompetitionName}";

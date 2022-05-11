@@ -118,9 +118,9 @@ namespace Stoolball.Web.Matches
 
             model.CurrentInnings.MatchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(model.CurrentInnings.MatchInnings);
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _matchRepository.UpdateBowlingScorecard(model.Match, model.CurrentInnings.MatchInnings.MatchInningsId!.Value, currentMember.Key, currentMember.Name);

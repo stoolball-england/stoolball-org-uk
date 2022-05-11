@@ -92,9 +92,9 @@ namespace Stoolball.Web.Matches
                 team.TeamRole = TeamRole.Training;
             }
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid &&
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid &&
                (model.Season == null || model.Season.MatchTypes.Contains(MatchType.TrainingSession)))
             {
                 if ((int?)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }

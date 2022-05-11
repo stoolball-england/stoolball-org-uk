@@ -118,9 +118,9 @@ namespace Stoolball.Web.Matches
                 }
             }
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid)
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedMatch = await _matchRepository.UpdateMatchFormat(model.Match, currentMember.Key, currentMember.Name);

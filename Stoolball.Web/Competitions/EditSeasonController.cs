@@ -48,7 +48,7 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 if (!model.Season.DefaultOverSets.Any())
                 {

@@ -59,7 +59,7 @@ namespace Stoolball.Web.Teams
                 return NotFound();
             }
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
 
             model.Matches = new MatchListingViewModel(CurrentPage)
             {

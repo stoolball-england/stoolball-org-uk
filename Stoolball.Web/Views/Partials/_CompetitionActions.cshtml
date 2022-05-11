@@ -4,14 +4,14 @@
     var the = Model.Competition!.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
 }
 <dl>
-    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditCompetition])
     {
         <dt><a href="@Model.Competition.CompetitionRoute/edit/competition">Edit @the'@Model.Competition.CompetitionName' competition</a></dt>
         <dd>Set the introduction, who can play and the contact details.</dd>
         <dt><a href="@Model.Competition.CompetitionRoute/add">Add a season</a></dt>
         <dd>Add a new season of the competition, then you can add teams and matches.</dd>
     }
-    @if (Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteCompetition])
     {
         <dt><a href="@Model.Competition.CompetitionRoute/delete">Delete @the'@Model.Competition.CompetitionName' competition</a> @await Html.PartialAsync("_AdminOnly")</dt>
         <dd>Delete the competition and all its seasons, losing the results and statistics and removing it from teams' pages.</dd>

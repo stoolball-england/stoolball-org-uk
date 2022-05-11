@@ -75,7 +75,7 @@ namespace Stoolball.Web.Matches
                 }
             }
 
-            model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity?.IsAuthenticated ?? false;
+            model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch] = User.Identity?.IsAuthenticated ?? false;
 
             _editMatchHelper.ConfigureAddMatchModelMetadata(model);
 

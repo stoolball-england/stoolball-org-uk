@@ -75,7 +75,7 @@ namespace Stoolball.Web.Competitions
                     model.Season.MatchTypes.Contains(MatchType.LeagueMatch),
                     model.Season.EnableTournaments);
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 model.Metadata.PageTitle = $"Matches and tournaments in {model.Season.SeasonFullNameAndPlayerType()}";
 

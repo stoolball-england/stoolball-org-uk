@@ -10,7 +10,7 @@
 <div class="container-xl">
     <h1>Delete @Model.MatchLocation!.NameAndLocalityOrTownIfDifferent()</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteMatchLocation])
     {
         if (!Model.Deleted)
         {

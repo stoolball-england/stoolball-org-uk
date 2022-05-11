@@ -3,7 +3,7 @@
 @using Stoolball.Security
 @{ 
     var firstAndOnlyMatch = Model.Matches.Matches.First();
-    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam];
+    var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam];
 }
 @section head {
     <meta name="robots" content="noindex,follow" />

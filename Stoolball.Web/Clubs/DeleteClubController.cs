@@ -46,7 +46,7 @@ namespace Stoolball.Web.Clubs
             {
                 model.ConfirmDeleteRequest.RequiredText = model.Club.ClubName;
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Club);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Club);
 
                 model.Metadata.PageTitle = "Delete " + model.Club.ClubName;
 

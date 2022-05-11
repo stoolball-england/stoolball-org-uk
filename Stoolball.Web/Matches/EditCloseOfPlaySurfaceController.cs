@@ -89,9 +89,9 @@ namespace Stoolball.Web.Matches
             model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
             model.Match.Teams = beforeUpdate.Teams;
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
                 if (model.Match.MatchResultType.HasValue && (int)model.Match.MatchResultType.Value == -1) { model.Match.MatchResultType = null; }
 

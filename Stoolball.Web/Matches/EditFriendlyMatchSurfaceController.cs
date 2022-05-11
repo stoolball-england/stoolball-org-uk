@@ -92,9 +92,9 @@ namespace Stoolball.Web.Matches
             _matchValidator.DateIsWithinTheSeason(model.MatchDate, model.Match.Season, ModelState, "MatchDate", "match");
             _matchValidator.AtLeastOneTeamId(model, ModelState);
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.IsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid)
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid)
             {
                 if ((int?)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
 

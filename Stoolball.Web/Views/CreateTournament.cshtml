@@ -23,7 +23,7 @@
 <div class="container-xl">
     <h1>@h1</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.CreateTournament])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateTournament])
     {
         using (Html.BeginUmbracoForm<CreateTournamentSurfaceController>(nameof(CreateTournamentSurfaceController.CreateTournament)))
         {

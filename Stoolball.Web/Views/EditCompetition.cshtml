@@ -10,7 +10,7 @@
 <div class="container-xl">
     <h1>Edit @Model.Competition!.CompetitionName</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditCompetition])
     {
         using (Html.BeginUmbracoForm<EditCompetitionSurfaceController>(nameof(EditCompetitionSurfaceController.UpdateCompetition)))
         {

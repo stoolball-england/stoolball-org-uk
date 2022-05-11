@@ -71,7 +71,7 @@ namespace Stoolball.Web.Competitions
 
                 model.Season.Results = _emailProtector.ProtectEmailAddresses(model.Season.Results, User.Identity?.IsAuthenticated ?? false);
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase);
                 model.Metadata.PageTitle = $"Results table for {(the ? string.Empty : "the ")}{model.Season.SeasonFullNameAndPlayerType()}";

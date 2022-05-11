@@ -15,13 +15,13 @@ namespace Stoolball.Web.Teams.Models
         {
         }
         public Team? Team { get; set; }
-        public MatchListingViewModel Matches { get; set; } = new MatchListingViewModel();
-        public AddMatchMenuViewModel AddMatchMenu { get; set; } = new AddMatchMenuViewModel();
-        public MatchFilter DefaultMatchFilter { get; set; } = new MatchFilter();
-        public MatchFilter AppliedMatchFilter { get; set; } = new MatchFilter();
+        public MatchListingViewModel Matches { get; set; } = new();
+        public AddMatchMenuViewModel AddMatchMenu { get; set; } = new();
+        public MatchFilter DefaultMatchFilter { get; set; } = new();
+        public MatchFilter AppliedMatchFilter { get; set; } = new();
         public string? FilterDescription { get; set; }
         public bool IsInACurrentLeague { get; set; }
         public bool IsInACurrentKnockoutCompetition { get; set; }
-        public IList<Player> Players { get; internal set; } = new List<Player>();
+        public List<Player> Players { get; internal set; } = new();
     }
 }

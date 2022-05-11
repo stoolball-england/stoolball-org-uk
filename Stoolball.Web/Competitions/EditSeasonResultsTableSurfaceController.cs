@@ -69,7 +69,7 @@ namespace Stoolball.Web.Competitions
                 Season = season,
                 UrlReferrer = string.IsNullOrEmpty(Request.Form["UrlReferrer"]) ? null : new Uri(Request.Form["UrlReferrer"])
             };
-            viewModel.IsAuthorized = isAuthorized;
+            viewModel.Authorization.CurrentMemberIsAuthorized = isAuthorized;
             season.Competition = beforeUpdate.Competition;
             season.FromYear = beforeUpdate.FromYear;
             season.UntilYear = beforeUpdate.UntilYear;

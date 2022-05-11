@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Services;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.Matches
@@ -11,10 +12,12 @@ namespace Stoolball.Web.Matches
     public class TournamentAuthorizationPolicy : IAuthorizationPolicy<Tournament>
     {
         private readonly IMemberManager _memberManager;
+        private readonly IMemberService _memberService;
 
-        public TournamentAuthorizationPolicy(IMemberManager memberManager)
+        public TournamentAuthorizationPolicy(IMemberManager memberManager, IMemberService memberService)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
+            _memberService = memberService ?? throw new ArgumentNullException(nameof(memberService));
         }
 
         /// <summary>
@@ -42,6 +45,33 @@ namespace Stoolball.Web.Matches
             if (tournament.MemberKey == currentMember.Key) { return true; }
 
             return await memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
+        }
+
+        /// <inheritdoc/>
+        public List<string> AuthorizedGroupNames(Tournament tournament)
+        {
+            return new List<string>();
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<string>> AuthorizedMemberNames(Tournament tournament)
+        {
+            if (tournament is null)
+            {
+                throw new ArgumentNullException(nameof(tournament));
+            }
+
+            var members = new List<string>();
+            var currentMember = await _memberManager.GetCurrentMemberAsync();
+            if (tournament.MemberKey.HasValue && tournament.MemberKey != currentMember?.Key)
+            {
+                var name = _memberService.GetByKey(tournament.MemberKey.Value)?.Name;
+                if (!string.IsNullOrEmpty(name))
+                {
+                    members.Add(name);
+                }
+            }
+            return members;
         }
     }
 }

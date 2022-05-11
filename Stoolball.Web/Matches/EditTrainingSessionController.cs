@@ -53,7 +53,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
                 if (model.Match.Season != null)
                 {

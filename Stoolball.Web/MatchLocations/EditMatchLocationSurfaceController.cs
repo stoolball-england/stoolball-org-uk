@@ -68,7 +68,7 @@ namespace Stoolball.Web.MatchLocations
             {
                 MatchLocation = location,
             };
-            viewModel.IsAuthorized = isAuthorized;
+            viewModel.Authorization.CurrentMemberIsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Edit {location.NameAndLocalityOrTown()}";
 
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });

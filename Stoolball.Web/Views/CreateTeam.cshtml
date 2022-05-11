@@ -12,7 +12,7 @@
 <div class="container-xl">
     <h1>Add a team</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.CreateTeam])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateTeam])
     {
         using (Html.BeginUmbracoForm<CreateTeamSurfaceController>(nameof(CreateTeamSurfaceController.CreateTeam)))
         {

@@ -73,7 +73,7 @@ namespace Stoolball.Web.Clubs
                     model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, filter.sortOrder).ConfigureAwait(false);
                 }
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Club);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Club);
 
                 var userFilter = _matchFilterHumanizer.MatchingFilter(model.AppliedMatchFilter);
                 if (!string.IsNullOrWhiteSpace(userFilter))

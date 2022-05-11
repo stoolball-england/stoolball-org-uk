@@ -92,7 +92,7 @@ namespace Stoolball.Web.Matches
                 model.Metadata.PageTitle = $"Add a tournament in the {model.Season.SeasonFullName()}";
             }
 
-            model.IsAuthorized[AuthorizedAction.CreateTournament] = User.Identity?.IsAuthenticated ?? false;
+            model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateTournament] = User.Identity?.IsAuthenticated ?? false;
 
             model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Tournaments, Url = new Uri(Constants.Pages.TournamentsUrl, UriKind.Relative) });
 

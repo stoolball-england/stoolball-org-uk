@@ -63,9 +63,9 @@ namespace Stoolball.Web.Matches
             {
                 Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Path)
             };
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
-            if (model.IsAuthorized[AuthorizedAction.DeleteTournament] && ModelState.IsValid)
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTournament] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _tournamentRepository.DeleteTournament(model.Tournament, currentMember.Key, currentMember.Name);

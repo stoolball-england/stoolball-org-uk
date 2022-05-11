@@ -77,7 +77,7 @@ namespace Stoolball.Web.Matches
 
                 model.ConfirmDeleteRequest.RequiredText = model.Match.MatchName;
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.Metadata.PageTitle = "Delete " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false)) + " - stoolball match";
 

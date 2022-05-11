@@ -81,9 +81,9 @@ namespace Stoolball.Web.Matches
             _matchValidator.DateIsWithinTheSeason(model.MatchDate, model.Match.Season, ModelState, "MatchDate", "match");
             _matchValidator.TeamsMustBeDifferent(model, ModelState);
 
-            model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity?.IsAuthenticated ?? false;
+            model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch] = User.Identity?.IsAuthenticated ?? false;
 
-            if (model.IsAuthorized[AuthorizedAction.CreateMatch] && ModelState.IsValid &&
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch] && ModelState.IsValid &&
                 (model.Team == null || (model.PossibleSeasons != null && model.PossibleSeasons.Any())) &&
                 (model.Season == null || model.Season.MatchTypes.Contains(MatchType.LeagueMatch)))
             {

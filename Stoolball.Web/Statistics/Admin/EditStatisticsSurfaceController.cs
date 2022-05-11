@@ -63,9 +63,9 @@ namespace Stoolball.Web.Statistics.Admin
         public async Task<IActionResult> UpdateStatistics()
         {
             var model = new EditStatisticsViewModel(CurrentPage, Services.UserService);
-            model.IsAuthorized[AuthorizedAction.EditStatistics] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
+            model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditStatistics] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
 
-            if (model.IsAuthorized[AuthorizedAction.EditStatistics] && ModelState.IsValid)
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditStatistics] && ModelState.IsValid)
             {
                 model.BackgroundTaskId = Guid.NewGuid();
                 var currentMember = await _memberManager.GetCurrentMemberAsync();

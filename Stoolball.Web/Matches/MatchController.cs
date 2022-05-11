@@ -66,7 +66,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.Match.Comments = await _commentsDataSource.ReadComments(model.Match.MatchId!.Value).ConfigureAwait(false);
                 foreach (var comment in model.Match.Comments)

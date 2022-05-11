@@ -54,9 +54,9 @@ namespace Stoolball.Web.Clubs
             {
                 Club = await _clubDataSource.ReadClubByRoute(Request.Path).ConfigureAwait(false),
             };
-            viewModel.IsAuthorized = await _authorizationPolicy.IsAuthorized(viewModel.Club);
+            viewModel.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(viewModel.Club);
 
-            if (viewModel.IsAuthorized[AuthorizedAction.DeleteClub] && ModelState.IsValid)
+            if (viewModel.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteClub] && ModelState.IsValid)
             {
                 var memberGroup = Services.MemberGroupService.GetById(viewModel.Club.MemberGroupKey!.Value);
                 if (memberGroup != null)

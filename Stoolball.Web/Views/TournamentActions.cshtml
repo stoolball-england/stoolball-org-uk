@@ -8,10 +8,10 @@
 <div class="container-xl">
     <h1>Edit @Html.TournamentFullNameAndPlayerType(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false))</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTournament] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTournament])
     {
         <dl>
-            @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
+            @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTournament])
             {
                 <dt><a href="@Model.Tournament!.TournamentRoute/edit/tournament">Edit @Html.TournamentFullName(Model.Tournament, x => dateTimeFormatter.FormatDate(x, false))</a></dt>
                 <dd>Set the name, date, time and location of the tournament, who can play, the match format and the notes.</dd>
@@ -22,12 +22,13 @@
                 <dt><a href="@Model.Tournament.TournamentRoute/edit/seasons">Where to list the tournament</a></dt>
                 <dd>Set which competitions to list this tournament in.</dd>
             }
-            @if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
+            @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTournament])
             {
                 <dt><a href="@Model.Tournament!.TournamentRoute/delete">Delete @Html.TournamentFullName(Model.Tournament, x => dateTimeFormatter.FormatDate(x, false))</a></dt>
                 <dd>Matches and match statistics will be lost. Players and teams that only feature in this tournament will be deleted.</dd>
             }
         </dl>
+        @await Html.PartialAsync("_AuthorizedMembers", Model.Authorization)
     }
     else
     {

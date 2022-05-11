@@ -4,7 +4,7 @@
 @using Stoolball.Security
 @{
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/show-all-teams.js"){Order = 100});
-    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation];
+    var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchLocation] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteMatchLocation];
 }
 <div class="container-xl">
     <h1>@Model.MatchLocation!.NameAndLocalityOrTownIfDifferent()</h1>

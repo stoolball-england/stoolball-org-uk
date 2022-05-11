@@ -1,4 +1,5 @@
 ﻿@inherits UmbracoViewPage<TeamViewModel>
+@using Stoolball.Web.Security
 @using Stoolball.Web.Teams.Models
 @using Stoolball.Security
 @section head {
@@ -7,20 +8,22 @@
 <div class="container-xl">
     <h1>Edit @Model.Team!.TeamName</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam])
     {
+        @await Html.PartialAsync("_AuthorizedMemberGroups", Model.Authorization)
         <dl>
-            @if (Model.IsAuthorized[AuthorizedAction.EditTeam])
+            @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
             {
                 <dt><a href="@Model.Team.TeamRoute/edit/team">Edit @Model.Team.TeamName</a></dt>
                 <dd>Set the introduction, type of team, home grounds and sports halls, cost to play, contact details and more.</dd>
             }
-            @if (Model.IsAuthorized[AuthorizedAction.DeleteTeam])
+            @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam])
             {
                 <dt><a href="@Model.Team.TeamRoute/delete">Delete @Model.Team.TeamName</a> @await Html.PartialAsync("_AdminOnly")</dt>
                 <dd>Remove the team out of all competitions. Delete players and statistics, including for opposition teams.</dd>
             }
         </dl>
+        @await Html.PartialAsync("_AuthorizedMembers", Model.Authorization)
     }
     else
     {

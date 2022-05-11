@@ -41,7 +41,7 @@ namespace Stoolball.Web.MatchLocations
                 GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")
             };
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
             model.Metadata.PageTitle = "Add a ground or sports centre";
 

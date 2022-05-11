@@ -63,9 +63,9 @@ namespace Stoolball.Web.Matches
                 model.Tournament.Seasons = Request.Form["Tournament.Seasons"].ToString().Split(',').Select(x => new Season { SeasonId = new Guid(x) }).ToList() ?? new List<Season>();
             }
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
-            if (model.IsAuthorized[AuthorizedAction.EditTournament])
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTournament])
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTournament = await _tournamentRepository.UpdateSeasons(model.Tournament, currentMember.Key, currentMember.UserName, currentMember.Name);

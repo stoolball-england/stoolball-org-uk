@@ -1,7 +1,7 @@
 ﻿@inherits UmbracoViewPage<Stoolball.Web.Clubs.ClubViewModel>
 @using Stoolball.Security
 @{ 
-    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditClub] || Model.IsAuthorized[AuthorizedAction.DeleteClub];
+    var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditClub] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteClub];
 }
 <div class="container-xl">
     <h1>@Model.Club?.ClubName</h1>

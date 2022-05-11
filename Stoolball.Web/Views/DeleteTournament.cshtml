@@ -12,7 +12,7 @@
 <div class="container-xl">
     <h1>Delete @Html.TournamentFullNameAndPlayerType(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false))</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTournament])
     {
         if (!Model.Deleted)
         {

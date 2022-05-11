@@ -31,7 +31,7 @@ namespace Stoolball.Web.Statistics.Admin
         public new async Task<IActionResult> Index()
         {
             var model = new EditStatisticsViewModel(CurrentPage);
-            model.IsAuthorized[AuthorizedAction.EditStatistics] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
+            model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditStatistics] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
 
             model.Metadata.PageTitle = "Update statistics";
 

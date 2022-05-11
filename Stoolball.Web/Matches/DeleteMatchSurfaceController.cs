@@ -61,9 +61,9 @@ namespace Stoolball.Web.Matches
             {
                 Match = await _matchDataSource.ReadMatchByRoute(Request.Path)
             };
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
-            if (model.IsAuthorized[AuthorizedAction.DeleteMatch] && ModelState.IsValid)
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteMatch] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _matchRepository.DeleteMatch(model.Match, currentMember.Key, currentMember.Name);

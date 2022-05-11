@@ -6,7 +6,7 @@
 }
 <div class="container-xl">
     <h1>Update statistics</h1>
-    @if (Model.IsAuthorized[AuthorizedAction.EditStatistics])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditStatistics])
     {
         if (Model.BackgroundTaskId.HasValue)
         {

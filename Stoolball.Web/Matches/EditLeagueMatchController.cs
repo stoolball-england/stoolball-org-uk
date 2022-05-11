@@ -66,11 +66,11 @@ namespace Stoolball.Web.Matches
                     return NotFound();
                 }
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
                 if (model.Match.Season != null && model.Match.Season.Teams.Count <= 1 && model.Match.Season.Competition != null)
                 {
                     (await _competitionAuthorizationPolicy.IsAuthorized(model.Match.Season.Competition)).TryGetValue(AuthorizedAction.EditCompetition, out var canEditCompetition);
-                    model.IsAuthorized[AuthorizedAction.EditCompetition] = canEditCompetition;
+                    model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditCompetition] = canEditCompetition;
                 }
 
                 if (model.Match.Season != null)

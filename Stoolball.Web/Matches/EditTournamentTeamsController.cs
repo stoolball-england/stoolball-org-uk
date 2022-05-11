@@ -51,7 +51,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.TournamentDate = model.Tournament.StartTime;
                 model.Metadata.PageTitle = "Teams in the " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x, false, false, false));

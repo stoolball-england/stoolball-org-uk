@@ -10,7 +10,7 @@
 <div class="container-xl">
     <h1>Delete @Model.Club?.ClubName</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.DeleteClub])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteClub])
     {
         if (!Model.Deleted)
         {

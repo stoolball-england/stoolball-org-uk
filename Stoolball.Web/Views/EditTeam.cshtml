@@ -12,7 +12,7 @@
 <div class="container-xl">
     <h1>Edit @Model.Team!.TeamName</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditTeam])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
     {
         using (Html.BeginUmbracoForm<EditTeamSurfaceController>(nameof(EditTeamSurfaceController.UpdateTeam)))
         {

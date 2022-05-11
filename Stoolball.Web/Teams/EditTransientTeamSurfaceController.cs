@@ -92,7 +92,7 @@ namespace Stoolball.Web.Teams
             {
                 Team = team,
             };
-            model.IsAuthorized = isAuthorized;
+            model.Authorization.CurrentMemberIsAuthorized = isAuthorized;
 
             model.Matches = new MatchListingViewModel(CurrentPage, Services?.UserService)
             {

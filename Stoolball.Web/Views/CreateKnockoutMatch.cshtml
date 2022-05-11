@@ -23,7 +23,7 @@
 <div class="container-xl">
     <h1>@h1</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.CreateMatch])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch])
     {
         using (Html.BeginUmbracoForm<CreateKnockoutMatchSurfaceController>(nameof(CreateKnockoutMatchSurfaceController.CreateMatch)))
         {

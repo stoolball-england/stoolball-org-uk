@@ -13,7 +13,7 @@
 <div class="container-xl">
     <h1>Add a season in @the@Model.Season.Competition.CompetitionName</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditCompetition])
     {
         using (Html.BeginUmbracoForm<CreateSeasonSurfaceController>(nameof(CreateSeasonSurfaceController.CreateSeason)))
         {

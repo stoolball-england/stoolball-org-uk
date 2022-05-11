@@ -30,7 +30,7 @@
         <li class="nav-item nav-item-admin">
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
         </li>
-        @if (Model.IsAuthorized[AuthorizedAction.EditStatistics])
+        @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditStatistics])
         {
             <li class="nav-item nav-item-admin">
                 <a class="nav-link nav-link-edit" href="@Stoolball.Constants.Pages.StatisticsUrl/edit">Edit statistics</a>

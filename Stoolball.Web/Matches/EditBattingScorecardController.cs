@@ -73,7 +73,7 @@ namespace Stoolball.Web.Matches
                     return NotFound();
                 }
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
                 if (!model.Match.PlayersPerTeam.HasValue)

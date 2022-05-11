@@ -49,7 +49,7 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Competition);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Competition);
 
                 model.Metadata.PageTitle = model.Competition.CompetitionName;
                 model.Metadata.Description = model.Competition.Description();

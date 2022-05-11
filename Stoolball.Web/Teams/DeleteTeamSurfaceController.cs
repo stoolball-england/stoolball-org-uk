@@ -63,9 +63,9 @@ namespace Stoolball.Web.Teams
             {
                 Team = await _teamDataSource.ReadTeamByRoute(Request.Path, true).ConfigureAwait(false),
             };
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
 
-            if (model.IsAuthorized[AuthorizedAction.DeleteTeam] && ModelState.IsValid)
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam] && ModelState.IsValid)
             {
                 var memberGroup = Services.MemberGroupService.GetById(model.Team.MemberGroupKey!.Value);
                 if (memberGroup != null)

@@ -45,7 +45,10 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
+                model.Authorization.AuthorizationFor = model.Team.TeamName;
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
+                model.Authorization.AuthorizedGroupNames = _authorizationPolicy.AuthorizedGroupNames(model.Team);
+                model.Authorization.AuthorizedMemberNames = await _authorizationPolicy.AuthorizedMemberNames(model.Team);
 
                 model.Metadata.PageTitle = "Edit " + model.Team.TeamName;
 

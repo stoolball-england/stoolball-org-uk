@@ -14,7 +14,7 @@
 <div class="container-xl">
     <h1>Edit @Model.Team!.TeamName, @dateTimeFormatter.FormatDate(firstAndOnlyMatch.StartTime, false, false)</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditTeam])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
     {
         using (Html.BeginUmbracoForm<EditTransientTeamSurfaceController>(nameof(EditTransientTeamSurfaceController.UpdateTransientTeam)))
         {

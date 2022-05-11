@@ -57,7 +57,7 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
 
                 model.Matches = new MatchListingViewModel(CurrentPage)
                 {

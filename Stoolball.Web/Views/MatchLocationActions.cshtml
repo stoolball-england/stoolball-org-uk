@@ -6,20 +6,22 @@
 <div class="container-xl">
     <h1>Edit @Model.MatchLocation!.NameAndLocalityOrTownIfDifferent()</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchLocation] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteMatchLocation])
     {
+        @await Html.PartialAsync("_AuthorizedMemberGroups", Model.Authorization)
         <dl>
-            @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation])
+            @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchLocation])
             {
                 <dt><a href="@Model.MatchLocation.MatchLocationRoute/edit/location">Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a></dt>
                 <dd>Set the address, map and notes.</dd>
             }
-            @if (Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
+            @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteMatchLocation])
             {
                 <dt><a href="@Model.MatchLocation.MatchLocationRoute/delete">Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a> @await Html.PartialAsync("_AdminOnly")</dt>
                 <dd>Matches played here will have an unknown location. Teams based here will lose their home.</dd>
             }
         </dl>
+        @await Html.PartialAsync("_AuthorizedMembers", Model.Authorization)
     }
     else
     {

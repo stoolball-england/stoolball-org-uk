@@ -10,7 +10,7 @@
 <div class="container-xl">
     <h1>Add a competition</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.CreateCompetition])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateCompetition])
     {
         using (Html.BeginUmbracoForm<CreateCompetitionSurfaceController>
             (nameof(CreateCompetitionSurfaceController.CreateCompetition)))

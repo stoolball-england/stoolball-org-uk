@@ -57,7 +57,7 @@ namespace Stoolball.Web.MatchLocations
                 });
                 model.ConfirmDeleteRequest.RequiredText = model.MatchLocation.NameAndLocalityOrTownIfDifferent();
 
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
                 model.Metadata.PageTitle = "Delete " + model.MatchLocation.NameAndLocalityOrTown();
 

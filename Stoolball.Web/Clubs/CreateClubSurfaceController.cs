@@ -108,7 +108,7 @@ namespace Stoolball.Web.Clubs
             {
                 Club = club,
             };
-            viewModel.IsAuthorized = isAuthorized;
+            viewModel.Authorization.CurrentMemberIsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Add a club";
 
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });

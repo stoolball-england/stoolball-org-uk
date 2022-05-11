@@ -4,7 +4,7 @@
 @using Stoolball.Security
 @using Stoolball.Web.Competitions.Models
 @{ 
-    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];
+    var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditCompetition] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteCompetition];
 }
 <div class="container-xl">
     <h1>@Model.Season!.SeasonFullNameAndPlayerType()</h1>

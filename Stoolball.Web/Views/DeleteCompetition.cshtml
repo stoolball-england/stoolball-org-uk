@@ -10,7 +10,7 @@
 <div class="container-xl">
     <h1>Delete @Model.Competition!.CompetitionName</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteCompetition])
     {
         if (!Model.Deleted)
         {

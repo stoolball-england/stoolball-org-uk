@@ -45,7 +45,10 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Competition);
+                model.Authorization.AuthorizationFor = model.Competition.CompetitionName;
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Competition);
+                model.Authorization.AuthorizedGroupNames = _authorizationPolicy.AuthorizedGroupNames(model.Competition);
+                model.Authorization.AuthorizedMemberNames = await _authorizationPolicy.AuthorizedMemberNames(model.Competition);
 
                 model.Metadata.PageTitle = "Edit " + model.Competition.CompetitionName;
 

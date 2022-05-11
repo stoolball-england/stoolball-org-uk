@@ -36,7 +36,7 @@ namespace Stoolball.Web.Competitions
                 Competition = new Competition()
             };
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Competition);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Competition);
 
             model.Metadata.PageTitle = "Add a competition";
 

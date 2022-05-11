@@ -7,7 +7,7 @@
 @using Stoolball.Web.Matches.Models
 @using Stoolball.Security
 @{
-    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament];
+    var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTournament] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTournament];
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/show-all-competitions.js") { Order = 100 });
     SmidgeHelper.RequiresCss(new CssFile("~/css/match.min.css") { Order = 100 });
     SmidgeHelper.RequiresCss(new CssFile("~/css/comments.min.css") { Order = 100 });

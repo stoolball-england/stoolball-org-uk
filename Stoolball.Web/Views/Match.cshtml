@@ -12,7 +12,7 @@
     SmidgeHelper.RequiresCss(new CssFile("~/css/scorecards.min.css") { Order = 100 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/match.js") { Order = 100 });
     SmidgeHelper.RequiresCss(new CssFile("~/css/comments.min.css") { Order = 100 });
-    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.DeleteMatch];
+    var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatch] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteMatch];
 }
 @functions{
     private string ResultDescription()

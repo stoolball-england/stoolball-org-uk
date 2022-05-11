@@ -1,0 +1,7 @@
+﻿@using Stoolball.Web.Security
+@using static Stoolball.Constants
+@model AuthorizedMembersViewModel
+@if (User.IsInRole(Groups.Administrators) && Model.AuthorizedGroupNames.Any())
+{
+    <p class="alert alert-info alert-tip">Add members to the <strong>@Model.AuthorizedGroupNames.First()</strong> group to grant edit access here. @await Html.PartialAsync("_AdminOnly")</p>
+}

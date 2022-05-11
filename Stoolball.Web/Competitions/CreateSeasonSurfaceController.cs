@@ -100,7 +100,7 @@ namespace Stoolball.Web.Competitions
             {
                 Season = season,
             };
-            viewModel.IsAuthorized = isAuthorized;
+            viewModel.Authorization.CurrentMemberIsAuthorized = isAuthorized;
             var the = season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
             viewModel.Metadata.PageTitle = $"Add a season in {the}{season.Competition.CompetitionName}";
 

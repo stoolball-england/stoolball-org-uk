@@ -15,7 +15,7 @@
 <div class="container-xl">
     <h1>Add a ground or sports centre</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.CreateMatchLocation])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatchLocation])
     {
         using (Html.BeginUmbracoForm<CreateMatchLocationSurfaceController>(nameof(CreateMatchLocationSurfaceController.CreateMatchLocation)))
         {

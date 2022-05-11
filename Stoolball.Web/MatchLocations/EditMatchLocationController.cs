@@ -51,7 +51,7 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
                 model.Metadata.PageTitle = "Edit " + model.MatchLocation.NameAndLocalityOrTown();
 

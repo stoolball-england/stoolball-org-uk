@@ -49,7 +49,7 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
 
                 model.Metadata.PageTitle = model.Team.TeamName + " stoolball team";
                 model.Metadata.Description = model.Team.Description();

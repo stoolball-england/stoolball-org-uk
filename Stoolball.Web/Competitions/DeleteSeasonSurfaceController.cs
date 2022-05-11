@@ -56,12 +56,12 @@ namespace Stoolball.Web.Competitions
             {
                 Season = await _seasonDataSource.ReadSeasonByRoute(Request.Path, true).ConfigureAwait(false),
             };
-            viewModel.IsAuthorized = await _authorizationPolicy.IsAuthorized(viewModel.Season.Competition);
+            viewModel.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(viewModel.Season.Competition);
 
             // Create a version without circular references before it gets serialised for audit
             viewModel.Season.Teams = viewModel.Season.Teams.Select(x => new TeamInSeason { Team = x.Team, WithdrawnDate = x.WithdrawnDate }).ToList();
 
-            if (viewModel.IsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
+            if (viewModel.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _seasonRepository.DeleteSeason(viewModel.Season, currentMember.Key, currentMember.Name).ConfigureAwait(false);

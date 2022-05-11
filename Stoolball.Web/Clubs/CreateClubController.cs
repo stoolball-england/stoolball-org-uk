@@ -35,7 +35,7 @@ namespace Stoolball.Web.Clubs
                 Club = new Club()
             };
 
-            model.IsAuthorized = await _authorizationPolicy.IsAuthorized(model.Club);
+            model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Club);
 
             model.Metadata.PageTitle = "Add a club";
 

@@ -10,7 +10,7 @@
 <div class="container-xl">
     <h1>Add a club</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.CreateClub])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateClub])
     {
         using (Html.BeginUmbracoForm<CreateClubSurfaceController>
             ("CreateClub"))

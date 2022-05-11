@@ -18,7 +18,7 @@
 <div class="container-xl">
     <h1>Edit @Html.MatchFullName(Model.Match, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchResult])
     {
         using (Html.BeginUmbracoForm<EditBowlingScorecardSurfaceController>(nameof(EditBowlingScorecardSurfaceController.UpdateMatch), null, new { id = "calling-it-search-disables-contact-managers" }))
         {
