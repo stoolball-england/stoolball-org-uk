@@ -22,7 +22,10 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
-    - name: Restore dependencies
+    - name: Restore npm dependencies
+      run: npm ci
+
+    - name: Restore NuGet dependencies
       run: dotnet restore ./Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj
 
     - name: Build unit tests
