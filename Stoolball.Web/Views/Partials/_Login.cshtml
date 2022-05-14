@@ -1,4 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<IPublishedContent>
+@using System.Configuration
 @using Umbraco.Web
 @using Umbraco.Web.Models
 @using Stoolball.Web.Account
@@ -13,6 +14,11 @@
     }
 }
 
+@if (ConfigurationManager.AppSettings["DisableLogin"] == "true")
+{
+    <p><strong>Sign in is temporarily disabled while we're busy upgrading the site. Please try again in a few hours.</strong></p>
+    return;
+}
 @if (Model.Key != loginPage?.Key)
 {
     if (Members.IsLoggedIn())

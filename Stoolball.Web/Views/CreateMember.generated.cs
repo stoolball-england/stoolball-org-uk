@@ -13,6 +13,12 @@ namespace ASP
 {
     using System;
     using System.Collections.Generic;
+    
+    #line 2 "..\..\Views\CreateMember.cshtml"
+    using System.Configuration;
+    
+    #line default
+    #line hidden
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -22,7 +28,7 @@ namespace ASP
     using System.Web.Mvc;
     using System.Web.Mvc.Ajax;
     
-    #line 3 "..\..\Views\CreateMember.cshtml"
+    #line 4 "..\..\Views\CreateMember.cshtml"
     using System.Web.Mvc.Html;
     
     #line default
@@ -32,26 +38,26 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     
-    #line 4 "..\..\Views\CreateMember.cshtml"
+    #line 5 "..\..\Views\CreateMember.cshtml"
     using ClientDependency.Core.Mvc;
     
     #line default
     #line hidden
     
-    #line 2 "..\..\Views\CreateMember.cshtml"
+    #line 3 "..\..\Views\CreateMember.cshtml"
     using ContentModels = Umbraco.Web.PublishedModels;
     
     #line default
     #line hidden
     using Examine;
     
-    #line 6 "..\..\Views\CreateMember.cshtml"
+    #line 7 "..\..\Views\CreateMember.cshtml"
     using Stoolball.Web.Account;
     
     #line default
     #line hidden
     
-    #line 7 "..\..\Views\CreateMember.cshtml"
+    #line 8 "..\..\Views\CreateMember.cshtml"
     using Stoolball.Web.Email;
     
     #line default
@@ -60,7 +66,7 @@ namespace ASP
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     
-    #line 5 "..\..\Views\CreateMember.cshtml"
+    #line 6 "..\..\Views\CreateMember.cshtml"
     using Umbraco.Web;
     
     #line default
@@ -78,7 +84,7 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 8 "..\..\Views\CreateMember.cshtml"
+            #line 9 "..\..\Views\CreateMember.cshtml"
   
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -97,7 +103,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 17 "..\..\Views\CreateMember.cshtml"
+            #line 18 "..\..\Views\CreateMember.cshtml"
    Write(Model.Name);
 
             
@@ -106,13 +112,34 @@ WriteLiteral(">\r\n    <h1>");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 19 "..\..\Views\CreateMember.cshtml"
+            #line 20 "..\..\Views\CreateMember.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 19 "..\..\Views\CreateMember.cshtml"
+            #line 20 "..\..\Views\CreateMember.cshtml"
+     if (ConfigurationManager.AppSettings["DisableLogin"] == "true")
+    {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("        <p><strong>Create an account is temporarily disabled while we\'re busy upg" +
+"rading the site. Please try again in a few hours.</strong></p>\r\n");
+
+            
+            #line 23 "..\..\Views\CreateMember.cshtml"
+        return;
+    }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("    ");
+
+            
+            #line 25 "..\..\Views\CreateMember.cshtml"
      if (User.Identity.IsAuthenticated)
     {
         
@@ -120,14 +147,14 @@ WriteLiteral("</h1>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 21 "..\..\Views\CreateMember.cshtml"
+            #line 27 "..\..\Views\CreateMember.cshtml"
    Write(Html.Partial("_Logout"));
 
             
             #line default
             #line hidden
             
-            #line 21 "..\..\Views\CreateMember.cshtml"
+            #line 27 "..\..\Views\CreateMember.cshtml"
                                 
     }
     else
@@ -139,14 +166,14 @@ WriteLiteral("</h1>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 27 "..\..\Views\CreateMember.cshtml"
+            #line 33 "..\..\Views\CreateMember.cshtml"
        Write(Html.ProtectEmailAddresses(Model.Value("memberCreatedSuccessfully").ToString(), TempData["Email"]?.ToString()));
 
             
             #line default
             #line hidden
             
-            #line 27 "..\..\Views\CreateMember.cshtml"
+            #line 33 "..\..\Views\CreateMember.cshtml"
                                                                                                                            
         }
         else
@@ -158,14 +185,14 @@ WriteLiteral("</h1>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 33 "..\..\Views\CreateMember.cshtml"
+            #line 39 "..\..\Views\CreateMember.cshtml"
            Write(Html.AntiForgeryToken());
 
             
             #line default
             #line hidden
             
-            #line 33 "..\..\Views\CreateMember.cshtml"
+            #line 39 "..\..\Views\CreateMember.cshtml"
                                         
 
                 if (ViewContext.ViewData.ModelState.Where(x => x.Key == string.Empty).Any())
@@ -175,14 +202,14 @@ WriteLiteral("</h1>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 37 "..\..\Views\CreateMember.cshtml"
+            #line 43 "..\..\Views\CreateMember.cshtml"
                Write(Html.ValidationSummary(true));
 
             
             #line default
             #line hidden
             
-            #line 37 "..\..\Views\CreateMember.cshtml"
+            #line 43 "..\..\Views\CreateMember.cshtml"
                                                  
                 }
 
@@ -199,7 +226,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                    ");
 
             
-            #line 41 "..\..\Views\CreateMember.cshtml"
+            #line 47 "..\..\Views\CreateMember.cshtml"
                Write(Html.LabelFor(m => createMemberModel.Name));
 
             
@@ -210,8 +237,8 @@ WriteLiteral("\r\n");
 WriteLiteral("                    ");
 
             
-            #line 42 "..\..\Views\CreateMember.cshtml"
-               Write(Html.TextBoxFor(m => createMemberModel.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name", autocomplete="name" }));
+            #line 48 "..\..\Views\CreateMember.cshtml"
+               Write(Html.TextBoxFor(m => createMemberModel.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name", autocomplete = "name" }));
 
             
             #line default
@@ -221,7 +248,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                    ");
 
             
-            #line 43 "..\..\Views\CreateMember.cshtml"
+            #line 49 "..\..\Views\CreateMember.cshtml"
                Write(Html.ValidationMessageFor(m => createMemberModel.Name, null, new { id = "form-name" }));
 
             
@@ -238,7 +265,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                    ");
 
             
-            #line 46 "..\..\Views\CreateMember.cshtml"
+            #line 52 "..\..\Views\CreateMember.cshtml"
                Write(Html.LabelFor(m => createMemberModel.Email));
 
             
@@ -249,8 +276,8 @@ WriteLiteral("\r\n");
 WriteLiteral("                    ");
 
             
-            #line 47 "..\..\Views\CreateMember.cshtml"
-               Write(Html.TextBoxFor(m => createMemberModel.Email, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off", autocomplete="email" }));
+            #line 53 "..\..\Views\CreateMember.cshtml"
+               Write(Html.TextBoxFor(m => createMemberModel.Email, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off", autocomplete = "email" }));
 
             
             #line default
@@ -260,7 +287,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                    ");
 
             
-            #line 48 "..\..\Views\CreateMember.cshtml"
+            #line 54 "..\..\Views\CreateMember.cshtml"
                Write(Html.ValidationMessageFor(m => createMemberModel.Email, "Please enter a valid email address", new { id = "form-email" }));
 
             
@@ -277,7 +304,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                    ");
 
             
-            #line 51 "..\..\Views\CreateMember.cshtml"
+            #line 57 "..\..\Views\CreateMember.cshtml"
                Write(Html.LabelFor(m => createMemberModel.Password));
 
             
@@ -286,13 +313,13 @@ WriteLiteral("                    ");
 WriteLiteral("\r\n");
 
             
-            #line 52 "..\..\Views\CreateMember.cshtml"
+            #line 58 "..\..\Views\CreateMember.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\CreateMember.cshtml"
+            #line 58 "..\..\Views\CreateMember.cshtml"
                        var describedBy = "form-password"; 
             
             #line default
@@ -300,13 +327,13 @@ WriteLiteral("\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 53 "..\..\Views\CreateMember.cshtml"
+            #line 59 "..\..\Views\CreateMember.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 53 "..\..\Views\CreateMember.cshtml"
+            #line 59 "..\..\Views\CreateMember.cshtml"
                      if (!string.IsNullOrEmpty(Model.PasswordHelp))
                     {
                         describedBy = "form-password form-password-help";
@@ -323,7 +350,7 @@ WriteLiteral(" id=\"form-password-help\"");
 WriteLiteral("><small>");
 
             
-            #line 56 "..\..\Views\CreateMember.cshtml"
+            #line 62 "..\..\Views\CreateMember.cshtml"
                                                                        Write(Model.PasswordHelp);
 
             
@@ -332,7 +359,7 @@ WriteLiteral("><small>");
 WriteLiteral("</small></p>\r\n");
 
             
-            #line 57 "..\..\Views\CreateMember.cshtml"
+            #line 63 "..\..\Views\CreateMember.cshtml"
                     }
 
             
@@ -341,8 +368,8 @@ WriteLiteral("</small></p>\r\n");
 WriteLiteral("                    ");
 
             
-            #line 58 "..\..\Views\CreateMember.cshtml"
-               Write(Html.PasswordFor(m => createMemberModel.Password, new { @class = "form-control", aria_describedby = describedBy, autocorrect = "off", autocapitalize = "off", autocomplete="new-password" }));
+            #line 64 "..\..\Views\CreateMember.cshtml"
+               Write(Html.PasswordFor(m => createMemberModel.Password, new { @class = "form-control", aria_describedby = describedBy, autocorrect = "off", autocapitalize = "off", autocomplete = "new-password" }));
 
             
             #line default
@@ -352,7 +379,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                    ");
 
             
-            #line 59 "..\..\Views\CreateMember.cshtml"
+            #line 65 "..\..\Views\CreateMember.cshtml"
                Write(Html.ValidationMessageFor(m => createMemberModel.Password, "Please create a new password", new { id = "form-password" }));
 
             
@@ -361,20 +388,20 @@ WriteLiteral("                    ");
 WriteLiteral("\r\n                </div>\r\n");
 
             
-            #line 61 "..\..\Views\CreateMember.cshtml"
+            #line 67 "..\..\Views\CreateMember.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 61 "..\..\Views\CreateMember.cshtml"
+            #line 67 "..\..\Views\CreateMember.cshtml"
            Write(Html.ProtectEmailAddresses(Model.Value("privacyNotice").ToString()));
 
             
             #line default
             #line hidden
             
-            #line 61 "..\..\Views\CreateMember.cshtml"
+            #line 67 "..\..\Views\CreateMember.cshtml"
                                                                                     
 
 
@@ -388,7 +415,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">");
 
             
-            #line 63 "..\..\Views\CreateMember.cshtml"
+            #line 69 "..\..\Views\CreateMember.cshtml"
                                            Write(Model.Value("createMemberButton"));
 
             
@@ -397,7 +424,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 64 "..\..\Views\CreateMember.cshtml"
+            #line 70 "..\..\Views\CreateMember.cshtml"
             }
         }
     }

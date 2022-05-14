@@ -1,7 +1,9 @@
-﻿using Stoolball.Web.Security;
-using System;
+﻿using System;
+using System.Configuration;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Security;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -43,6 +45,16 @@ namespace Stoolball.Web.Routing
             if (controllerType == null)
             {
                 return new HttpNotFoundResult();
+            }
+
+            if (ConfigurationManager.AppSettings["DisableLogin"] == "true" &&
+                !Request.Url.AbsolutePath.StartsWith("/umbraco") && !Request.Url.AbsolutePath.StartsWith("/install")
+                && User?.Identity.IsAuthenticated == true)
+            {
+                FormsAuthentication.SignOut();
+                var logoutPage = Umbraco.ContentSingleAtXPath("//logoutMember");
+                Response.Redirect(logoutPage.Url());
+
             }
 
             // Pass off the work of building a response to the appropriate controller.

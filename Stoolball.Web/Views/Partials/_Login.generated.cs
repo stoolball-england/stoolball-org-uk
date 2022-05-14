@@ -13,6 +13,12 @@ namespace ASP
 {
     using System;
     using System.Collections.Generic;
+    
+    #line 2 "..\..\Views\Partials\_Login.cshtml"
+    using System.Configuration;
+    
+    #line default
+    #line hidden
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -28,13 +34,13 @@ namespace ASP
     using System.Web.WebPages;
     using Examine;
     
-    #line 4 "..\..\Views\Partials\_Login.cshtml"
+    #line 5 "..\..\Views\Partials\_Login.cshtml"
     using Stoolball.Web.Account;
     
     #line default
     #line hidden
     
-    #line 5 "..\..\Views\Partials\_Login.cshtml"
+    #line 6 "..\..\Views\Partials\_Login.cshtml"
     using Stoolball.Web.Email;
     
     #line default
@@ -43,13 +49,13 @@ namespace ASP
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     
-    #line 2 "..\..\Views\Partials\_Login.cshtml"
+    #line 3 "..\..\Views\Partials\_Login.cshtml"
     using Umbraco.Web;
     
     #line default
     #line hidden
     
-    #line 3 "..\..\Views\Partials\_Login.cshtml"
+    #line 4 "..\..\Views\Partials\_Login.cshtml"
     using Umbraco.Web.Models;
     
     #line default
@@ -67,7 +73,7 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 6 "..\..\Views\Partials\_Login.cshtml"
+            #line 7 "..\..\Views\Partials\_Login.cshtml"
   
     var loginPage = Umbraco.ContentSingleAtXPath("//loginMember");
     var loginModel = new LoginModel();
@@ -83,7 +89,26 @@ namespace ASP
 WriteLiteral("\r\n\r\n");
 
             
-            #line 16 "..\..\Views\Partials\_Login.cshtml"
+            #line 17 "..\..\Views\Partials\_Login.cshtml"
+ if (ConfigurationManager.AppSettings["DisableLogin"] == "true")
+{
+
+            
+            #line default
+            #line hidden
+WriteLiteral("    <p><strong>Sign in is temporarily disabled while we\'re busy upgrading the sit" +
+"e. Please try again in a few hours.</strong></p>\r\n");
+
+            
+            #line 20 "..\..\Views\Partials\_Login.cshtml"
+    return;
+}
+
+            
+            #line default
+            #line hidden
+            
+            #line 22 "..\..\Views\Partials\_Login.cshtml"
  if (Model.Key != loginPage?.Key)
 {
     if (Members.IsLoggedIn())
@@ -94,14 +119,14 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 21 "..\..\Views\Partials\_Login.cshtml"
+            #line 27 "..\..\Views\Partials\_Login.cshtml"
    Write(Html.ProtectEmailAddresses(permissionRequired));
 
             
             #line default
             #line hidden
             
-            #line 21 "..\..\Views\Partials\_Login.cshtml"
+            #line 27 "..\..\Views\Partials\_Login.cshtml"
                                                        
     }
     else
@@ -111,14 +136,14 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 25 "..\..\Views\Partials\_Login.cshtml"
+            #line 31 "..\..\Views\Partials\_Login.cshtml"
    Write(Html.ProtectEmailAddresses(loginPage.Value<IHtmlString>("loginRequired")));
 
             
             #line default
             #line hidden
             
-            #line 25 "..\..\Views\Partials\_Login.cshtml"
+            #line 31 "..\..\Views\Partials\_Login.cshtml"
                                                                                   
     }
     loginModel.RedirectUrl = Request.Url.AbsolutePath;
@@ -130,7 +155,7 @@ WriteLiteral("\r\n\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 30 "..\..\Views\Partials\_Login.cshtml"
+            #line 36 "..\..\Views\Partials\_Login.cshtml"
  using (Html.BeginUmbracoForm<LoginMemberSurfaceController>("Login"))
 {
     
@@ -138,42 +163,42 @@ WriteLiteral("\r\n");
             #line default
             #line hidden
             
-            #line 32 "..\..\Views\Partials\_Login.cshtml"
+            #line 38 "..\..\Views\Partials\_Login.cshtml"
 Write(Html.HiddenFor(m => loginModel.RedirectUrl));
 
             
             #line default
             #line hidden
             
-            #line 32 "..\..\Views\Partials\_Login.cshtml"
+            #line 38 "..\..\Views\Partials\_Login.cshtml"
                                                 
     
             
             #line default
             #line hidden
             
-            #line 33 "..\..\Views\Partials\_Login.cshtml"
+            #line 39 "..\..\Views\Partials\_Login.cshtml"
 Write(Html.ValidationSummary("loginModel", true));
 
             
             #line default
             #line hidden
             
-            #line 33 "..\..\Views\Partials\_Login.cshtml"
+            #line 39 "..\..\Views\Partials\_Login.cshtml"
                                                
     
             
             #line default
             #line hidden
             
-            #line 34 "..\..\Views\Partials\_Login.cshtml"
+            #line 40 "..\..\Views\Partials\_Login.cshtml"
 Write(Html.AntiForgeryToken());
 
             
             #line default
             #line hidden
             
-            #line 34 "..\..\Views\Partials\_Login.cshtml"
+            #line 40 "..\..\Views\Partials\_Login.cshtml"
                             
 
 
@@ -189,7 +214,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 37 "..\..\Views\Partials\_Login.cshtml"
+            #line 43 "..\..\Views\Partials\_Login.cshtml"
    Write(Html.LabelFor(m => loginModel.Username, "Email"));
 
             
@@ -200,7 +225,7 @@ WriteLiteral("\r\n");
 WriteLiteral("        ");
 
             
-            #line 38 "..\..\Views\Partials\_Login.cshtml"
+            #line 44 "..\..\Views\Partials\_Login.cshtml"
    Write(Html.TextBoxFor(m => loginModel.Username, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off", autocomplete="username" }));
 
             
@@ -211,7 +236,7 @@ WriteLiteral("\r\n");
 WriteLiteral("        ");
 
             
-            #line 39 "..\..\Views\Partials\_Login.cshtml"
+            #line 45 "..\..\Views\Partials\_Login.cshtml"
    Write(Html.ValidationMessageFor(m => loginModel.Username, "The email field is required", new { id = "form-email" }));
 
             
@@ -228,7 +253,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 42 "..\..\Views\Partials\_Login.cshtml"
+            #line 48 "..\..\Views\Partials\_Login.cshtml"
    Write(Html.LabelFor(m => loginModel.Password));
 
             
@@ -239,7 +264,7 @@ WriteLiteral("\r\n");
 WriteLiteral("        ");
 
             
-            #line 43 "..\..\Views\Partials\_Login.cshtml"
+            #line 49 "..\..\Views\Partials\_Login.cshtml"
    Write(Html.PasswordFor(m => loginModel.Password, new { @class = "form-control", required = "required", aria_describedby = "form-password", autocorrect = "off", autocapitalize = "off", autocomplete="current-password" }));
 
             
@@ -250,7 +275,7 @@ WriteLiteral("\r\n");
 WriteLiteral("        ");
 
             
-            #line 44 "..\..\Views\Partials\_Login.cshtml"
+            #line 50 "..\..\Views\Partials\_Login.cshtml"
    Write(Html.ValidationMessageFor(m => loginModel.Password, "The password field is required", new { id = "form-password" }));
 
             
@@ -259,7 +284,7 @@ WriteLiteral("        ");
 WriteLiteral("\r\n    </div>\r\n");
 
             
-            #line 46 "..\..\Views\Partials\_Login.cshtml"
+            #line 52 "..\..\Views\Partials\_Login.cshtml"
 
 
             
@@ -272,7 +297,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">");
 
             
-            #line 47 "..\..\Views\Partials\_Login.cshtml"
+            #line 53 "..\..\Views\Partials\_Login.cshtml"
                                Write(loginPage.Value("loginButton"));
 
             
@@ -281,7 +306,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 48 "..\..\Views\Partials\_Login.cshtml"
+            #line 54 "..\..\Views\Partials\_Login.cshtml"
 }
 
             
@@ -290,7 +315,7 @@ WriteLiteral("</button>\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 50 "..\..\Views\Partials\_Login.cshtml"
+            #line 56 "..\..\Views\Partials\_Login.cshtml"
 Write(Html.ProtectEmailAddresses(loginPage?.Value<IHtmlString>("resetPassword")));
 
             
@@ -299,7 +324,7 @@ Write(Html.ProtectEmailAddresses(loginPage?.Value<IHtmlString>("resetPassword"))
 WriteLiteral("\r\n\r\n");
 
             
-            #line 52 "..\..\Views\Partials\_Login.cshtml"
+            #line 58 "..\..\Views\Partials\_Login.cshtml"
  if (loginPage != null && loginPage.HasValue("migratedMemberAccounts"))
 {
 
@@ -315,7 +340,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 55 "..\..\Views\Partials\_Login.cshtml"
+            #line 61 "..\..\Views\Partials\_Login.cshtml"
    Write(Html.ProtectEmailAddresses(loginPage?.Value<IHtmlString>("migratedMemberAccounts")));
 
             
@@ -324,7 +349,7 @@ WriteLiteral("        ");
 WriteLiteral("\r\n    </div>\r\n");
 
             
-            #line 57 "..\..\Views\Partials\_Login.cshtml"
+            #line 63 "..\..\Views\Partials\_Login.cshtml"
 }
 
             

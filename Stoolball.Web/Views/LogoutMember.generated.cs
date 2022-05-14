@@ -13,6 +13,12 @@ namespace ASP
 {
     using System;
     using System.Collections.Generic;
+    
+    #line 2 "..\..\Views\LogoutMember.cshtml"
+    using System.Configuration;
+    
+    #line default
+    #line hidden
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -27,14 +33,14 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     
-    #line 2 "..\..\Views\LogoutMember.cshtml"
+    #line 3 "..\..\Views\LogoutMember.cshtml"
     using ContentModels = Umbraco.Web.PublishedModels;
     
     #line default
     #line hidden
     using Examine;
     
-    #line 3 "..\..\Views\LogoutMember.cshtml"
+    #line 4 "..\..\Views\LogoutMember.cshtml"
     using Stoolball.Web.Email;
     
     #line default
@@ -62,7 +68,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 5 "..\..\Views\LogoutMember.cshtml"
+            #line 6 "..\..\Views\LogoutMember.cshtml"
    Write(Model.Name);
 
             
@@ -71,13 +77,13 @@ WriteLiteral(">\r\n    <h1>");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 7 "..\..\Views\LogoutMember.cshtml"
+            #line 8 "..\..\Views\LogoutMember.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 7 "..\..\Views\LogoutMember.cshtml"
+            #line 8 "..\..\Views\LogoutMember.cshtml"
      if (User.Identity.IsAuthenticated)
     {
         
@@ -85,32 +91,48 @@ WriteLiteral("</h1>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 9 "..\..\Views\LogoutMember.cshtml"
+            #line 10 "..\..\Views\LogoutMember.cshtml"
    Write(Html.Partial("_Logout"));
 
             
             #line default
             #line hidden
             
-            #line 9 "..\..\Views\LogoutMember.cshtml"
+            #line 10 "..\..\Views\LogoutMember.cshtml"
                                 
     }
     else
     {
-        
+        if (ConfigurationManager.AppSettings["DisableLogin"] == "true")
+        {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("            <p><strong>You have been signed out automatically because sign in is " +
+"temporarily disabled while we\'re busy upgrading the site. Please try again in a " +
+"few hours.</strong></p>\r\n");
+
+            
+            #line 17 "..\..\Views\LogoutMember.cshtml"
+        }
+        else
+        {
+            
             
             #line default
             #line hidden
             
-            #line 13 "..\..\Views\LogoutMember.cshtml"
-   Write(Html.ProtectEmailAddresses(Model.LoggedOut));
+            #line 20 "..\..\Views\LogoutMember.cshtml"
+       Write(Html.ProtectEmailAddresses(Model.LoggedOut));
 
             
             #line default
             #line hidden
             
-            #line 13 "..\..\Views\LogoutMember.cshtml"
-                                                    
+            #line 20 "..\..\Views\LogoutMember.cshtml"
+                                                        
+        }
 
             
             #line default
@@ -124,7 +146,7 @@ WriteLiteral(" class=\"btn btn-primary btn-back\"");
 WriteLiteral(">");
 
             
-            #line 14 "..\..\Views\LogoutMember.cshtml"
+            #line 22 "..\..\Views\LogoutMember.cshtml"
                                                    Write(Model.HomeButton);
 
             
@@ -133,7 +155,7 @@ WriteLiteral(">");
 WriteLiteral("</a></p>\r\n");
 
             
-            #line 15 "..\..\Views\LogoutMember.cshtml"
+            #line 23 "..\..\Views\LogoutMember.cshtml"
     }
 
             

@@ -1,4 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.LogoutMember>
+@using System.Configuration
 @using ContentModels = Umbraco.Web.PublishedModels;
 @using Stoolball.Web.Email
 <div class="container-xl">
@@ -10,7 +11,14 @@
     }
     else
     {
-        @Html.ProtectEmailAddresses(Model.LoggedOut)
+        if (ConfigurationManager.AppSettings["DisableLogin"] == "true")
+        {
+            <p><strong>You have been signed out automatically because sign in is temporarily disabled while we're busy upgrading the site. Please try again in a few hours.</strong></p>
+        }
+        else
+        {
+            @Html.ProtectEmailAddresses(Model.LoggedOut)
+        }
         <p><a href="/" class="btn btn-primary btn-back">@Model.HomeButton</a></p>
     }
 </div>
