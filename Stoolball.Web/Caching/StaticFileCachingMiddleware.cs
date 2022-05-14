@@ -22,7 +22,7 @@ namespace Stoolball.Web.Caching
         {
             string path = context.Request.Path;
 
-            if (path.StartsWith("/umbraco/") == false)
+            if (path.StartsWith("/umbraco/") == false && path.StartsWith("/install") == false)
             {
                 if (new List<string> { ".css", ".js", ".svg", ".gif", ".png", ".jpg", ".ico", ".woff", ".woff2" }.Contains(path.GetFileExtension().ToLowerInvariant()))
                 {

@@ -27,7 +27,7 @@ namespace Stoolball.Web.Security
             context.Response.Headers.Add("Report-To", "{\"group\":\"default\",\"max_age\":31536000,\"endpoints\":[{\"url\":\"https://stoolball.report-uri.com/a/d/g\"}],\"include_subdomains\":true}");
             context.Response.Headers.Add("NEL", "{\"report_to\":\"default\",\"max_age\":31536000,\"include_subdomains\":true}");
 
-            if (path.StartsWith("/umbraco") == false)
+            if (path.StartsWith("/umbraco") == false && path.StartsWith("/install") == false)
             {
                 context.Response.Headers.Add("Permissions-Policy", "accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),cross-origin-isolated=(),display-capture=(),document-domain=(),encrypted-media=(),execution-while-not-rendered=(),execution-while-out-of-viewport=(),fullscreen=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),navigation-override=(),payment=(),picture-in-picture=(),publickey-credentials-get=(),screen-wake-lock=(),sync-xhr=(),usb=(),web-share=(),xr-spatial-tracking=()");
                 context.Response.Headers.Add("Cross-Origin-Opener-Policy", "same-origin; report-to=\"default\"");
