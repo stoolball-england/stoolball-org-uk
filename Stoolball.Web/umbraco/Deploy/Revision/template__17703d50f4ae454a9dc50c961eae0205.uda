@@ -1,10 +1,16 @@
 {
   "Name": "Style guide - Stoolball data",
   "Alias": "StyleGuideStoolballData",
-  "File": null,
+  "File": "umb://template-file/StyleGuideStoolballData.cshtml",
   "Master": null,
   "Udi": "umb://template/17703d50f4ae454a9dc50c961eae0205",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/StyleGuideStoolballData.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

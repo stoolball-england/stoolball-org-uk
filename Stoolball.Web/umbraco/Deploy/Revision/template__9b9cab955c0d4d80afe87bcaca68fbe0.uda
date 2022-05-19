@@ -1,10 +1,16 @@
 {
   "Name": "Create Training Session",
   "Alias": "CreateTrainingSession",
-  "File": null,
+  "File": "umb://template-file/CreateTrainingSession.cshtml",
   "Master": null,
   "Udi": "umb://template/9b9cab955c0d4d80afe87bcaca68fbe0",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/CreateTrainingSession.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

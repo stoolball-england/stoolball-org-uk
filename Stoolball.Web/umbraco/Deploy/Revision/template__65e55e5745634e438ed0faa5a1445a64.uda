@@ -1,10 +1,16 @@
 {
   "Name": "Match Location Actions",
   "Alias": "matchLocationActions",
-  "File": null,
+  "File": "umb://template-file/matchLocationActions.cshtml",
   "Master": null,
   "Udi": "umb://template/65e55e5745634e438ed0faa5a1445a64",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/matchLocationActions.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

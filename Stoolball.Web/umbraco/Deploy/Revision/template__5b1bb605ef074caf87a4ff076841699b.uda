@@ -1,10 +1,16 @@
 {
   "Name": "Edit Transient Team",
   "Alias": "editTransientTeam",
-  "File": null,
+  "File": "umb://template-file/editTransientTeam.cshtml",
   "Master": null,
   "Udi": "umb://template/5b1bb605ef074caf87a4ff076841699b",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/editTransientTeam.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

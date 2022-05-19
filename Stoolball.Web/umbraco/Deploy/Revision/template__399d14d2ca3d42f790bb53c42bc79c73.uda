@@ -1,10 +1,16 @@
 {
   "Name": "Edit Competition",
   "Alias": "editCompetition",
-  "File": null,
+  "File": "umb://template-file/editCompetition.cshtml",
   "Master": null,
   "Udi": "umb://template/399d14d2ca3d42f790bb53c42bc79c73",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/editCompetition.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

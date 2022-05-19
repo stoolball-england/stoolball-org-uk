@@ -1,10 +1,16 @@
 {
   "Name": "Product List",
   "Alias": "ProductList",
-  "File": null,
+  "File": "umb://template-file/ProductList.cshtml",
   "Master": null,
   "Udi": "umb://template/520b9d197f634809b7e6cf313decde0a",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/ProductList.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

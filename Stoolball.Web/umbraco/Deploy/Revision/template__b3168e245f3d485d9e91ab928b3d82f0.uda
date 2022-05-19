@@ -1,10 +1,16 @@
 {
   "Name": "Individual Scores",
   "Alias": "IndividualScores",
-  "File": null,
+  "File": "umb://template-file/IndividualScores.cshtml",
   "Master": null,
   "Udi": "umb://template/b3168e245f3d485d9e91ab928b3d82f0",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/IndividualScores.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

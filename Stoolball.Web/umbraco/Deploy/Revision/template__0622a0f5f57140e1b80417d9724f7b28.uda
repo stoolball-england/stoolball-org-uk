@@ -1,10 +1,16 @@
 {
   "Name": "Edit Match Format",
   "Alias": "EditMatchFormat",
-  "File": null,
+  "File": "umb://template-file/EditMatchFormat.cshtml",
   "Master": null,
   "Udi": "umb://template/0622a0f5f57140e1b80417d9724f7b28",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/EditMatchFormat.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

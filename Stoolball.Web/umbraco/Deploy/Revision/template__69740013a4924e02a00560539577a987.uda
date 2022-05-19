@@ -1,10 +1,16 @@
 {
   "Name": "Team Statistics",
   "Alias": "TeamStatistics",
-  "File": null,
+  "File": "umb://template-file/TeamStatistics.cshtml",
   "Master": null,
   "Udi": "umb://template/69740013a4924e02a00560539577a987",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/TeamStatistics.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

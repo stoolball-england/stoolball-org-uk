@@ -1,10 +1,16 @@
 {
   "Name": "Most Run-Outs",
   "Alias": "MostRunOuts",
-  "File": null,
+  "File": "umb://template-file/MostRunOuts.cshtml",
   "Master": null,
   "Udi": "umb://template/01c881ca72da40c3a1289ba09fe61b46",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/MostRunOuts.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

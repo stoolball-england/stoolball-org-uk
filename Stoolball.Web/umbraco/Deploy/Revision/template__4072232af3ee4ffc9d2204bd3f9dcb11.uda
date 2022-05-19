@@ -1,10 +1,16 @@
 {
   "Name": "Reset Password Request",
   "Alias": "ResetPasswordRequest",
-  "File": null,
+  "File": "umb://template-file/ResetPasswordRequest.cshtml",
   "Master": null,
   "Udi": "umb://template/4072232af3ee4ffc9d2204bd3f9dcb11",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/ResetPasswordRequest.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

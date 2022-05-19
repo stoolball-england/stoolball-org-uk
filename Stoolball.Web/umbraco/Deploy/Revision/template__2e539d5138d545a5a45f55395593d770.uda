@@ -1,10 +1,16 @@
 {
   "Name": "Bowling Average",
   "Alias": "BowlingAverage",
-  "File": null,
+  "File": "umb://template-file/BowlingAverage.cshtml",
   "Master": null,
   "Udi": "umb://template/2e539d5138d545a5a45f55395593d770",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/BowlingAverage.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

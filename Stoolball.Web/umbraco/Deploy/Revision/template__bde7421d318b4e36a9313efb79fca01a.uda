@@ -1,10 +1,16 @@
 {
   "Name": "Matches RSS",
   "Alias": "MatchesRSS",
-  "File": null,
+  "File": "umb://template-file/MatchesRSS.cshtml",
   "Master": null,
   "Udi": "umb://template/bde7421d318b4e36a9313efb79fca01a",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/MatchesRSS.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

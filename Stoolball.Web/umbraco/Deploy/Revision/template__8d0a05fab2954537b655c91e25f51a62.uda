@@ -1,10 +1,16 @@
 {
   "Name": "Approve Member",
   "Alias": "ApproveMember",
-  "File": null,
+  "File": "umb://template-file/ApproveMember.cshtml",
   "Master": null,
   "Udi": "umb://template/8d0a05fab2954537b655c91e25f51a62",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/ApproveMember.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

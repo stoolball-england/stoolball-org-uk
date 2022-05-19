@@ -1,0 +1,12 @@
+{
+  "Name": "Relate Parent Document On Delete",
+  "Alias": "relateParentDocumentOnDelete",
+  "IsBidirectional": false,
+  "ParentObjectType": "c66ba18e-eaf3-4cff-8a22-41b16d66a972",
+  "ChildObjectType": "c66ba18e-eaf3-4cff-8a22-41b16d66a972",
+  "IsDependency": false,
+  "Udi": "umb://relation-type/0cc3507c66ab309189133d998148e423",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.RelationTypeArtifact",
+  "__version": "9.4.0"
+}

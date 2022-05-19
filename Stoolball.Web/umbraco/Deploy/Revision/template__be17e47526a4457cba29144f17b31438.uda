@@ -1,10 +1,16 @@
 {
   "Name": "Create Match Location",
   "Alias": "createMatchLocation",
-  "File": null,
+  "File": "umb://template-file/createMatchLocation.cshtml",
   "Master": null,
   "Udi": "umb://template/be17e47526a4457cba29144f17b31438",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/createMatchLocation.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

@@ -1,10 +1,16 @@
 {
   "Name": "Reset Password Complete",
   "Alias": "ResetPasswordComplete",
-  "File": null,
+  "File": "umb://template-file/ResetPasswordComplete.cshtml",
   "Master": null,
   "Udi": "umb://template/289a8b84d4584034a788a70fc734316d",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/ResetPasswordComplete.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

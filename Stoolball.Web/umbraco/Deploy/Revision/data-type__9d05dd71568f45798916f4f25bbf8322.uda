@@ -3,10 +3,10 @@
   "Alias": null,
   "EditorAlias": "Umbraco.TinyMCE",
   "DatabaseType": 0,
-  "Configuration": {"editor":{"toolbar":["removeformat","styleselect","bold","italic","bullist","numlist","outdent","indent","link","unlink","anchor","umbmediapicker","table","fullscreen"],"stylesheets":["/css/tinymce.css"],"maxImageSize":600,"mode":"classic","dimensions":{"height":600}},"overlaySize":null,"hideLabel":true,"ignoreUserStartNodes":false,"mediaParentId":null},
+  "Configuration": {"editor":{"toolbar":["removeformat","styleselect","bold","italic","bullist","numlist","outdent","indent","link","unlink","anchor","umbmediapicker","table","fullscreen"],"stylesheets":["/css/tinymce.css"],"maxImageSize":600,"mode":"classic","dimensions":{"height":600}},"hideLabel":true,"ignoreUserStartNodes":false},
   "Parent": null,
   "Udi": "umb://data-type/9d05dd71568f45798916f4f25bbf8322",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

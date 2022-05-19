@@ -1,10 +1,16 @@
 {
   "Name": "Edit Batting Scorecard",
   "Alias": "EditBattingScorecard",
-  "File": null,
+  "File": "umb://template-file/EditBattingScorecard.cshtml",
   "Master": null,
   "Udi": "umb://template/abdd163638dd46c38dbd2e62814f9618",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/EditBattingScorecard.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

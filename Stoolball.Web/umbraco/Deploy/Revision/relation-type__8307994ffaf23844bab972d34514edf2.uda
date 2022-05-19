@@ -1,0 +1,12 @@
+{
+  "Name": "Relate Parent Media Folder On Delete",
+  "Alias": "relateParentMediaFolderOnDelete",
+  "IsBidirectional": false,
+  "ParentObjectType": "b796f64c-1f99-4ffb-b886-4bf4bc011a9c",
+  "ChildObjectType": "b796f64c-1f99-4ffb-b886-4bf4bc011a9c",
+  "IsDependency": false,
+  "Udi": "umb://relation-type/8307994ffaf23844bab972d34514edf2",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.RelationTypeArtifact",
+  "__version": "9.4.0"
+}

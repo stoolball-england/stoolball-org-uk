@@ -1,10 +1,16 @@
 {
   "Name": "Create Tournament",
   "Alias": "createTournament",
-  "File": null,
+  "File": "umb://template-file/createTournament.cshtml",
   "Master": null,
   "Udi": "umb://template/120b2463988a40b886de1036b758087d",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/createTournament.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

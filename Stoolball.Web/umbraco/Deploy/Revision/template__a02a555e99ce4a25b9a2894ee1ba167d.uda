@@ -1,10 +1,16 @@
 {
   "Name": "Match Actions",
   "Alias": "matchActions",
-  "File": null,
+  "File": "umb://template-file/matchActions.cshtml",
   "Master": null,
   "Udi": "umb://template/a02a555e99ce4a25b9a2894ee1ba167d",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/matchActions.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

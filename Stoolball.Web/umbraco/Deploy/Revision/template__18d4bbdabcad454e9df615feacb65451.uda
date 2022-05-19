@@ -1,10 +1,16 @@
 {
   "Name": "Edit Season Results Table",
   "Alias": "editSeasonResultsTable",
-  "File": null,
+  "File": "umb://template-file/editSeasonResultsTable.cshtml",
   "Master": null,
   "Udi": "umb://template/18d4bbdabcad454e9df615feacb65451",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/editSeasonResultsTable.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

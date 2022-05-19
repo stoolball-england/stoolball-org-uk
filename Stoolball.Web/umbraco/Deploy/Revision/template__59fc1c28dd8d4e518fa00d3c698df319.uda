@@ -1,10 +1,16 @@
 {
   "Name": "Edit Knockout Match",
   "Alias": "editKnockoutMatch",
-  "File": null,
+  "File": "umb://template-file/editKnockoutMatch.cshtml",
   "Master": null,
   "Udi": "umb://template/59fc1c28dd8d4e518fa00d3c698df319",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/editKnockoutMatch.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

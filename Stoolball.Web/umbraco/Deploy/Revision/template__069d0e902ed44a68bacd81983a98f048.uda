@@ -1,10 +1,16 @@
 {
   "Name": "Matches Calendar",
   "Alias": "MatchesCalendar",
-  "File": null,
+  "File": "umb://template-file/MatchesCalendar.cshtml",
   "Master": null,
   "Udi": "umb://template/069d0e902ed44a68bacd81983a98f048",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/MatchesCalendar.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

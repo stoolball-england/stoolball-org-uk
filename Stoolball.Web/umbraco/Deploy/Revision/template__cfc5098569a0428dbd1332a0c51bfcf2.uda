@@ -1,10 +1,16 @@
 {
   "Name": "Edit Tournament Matches",
   "Alias": "EditTournamentMatches",
-  "File": null,
+  "File": "umb://template-file/EditTournamentMatches.cshtml",
   "Master": null,
   "Udi": "umb://template/cfc5098569a0428dbd1332a0c51bfcf2",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/EditTournamentMatches.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

@@ -1,10 +1,16 @@
 {
   "Name": "Edit Statistics",
   "Alias": "EditStatistics",
-  "File": null,
+  "File": "umb://template-file/EditStatistics.cshtml",
   "Master": null,
   "Udi": "umb://template/0e110fcc538f401fac402cdfd8916af4",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/EditStatistics.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

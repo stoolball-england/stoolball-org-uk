@@ -1,10 +1,16 @@
 {
   "Name": "Edit Tournament Seasons",
   "Alias": "EditTournamentSeasons",
-  "File": null,
+  "File": "umb://template-file/EditTournamentSeasons.cshtml",
   "Master": null,
   "Udi": "umb://template/97c862e83dec40eeb26a4840969c84aa",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/EditTournamentSeasons.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

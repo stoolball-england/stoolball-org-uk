@@ -1,10 +1,16 @@
 {
   "Name": "News",
   "Alias": "News",
-  "File": null,
+  "File": "umb://template-file/News.cshtml",
   "Master": null,
   "Udi": "umb://template/207b1110bbe74e93bd83c3761b338ee3",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/News.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

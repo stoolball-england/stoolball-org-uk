@@ -1,10 +1,16 @@
 {
   "Name": "Competition Actions",
   "Alias": "competitionActions",
-  "File": null,
+  "File": "umb://template-file/competitionActions.cshtml",
   "Master": null,
   "Udi": "umb://template/19b067bfa44940cc94c9709af58fedc3",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/competitionActions.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

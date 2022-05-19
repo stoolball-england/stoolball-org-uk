@@ -1,10 +1,16 @@
 {
   "Name": "Season Statistics",
   "Alias": "SeasonStatistics",
-  "File": null,
+  "File": "umb://template-file/SeasonStatistics.cshtml",
   "Master": null,
   "Udi": "umb://template/d2f0ef3469fb454181fa67b498d354a8",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/SeasonStatistics.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

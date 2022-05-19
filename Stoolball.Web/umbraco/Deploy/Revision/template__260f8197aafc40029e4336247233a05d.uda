@@ -1,10 +1,16 @@
 {
   "Name": "Edit Season Teams",
   "Alias": "editSeasonTeams",
-  "File": null,
+  "File": "umb://template-file/editSeasonTeams.cshtml",
   "Master": null,
   "Udi": "umb://template/260f8197aafc40029e4336247233a05d",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/editSeasonTeams.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

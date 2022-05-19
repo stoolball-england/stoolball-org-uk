@@ -1,0 +1,12 @@
+{
+  "Name": "Relate Document On Copy",
+  "Alias": "relateDocumentOnCopy",
+  "IsBidirectional": true,
+  "ParentObjectType": "c66ba18e-eaf3-4cff-8a22-41b16d66a972",
+  "ChildObjectType": "c66ba18e-eaf3-4cff-8a22-41b16d66a972",
+  "IsDependency": false,
+  "Udi": "umb://relation-type/4cbeb612e6893563b755bf3ede295433",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.RelationTypeArtifact",
+  "__version": "9.4.0"
+}

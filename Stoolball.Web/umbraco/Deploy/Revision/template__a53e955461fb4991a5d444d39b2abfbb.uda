@@ -1,10 +1,16 @@
 {
   "Name": "Tournament Tweets",
   "Alias": "TournamentTweets",
-  "File": null,
+  "File": "umb://template-file/TournamentTweets.cshtml",
   "Master": null,
   "Udi": "umb://template/a53e955461fb4991a5d444d39b2abfbb",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/TournamentTweets.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

@@ -1,0 +1,12 @@
+{
+  "Name": "Related Media",
+  "Alias": "umbMedia",
+  "IsBidirectional": false,
+  "ParentObjectType": null,
+  "ChildObjectType": null,
+  "IsDependency": true,
+  "Udi": "umb://relation-type/4954ce933bf93d1e9cd221bf9f9c2abf",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.RelationTypeArtifact",
+  "__version": "9.4.0"
+}

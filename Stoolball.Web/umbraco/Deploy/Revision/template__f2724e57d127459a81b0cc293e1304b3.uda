@@ -1,10 +1,16 @@
 {
   "Name": "Club",
   "Alias": "club",
-  "File": null,
+  "File": "umb://template-file/club.cshtml",
   "Master": null,
   "Udi": "umb://template/f2724e57d127459a81b0cc293e1304b3",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/club.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }

@@ -1,10 +1,16 @@
 {
   "Name": "Delete Team",
   "Alias": "deleteTeam",
-  "File": null,
+  "File": "umb://template-file/deleteTeam.cshtml",
   "Master": null,
   "Udi": "umb://template/e82bf961049b4c05a02375bf9bc24cb1",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/deleteTeam.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.2.1"
+  "__version": "9.4.0"
 }
