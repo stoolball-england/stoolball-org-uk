@@ -30,6 +30,13 @@
 				Condition="Exists('$(ProjectDir)..\.UmbracoCloud\src\UmbracoProject\umbraco-cloud.json')" />
 	</Target>
 
+	<Target Name="StoolballCopyFilesFromNuGet" BeforeTargets="AfterBuild">
+		<!-- Copy files referenced by NuGet but not copied to /bin and reported missing on Umbraco Cloud -->
+		<Copy SourceFiles="$(USERPROFILE)\.nuget\packages\system.io.filesystem.accesscontrol\5.0.0\lib\netstandard2.0\System.IO.FileSystem.AccessControl.dll"
+				DestinationFiles="$(ProjectDir)bin\$(Configuration)\net5.0\System.IO.FileSystem.AccessControl.dll"
+				Condition="!Exists('$(ProjectDir)bin\$(Configuration)\net5.0\System.IO.FileSystem.AccessControl.dll')" />
+	</Target>
+
 	<Target Name="StoolballApplyWebConfigTransform" BeforeTargets="AfterBuild">
 		<!-- Testing for the existence of web.template.config ensures this task only runs on local builds.
 		     On Umbraco Cloud web.release.config runs automatically to transform the .net core web.config -->
