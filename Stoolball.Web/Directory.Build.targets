@@ -25,9 +25,15 @@
 
 	<Target Name="StoolballCopyFilesFromUmbracoCloud" BeforeTargets="BeforeBuild">
 		<!-- Copy files source-controlled in the .UmbracoCloud repo, if that repo is present -->
+		<ItemGroup>
+			<UmbracoLicences Include="$(ProjectDir)..\.UmbracoCloud\src\UmbracoProject\umbraco\Licenses\**" />
+		</ItemGroup>
 		<Copy SourceFiles="$(ProjectDir)..\.UmbracoCloud\src\UmbracoProject\umbraco-cloud.json"
 				DestinationFiles="$(ProjectDir)umbraco-cloud.json"
 				Condition="Exists('$(ProjectDir)..\.UmbracoCloud\src\UmbracoProject\umbraco-cloud.json')" />
+		<Copy SourceFiles="@(UmbracoLicences)"
+				DestinationFiles="$(ProjectDir)umbraco\Licenses\%(RecursiveDir)%(Filename)%(Extension)"
+				Condition="Exists('$(ProjectDir)..\.UmbracoCloud\src\UmbracoProject\umbraco\Licenses\%(RecursiveDir)%(Filename)%(Extension)')" />
 	</Target>
 
 	<Target Name="StoolballCopyFilesFromNuGet" BeforeTargets="AfterBuild">

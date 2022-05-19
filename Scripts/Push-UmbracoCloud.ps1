@@ -33,7 +33,7 @@ foreach ($folder in $foldersToCopy) {
     $folderPath = Resolve-Path (Join-Path $projectRoot -ChildPath $folder)
 
     robocopy $folderPath $cloudRoot\src\$folder `
-        /IF *.cs *.csproj *.cshtml *.uda *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 appsettings.json appsettings.Production.json compilerconfig.json umbraco-cloud.json web.release.config `
+        /IF *.cs *.csproj *.cshtml *.uda *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 *.lic appsettings.json appsettings.Production.json compilerconfig.json umbraco-cloud.json web.release.config `
         /XF member-group__*.uda *.test.js `
         /S `
         /XD $folderPath\obj $folderPath\bin $folderPath\node_modules $folderPath\sass $folderPath\App_Data $folderPath\wwwroot\media $folderPath\wwwroot\umbraco `
