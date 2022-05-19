@@ -65,20 +65,48 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedText.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedTextWithImage.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\GettyImage.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\IFrameElementType.controller.js" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.controller.js" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\package.manifest" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\Tip.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\TipElementType.controller.js" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\YouTubeVideo.html" />
-    <Content Include="App_Plugins\Stoolball.PropertyEditors\package.manifest" />
-    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js" />
-    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html" />
-    <Content Include="App_Plugins\Stoolball.UmbracoForms\EmailField.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedText.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedTextWithImage.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.BlockEditors\GettyImage.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.BlockEditors\IFrameElementType.controller.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.controller.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.BlockEditors\package.manifest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.BlockEditors\Tip.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.BlockEditors\TipElementType.controller.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.BlockEditors\YouTubeVideo.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.PropertyEditors\package.manifest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.UmbracoForms\EmailField.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="C:\Users\rickm\Documents\Stoolball\stoolball-v9\.editorconfig" />
     <Content Include="Forms\RecreateUmbracoForms.sql" />
     <Content Include="Directory.Build.targets" />
