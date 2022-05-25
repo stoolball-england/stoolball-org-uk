@@ -47,7 +47,7 @@
                     @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Batter, $"{(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__batter-label" })
                     <div>
                         @* Extra divs act as flex-items when using .table-as-cards. Allowing the form field to be a flex-item means its height grows if the label wraps. *@
-                        @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Batter, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString(), aria_labelledby="batter-header" })
+                        @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Batter, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name scorecard__batter", data_team = Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString(), aria_labelledby="batter-header" })
                     </div>
                 </th>
                 <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__dismissal" data-stackable="true">
@@ -137,7 +137,7 @@
         <tr class="batting-scorecard-editor__player-innings">
             <th scope="row" class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__batter" id="player-innings-header--0--">
                 <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__batter-label" for="CurrentInnings_PlayerInningsSearch_[0]__Batter">[0th] batter</label>
-                <div><input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].Batter" id="CurrentInnings_PlayerInningsSearch_[0]__Batter" aria-labelledby="batter-header" type="text" value="" /></div>
+                <div><input autocomplete="off" data-lpignore="true" class="scorecard__player-name scorecard__batter" data-team="@Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].Batter" id="CurrentInnings_PlayerInningsSearch_[0]__Batter" aria-labelledby="batter-header" type="text" value="" /></div>
             </th>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__dismissal">
                 <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__dismissal-label" for="CurrentInnings_PlayerInningsSearch_[0]__DismissalType">How out</label>

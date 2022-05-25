@@ -7,6 +7,7 @@
 
     const playerInningsRowClass = "batting-scorecard-editor__player-innings";
     const playerNameFieldClass = "scorecard__player-name";
+    const batterFieldClass = "scorecard__batter";
     const dismissalTypeFieldClass = "scorecard__dismissal";
     const runsFieldClass = "scorecard__runs";
     const wicketsFieldClass = "scorecard__wickets";
@@ -52,6 +53,17 @@
             .setAttribute("disabled", "disabled");
         }
       }
+    }
+
+    function resetBattingRow(tr) {
+      const dismissalType = tr.querySelector("." + dismissalTypeFieldClass);
+      if (dismissalType) {
+        dismissalType.selectedIndex = 0;
+      }
+      const inputs = tr.querySelectorAll("input");
+      [].forEach.call(inputs, function (input) {
+        input.value = "";
+      });
     }
 
     function disableFollowingRows(tr) {
@@ -266,6 +278,13 @@
 
       if (e.target.classList.contains(playerNameFieldClass)) {
         showFullNameHint();
+      }
+
+      if (
+        e.target.classList.contains(batterFieldClass) &&
+        !e.target.value.trim()
+      ) {
+        resetBattingRow(e.target.parentElement.parentElement.parentElement);
       }
     }
 
