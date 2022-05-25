@@ -20,7 +20,7 @@ namespace Stoolball.Web.Matches.Validation
                        !string.IsNullOrWhiteSpace(innings.Bowler)
                        ))
             {
-                return new ValidationResult($"You've said {innings.Batter} was not out, but you named a fielder and/or bowler.");
+                return new ValidationResult($"You've said {innings.Batter} was not out, but you named a fielder and/or bowler.", new[] { validationContext.MemberName! });
             }
             return null;
         }

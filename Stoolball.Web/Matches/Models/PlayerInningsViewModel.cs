@@ -10,15 +10,16 @@ namespace Stoolball.Web.Matches.Models
         public string? Batter { get; set; }
 
         [DidNotBatCannotHaveBattingDetails]
-        [DismissalTypeCannotHaveDismissedBy]
         [NotOutCannotHaveDismissalDetails]
         [FixCaughtAndBowled]
         [Display(Name = "How out")]
         public DismissalType? DismissalType { get; set; }
 
+        [DismissalTypeCannotHaveDismissedBy]
         [Display(Name = "Caught/run-out by")]
         public string? DismissedBy { get; set; }
 
+        [RunOutCannotHaveBowler]
         public string? Bowler { get; set; }
 
         [Display(Name = "Runs")]

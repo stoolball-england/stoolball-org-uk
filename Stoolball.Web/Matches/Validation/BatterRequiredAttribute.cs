@@ -23,7 +23,7 @@ namespace Stoolball.Web.Matches.Validation
                     innings.RunsScored != null ||
                     innings.BallsFaced != null))
             {
-                return new ValidationResult($"You've added details for a batter with no name. Please name the batter.");
+                return new ValidationResult($"You've added details for a batter with no name. Please name the batter.", new[] { validationContext.MemberName! });
             }
             return null;
         }

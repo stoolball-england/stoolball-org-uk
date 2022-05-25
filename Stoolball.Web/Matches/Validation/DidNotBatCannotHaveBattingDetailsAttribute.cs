@@ -21,7 +21,7 @@ namespace Stoolball.Web.Matches.Validation
                     innings.RunsScored != null ||
                     innings.BallsFaced != null))
             {
-                return new ValidationResult($"You've said {innings.Batter} did not bat, but you added batting details.");
+                return new ValidationResult($"You've said {innings.Batter} did not bat, but you added batting details.", new[] { validationContext.MemberName! });
             }
             return null;
         }
