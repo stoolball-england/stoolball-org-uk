@@ -137,7 +137,7 @@ namespace Stoolball.Web.Matches
                 Autofocus = true
             };
             model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
-            model.CurrentInnings.MatchInnings.PlayerInnings = postedData.PlayerInningsSearch.Where(x => !string.IsNullOrWhiteSpace(x.Batter)).Select(x => new PlayerInnings
+            model.CurrentInnings.MatchInnings.PlayerInnings = postedData.PlayerInningsSearch.Where(x => !ModelState.IsValid || !string.IsNullOrWhiteSpace(x.Batter)).Select(x => new PlayerInnings
             {
                 Batter = new PlayerIdentity
                 {
@@ -158,7 +158,6 @@ namespace Stoolball.Web.Matches
                 RunsScored = x.RunsScored,
                 BallsFaced = x.BallsFaced
             }).ToList();
-            model.CurrentInnings.PlayerInningsSearch = postedData.PlayerInningsSearch;
             model.CurrentInnings.MatchInnings.Byes = postedData.MatchInnings.Byes;
             model.CurrentInnings.MatchInnings.Wides = postedData.MatchInnings.Wides;
             model.CurrentInnings.MatchInnings.NoBalls = postedData.MatchInnings.NoBalls;
@@ -176,6 +175,16 @@ namespace Stoolball.Web.Matches
                 model.Match.PlayersPerTeam = postedData.MatchInnings.PlayerInnings.Count;
             }
             _playerInningsScaffolder.ScaffoldPlayerInnings(model.CurrentInnings.MatchInnings.PlayerInnings, model.Match.PlayersPerTeam.Value);
+
+            model.CurrentInnings.PlayerInningsSearch.AddRange(model.CurrentInnings.MatchInnings.PlayerInnings.Select(x => new PlayerInningsViewModel
+            {
+                Batter = x.Batter?.PlayerIdentityName,
+                DismissalType = x.DismissalType,
+                DismissedBy = x.DismissedBy?.PlayerIdentityName,
+                Bowler = x.Bowler?.PlayerIdentityName,
+                RunsScored = x.RunsScored,
+                BallsFaced = x.BallsFaced
+            }));
 
             model.CurrentInnings.MatchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(model.CurrentInnings.MatchInnings);
 
