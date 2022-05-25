@@ -1007,6 +1007,7 @@ namespace Stoolball.Data.SqlServer
 
                     }
 
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE PlayerInningsId IN @PlayerInningsIds", new { PlayerInningsIds = comparison.PlayerInningsRemoved.Select(x => x.PlayerInningsId) }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE PlayerInningsId IN @PlayerInningsIds", new { PlayerInningsIds = comparison.PlayerInningsRemoved.Select(x => x.PlayerInningsId) }, transaction).ConfigureAwait(false);
 
                     // Update the extras and final score
