@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -74,60 +72,6 @@ namespace Stoolball.Web.Matches
                 }.Contains(beforeUpdate.MatchResultType.Value))
             {
                 return NotFound();
-            }
-
-            var i = 0;
-            foreach (var innings in postedData.PlayerInningsSearch)
-            {
-                // The batter name is required if any other fields are filled in for an innings
-                if (string.IsNullOrWhiteSpace(innings.Batter) &&
-                    (innings.DismissalType.HasValue &&
-                    innings.DismissalType != DismissalType.DidNotBat ||
-                    !string.IsNullOrWhiteSpace(innings.DismissedBy) ||
-                    !string.IsNullOrWhiteSpace(innings.Bowler) ||
-                    innings.RunsScored != null ||
-                    innings.BallsFaced != null))
-                {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInningsSearch[{i}].Batter", $"You've added details for the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter. Please name the batter.");
-                }
-
-                // The batter must have batted if any other fields are filled in for an innings
-                if ((innings.DismissalType == DismissalType.DidNotBat || innings.DismissalType == DismissalType.TimedOut) &&
-                    (!string.IsNullOrWhiteSpace(innings.DismissedBy) ||
-                    !string.IsNullOrWhiteSpace(innings.Bowler) ||
-                    innings.RunsScored != null ||
-                    innings.BallsFaced != null))
-                {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInningsSearch[{i}].DismissalType", $"You've said the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter did not bat, but you added batting details.");
-                }
-
-                // The batter can't be not out if a a bowler or fielder is named
-                if ((innings.DismissalType == DismissalType.NotOut || innings.DismissalType == DismissalType.Retired || innings.DismissalType == DismissalType.RetiredHurt) &&
-                    (!string.IsNullOrWhiteSpace(innings.DismissedBy) ||
-                    !string.IsNullOrWhiteSpace(innings.Bowler)
-                    ))
-                {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInningsSearch[{i}].DismissalType", $"You've said the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter was not out, but you named a fielder and/or bowler.");
-                }
-
-                // Caught and bowled by the same person is caught and bowled
-                if (innings.DismissalType == DismissalType.Caught &&
-                    !string.IsNullOrWhiteSpace(innings.DismissedBy) &&
-                    innings.DismissedBy?.Trim() == innings.Bowler?.Trim())
-                {
-                    innings.DismissalType = DismissalType.CaughtAndBowled;
-                    innings.DismissedBy = null;
-                }
-
-                // If there's a fielder, the dismissal type should be caught or run-out
-                if (innings.DismissalType != DismissalType.Caught &&
-                    innings.DismissalType != DismissalType.RunOut &&
-                    !string.IsNullOrWhiteSpace(innings.DismissedBy))
-                {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInningsSearch[{i}].DismissalType", $"You've named the fielder for the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter, but they were not caught or run-out.");
-                }
-
-                i++;
             }
 
             var model = new EditScorecardViewModel(CurrentPage, Services.UserService)

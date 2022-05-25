@@ -1,12 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Stoolball.Matches;
+using Stoolball.Web.Matches.Validation;
 
 namespace Stoolball.Web.Matches.Models
 {
     public class PlayerInningsViewModel
     {
+        [BatterRequired]
         public string? Batter { get; set; }
 
+        [DidNotBatCannotHaveBattingDetails]
+        [DismissalTypeCannotHaveDismissedBy]
+        [NotOutCannotHaveDismissalDetails]
+        [FixCaughtAndBowled]
         [Display(Name = "How out")]
         public DismissalType? DismissalType { get; set; }
 
