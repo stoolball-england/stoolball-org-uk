@@ -41,6 +41,12 @@
 		<Copy SourceFiles="$(USERPROFILE)\.nuget\packages\system.io.filesystem.accesscontrol\5.0.0\lib\netstandard2.0\System.IO.FileSystem.AccessControl.dll"
 				DestinationFiles="$(ProjectDir)bin\$(Configuration)\net5.0\System.IO.FileSystem.AccessControl.dll"
 				Condition="!Exists('$(ProjectDir)bin\$(Configuration)\net5.0\System.IO.FileSystem.AccessControl.dll')" />
+		<Copy SourceFiles="$(USERPROFILE)\.nuget\packages\system.security.cryptography.pkcs\5.0.0\lib\netcoreapp3.0\System.Security.Cryptography.Pkcs.dll"
+				DestinationFiles="$(ProjectDir)bin\$(Configuration)\net5.0\System.Security.Cryptography.Pkcs.dll"
+				Condition="!Exists('$(ProjectDir)bin\$(Configuration)\net5.0\System.Security.Cryptography.Pkcs.dll')" />
+		<Copy SourceFiles="$(USERPROFILE)\.nuget\packages\microsoft.aspnetcore.antiforgery\2.2.0\lib\netstandard2.0\Microsoft.AspNetCore.Antiforgery.dll"
+				DestinationFiles="$(ProjectDir)bin\$(Configuration)\net5.0\Microsoft.AspNetCore.Antiforgery.dll"
+				Condition="!Exists('$(ProjectDir)bin\$(Configuration)\net5.0\Microsoft.AspNetCore.Antiforgery.dll')" />
 	</Target>
 
 	<Target Name="StoolballApplyWebConfigTransform" BeforeTargets="AfterBuild">
