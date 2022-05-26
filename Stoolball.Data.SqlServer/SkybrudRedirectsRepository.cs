@@ -35,11 +35,13 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
+            await transaction.Connection.ExecuteAsync($@"SET IDENTITY_INSERT SkybrudRedirects ON;
+                            INSERT INTO SkybrudRedirects 
 							([Id], [Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
 							 [DestinationUrl], [Created], [Updated], [IsPermanent], [ForwardQueryString], [DestinationQuery], [DestinationFragment])
 							 VALUES ((SELECT MAX(Id)+1 FROM SkybrudRedirects), @Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
-                             @Created, @Updated, @IsPermanent, @ForwardQueryString, @DestinationQuery, @DestinationFragment)",
+                             @Created, @Updated, @IsPermanent, @ForwardQueryString, @DestinationQuery, @DestinationFragment);
+                            SET IDENTITY_INSERT SkybrudRedirects OFF",
                                          new
                                          {
                                              Key = Guid.NewGuid().ToString(),
@@ -73,11 +75,13 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
+            await transaction.Connection.ExecuteAsync($@"SET IDENTITY_INSERT SkybrudRedirects ON;
+                            INSERT INTO SkybrudRedirects 
 							([Id], [Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
 							 [DestinationUrl], [Created], [Updated], [IsPermanent], [ForwardQueryString], [DestinationQuery], [DestinationFragment])
 							 VALUES ((SELECT MAX(Id)+1 FROM SkybrudRedirects), @Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
-                             @Created, @Updated, @IsPermanent, @ForwardQueryString, @DestinationQuery, @DestinationFragment)",
+                             @Created, @Updated, @IsPermanent, @ForwardQueryString, @DestinationQuery, @DestinationFragment);
+                            SET IDENTITY_INSERT SkybrudRedirects OFF",
                  new
                  {
                      Key = Guid.NewGuid().ToString(),
