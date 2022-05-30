@@ -40,7 +40,7 @@
         </tr>
     </thead>
     <tbody>
-        @for (var i = 0; i < (Model.Match.PlayersPerTeam); i++)
+        @for (var i = 0; i < Model.CurrentInnings.PlayerInningsSearch.Count; i++)
         {
             <tr class="batting-scorecard-editor__player-innings">
                 <th scope="row" class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__batter" data-stackable="true" id="player-innings-header--@i--">
