@@ -37,7 +37,7 @@
             <fieldset class="form-group">
                 <legend>Who won?</legend>
                 <div class="custom-control custom-radio">
-                    @Html.RadioButtonFor(m => Model.FormData.MatchResultType, -1, Model.FormData.MatchResultType.HasValue ? new { @class = "custom-control-input", @id = "MatchResultTypeUnknown", aria_describedby = "result-type-validation" } : new { @class = "custom-control-input", @id = "MatchResultTypeUnknown", @checked = "checked", aria_describedby = "result-type-validation" })
+                    <input aria-describedby="result-type-validation" class="custom-control-input" id="MatchResultTypeUnknown" name="@nameof(Model.FormData).@nameof(Model.FormData.MatchResultType)" type="radio" value="" @(Model.FormData.MatchResultType.HasValue ? string.Empty : " checked=\"checked\"") />
                     <label for="MatchResultTypeUnknown" class="custom-control-label">Don't know</label>
                 </div>
                 <div class="custom-control custom-radio">

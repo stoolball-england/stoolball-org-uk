@@ -27,7 +27,7 @@
             <fieldset class="form-group">
                 <legend>@(Model.Match!.StartTime >= DateTimeOffset.UtcNow ? "Will" : "Did") the training session happen?</legend>
                 <div class="custom-control custom-radio">
-                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, (Model.Match!.MatchResultType.HasValue) ? new { @class = "custom-control-input", @id = "MatchResultTypeYes" } : new { @class = "custom-control-input", @id = "MatchResultTypeYes", @checked = "checked" })
+                    <input class="custom-control-input" id="MatchResultTypeYes" name="@nameof(Model.Match).@nameof(Model.Match.MatchResultType)" type="radio" value="" @(Model.Match!.MatchResultType.HasValue ? string.Empty : " checked=\"checked\"") />
                     <label for="MatchResultTypeYes" class="custom-control-label">The training session @(Model.Match.StartTime >= DateTimeOffset.UtcNow ? "will happen" : "happened")</label>
                 </div>
                 <div class="custom-control custom-radio">

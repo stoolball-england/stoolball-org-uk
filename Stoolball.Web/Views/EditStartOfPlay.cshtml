@@ -248,7 +248,7 @@
                 <fieldset class="form-group">
                     <legend class="has-form-text">Who won the toss? <small>(optional)</small></legend>
                     <div class="custom-control custom-radio">
-                        @Html.RadioButtonFor(m => Model.TossWonBy, string.Empty, string.IsNullOrEmpty(Model.TossWonBy) ? new { @class = "custom-control-input", @id = "toss-won-by-unknown", @checked = "checked", aria_describedby = "toss-won-by-validation" } : new { @class = "custom-control-input", @id = "toss-won-by-unknown", aria_describedby = "toss-won-by-validation" })
+                        <input aria-describedby="toss-won-by-validation" class="custom-control-input" id="toss-won-by-unknown" name="@nameof(Model.TossWonBy)" type="radio" value="" @(string.IsNullOrEmpty(Model.TossWonBy) ? " checked=\"checked\"" : string.Empty) />
                         <label for="toss-won-by-unknown" class="custom-control-label">Don't know</label>
                     </div>
                     <div class="custom-control custom-radio">
@@ -264,7 +264,7 @@
                 <fieldset class="form-group">
                     <legend class="has-form-text">Who batted first? <small>(optional)</small></legend>
                     <div class="custom-control custom-radio">
-                        @Html.RadioButtonFor(m => Model.BattedFirst, string.Empty, string.IsNullOrEmpty(Model.BattedFirst) ? new { @class = "custom-control-input", @id = "batted-first-unknown", @checked = "checked", aria_describedby = "batted-first-validation" } : new { @class = "custom-control-input", @id = "batted-first-unknown", aria_describedby = "batted-first-validation" })
+                        <input aria-describedby="batted-first-validation" class="custom-control-input" id="batted-first-unknown" name="@nameof(Model.BattedFirst)" type="radio" value="" @(string.IsNullOrEmpty(Model.BattedFirst) ? " checked=\"checked\"" : string.Empty) />
                         <label for="batted-first-unknown" class="custom-control-label">Don't know</label>
                     </div>
                     <div class="custom-control custom-radio">
