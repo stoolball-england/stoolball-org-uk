@@ -3,13 +3,11 @@ name: "Run tests"
 on:
   push:
     branches:
-    - master
-    - feature/v9
+    - main
   pull_request:
     # The branches below must be a subset of the branches above
     branches: 
-    - master
-    - feature/v9
+    - main
 
 jobs:
   stoolball-web-unit-tests:

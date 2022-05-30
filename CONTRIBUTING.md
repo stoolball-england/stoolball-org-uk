@@ -10,18 +10,18 @@ Before starting, create or comment on an issue you're planning to work on to dis
 
 On your fork, run `.\Scripts\Pull-UmbracoCloud.ps1` to pull changes from Umbraco Cloud into your branch before starting new work.
 
-Always work on a feature branch named `feature/xxx` or `fix/xxx` based off of `master`.
+Always work on a feature branch named `feature/xxx` or `fix/xxx` based off of `main`.
 
-## Merge into `master` and push to Umbraco Cloud
+## Merge into `main` and push to Umbraco Cloud
 
-Run `.\Scripts\Pull-UmbracoCloud.ps1` again to pull changes from Umbraco Cloud before merging into `master`.
+Run `.\Scripts\Pull-UmbracoCloud.ps1` again to pull changes from Umbraco Cloud before merging into `main`.
 
-The pull from Umbraco Cloud always gets committed to `master`, so the changes should be there before you merge yours in. This should avoid the remote changes overwriting yours.
+The pull from Umbraco Cloud always gets committed to `main`, so the changes should be there before you merge yours in. This should avoid the remote changes overwriting yours.
 
-You can merge `master` into your `feature/xxx` or `fix/xxx` branch if required.
+You can merge `main` into your `feature/xxx` or `fix/xxx` branch if required.
 
-Once your branch is merged into `master` run `.\Scripts\Push-UmbracoCloud.ps1` to push your changes. This should keep the remote up-to-date and minimise conflicts.
+Once your branch is merged into `main` run `.\Scripts\Push-UmbracoCloud.ps1` to push your changes. This should keep the remote up-to-date and minimise conflicts.
 
 ## Submit a pull request
 
-When your changes are ready, create a pull request for your feature branch targeting the `master` branch.
+When your changes are ready, create a pull request for your feature branch targeting the `main` branch.
