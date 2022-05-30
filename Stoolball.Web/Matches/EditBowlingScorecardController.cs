@@ -70,6 +70,12 @@ namespace Stoolball.Web.Matches
                     return NotFound();
                 }
 
+                // This page is not for innings which don't exist
+                if (!model.Match.MatchInnings.Any(x => x.InningsOrderInMatch == model.InningsOrderInMatch))
+                {
+                    return NotFound();
+                }
+
                 model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);

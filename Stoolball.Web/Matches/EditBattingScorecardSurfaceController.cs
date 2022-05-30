@@ -62,10 +62,12 @@ namespace Stoolball.Web.Matches
 
             var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path);
 
+            // This page is only for matches in the past, or for tournament matches
             if (beforeUpdate.StartTime > DateTime.UtcNow || beforeUpdate.Tournament != null)
             {
                 return NotFound();
             }
+
 
             if (beforeUpdate.MatchResultType.HasValue && new List<MatchResultType> {
                     MatchResultType.HomeWinByForfeit, MatchResultType.AwayWinByForfeit, MatchResultType.Postponed, MatchResultType.Cancelled
@@ -80,6 +82,13 @@ namespace Stoolball.Web.Matches
                 InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.Path, UriKind.Relative)),
                 Autofocus = true
             };
+
+            // This page is not for innings which don't exist
+            if (!beforeUpdate.MatchInnings.Any(x => x.InningsOrderInMatch == model.InningsOrderInMatch))
+            {
+                return NotFound();
+            }
+
             model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
             model.CurrentInnings.MatchInnings.PlayerInnings = postedData.PlayerInningsSearch.Where(x => !ModelState.IsValid || !string.IsNullOrWhiteSpace(x.Batter)).Select(x => new PlayerInnings
             {

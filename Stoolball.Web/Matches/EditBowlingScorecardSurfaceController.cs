@@ -97,6 +97,13 @@ namespace Stoolball.Web.Matches
                 InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.Path, UriKind.Relative)),
                 Autofocus = true
             };
+
+            // This page is not for innings which don't exist
+            if (!beforeUpdate.MatchInnings.Any(x => x.InningsOrderInMatch == model.InningsOrderInMatch))
+            {
+                return NotFound();
+            }
+
             model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
             model.CurrentInnings.MatchInnings.OversBowled = postedData.OversBowledSearch.Where(x => x.BowledBy?.Trim().Length > 0).Select((x, index) => new Over
             {
