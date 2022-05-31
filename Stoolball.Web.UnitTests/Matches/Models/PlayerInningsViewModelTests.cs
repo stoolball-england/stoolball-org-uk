@@ -263,23 +263,5 @@ namespace Stoolball.Web.UnitTests.Matches.Models
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.DismissalType)) &&
                      v.ErrorMessage.ToUpperInvariant().Contains("YOU ADDED BATTING DETAILS"));
         }
-
-        [Fact]
-        public void Caught_by_bowler_is_converted_to_caught_and_bowled()
-        {
-            var innings = new PlayerInningsViewModel
-            {
-                Batter = "Jo Bloggs",
-                DismissalType = DismissalType.Caught,
-                DismissedBy = "John Smith",
-                Bowler = "John Smith"
-            };
-
-            ValidateModel(innings);
-
-            Assert.Equal(DismissalType.CaughtAndBowled, innings.DismissalType);
-            Assert.True(string.IsNullOrEmpty(innings.DismissedBy));
-            Assert.False(string.IsNullOrEmpty(innings.Bowler));
-        }
     }
 }

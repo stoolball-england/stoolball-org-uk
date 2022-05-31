@@ -1,9 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using Stoolball.Matches;
+using Stoolball.Web.Matches.ModelBinders;
 using Stoolball.Web.Matches.Validation;
 
 namespace Stoolball.Web.Matches.Models
 {
+    [ModelBinder(BinderType = typeof(PlayerInningsModelBinder))]
     public class PlayerInningsViewModel
     {
         [BatterRequired]
@@ -11,7 +14,6 @@ namespace Stoolball.Web.Matches.Models
 
         [DidNotBatCannotHaveBattingDetails]
         [NotOutCannotHaveDismissalDetails]
-        [FixCaughtAndBowled]
         [Display(Name = "How out")]
         public DismissalType? DismissalType { get; set; }
 
