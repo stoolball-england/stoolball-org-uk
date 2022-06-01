@@ -23,7 +23,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: windows-2019
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
@@ -49,16 +49,19 @@ jobs:
 
       # Need to build the code before running CodeQL
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+
+      - name: Restore npm dependencies
+        run: npm ci
 
       - name: Restore NuGet Packages
-        run: nuget restore Stoolball.sln
+        run: dotnet restore Stoolball.sln
 
       - name: Build Solution
-        run: msbuild Stoolball.sln /p:Configuration=Release
-        env:
-          REQUIRE_CLOUD_REPO: false
+        run: dotnet build --no-restore Stoolball.sln --configuration Release
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1

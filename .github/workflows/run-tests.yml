@@ -28,8 +28,6 @@ jobs:
 
     - name: Build unit tests
       run: dotnet build --no-restore ./Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj
-      env:
-          REQUIRE_CLOUD_REPO: false
 
     - name: Run Stoolball.Web.UnitTests 
       run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings ./Stoolball.Web.UnitTests/coverlet.runsettings ./Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj
