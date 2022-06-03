@@ -611,3 +611,26 @@ $space-character-width: .25em;
         margin-left: $table-cell-padding;
     }
 }
+
+// When .batting-scorecard-editor__player-innings--deleted is added to the row, animate the row disappearing by:
+// - removing the cell padding
+// - having a child div with padding offset by negative margin added purely for the animation (since the cell cannot have margin-top, and we cannot animate from height: auto)
+.batting-scorecard-editor__player-innings-field {
+    transition: padding-top .5s, padding-bottom .5s;
+}
+.batting-scorecard-editor__player-innings--deleted .batting-scorecard-editor__player-innings-field {
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+}
+
+.scorecard-editor__animate {
+    transition: padding-top .5s, margin-top .5s;
+    padding-top: $spacer*3;
+    margin-top: $spacer*-3;
+}
+
+.batting-scorecard-editor__player-innings--deleted .scorecard-editor__animate {
+    padding-top: 0;
+    margin-top: $spacer*-2.2;
+}

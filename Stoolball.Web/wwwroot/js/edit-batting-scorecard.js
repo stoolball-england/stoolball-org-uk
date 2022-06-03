@@ -6,6 +6,7 @@
     }
 
     const playerInningsRowClass = "batting-scorecard-editor__player-innings";
+    const ordinalBatterLabelClass = "batting-scorecard-editor__batter-label";
     const playerNameFieldClass = "scorecard__player-name";
     const batterFieldClass = "scorecard__batter";
     const dismissalTypeFieldClass = "scorecard__dismissal";
@@ -238,12 +239,10 @@
 
     function enableBattingRowEvent(e) {
       if (e.target && e.target.classList.contains(playerNameFieldClass)) {
-        enableBattingRow(e.target.parentElement.parentElement.parentElement);
+        enableBattingRow(e.target.closest("tr"));
       }
       if (e.target.classList.contains(dismissalTypeFieldClass)) {
-        dismissalTypeEnableDetails(
-          e.target.parentElement.parentElement.parentElement
-        );
+        dismissalTypeEnableDetails(e.target.closest("tr"));
       }
     }
 
@@ -284,7 +283,87 @@
         e.target.classList.contains(batterFieldClass) &&
         !e.target.value.trim()
       ) {
-        resetBattingRow(e.target.parentElement.parentElement.parentElement);
+        const row = e.target.closest("tr");
+        const nextRowHasBatter =
+          row.nextElementSibling &&
+          row.nextElementSibling
+            .querySelector(".scorecard__batter")
+            .value.trim();
+        if (nextRowHasBatter) {
+          updateIndexesOfFollowingRows(row);
+
+          // Set a class on the row so that CSS can transition it, then delete it after the transition
+          row.classList.add(
+            "batting-scorecard-editor__player-innings--deleted"
+          );
+          row.addEventListener("transitionend", function () {
+            if (row.parentElement) {
+              row.parentElement.removeChild(row);
+            }
+          });
+        } else {
+          resetBattingRow(row);
+        }
+      }
+    }
+
+    function ordinal_suffix_of(i) {
+      var j = i % 10,
+        k = i % 100;
+      if (j == 1 && k != 11) {
+        return i + "st";
+      }
+      if (j == 2 && k != 12) {
+        return i + "nd";
+      }
+      if (j == 3 && k != 13) {
+        return i + "rd";
+      }
+      return i + "th";
+    }
+
+    function updateIndexesOfFollowingRows(tr) {
+      while (
+        tr.nextElementSibling &&
+        tr.nextElementSibling.classList.contains(playerInningsRowClass)
+      ) {
+        let target = tr.nextElementSibling;
+        const index =
+          [].slice.call(tr.parentElement.children).indexOf(target) - 1;
+        target.querySelector("th[scope='row']").id =
+          "player-innings-header--" + index + "--";
+        target.querySelector("." + ordinalBatterLabelClass).innerHTML =
+          ordinal_suffix_of(index + 1) + " batter";
+        [].slice
+          .call(target.querySelectorAll("[aria-labelledby]"))
+          .map(function (element) {
+            element.setAttribute(
+              "aria-labelledby",
+              element
+                .getAttribute("aria-labelledby")
+                .replace(/--[0-9]+--/, "--" + index + "--")
+            );
+          });
+        [].slice.call(target.querySelectorAll("[for]")).map(function (element) {
+          element.setAttribute(
+            "for",
+            element.getAttribute("for").replace(/_[0-9]+__/, "_" + index + "__")
+          );
+        });
+        [].slice.call(target.querySelectorAll("[id]")).map(function (element) {
+          element.id = element.id.replace(/_[0-9]+__/, "_" + index + "__");
+        }).id;
+        [].slice
+          .call(target.querySelectorAll("[name]"))
+          .map(function (element) {
+            element.setAttribute(
+              "name",
+              element
+                .getAttribute("name")
+                .replace(/\[[0-9]+]/, "[" + index + "]")
+            );
+          });
+        tr = tr.nextElementSibling;
       }
     }
 

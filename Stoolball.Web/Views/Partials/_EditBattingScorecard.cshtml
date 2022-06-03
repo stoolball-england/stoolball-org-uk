@@ -44,35 +44,47 @@
         {
             <tr class="batting-scorecard-editor__player-innings">
                 <th scope="row" class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__batter" data-stackable="true" id="player-innings-header--@i--">
-                    @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Batter, $"{(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__batter-label" })
-                    <div>
-                        @* Extra divs act as flex-items when using .table-as-cards. Allowing the form field to be a flex-item means its height grows if the label wraps. *@
-                        @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Batter, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name scorecard__batter", data_team = Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString(), aria_labelledby="batter-header" })
+                    <div class="scorecard-editor__animate">
+                        @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Batter, $"{(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__batter-label" })
+                        <div>
+                            @* Extra divs act as flex-items when using .table-as-cards. Allowing the form field to be a flex-item means its height grows if the label wraps. *@
+                            @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Batter, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name scorecard__batter", data_team = Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString(), aria_labelledby="batter-header" })
+                        </div>
                     </div>
                 </th>
                 <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__dismissal" data-stackable="true">
-                    @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].DismissalType, "How out", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__dismissal-label" })
-                    <div>
-                        @Html.DropDownListFor(m => Model.CurrentInnings.PlayerInningsSearch[i].DismissalType, new SelectList(dismissalTypes, "Value", "Text", Model.CurrentInnings.PlayerInningsSearch[i].DismissalType.HasValue ? Model.CurrentInnings.PlayerInningsSearch[i].DismissalType.ToString() : string.IsNullOrEmpty(Model.CurrentInnings.PlayerInningsSearch[i].Batter) ? DismissalType.DidNotBat.ToString() : string.Empty), new { @class = "scorecard__dismissal", aria_labelledby=$"how-out-header player-innings-header--{i}--" })
+                    <div class="scorecard-editor__animate">
+                        @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].DismissalType, "How out", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__dismissal-label" })
+                        <div>
+                            @Html.DropDownListFor(m => Model.CurrentInnings.PlayerInningsSearch[i].DismissalType, new SelectList(dismissalTypes, "Value", "Text", Model.CurrentInnings.PlayerInningsSearch[i].DismissalType.HasValue ? Model.CurrentInnings.PlayerInningsSearch[i].DismissalType.ToString() : string.IsNullOrEmpty(Model.CurrentInnings.PlayerInningsSearch[i].Batter) ? DismissalType.DidNotBat.ToString() : string.Empty), new { @class = "scorecard__dismissal", aria_labelledby=$"how-out-header player-innings-header--{i}--" })
+                        </div>
                     </div>
                 </td>
                 <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__dismissed-by" data-stackable="true">
-                    <label for="CurrentInnings_PlayerInningsSearch_@(i)__DismissedBy" aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__dismissed-by-label">Caught/ <span class="text-nowrap">run-out by</span></label>
-                    <div>
-                        @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].DismissedBy, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString(), aria_labelledby=$"dismissed-by-header player-innings-header--{i}--" })
+                    <div class="scorecard-editor__animate">
+                        <label for="CurrentInnings_PlayerInningsSearch_@(i)__DismissedBy" aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__dismissed-by-label">Caught/ <span class="text-nowrap">run-out by</span></label>
+                        <div>
+                            @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].DismissedBy, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString(), aria_labelledby=$"dismissed-by-header player-innings-header--{i}--" })
+                        </div>
                     </div>
                 </td>
                 <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__bowler" data-stackable="true">
-                    @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Bowler, "Bowler", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__bowler-label" })
-                    @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Bowler, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString(), aria_labelledby=$"bowler-header player-innings-header--{i}--" })
+                    <div class="scorecard-editor__animate">
+                        @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Bowler, "Bowler", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__bowler-label" })
+                        @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Bowler, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString(), aria_labelledby=$"bowler-header player-innings-header--{i}--" })
+                    </div>
                 </td>
                 <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__runs" data-stackable="true">
-                    @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, "Runs", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__runs-label" })
-                    @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, new { autocomplete = "off", type = "number", @class = "scorecard__runs", aria_labelledby=$"runs-header player-innings-header--{i}--" })
+                    <div class="scorecard-editor__animate">
+                        @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, "Runs", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__runs-label" })
+                        @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, new { autocomplete = "off", type = "number", @class = "scorecard__runs", aria_labelledby=$"runs-header player-innings-header--{i}--" })
+                    </div>
                 </td>
                 <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__balls" data-stackable="true">
-                    @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].BallsFaced, "Balls", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__balls-label" })
-                    @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].BallsFaced, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__balls", aria_labelledby=$"balls-header player-innings-header--{i}--" })
+                    <div class="scorecard-editor__animate">
+                        @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].BallsFaced, "Balls", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__balls-label" })
+                        @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].BallsFaced, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__balls", aria_labelledby=$"balls-header player-innings-header--{i}--" })
+                    </div>
                 </td>
             </tr>
         }
@@ -136,33 +148,45 @@
     <table>
         <tr class="batting-scorecard-editor__player-innings">
             <th scope="row" class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__batter" id="player-innings-header--0--">
-                <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__batter-label" for="CurrentInnings_PlayerInningsSearch_[0]__Batter">[0th] batter</label>
-                <div><input autocomplete="off" data-lpignore="true" class="scorecard__player-name scorecard__batter" data-team="@Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].Batter" id="CurrentInnings_PlayerInningsSearch_[0]__Batter" aria-labelledby="batter-header" type="text" value="" /></div>
+                <div class="scorecard-editor__animate">
+                    <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__batter-label" for="CurrentInnings_PlayerInningsSearch_[0]__Batter">[0th] batter</label>
+                    <div><input autocomplete="off" data-lpignore="true" class="scorecard__player-name scorecard__batter" data-team="@Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].Batter" id="CurrentInnings_PlayerInningsSearch_[0]__Batter" aria-labelledby="batter-header" type="text" value="" /></div>
+                </div>
             </th>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__dismissal">
-                <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__dismissal-label" for="CurrentInnings_PlayerInningsSearch_[0]__DismissalType">How out</label>
-                <div><select name="CurrentInnings.PlayerInningsSearch[0].DismissalType" id="CurrentInnings_PlayerInningsSearch_[0]__DismissalType" required="required" class="scorecard__dismissal" aria-labelledby="how-out-header player-innings-header--0--">
-                    @foreach (var listItem in dismissalTypes)
-                    {
-                        <option value="@listItem.Value">@listItem.Text</option>
-                    }
-                </select></div>
+                <div class="scorecard-editor__animate">
+                    <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__dismissal-label" for="CurrentInnings_PlayerInningsSearch_[0]__DismissalType">How out</label>
+                    <div><select name="CurrentInnings.PlayerInningsSearch[0].DismissalType" id="CurrentInnings_PlayerInningsSearch_[0]__DismissalType" required="required" class="scorecard__dismissal" aria-labelledby="how-out-header player-innings-header--0--">
+                        @foreach (var listItem in dismissalTypes)
+                        {
+                            <option value="@listItem.Value">@listItem.Text</option>
+                        }
+                    </select></div>
+                </div>
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__dismissed-by">
-                <label for="CurrentInnings_PlayerInningsSearch_[0]__DismissedBy" aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__dismissed-by-label">Caught/ <span class="text-nowrap">run-out by</span></label>
-                <div><input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].DismissedBy" id="CurrentInnings_PlayerInningsSearch_[0]__DismissedBy" type="text" value="" aria-labelledby="dismissed-by-header player-innings-header--0--" /></div>
+                <div class="scorecard-editor__animate">
+                    <label for="CurrentInnings_PlayerInningsSearch_[0]__DismissedBy" aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__dismissed-by-label">Caught/ <span class="text-nowrap">run-out by</span></label>
+                    <div><input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].DismissedBy" id="CurrentInnings_PlayerInningsSearch_[0]__DismissedBy" type="text" value="" aria-labelledby="dismissed-by-header player-innings-header--0--" /></div>
+                </div>
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__bowler">
-                <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__bowler-label" for="CurrentInnings_PlayerInningsSearch_[0]__Bowler">Bowler</label>
-                <input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].Bowler" id="CurrentInnings_PlayerInningsSearch_[0]__Bowler" aria-labelledby="bowler-header player-innings-header--0--" type="text" value="" />
+                <div class="scorecard-editor__animate">
+                    <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__bowler-label" for="CurrentInnings_PlayerInningsSearch_[0]__Bowler">Bowler</label>
+                    <input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].Bowler" id="CurrentInnings_PlayerInningsSearch_[0]__Bowler" aria-labelledby="bowler-header player-innings-header--0--" type="text" value="" />
+                </div>
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__runs">
-                <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__runs-label" for="CurrentInnings_PlayerInningsSearch_[0]__RunsScored">Runs</label>
-                <input autocomplete="off" class="scorecard__runs" name="CurrentInnings.PlayerInningsSearch[0].RunsScored" id="CurrentInnings_PlayerInningsSearch_[0]__RunsScored" type="number" value="" aria-labelledby="runs-header player-innings-header--0--" />
+                <div class="scorecard-editor__animate">
+                    <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__runs-label" for="CurrentInnings_PlayerInningsSearch_[0]__RunsScored">Runs</label>
+                    <input autocomplete="off" class="scorecard__runs" name="CurrentInnings.PlayerInningsSearch[0].RunsScored" id="CurrentInnings_PlayerInningsSearch_[0]__RunsScored" type="number" value="" aria-labelledby="runs-header player-innings-header--0--" />
+                </div>
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__balls">
-                <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__balls-label" for="CurrentInnings_PlayerInningsSearch_[0]__BallsFaced">Balls</label>
-                <input autocomplete="off" class="scorecard__balls" min="0" name="CurrentInnings.PlayerInningsSearch[0].BallsFaced" id="CurrentInnings_PlayerInningsSearch_[0]__BallsFaced" type="number" value="" aria-labelledby="balls-header player-innings-header--0--" />
+                <div class="scorecard-editor__animate">
+                    <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__balls-label" for="CurrentInnings_PlayerInningsSearch_[0]__BallsFaced">Balls</label>
+                    <input autocomplete="off" class="scorecard__balls" min="0" name="CurrentInnings.PlayerInningsSearch[0].BallsFaced" id="CurrentInnings_PlayerInningsSearch_[0]__BallsFaced" type="number" value="" aria-labelledby="balls-header player-innings-header--0--" />
+                </div>
             </td>
         </tr>
     </table>
