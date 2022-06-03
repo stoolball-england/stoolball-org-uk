@@ -898,8 +898,9 @@ namespace Stoolball.Data.SqlServer
                 using (var transaction = connection.BeginTransaction())
                 {
                     // Select existing innings and work out which ones have changed.
+                    var battingPosition = 1;
                     var inningsBefore = await connection.QueryAsync<PlayerInnings, PlayerIdentity, PlayerIdentity, PlayerIdentity, PlayerInnings>(
-                        $@"SELECT i.PlayerInningsId, i.BattingPosition, i.DismissalType, i.RunsScored, i.BallsFaced,
+                        $@"SELECT i.PlayerInningsId, i.DismissalType, i.RunsScored, i.BallsFaced,
                                bat.PlayerIdentityName,
                                field.PlayerIdentityName,
                                bowl.PlayerIdentityName
@@ -907,9 +908,11 @@ namespace Stoolball.Data.SqlServer
                                INNER JOIN {Tables.PlayerIdentity} bat ON i.BatterPlayerIdentityId = bat.PlayerIdentityId
                                LEFT JOIN {Tables.PlayerIdentity} field ON i.DismissedByPlayerIdentityId = field.PlayerIdentityId
                                LEFT JOIN {Tables.PlayerIdentity} bowl ON i.BowlerPlayerIdentityId = bowl.PlayerIdentityId
-                               WHERE i.MatchInningsId = @MatchInningsId",
+                               WHERE i.MatchInningsId = @MatchInningsId
+                               ORDER BY BattingPosition ASC",
                         (playerInnings, batter, fielder, bowler) =>
                         {
+                            playerInnings.BattingPosition = battingPosition++; // Use an incremeted batting position based on the sort order, in case the source data has duplicate batting positions
                             playerInnings.Batter = batter;
                             playerInnings.DismissedBy = fielder;
                             playerInnings.Bowler = bowler;
