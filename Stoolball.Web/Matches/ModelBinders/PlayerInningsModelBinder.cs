@@ -17,9 +17,9 @@ namespace Stoolball.Web.Matches.ModelBinders
 
             var model = new PlayerInningsViewModel();
 
-            model.Batter = BindStringField(bindingContext, bindingContext.ModelName + "." + nameof(PlayerInningsViewModel.Batter));
-            if (model.Batter != null)
+            if (TryBindStringField(bindingContext, bindingContext.ModelName + "." + nameof(PlayerInningsViewModel.Batter), out var batterResult))
             {
+                model.Batter = batterResult;
                 bindingContext.Result = ModelBindingResult.Success(model);
             }
             else
@@ -28,8 +28,14 @@ namespace Stoolball.Web.Matches.ModelBinders
             }
 
             model.DismissalType = BindEnumField<DismissalType>(bindingContext, bindingContext.ModelName + "." + nameof(PlayerInningsViewModel.DismissalType));
-            model.DismissedBy = BindStringField(bindingContext, bindingContext.ModelName + "." + nameof(PlayerInningsViewModel.DismissedBy));
-            model.Bowler = BindStringField(bindingContext, bindingContext.ModelName + "." + nameof(PlayerInningsViewModel.Bowler));
+            if (TryBindStringField(bindingContext, bindingContext.ModelName + "." + nameof(PlayerInningsViewModel.DismissedBy), out var dismissedByResult))
+            {
+                model.DismissedBy = dismissedByResult;
+            }
+            if (TryBindStringField(bindingContext, bindingContext.ModelName + "." + nameof(PlayerInningsViewModel.Bowler), out var bowlerResult))
+            {
+                model.Bowler = bowlerResult;
+            }
             model.RunsScored = BindIntField(bindingContext, bindingContext.ModelName + "." + nameof(PlayerInningsViewModel.RunsScored));
             model.BallsFaced = BindIntField(bindingContext, bindingContext.ModelName + "." + nameof(PlayerInningsViewModel.BallsFaced));
 
@@ -73,15 +79,17 @@ namespace Stoolball.Web.Matches.ModelBinders
             return null;
         }
 
-        private static string? BindStringField(ModelBindingContext bindingContext, string fieldName)
+        private static bool TryBindStringField(ModelBindingContext bindingContext, string fieldName, out string? result)
         {
             var bindingResult = bindingContext.ValueProvider.GetValue(fieldName);
             if (bindingResult != ValueProviderResult.None)
             {
                 bindingContext.ModelState.SetModelValue(fieldName, bindingResult);
-                return string.IsNullOrEmpty(bindingResult.FirstValue) ? null : bindingResult.FirstValue.Trim();
+                result = string.IsNullOrEmpty(bindingResult.FirstValue) ? null : bindingResult.FirstValue.Trim();
+                return true;
             }
-            return null;
+            result = null;
+            return false;
         }
     }
 }
