@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
+using Dapper;
 using Moq;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Matches;
@@ -9,13 +12,15 @@ using Xunit;
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 {
     [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
-    public class SqlServerMatchDataSourceTests
+    public class SqlServerMatchDataSourceTests : IDisposable
     {
         private readonly SqlServerDataSourceFixture _databaseFixture;
+        private readonly TransactionScope _scope;
 
         public SqlServerMatchDataSourceTests(SqlServerDataSourceFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
+            _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
 
         [Fact]
@@ -152,6 +157,32 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].BallsFaced, result.MatchInnings[innings].PlayerInnings[batter].BallsFaced);
                 }
             }
+        }
+
+        [Fact]
+        public async Task Read_match_by_route_does_not_duplicate_player_innings_when_overs_and_oversets_are_duplicated()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute, "matches")).Returns(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute);
+            var matchDataSource = new SqlServerMatchDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var affectedMatchInnings = _databaseFixture.MatchInThePastWithFullDetails.MatchInnings.First();
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var duplicateOverSetId = Guid.NewGuid();
+                await connection.ExecuteAsync(@$"INSERT INTO {Tables.OverSet} (OverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver)
+                                                 SELECT TOP 1 @duplicateOverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver FROM {Tables.OverSet} WHERE MatchInningsId = @MatchInningsId",
+                                                 new { duplicateOverSetId, affectedMatchInnings.MatchInningsId });
+                await connection.ExecuteAsync(@$"INSERT INTO {Tables.Over} (OverId, MatchInningsId, BowlerPlayerIdentityId, OverNumber, OverSetId, BallsBowled, NoBalls, Wides, RunsConceded) 
+                                                 SELECT NEWID(), MatchInningsId, BowlerPlayerIdentityId, OverNumber, @duplicateOverSetId, BallsBowled, NoBalls, Wides, RunsConceded
+                                                 FROM {Tables.Over} WHERE MatchInningsId = @MatchInningsId", new { duplicateOverSetId, affectedMatchInnings.MatchInningsId });
+            }
+
+            var result = await matchDataSource.ReadMatchByRoute(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute).ConfigureAwait(false);
+
+            var playerInningsIds = result.MatchInnings.Single(x => x.MatchInningsId == affectedMatchInnings.MatchInningsId).PlayerInnings.Select(x => x.PlayerInningsId);
+            var distinctPlayerInningsIds = playerInningsIds.Distinct();
+            Assert.Equal(distinctPlayerInningsIds.Count(), playerInningsIds.Count());
         }
 
         [Fact]
@@ -312,5 +343,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Season.Competition.MemberGroupName, result.Season.Competition.MemberGroupName);
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Season.Competition.CompetitionRoute, result.Season.Competition.CompetitionRoute);
         }
+        public void Dispose() => _scope.Dispose();
     }
 }
