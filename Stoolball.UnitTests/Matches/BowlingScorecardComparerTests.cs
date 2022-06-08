@@ -44,17 +44,6 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void Duplicate_over_number_in_before_overs_throws_ArgumentException()
-        {
-            var comparer = new BowlingScorecardComparer();
-            var firstOver = new Over { OverNumber = 1, Bowler = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
-            var firstOverDuplicate = new Over { OverNumber = 1, Bowler = new PlayerIdentity { PlayerIdentityName = "Player two" }, BallsBowled = 10, NoBalls = 2, Wides = 2, RunsConceded = 12 };
-
-            Assert.Throws<ArgumentException>(() => comparer.CompareScorecards(new List<Over> { firstOver, firstOverDuplicate }, new List<Over>()));
-        }
-
-
-        [Fact]
         public void Duplicate_over_number_in_after_overs_throws_ArgumentException()
         {
             var comparer = new BowlingScorecardComparer();
@@ -65,7 +54,7 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void Added_over_is_identified_by_over_number()
+        public void Added_over_is_identified_by_over_index()
         {
             var firstOver = new Over { OverNumber = 1, Bowler = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOver = new Over { OverNumber = 2, Bowler = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
@@ -78,7 +67,24 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void Changed_over_is_identified_from_changed_PlayerIdentityName_for_over_number()
+        public void Changed_over_is_identified_from_changed_OverNumber_for_over_index()
+        {
+            var playerOne = new PlayerIdentity { PlayerIdentityName = "Player one" };
+            var playerTwo = new PlayerIdentity { PlayerIdentityName = "Player two" };
+            var firstOverBefore = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
+            var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
+            var secondOverBefore = new Over { OverNumber = 1, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
+            var secondOverAfter = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
+            var comparer = new BowlingScorecardComparer();
+
+            var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
+
+            Assert.Single(result.OversChanged);
+            Assert.Contains((secondOverBefore, secondOverAfter), result.OversChanged);
+        }
+
+        [Fact]
+        public void Changed_over_is_identified_from_changed_PlayerIdentityName_for_over_index()
         {
             var playerOne = new PlayerIdentity { PlayerIdentityName = "Player one" };
             var firstOverBefore = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
@@ -94,7 +100,7 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void Changed_over_is_identified_from_changed_BallsBowled_for_over_number()
+        public void Changed_over_is_identified_from_changed_BallsBowled_for_over_index()
         {
             var playerOne = new PlayerIdentity { PlayerIdentityName = "Player one" };
             var playerTwo = new PlayerIdentity { PlayerIdentityName = "Player two" };
@@ -111,7 +117,7 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void Changed_over_is_identified_from_changed_NoBalls_for_over_number()
+        public void Changed_over_is_identified_from_changed_NoBalls_for_over_index()
         {
             var playerOne = new PlayerIdentity { PlayerIdentityName = "Player one" };
             var playerTwo = new PlayerIdentity { PlayerIdentityName = "Player two" };
@@ -128,7 +134,7 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void Changed_over_is_identified_from_changed_Wides_for_over_number()
+        public void Changed_over_is_identified_from_changed_Wides_for_over_index()
         {
             var playerOne = new PlayerIdentity { PlayerIdentityName = "Player one" };
             var playerTwo = new PlayerIdentity { PlayerIdentityName = "Player two" };
@@ -145,7 +151,7 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void Changed_over_is_identified_from_changed_RunsConceded_for_over_number()
+        public void Changed_over_is_identified_from_changed_RunsConceded_for_over_index()
         {
             var playerOne = new PlayerIdentity { PlayerIdentityName = "Player one" };
             var playerTwo = new PlayerIdentity { PlayerIdentityName = "Player two" };
@@ -176,7 +182,7 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void Removed_over_is_identified_by_over_number()
+        public void Removed_over_is_identified_by_over_index()
         {
             var playerOne = new PlayerIdentity { PlayerIdentityName = "Player one" };
             var playerTwo = new PlayerIdentity { PlayerIdentityName = "Player two" };

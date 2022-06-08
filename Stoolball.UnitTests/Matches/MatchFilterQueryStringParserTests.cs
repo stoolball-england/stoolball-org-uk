@@ -2,7 +2,7 @@
 using Stoolball.Matches;
 using Xunit;
 
-namespace Stoolball.Tests.Matches
+namespace Stoolball.UnitTests.Matches
 {
     public class MatchFilterQueryStringParserTests
     {
@@ -11,7 +11,7 @@ namespace Stoolball.Tests.Matches
         {
             var parser = new MatchFilterQueryStringParser();
 
-            Assert.Throws<ArgumentNullException>(() => _ = parser.ParseQueryString(null, String.Empty));
+            Assert.Throws<ArgumentNullException>(() => _ = parser.ParseQueryString(null, string.Empty));
         }
 
         [Fact]

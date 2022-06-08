@@ -18,43 +18,39 @@ namespace Stoolball.Matches
                 throw new ArgumentNullException(nameof(after));
             }
 
-            if (before.Any(x => x.OverNumber < 1))
+            var oversBefore = new List<Over>(before);
+            var oversAfter = new List<Over>(after);
+
+            if (oversBefore.Any(x => x.OverNumber < 1))
             {
                 throw new ArgumentException("Over numbers must be 1 or greater", nameof(before));
             }
 
-            if (after.Any(x => x.OverNumber < 1))
+            if (oversAfter.Any(x => x.OverNumber < 1))
             {
                 throw new ArgumentException("Over numbers must be 1 or greater", nameof(after));
             }
 
             var comparison = new BowlingScorecardComparison();
 
-            var identitiesBefore = before.Select(x => x.Bowler.PlayerIdentityName).Distinct();
-            var identitiesAfter = after.Select(x => x.Bowler.PlayerIdentityName).Distinct();
+            var identitiesBefore = oversBefore.Select(x => x.Bowler.PlayerIdentityName).Distinct();
+            var identitiesAfter = oversAfter.Select(x => x.Bowler.PlayerIdentityName).Distinct();
             comparison.PlayerIdentitiesAdded.AddRange(identitiesAfter.Where(x => !identitiesBefore.Contains(x)));
             comparison.PlayerIdentitiesRemoved.AddRange(identitiesBefore.Where(x => !identitiesAfter.Contains(x)));
 
-            var overNumber = 1;
+            var index = 0;
             Over overBefore = null, overAfter = null;
             do
             {
-                try
-                {
-                    overBefore = before.SingleOrDefault(x => x.OverNumber == overNumber);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    throw new ArgumentException($"{nameof(before)} has multiple overs with OverNumber={overNumber}", nameof(before), ex);
-                }
+                overBefore = oversBefore.Count > index ? oversBefore[index] : null;
 
                 try
                 {
-                    overAfter = after.SingleOrDefault(x => x.OverNumber == overNumber);
+                    overAfter = oversAfter.SingleOrDefault(x => x.OverNumber == index + 1);
                 }
                 catch (InvalidOperationException ex)
                 {
-                    throw new ArgumentException($"{nameof(after)} has multiple overs with OverNumber={overNumber}", nameof(after), ex);
+                    throw new ArgumentException($"{nameof(after)} has multiple overs with OverNumber={index + 1}", nameof(after), ex);
                 }
 
                 if (overBefore != null && overAfter == null)
@@ -67,7 +63,8 @@ namespace Stoolball.Matches
                 }
                 else if (overBefore != null && overAfter != null)
                 {
-                    if (overBefore.Bowler.ComparableName() != overAfter.Bowler.ComparableName() ||
+                    if (overBefore.OverNumber != overAfter.OverNumber ||
+                        overBefore.Bowler.ComparableName() != overAfter.Bowler.ComparableName() ||
                         overBefore.BallsBowled != overAfter.BallsBowled ||
                         overBefore.NoBalls != overAfter.NoBalls ||
                         overBefore.Wides != overAfter.Wides ||
@@ -90,7 +87,7 @@ namespace Stoolball.Matches
                     }
                 }
 
-                overNumber++;
+                index++;
             }
             while (overBefore != null || overAfter != null);
 

@@ -18,47 +18,43 @@ namespace Stoolball.Matches
                 throw new ArgumentNullException(nameof(after));
             }
 
-            if (before.Any(x => x.BattingPosition < 1))
+            var playerInningsBefore = new List<PlayerInnings>(before);
+            var playerInningsAfter = new List<PlayerInnings>(after);
+
+            if (playerInningsBefore.Any(x => x.BattingPosition < 1))
             {
                 throw new ArgumentException("Batting position must be 1 or greater", nameof(before));
             }
 
-            if (after.Any(x => x.BattingPosition < 1))
+            if (playerInningsAfter.Any(x => x.BattingPosition < 1))
             {
                 throw new ArgumentException("Batting position must be 1 or greater", nameof(after));
             }
 
             var comparison = new BattingScorecardComparison();
 
-            var battingIdentitiesBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).Select(x => x.Batter.PlayerIdentityName).Distinct();
-            var bowlingIdentitiesBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
-            var battingIdentitiesAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).Select(x => x.Batter.PlayerIdentityName).Distinct();
-            var bowlingIdentitiesAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
+            var battingIdentitiesBefore = playerInningsBefore.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).Select(x => x.Batter.PlayerIdentityName).Distinct();
+            var bowlingIdentitiesBefore = playerInningsBefore.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
+            var battingIdentitiesAfter = playerInningsAfter.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).Select(x => x.Batter.PlayerIdentityName).Distinct();
+            var bowlingIdentitiesAfter = playerInningsAfter.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
             comparison.BattingPlayerIdentitiesAdded.AddRange(battingIdentitiesAfter.Where(x => !battingIdentitiesBefore.Contains(x)));
             comparison.BowlingPlayerIdentitiesAdded.AddRange(bowlingIdentitiesAfter.Where(x => !bowlingIdentitiesBefore.Contains(x)));
             comparison.BattingPlayerIdentitiesRemoved.AddRange(battingIdentitiesBefore.Where(x => !battingIdentitiesAfter.Contains(x)));
             comparison.BowlingPlayerIdentitiesRemoved.AddRange(bowlingIdentitiesBefore.Where(x => !bowlingIdentitiesAfter.Contains(x)));
 
-            var battingPosition = 1;
+            var index = 0;
             PlayerInnings inningsBefore = null, inningsAfter = null;
             do
             {
-                try
-                {
-                    inningsBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == battingPosition);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    throw new ArgumentException($"{nameof(before)} has multiple innings with BattingPosition={battingPosition}", nameof(before), ex);
-                }
+                inningsBefore = playerInningsBefore.Count > index ? playerInningsBefore[index] : null;
 
                 try
                 {
-                    inningsAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == battingPosition);
+                    inningsAfter = playerInningsAfter.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == index + 1);
                 }
                 catch (InvalidOperationException ex)
                 {
-                    throw new ArgumentException($"{nameof(after)} has multiple innings with BattingPosition={battingPosition}", nameof(after), ex);
+                    throw new ArgumentException($"{nameof(after)} has multiple innings with BattingPosition={index + 1}", nameof(after), ex);
                 }
 
                 if (inningsBefore != null && inningsAfter == null)
@@ -71,7 +67,8 @@ namespace Stoolball.Matches
                 }
                 else if (inningsBefore != null && inningsAfter != null)
                 {
-                    if (inningsBefore.Batter.ComparableName() != inningsAfter.Batter.ComparableName() ||
+                    if (inningsBefore.BattingPosition != inningsAfter.BattingPosition ||
+                        inningsBefore.Batter.ComparableName() != inningsAfter.Batter.ComparableName() ||
                         inningsBefore.DismissalType != inningsAfter.DismissalType ||
                         inningsBefore.DismissedBy?.ComparableName() != inningsAfter.DismissedBy?.ComparableName() ||
                         inningsBefore.Bowler?.ComparableName() != inningsAfter.Bowler?.ComparableName() ||
@@ -116,7 +113,7 @@ namespace Stoolball.Matches
                     }
                 }
 
-                battingPosition++;
+                index++;
             }
             while (inningsBefore != null || inningsAfter != null);
 
