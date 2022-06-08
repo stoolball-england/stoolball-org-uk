@@ -437,6 +437,7 @@ tinyMceConfig.config
 ApplicationInsights.config
 Smidge
 Stoolball.Web/web.config
+coverage
 
 # Work with Umbraco Cloud in a separate repo
 .UmbracoCloud
