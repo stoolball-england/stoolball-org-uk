@@ -116,16 +116,16 @@
     <PackageReference Include="HtmlSanitizer" Version="5.0.404" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.12" />
-    <PackageReference Include="Skybrud.Umbraco.Redirects" Version="3.0.3" />
+    <PackageReference Include="Skybrud.Umbraco.Redirects" Version="3.0.4" />
     <PackageReference Include="SolarCalculator" Version="3.1.0" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="Umbraco.Cloud.Identity.Cms" Version="4.0.51" />
     <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="4.1.0" />
-    <PackageReference Include="Umbraco.Cms" Version="9.5.0" />
+    <PackageReference Include="Umbraco.Cms" Version="9.5.1" />
     <PackageReference Include="Umbraco.Deploy.Cloud" Version="9.4.0" />
     <PackageReference Include="Umbraco.Deploy.Contrib" Version="9.0.1" />
     <PackageReference Include="Umbraco.Deploy.Forms" Version="9.4.0" />
-    <PackageReference Include="Umbraco.Forms" Version="9.4.1" />
+    <PackageReference Include="Umbraco.Forms" Version="9.4.2" />
     <PackageReference Include="uSync" Version="9.1.0" />
   </ItemGroup>
 
