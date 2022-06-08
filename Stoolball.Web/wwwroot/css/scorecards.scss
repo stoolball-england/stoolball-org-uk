@@ -612,13 +612,14 @@ $space-character-width: .25em;
     }
 }
 
-// When .batting-scorecard-editor__player-innings--deleted is added to the row, animate the row disappearing by:
+// When .<table-row-class>--deleted is added to the row, animate the row disappearing by:
 // - removing the cell padding
 // - having a child div with padding offset by negative margin added purely for the animation (since the cell cannot have margin-top, and we cannot animate from height: auto)
-.batting-scorecard-editor__player-innings-field {
+.batting-scorecard-editor__player-innings-field, .bowling-scorecard-editor__field {
     transition: padding-top .5s, padding-bottom .5s;
 }
-.batting-scorecard-editor__player-innings--deleted .batting-scorecard-editor__player-innings-field {
+.batting-scorecard-editor__player-innings--deleted .batting-scorecard-editor__player-innings-field,
+.bowling-scorecard-editor__over--deleted .bowling-scorecard-editor__field {
     padding-top: 0;
     padding-bottom: 0;
     opacity: 0;
@@ -630,7 +631,8 @@ $space-character-width: .25em;
     margin-top: $spacer*-3;
 }
 
-.batting-scorecard-editor__player-innings--deleted .scorecard-editor__animate {
+.batting-scorecard-editor__player-innings--deleted .scorecard-editor__animate,
+.bowling-scorecard-editor__over--deleted .scorecard-editor__animate {
     padding-top: 0;
     margin-top: $spacer*-2.2;
 }

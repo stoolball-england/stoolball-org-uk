@@ -1,9 +1,42 @@
+"use strict";
+
+// For Jest tests
+if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
+  module.exports = createBattingScorecardEditor;
+}
+
+function createBattingScorecardEditor() {
+  return {
+    /**
+     * Adds an ordinal suffix to a given number
+     * @param {number} i
+     * @returns string
+     */
+    ordinalSuffixOf: function (i) {
+      var j = i % 10,
+        k = i % 100;
+      if (j == 1 && k != 11) {
+        return i + "st";
+      }
+      if (j == 2 && k != 12) {
+        return i + "nd";
+      }
+      if (j == 3 && k != 13) {
+        return i + "rd";
+      }
+      return i + "th";
+    },
+  };
+}
+
 (function () {
   window.addEventListener("DOMContentLoaded", function () {
     const editor = document.querySelector(".batting-scorecard-editor");
     if (!editor) {
       return;
     }
+
+    const battingScorecardEditor = createBattingScorecardEditor();
 
     const playerInningsRowClass = "batting-scorecard-editor__player-innings";
     const ordinalBatterLabelClass = "batting-scorecard-editor__batter-label";
@@ -307,21 +340,6 @@
       }
     }
 
-    function ordinal_suffix_of(i) {
-      var j = i % 10,
-        k = i % 100;
-      if (j == 1 && k != 11) {
-        return i + "st";
-      }
-      if (j == 2 && k != 12) {
-        return i + "nd";
-      }
-      if (j == 3 && k != 13) {
-        return i + "rd";
-      }
-      return i + "th";
-    }
-
     function updateIndexesOfFollowingRows(tr) {
       while (
         tr.nextElementSibling &&
@@ -333,7 +351,7 @@
         target.querySelector("th[scope='row']").id =
           "player-innings-header--" + index + "--";
         target.querySelector("." + ordinalBatterLabelClass).innerHTML =
-          ordinal_suffix_of(index + 1) + " batter";
+          battingScorecardEditor.ordinalSuffixOf(index + 1) + " batter";
         [].slice
           .call(target.querySelectorAll("[aria-labelledby]"))
           .map(function (element) {

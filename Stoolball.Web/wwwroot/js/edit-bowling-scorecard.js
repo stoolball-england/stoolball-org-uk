@@ -1,3 +1,29 @@
+"use strict";
+
+// For Jest tests
+if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
+  module.exports = createBowlingScorecardEditor;
+}
+
+function createBowlingScorecardEditor() {
+  return {
+    ordinalSuffixOf: function (i) {
+      var j = i % 10,
+        k = i % 100;
+      if (j == 1 && k != 11) {
+        return i + "st";
+      }
+      if (j == 2 && k != 12) {
+        return i + "nd";
+      }
+      if (j == 3 && k != 13) {
+        return i + "rd";
+      }
+      return i + "th";
+    },
+  };
+}
+
 (function () {
   window.addEventListener("DOMContentLoaded", function () {
     const editor = document.querySelector(".bowling-scorecard-editor");
@@ -5,11 +31,21 @@
       return;
     }
 
+    const bowlingScorecardEditor = createBowlingScorecardEditor();
+
+    const overClass = "bowling-scorecard-editor__over";
+    const ordinalBowlerLabelClass = "bowling-scorecard-editor__bowler-label";
+    const bowlerInputClass = "scorecard__player-name";
+    const ballsInputClass = "scorecard__balls";
+    const widesInputClass = "scorecard__wides";
+    const noBallsInputClass = "scorecard__no-balls";
+    const runsInputClass = "scorecard__runs";
+
     function disableFollowingRows(row) {
       while (row.nextElementSibling) {
-        let thisPlayer = row.querySelector(".scorecard__player-name");
+        let thisPlayer = row.querySelector("." + bowlerInputClass);
         let nextPlayer = row.nextElementSibling.querySelector(
-          ".scorecard__player-name"
+          "." + bowlerInputClass
         );
         if (!thisPlayer.value && !nextPlayer.value) {
           nextPlayer.setAttribute("disabled", "disabled");
@@ -19,7 +55,7 @@
     }
 
     function focusEvent(e) {
-      if (e.target.classList.contains("scorecard__player-name")) {
+      if (e.target.classList.contains(bowlerInputClass)) {
         suggestDefaultBowler(e);
       }
       if (e.target.getAttribute("type") === "number") {
@@ -35,8 +71,8 @@
       }
 
       // Is there a player?
-      const row = e.target.parentNode.parentNode;
-      const playerField = row.querySelector(".scorecard__player-name");
+      const row = e.target.closest("tr");
+      const playerField = row.querySelector("." + bowlerInputClass);
       if (playerField.value.trim().length === 0) return;
 
       // If this over was bowled, previous overs must have been, so set balls bowled to 8 if missing
@@ -44,9 +80,9 @@
         previousPlayer,
         previousBalls;
       while (previous) {
-        previousPlayer = previous.querySelector(".scorecard__player-name");
+        previousPlayer = previous.querySelector("." + bowlerInputClass);
         if (previousPlayer.value.trim().length > 0) {
-          previousBalls = previous.querySelector(".scorecard__balls");
+          previousBalls = previous.querySelector("." + ballsInputClass);
           if (previousBalls.value.trim().length === 0) {
             previousBalls.value = 8;
           }
@@ -55,19 +91,19 @@
       }
 
       // // Apply defaults to current field and previous fields (previous fields useful for touch screens)
-      const ballsField = row.querySelector(".scorecard__balls");
-      const widesField = row.querySelector(".scorecard__wides");
-      const noballsField = row.querySelector(".scorecard__no-balls");
+      const ballsField = row.querySelector("." + ballsInputClass);
+      const widesField = row.querySelector("." + widesInputClass);
+      const noballsField = row.querySelector("." + noBallsInputClass);
 
       // Balls bowled defaults to 8, extras default to 0
-      if (e.target.classList.contains("scorecard__balls")) {
+      if (e.target.classList.contains(ballsInputClass)) {
         e.target.value = 8;
-      } else if (e.target.classList.contains("scorecard__no-balls")) {
+      } else if (e.target.classList.contains(noBallsInputClass)) {
         if (ballsField.value.trim().length === 0) {
           ballsField.value = 8;
         }
         e.target.value = 0;
-      } else if (e.target.classList.contains("scorecard__wides")) {
+      } else if (e.target.classList.contains(widesInputClass)) {
         if (ballsField.value.trim().length === 0) {
           ballsField.value = 8;
         }
@@ -75,7 +111,7 @@
           noballsField.value = 0;
         }
         e.target.value = 0;
-      } else if (e.target.classList.contains("scorecard__runs")) {
+      } else if (e.target.classList.contains(runsInputClass)) {
         if (ballsField.value.trim().length === 0) {
           ballsField.value = 8;
         }
@@ -104,12 +140,12 @@
       if (e.target.value.trim().length > 0) return;
 
       // Get player name from two rows above
-      let row = e.target.parentNode.parentNode;
+      let row = e.target.closest("tr");
       row = row.previousElementSibling;
       if (!row) return;
       row = row.previousElementSibling;
       if (!row) return;
-      const twoUp = row.querySelector(".scorecard__player-name").value;
+      const twoUp = row.querySelector("." + bowlerInputClass).value;
 
       // If four rows above is different, the bowling is probably shared around
       let fourUp;
@@ -117,7 +153,7 @@
       if (row) {
         row = row.previousElementSibling;
         if (row) {
-          fourUp = row.querySelector(".scorecard__player-name").value;
+          fourUp = row.querySelector("." + bowlerInputClass).value;
         }
       }
 
@@ -148,13 +184,13 @@
     );
 
     function enableOverEvent(e) {
-      if (e.target && e.target.classList.contains("scorecard__player-name")) {
-        enableOver(e.target.parentElement.parentElement);
+      if (e.target && e.target.classList.contains(bowlerInputClass)) {
+        enableOver(e.target.closest("tr"));
       }
     }
 
     function enableOver(tableRow) {
-      const playerName = tableRow.querySelector(".scorecard__player-name");
+      const playerName = tableRow.querySelector("." + bowlerInputClass);
       const fields = tableRow.querySelectorAll("input[type=number]");
 
       if (playerName.value) {
@@ -165,7 +201,7 @@
         // If this over row used, ensure next one is ready
         if (tableRow.nextElementSibling) {
           tableRow.nextElementSibling
-            .querySelector(".scorecard__player-name")
+            .querySelector("." + bowlerInputClass)
             .removeAttribute("disabled");
         } else {
           addOver.removeAttribute("disabled");
@@ -184,8 +220,95 @@
       }
     }
 
+    function blurEvent(e) {
+      tryDeleteRow(e);
+      showFullNameHint(e);
+    }
+
+    function tryDeleteRow(e) {
+      if (!e.target.classList.contains(bowlerInputClass)) {
+        return;
+      }
+
+      if (e.target.value.trim()) {
+        return;
+      }
+
+      const row = e.target.closest("tr");
+      const nextRowHasBowler =
+        row.nextElementSibling &&
+        row.nextElementSibling
+          .querySelector("." + bowlerInputClass)
+          .value.trim();
+      if (nextRowHasBowler) {
+        updateIndexesOfFollowingRows(row);
+
+        // Set a class on the row so that CSS can transition it, then delete it after the transition
+        row.classList.add(overClass + "--deleted");
+        row.addEventListener("transitionend", function () {
+          if (row.parentElement) {
+            row.parentElement.removeChild(row);
+          }
+        });
+      } else {
+        resetOver(row);
+      }
+    }
+
+    function updateIndexesOfFollowingRows(tr) {
+      while (
+        tr.nextElementSibling &&
+        tr.nextElementSibling.classList.contains(overClass)
+      ) {
+        let target = tr.nextElementSibling;
+        const index =
+          [].slice.call(tr.parentElement.children).indexOf(target) - 1;
+        target.querySelector("th[scope='row']").id =
+          "over-header--" + index + "--";
+        target.querySelector("." + ordinalBowlerLabelClass).innerHTML =
+          bowlingScorecardEditor.ordinalSuffixOf(index + 1) + " bowler";
+        [].slice
+          .call(target.querySelectorAll("[aria-labelledby]"))
+          .map(function (element) {
+            element.setAttribute(
+              "aria-labelledby",
+              element
+                .getAttribute("aria-labelledby")
+                .replace(/--[0-9]+--/, "--" + index + "--")
+            );
+          });
+        [].slice.call(target.querySelectorAll("[for]")).map(function (element) {
+          element.setAttribute(
+            "for",
+            element.getAttribute("for").replace(/_[0-9]+__/, "_" + index + "__")
+          );
+        });
+        [].slice.call(target.querySelectorAll("[id]")).map(function (element) {
+          element.id = element.id.replace(/_[0-9]+__/, "_" + index + "__");
+        }).id;
+        [].slice
+          .call(target.querySelectorAll("[name]"))
+          .map(function (element) {
+            element.setAttribute(
+              "name",
+              element
+                .getAttribute("name")
+                .replace(/\[[0-9]+]/, "[" + index + "]")
+            );
+          });
+        tr = tr.nextElementSibling;
+      }
+    }
+
+    function resetOver(tr) {
+      const inputs = tr.querySelectorAll("input");
+      [].forEach.call(inputs, function (input) {
+        input.value = "";
+      });
+    }
+
     function showFullNameHint(e) {
-      if (!e.target.classList.contains("scorecard__player-name")) {
+      if (!e.target.classList.contains(bowlerInputClass)) {
         return;
       }
 
@@ -194,7 +317,7 @@
       // then filter again to get one-word names
       const threeOrMoreOneWordNames =
         [].slice
-          .call(document.querySelectorAll(".scorecard__player-name"))
+          .call(document.querySelectorAll("." + bowlerInputClass))
           .map(function (x) {
             return x.value;
           })
@@ -222,7 +345,7 @@
     editor.addEventListener("change", enableOverEvent);
     editor.addEventListener("focusin", focusEvent);
     editor.addEventListener("keydown", replaceBowlingDefaults);
-    editor.addEventListener("focusout", showFullNameHint);
+    editor.addEventListener("focusout", blurEvent);
 
     // Run enableOver for every row to setup the fields on page load
     const overs = editor.querySelectorAll("tbody > tr");
