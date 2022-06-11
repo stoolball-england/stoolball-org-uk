@@ -5,6 +5,7 @@
 @using Umbraco.Cms.Core.Security
 @using Umbraco.Cms.Core.Strings
 @await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_Forms")
 @{
     var currentMemberName = (await memberManager.GetCurrentMemberAsync())?.Name; // GetCurrentMemberAsync() returns null when the member has just confirmed their new email address in another tab
 }

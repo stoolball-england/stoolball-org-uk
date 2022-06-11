@@ -7,6 +7,7 @@
     <meta name="robots" content="noindex,follow" />
 }
 @await Html.PartialAsync("_RelatedItems")
+@await Html.PartialAsync("_Forms")
 @{
     SmidgeHelper.RequiresCss(new CssFile("~/css/edit-tournament-matches.min.css") { Order = 100 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/sortable.1.13.0.min.js") { Order = 80 });

@@ -8,6 +8,7 @@
     <meta name="robots" content="noindex,follow" />
 }
 @await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_Forms")
 <div class="container-xl">
     <h1>Edit @Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 

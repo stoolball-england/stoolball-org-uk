@@ -11,6 +11,7 @@
 @await Html.PartialAsync("_JQueryValidate")
 @await Html.PartialAsync("_JQueryAutocomplete")
 @await Html.PartialAsync("_RelatedItems")
+@await Html.PartialAsync("_Forms")
 <div class="container-xl">
     <h1>Teams in the @Html.TournamentFullNameAndPlayerType(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 

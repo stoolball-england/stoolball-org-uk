@@ -216,6 +216,42 @@ svg {
     max-width: none; // don't allow this image to shrink when space is tight
 }
 
+/* When a form is submitted disable the button and apply .btn-submitting to show an animation */
+.btn-primary.btn-submitting:disabled {
+    position: relative;
+    background: theme-color("primary")
+}
+.btn-submitting__label, .btn-submitting::after {
+    visibility: hidden;
+}
+.btn-submitting__spinner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    margin-left: -9px;
+    margin-top: -9px;
+    z-index: 100;
+    border-radius: 40px;
+    border: 2px solid #e9e9eb;
+    border-color: hsla(0,0%,100%,.4) hsla(0,0%,100%,.4) hsla(0,0%,100%,.4) #fff;
+    opacity: 1;
+    -webkit-animation: rotating .4s linear infinite;
+    animation: rotating .4s linear infinite;
+    transition: opacity .25s ease;
+}
+
+@keyframes rotating {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(359deg);
+    }
+}
+
 [aria-grabbed='true'] {
     outline: 2px dashed $black;
 }

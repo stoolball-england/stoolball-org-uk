@@ -10,6 +10,7 @@
 @await Html.PartialAsync("_JQueryAutocomplete")
 @await Html.PartialAsync("_RelatedItem")
 @await Html.PartialAsync("_TinyMCE")
+@await Html.PartialAsync("_Forms")
 <div class="container-xl">
     <h1>Edit @Html.TournamentFullNameAndPlayerType(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false, false, false))</h1>
 

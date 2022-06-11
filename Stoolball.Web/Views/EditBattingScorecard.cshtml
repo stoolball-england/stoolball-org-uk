@@ -8,6 +8,7 @@
     <meta name="robots" content="noindex,follow" />
 }
 @await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_Forms")
 @{
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/player-autocomplete.js") { Order = 70 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/edit-batting-scorecard.js") { Order = 100 });

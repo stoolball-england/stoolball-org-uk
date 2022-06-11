@@ -7,6 +7,7 @@
 }
 @await Html.PartialAsync("_JQueryValidate")
 @await Html.PartialAsync("_TinyMCE")
+@await Html.PartialAsync("_Forms")
 @{
     SmidgeHelper.RequiresJs(new JavaScriptFile("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey) { Order = 50 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("/js/maps.js") { Order = 90 });
