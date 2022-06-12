@@ -60,10 +60,11 @@ namespace Stoolball.Matches
         {
             var hasBatting = MatchInnings.Select(x => x.PlayerInnings.Count).Sum() > 0;
             var hasOvers = MatchInnings.Select(x => x.OversBowled.Count).Sum() > 0;
-            var hasRuns = MatchInnings.Select(x => x.Runs.HasValue).Contains(true);
-            var hasWickets = MatchInnings.Select(x => x.Wickets.HasValue).Contains(true);
+            var hasRuns = MatchInnings.Any(x => x.Runs.HasValue);
+            var hasWickets = MatchInnings.Any(x => x.Wickets.HasValue);
+            var hasExtras = MatchInnings.Any(x => x.HasExtras());
 
-            return (hasBatting || hasOvers || hasRuns || hasWickets);
+            return (hasBatting || hasOvers || hasRuns || hasWickets || hasExtras);
         }
 
         public bool HasCompleteScorecard()

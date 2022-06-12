@@ -65,11 +65,6 @@ namespace Stoolball.Web.Matches
 
                 model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Match);
 
-                if (model.Match.MatchResultType.HasValue)
-                {
-                    model.MatchWentAhead = (model.Match.MatchResultType == MatchResultType.HomeWin || model.Match.MatchResultType == MatchResultType.AwayWin || model.Match.MatchResultType == MatchResultType.Tie);
-                }
-
                 if (model.Match.MatchType == MatchType.KnockoutMatch && model.Match.Season != null)
                 {
                     model.Match.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true);
@@ -77,12 +72,23 @@ namespace Stoolball.Web.Matches
                     model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Match.Season?.Teams);
                 }
 
-                model.HomeTeamId = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamId;
-                model.AwayTeamId = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamId;
+                model.HomeTeamId = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team?.TeamId;
+                model.AwayTeamId = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team?.TeamId;
                 model.MatchLocationId = model.Match.MatchLocation?.MatchLocationId;
                 model.MatchLocationName = model.Match.MatchLocation?.NameAndLocalityOrTownIfDifferent();
                 model.TossWonBy = model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value)?.MatchTeamId.ToString();
                 model.BattedFirst = model.Match.InningsOrderIsKnown ? model.Match.MatchInnings.First().BattingTeam.MatchTeamId.ToString() : null;
+
+                var hasPlayedResult = (model.Match.MatchResultType == MatchResultType.HomeWin || model.Match.MatchResultType == MatchResultType.AwayWin || model.Match.MatchResultType == MatchResultType.Tie);
+                var hasNotPlayedResult = model.Match.MatchResultType.HasValue && !hasPlayedResult;
+                if (hasNotPlayedResult)
+                {
+                    model.MatchWentAhead = false;
+                }
+                else if (hasPlayedResult || model.Match.HasScorecard() || !string.IsNullOrEmpty(model.TossWonBy) || !string.IsNullOrEmpty(model.BattedFirst) || model.Match.Awards.Any())
+                {
+                    model.MatchWentAhead = true;
+                }
 
                 model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false));
 

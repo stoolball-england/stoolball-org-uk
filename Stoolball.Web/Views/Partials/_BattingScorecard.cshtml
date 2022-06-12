@@ -7,8 +7,8 @@
     // If no player innings, only show a minimal scorecard
     var minimalScorecard = !Model.MatchInnings.PlayerInnings.Any();
 
-    // If no total, wickets, or batters, don't show anything
-    var nothingToDisplay = (minimalScorecard && !Model.MatchInnings.Runs.HasValue && !Model.MatchInnings.Wickets.HasValue);
+    // If no total, wickets, extras or batters, don't show anything
+    var nothingToDisplay = (minimalScorecard && !Model.MatchInnings.Runs.HasValue && !Model.MatchInnings.Wickets.HasValue && !Model.MatchInnings.HasExtras());
     if (!nothingToDisplay)
     {
         <table class="batting-scorecard table-hover table-as-cards table-as-cards-reset-sm">

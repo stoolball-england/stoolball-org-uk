@@ -41,6 +41,11 @@ namespace Stoolball.Matches
         [Display(Name = "Bonus or penalty runs")]
         public int? BonusOrPenaltyRuns { get; set; }
 
+        public bool HasExtras()
+        {
+            return Byes.HasValue || Wides.HasValue || NoBalls.HasValue || BonusOrPenaltyRuns.HasValue;
+        }
+
         [Range(0, 1000000, ErrorMessage = "Runs must be a number, 0 or more")]
         public int? Runs { get; set; }
 
