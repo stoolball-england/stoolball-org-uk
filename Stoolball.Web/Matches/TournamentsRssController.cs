@@ -60,7 +60,12 @@ namespace Stoolball.Web.Matches
                 model.AppliedMatchFilter.UntilDate = DateTimeOffset.UtcNow.AddDays(daysAhead);
             }
 
-            var playerType = Path.GetFileNameWithoutExtension(Request.Path.Value?.ToUpperInvariant());
+            var path = Request.Path.Value?.ToUpperInvariant();
+            if (!string.IsNullOrEmpty(path) && path.EndsWith("/RSS"))
+            {
+                path = path.Substring(0, path.Length - 4);
+            }
+            var playerType = Path.GetFileNameWithoutExtension(path);
             switch (playerType)
             {
                 case "MIXED":
