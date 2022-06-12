@@ -1,0 +1,14 @@
+﻿@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
+@import "../../../node_modules/bootstrap/scss/_variables.scss";
+
+body {
+    padding: $spacer;
+}
+.navbar a { 
+    border: none 
+
+}
+.navbar { 
+    margin-bottom: $spacer; 
+}

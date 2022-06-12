@@ -78,5 +78,9 @@
   {
     "outputFile": "wwwroot/css/statistics.css",
     "inputFile": "wwwroot/css/statistics.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/status.css",
+    "inputFile": "wwwroot/css/status.scss"
   }
 ]
