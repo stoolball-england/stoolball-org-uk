@@ -32,4 +32,59 @@ describe("edit-batting-scorecard.js", () => {
       expect(objectUnderTest.ordinalSuffixOf(25)).toBe("25th");
     });
   });
+
+  describe("toggleFullNameTip", () => {
+    it("should not show the tip if two single names are entered", () => {
+      const objectUnderTest = objectUnderTestFactory();
+      document.body.innerHTML = `
+        <input class="${objectUnderTest.playerNameFieldClass}" value="Jane" />
+        <input class="${objectUnderTest.playerNameFieldClass}" value="Joe" />
+        <p class="${objectUnderTest.enterFullNamesTipClass}"></p>
+      `;
+
+      objectUnderTest.toggleFullNameTip();
+
+      const tipClassList = document.querySelector(
+        "." + objectUnderTest.enterFullNamesTipClass
+      ).classList;
+      expect(tipClassList.contains("d-block")).toBe(false);
+      expect(tipClassList.contains("d-none")).toBe(true);
+    });
+
+    it("should show the tip if three single names are entered", () => {
+      const objectUnderTest = objectUnderTestFactory();
+      document.body.innerHTML = `
+        <input class="${objectUnderTest.playerNameFieldClass}" value="Jane" />
+        <input class="${objectUnderTest.playerNameFieldClass}" value="Joe" />
+        <input class="${objectUnderTest.playerNameFieldClass}" value="John" />
+        <p class="${objectUnderTest.enterFullNamesTipClass}"></p>
+      `;
+
+      objectUnderTest.toggleFullNameTip();
+
+      const tipClassList = document.querySelector(
+        "." + objectUnderTest.enterFullNamesTipClass
+      ).classList;
+      expect(tipClassList.contains("d-block")).toBe(true);
+      expect(tipClassList.contains("d-none")).toBe(false);
+    });
+
+    it("should not show the tip if three full names are entered", () => {
+      const objectUnderTest = objectUnderTestFactory();
+      document.body.innerHTML = `
+        <input class="${objectUnderTest.playerNameFieldClass}" value="Jane Doe" />
+        <input class="${objectUnderTest.playerNameFieldClass}" value="Joe Bloggs" />
+        <input class="${objectUnderTest.playerNameFieldClass}" value="John Smith" />
+        <p class="${objectUnderTest.enterFullNamesTipClass}"></p>
+      `;
+
+      objectUnderTest.toggleFullNameTip();
+
+      const tipClassList = document.querySelector(
+        "." + objectUnderTest.enterFullNamesTipClass
+      ).classList;
+      expect(tipClassList.contains("d-block")).toBe(false);
+      expect(tipClassList.contains("d-none")).toBe(true);
+    });
+  });
 });

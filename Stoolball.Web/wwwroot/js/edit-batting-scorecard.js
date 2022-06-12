@@ -7,6 +7,9 @@ if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
 
 function createBattingScorecardEditor() {
   return {
+    playerNameFieldClass: "scorecard__player-name",
+    enterFullNamesTipClass: "batting-scorecard__full-name-tip",
+
     /**
      * Adds an ordinal suffix to a given number
      * @param {number} i
@@ -26,6 +29,36 @@ function createBattingScorecardEditor() {
       }
       return i + "th";
     },
+
+    /**
+     * Shows or hides a tip suggesting full names are entered, based on how many single names have been entereds
+     */
+    toggleFullNameTip: function () {
+      // querySelectorAll to get players, and slice to convert that to an array.
+      // map to get the input.value from the input, and filter to get unique values,
+      // then filter again to get one-word names
+      const threeOrMoreOneWordNames =
+        [].slice
+          .call(document.querySelectorAll("." + this.playerNameFieldClass))
+          .map(function (x) {
+            return x.value;
+          })
+          .filter(function (value, index, self) {
+            return self.indexOf(value.trim()) === index;
+          })
+          .filter(function (x) {
+            return x && x.indexOf(" ") === -1;
+          }).length >= 3;
+
+      const tip = document.querySelector("." + this.enterFullNamesTipClass);
+      if (threeOrMoreOneWordNames) {
+        tip.classList.remove("d-none");
+        tip.classList.add("d-block");
+      } else {
+        tip.classList.add("d-none");
+        tip.classList.remove("d-block");
+      }
+    },
   };
 }
 
@@ -40,7 +73,6 @@ function createBattingScorecardEditor() {
 
     const playerInningsRowClass = "batting-scorecard-editor__player-innings";
     const ordinalBatterLabelClass = "batting-scorecard-editor__batter-label";
-    const playerNameFieldClass = "scorecard__player-name";
     const batterFieldClass = "scorecard__batter";
     const dismissalTypeFieldClass = "scorecard__dismissal";
     const runsFieldClass = "scorecard__runs";
@@ -48,10 +80,11 @@ function createBattingScorecardEditor() {
     const totalRunsFieldClass = "scorecard__total";
     const ballsFacedFieldClass = "scorecard__balls";
     const addBatterButtonClass = "batting-scorecard-editor__add-batter";
-    const enterFullNamesTipClass = "batting-scorecard__full-name-tip";
 
     function enableBattingRow(tr) {
-      const batter = tr.querySelector("." + playerNameFieldClass);
+      const batter = tr.querySelector(
+        "." + battingScorecardEditor.playerNameFieldClass
+      );
       const dismissalType = tr.querySelector("." + dismissalTypeFieldClass);
       if (batter.value) {
         if (dismissalType) {
@@ -63,7 +96,7 @@ function createBattingScorecardEditor() {
           tr.nextElementSibling.classList.contains(playerInningsRowClass)
         ) {
           const nextBatter = tr.nextElementSibling.querySelector(
-            "." + playerNameFieldClass
+            "." + battingScorecardEditor.playerNameFieldClass
           );
           nextBatter.removeAttribute("disabled");
         } else {
@@ -105,9 +138,11 @@ function createBattingScorecardEditor() {
         tr.nextElementSibling &&
         tr.nextElementSibling.classList.contains(playerInningsRowClass)
       ) {
-        const thisBatter = tr.querySelector("." + playerNameFieldClass);
+        const thisBatter = tr.querySelector(
+          "." + battingScorecardEditor.playerNameFieldClass
+        );
         const nextBatter = tr.nextElementSibling.querySelector(
-          "." + playerNameFieldClass
+          "." + battingScorecardEditor.playerNameFieldClass
         );
         if (!thisBatter.value && !nextBatter.value) {
           nextBatter.setAttribute("disabled", "disabled");
@@ -146,14 +181,18 @@ function createBattingScorecardEditor() {
           break;
       }
 
-      const dismissedBy = tr.querySelectorAll("." + playerNameFieldClass)[1];
+      const dismissedBy = tr.querySelectorAll(
+        "." + battingScorecardEditor.playerNameFieldClass
+      )[1];
       if (enableDismissedBy) {
         dismissedBy.removeAttribute("disabled");
       } else {
         dismissedBy.setAttribute("disabled", "disabled");
       }
 
-      const bowler = tr.querySelectorAll("." + playerNameFieldClass)[2];
+      const bowler = tr.querySelectorAll(
+        "." + battingScorecardEditor.playerNameFieldClass
+      )[2];
       if (enableBowler) {
         bowler.removeAttribute("disabled");
       } else {
@@ -271,7 +310,10 @@ function createBattingScorecardEditor() {
     }
 
     function enableBattingRowEvent(e) {
-      if (e.target && e.target.classList.contains(playerNameFieldClass)) {
+      if (
+        e.target &&
+        e.target.classList.contains(battingScorecardEditor.playerNameFieldClass)
+      ) {
         enableBattingRow(e.target.closest("tr"));
       }
       if (e.target.classList.contains(dismissalTypeFieldClass)) {
@@ -308,8 +350,10 @@ function createBattingScorecardEditor() {
         calculateInningsWickets();
       }
 
-      if (e.target.classList.contains(playerNameFieldClass)) {
-        showFullNameHint();
+      if (
+        e.target.classList.contains(battingScorecardEditor.playerNameFieldClass)
+      ) {
+        battingScorecardEditor.toggleFullNameTip();
       }
 
       if (
@@ -382,33 +426,6 @@ function createBattingScorecardEditor() {
             );
           });
         tr = tr.nextElementSibling;
-      }
-    }
-
-    function showFullNameHint() {
-      // querySelectorAll to get players, and slice to convert that to an array.
-      // map to get the input.value from the input, and filter to get unique values,
-      // then filter again to get one-word names
-      const threeOrMoreOneWordNames =
-        [].slice
-          .call(document.querySelectorAll("." + playerNameFieldClass))
-          .map(function (x) {
-            return x.value;
-          })
-          .filter(function (value, index, self) {
-            return self.indexOf(value.trim()) === index;
-          })
-          .filter(function (x) {
-            return x && x.indexOf(" ") === -1;
-          }).length >= 3;
-
-      const hint = document.querySelector("." + enterFullNamesTipClass);
-      if (threeOrMoreOneWordNames) {
-        hint.classList.remove("d-none");
-        hint.classList.add("d-block");
-      } else {
-        hint.classList.add("d-none");
-        hint.classList.remove("d-block");
       }
     }
 
@@ -491,7 +508,7 @@ function createBattingScorecardEditor() {
 
       if (typeof stoolball.autocompletePlayer !== "undefined") {
         const playerNameFields = newRow.querySelectorAll(
-          "." + playerNameFieldClass
+          "." + battingScorecardEditor.playerNameFieldClass
         );
         for (let i = 0; i < playerNameFields.length; i++) {
           stoolball.autocompletePlayer(playerNameFields[i]);
