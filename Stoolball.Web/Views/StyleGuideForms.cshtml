@@ -160,13 +160,25 @@
                             autocomplete = "off",
                             type = "search",
                             data_url = "/api/teams/autocomplete",
-                            data_template = "team-template",
+                            data_template = "team-template-1",
                             aria_label = "Type a team name and press down arrow to select the team"
                         })
                     </td>
                 </tr>
             </tbody>
         </table>
+         <script type="text/x-template" id="team-template-1">
+            <table>
+                <tr class="related-item__selected">
+                    <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
+                    <td class="related-item__delete related-item__selected__section">
+                        <div class="related-item__animate">
+                            <button class="btn-delete-icon" type="button">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}}")</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </script>
         <table class="table table-hover related-items related-items__create" data-related-item="team">
             <thead class="thead-dark">
                 <tr><th scope="col">Multiple related items, with add option</th><th scope="col" colspan="2">Extra column</th></tr>
@@ -191,14 +203,14 @@
                             autocomplete = "off",
                             type = "search",
                             data_url = "/api/teams/autocomplete",
-                            data_template = "team-template",
+                            data_template = "team-template-2",
                             aria_label = "Type a team name and press down arrow to select the team"
                         })
                     </td>
                 </tr>
             </tbody>
         </table>
-        <script type="text/x-template" id="team-template">
+        <script type="text/x-template" id="team-template-2">
             <table>
                 <tr class="related-item__selected">
                     <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
