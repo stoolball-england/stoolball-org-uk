@@ -51,7 +51,7 @@ namespace Stoolball.Web.Matches
         }
 
         [HttpGet]
-        [ContentSecurityPolicy]
+        [ContentSecurityPolicy(GoogleMaps = true)]
         public async new Task<IActionResult> Index()
         {
             var model = new MatchViewModel(CurrentPage)
