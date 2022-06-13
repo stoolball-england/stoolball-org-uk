@@ -10,7 +10,6 @@ using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Routing;
-using Stoolball.Security;
 using Stoolball.Teams;
 using Xunit;
 
@@ -37,6 +36,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             sanitizer.Setup(x => x.AllowedCssProperties).Returns(new HashSet<string>());
             sanitizer.Setup(x => x.AllowedAtRules).Returns(new HashSet<CssRuleType>());
 
+            var auditable = new Tournament { TournamentId = _databaseFixture.TestData.TournamentWithFullDetails.TournamentId };
+            var redacted = new Tournament { TournamentId = _databaseFixture.TestData.TournamentWithFullDetails.TournamentId };
+
+            var copier = new Mock<IStoolballEntityCopier>();
+            copier.Setup(x => x.CreateAuditableCopy(_databaseFixture.TestData.TournamentWithFullDetails)).Returns(auditable);
+            copier.Setup(x => x.CreateAuditableCopy(auditable)).Returns(redacted);
+
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
 
@@ -49,7 +55,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Mock.Of<ITeamRepository>(),
                 Mock.Of<IMatchRepository>(),
                 sanitizer.Object,
-                Mock.Of<IDataRedactor>());
+                copier.Object);
 
             await repo.DeleteTournament(_databaseFixture.TestData.TournamentWithFullDetails, memberKey, memberName).ConfigureAwait(false);
 

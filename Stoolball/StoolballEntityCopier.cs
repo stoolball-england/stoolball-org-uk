@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
 using Stoolball.Statistics;
@@ -182,6 +184,39 @@ namespace Stoolball
             };
         }
 
+        public Tournament CreateAuditableCopy(Tournament tournament)
+        {
+            return new Tournament
+            {
+                TournamentId = tournament.TournamentId,
+                TournamentName = tournament.TournamentName,
+                StartTime = tournament.StartTime,
+                StartTimeIsKnown = tournament.StartTimeIsKnown,
+                TournamentLocation = tournament.TournamentLocation != null ? new MatchLocation { MatchLocationId = tournament.TournamentLocation.MatchLocationId } : null,
+                PlayerType = tournament.PlayerType,
+                PlayersPerTeam = tournament.PlayersPerTeam,
+                DefaultOverSets = tournament.DefaultOverSets,
+                QualificationType = tournament.QualificationType,
+                SpacesInTournament = tournament.SpacesInTournament,
+                MaximumTeamsInTournament = tournament.MaximumTeamsInTournament,
+                Teams = CreateAuditableCopy(tournament.Teams),
+                Seasons = tournament.Seasons.Select(x => new Season { SeasonId = x.SeasonId }).ToList(),
+                Matches = tournament.Matches.Select(x => new MatchInTournament { MatchId = x.MatchId, MatchName = x.MatchName, Teams = CreateAuditableCopy(x.Teams) }).ToList(),
+                TournamentNotes = tournament.TournamentNotes,
+                TournamentRoute = tournament.TournamentRoute
+            };
+        }
+
+        public List<TeamInTournament> CreateAuditableCopy(List<TeamInTournament> teams)
+        {
+            return teams.Select(x => new TeamInTournament
+            {
+                TournamentTeamId = x.TournamentTeamId,
+                Team = x.Team != null ? new Team { TeamId = x.Team.TeamId, TeamName = x.Team.TeamName } : null,
+                TeamRole = x.TeamRole
+            }).ToList();
+        }
+
         public Competition CreateRedactedCopy(Competition competition)
         {
             var redacted = CreateAuditableCopy(competition);
@@ -191,6 +226,13 @@ namespace Stoolball
                 redacted.PrivateContactDetails = _dataRedactor.RedactAll(redacted.PrivateContactDetails);
                 redacted.PublicContactDetails = _dataRedactor.RedactAll(redacted.PublicContactDetails);
             }
+            return redacted;
+        }
+
+        public Tournament CreateRedactedCopy(Tournament tournament)
+        {
+            var redacted = CreateAuditableCopy(tournament);
+            redacted.TournamentNotes = _dataRedactor.RedactPersonalData(tournament.TournamentNotes);
             return redacted;
         }
     }

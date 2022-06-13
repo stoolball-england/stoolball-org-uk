@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,9 +7,7 @@ using Ganss.XSS;
 using Newtonsoft.Json;
 using Stoolball.Logging;
 using Stoolball.Matches;
-using Stoolball.MatchLocations;
 using Stoolball.Routing;
-using Stoolball.Security;
 using Stoolball.Teams;
 using static Stoolball.Constants;
 
@@ -29,10 +26,10 @@ namespace Stoolball.Data.SqlServer
         private readonly ITeamRepository _teamRepository;
         private readonly IMatchRepository _matchRepository;
         private readonly IHtmlSanitizer _htmlSanitiser;
-        private readonly IDataRedactor _dataRedactor;
+        private readonly IStoolballEntityCopier _stoolballEntityCopier;
 
         public SqlServerTournamentRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger<SqlServerTournamentRepository> logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, ITeamRepository teamRepository, IMatchRepository matchRepository, IHtmlSanitizer htmlSanitiser, IDataRedactor dataRedactor)
+            IRedirectsRepository redirectsRepository, ITeamRepository teamRepository, IMatchRepository matchRepository, IHtmlSanitizer htmlSanitiser, IStoolballEntityCopier stoolballEntityCopier)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -42,7 +39,7 @@ namespace Stoolball.Data.SqlServer
             _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
-            _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
+            _stoolballEntityCopier = stoolballEntityCopier ?? throw new ArgumentNullException(nameof(stoolballEntityCopier));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -57,46 +54,6 @@ namespace Stoolball.Data.SqlServer
             _htmlSanitiser.AllowedAttributes.Add("href");
             _htmlSanitiser.AllowedCssProperties.Clear();
             _htmlSanitiser.AllowedAtRules.Clear();
-        }
-
-        private static Tournament CreateAuditableCopy(Tournament tournament)
-        {
-            return new Tournament
-            {
-                TournamentId = tournament.TournamentId,
-                TournamentName = tournament.TournamentName,
-                StartTime = tournament.StartTime,
-                StartTimeIsKnown = tournament.StartTimeIsKnown,
-                TournamentLocation = tournament.TournamentLocation != null ? new MatchLocation { MatchLocationId = tournament.TournamentLocation.MatchLocationId } : null,
-                PlayerType = tournament.PlayerType,
-                PlayersPerTeam = tournament.PlayersPerTeam,
-                DefaultOverSets = tournament.DefaultOverSets,
-                QualificationType = tournament.QualificationType,
-                SpacesInTournament = tournament.SpacesInTournament,
-                MaximumTeamsInTournament = tournament.MaximumTeamsInTournament,
-                Teams = CreateAuditableCopy(tournament.Teams),
-                Seasons = tournament.Seasons.Select(x => new Competitions.Season { SeasonId = x.SeasonId }).ToList(),
-                Matches = tournament.Matches.Select(x => new MatchInTournament { MatchId = x.MatchId, MatchName = x.MatchName, Teams = CreateAuditableCopy(x.Teams) }).ToList(),
-                TournamentNotes = tournament.TournamentNotes,
-                TournamentRoute = tournament.TournamentRoute
-            };
-        }
-
-        private static List<TeamInTournament> CreateAuditableCopy(List<TeamInTournament> teams)
-        {
-            return teams.Select(x => new TeamInTournament
-            {
-                TournamentTeamId = x.TournamentTeamId,
-                Team = x.Team != null ? new Team { TeamId = x.Team.TeamId, TeamName = x.Team.TeamName } : null,
-                TeamRole = x.TeamRole
-            }).ToList();
-        }
-
-        private Tournament CreateRedactedCopy(Tournament tournament)
-        {
-            var redacted = CreateAuditableCopy(tournament);
-            redacted.TournamentNotes = _dataRedactor.RedactPersonalData(tournament.TournamentNotes);
-            return redacted;
         }
 
         /// <summary>
@@ -114,7 +71,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableTournament = CreateAuditableCopy(tournament);
+            var auditableTournament = _stoolballEntityCopier.CreateAuditableCopy(tournament);
             auditableTournament.TournamentId = Guid.NewGuid();
             auditableTournament.TournamentNotes = _htmlSanitiser.Sanitize(auditableTournament.TournamentNotes);
             auditableTournament.MemberKey = memberKey;
@@ -124,17 +81,12 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    auditableTournament.TournamentRoute = _routeGenerator.GenerateRoute("/tournaments", auditableTournament.TournamentName + " " + auditableTournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.TournamentRoute);
-                    int count;
-                    do
-                    {
-                        count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Tournament} WHERE TournamentRoute = @TournamentRoute", new { auditableTournament.TournamentRoute }, transaction).ConfigureAwait(false);
-                        if (count > 0)
-                        {
-                            auditableTournament.TournamentRoute = _routeGenerator.IncrementRoute(auditableTournament.TournamentRoute);
-                        }
-                    }
-                    while (count > 0);
+                    auditableTournament.TournamentRoute = await _routeGenerator.GenerateUniqueRoute(
+                        "/tournaments",
+                        auditableTournament.TournamentName + " " + auditableTournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture),
+                        NoiseWords.TournamentRoute,
+                        async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Tournament} WHERE TournamentRoute = @TournamentRoute", new { TournamentRoute = route }, transaction).ConfigureAwait(false)
+                    ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Tournament}
 						(TournamentId, TournamentName, MatchLocationId, PlayerType, PlayersPerTeam, 
@@ -187,7 +139,7 @@ namespace Stoolball.Data.SqlServer
                             transaction).ConfigureAwait(false);
                     }
 
-                    var redacted = CreateRedactedCopy(auditableTournament);
+                    var redacted = _stoolballEntityCopier.CreateRedactedCopy(auditableTournament);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Create,
@@ -259,7 +211,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableTournament = CreateAuditableCopy(tournament);
+            var auditableTournament = _stoolballEntityCopier.CreateAuditableCopy(tournament);
             auditableTournament.TournamentNotes = _htmlSanitiser.Sanitize(auditableTournament.TournamentNotes);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
@@ -267,21 +219,13 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var baseRoute = _routeGenerator.GenerateRoute("/tournaments", auditableTournament.TournamentName + " " + auditableTournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.TournamentRoute);
-                    if (!_routeGenerator.IsMatchingRoute(tournament.TournamentRoute, baseRoute))
-                    {
-                        auditableTournament.TournamentRoute = baseRoute;
-                        int count;
-                        do
-                        {
-                            count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Tournament} WHERE TournamentRoute = @TournamentRoute", new { auditableTournament.TournamentRoute }, transaction).ConfigureAwait(false);
-                            if (count > 0)
-                            {
-                                auditableTournament.TournamentRoute = _routeGenerator.IncrementRoute(auditableTournament.TournamentRoute);
-                            }
-                        }
-                        while (count > 0);
-                    }
+                    auditableTournament.TournamentRoute = await _routeGenerator.GenerateUniqueRoute(
+                        tournament.TournamentRoute,
+                        "/tournaments",
+                        auditableTournament.TournamentName + " " + auditableTournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture),
+                        NoiseWords.TournamentRoute,
+                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Tournament} WHERE TournamentRoute = @TournamentRoute", new { TournamentRoute = route }, transaction).ConfigureAwait(false)
+                    ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"UPDATE {Tables.Tournament} SET
 						    TournamentName = @TournamentName,
@@ -395,7 +339,7 @@ namespace Stoolball.Data.SqlServer
                         }
                     }
 
-                    var redacted = CreateRedactedCopy(auditableTournament);
+                    var redacted = _stoolballEntityCopier.CreateRedactedCopy(auditableTournament);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
@@ -445,7 +389,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableTournament = CreateAuditableCopy(tournament);
+            var auditableTournament = _stoolballEntityCopier.CreateAuditableCopy(tournament);
             if (auditableTournament.MaximumTeamsInTournament.HasValue)
             {
                 auditableTournament.SpacesInTournament = auditableTournament.MaximumTeamsInTournament - auditableTournament.Teams.Count >= 0 ? auditableTournament.MaximumTeamsInTournament - auditableTournament.Teams.Count : 0;
@@ -553,7 +497,7 @@ namespace Stoolball.Data.SqlServer
                         }
                     }
 
-                    var redacted = CreateRedactedCopy(auditableTournament);
+                    var redacted = _stoolballEntityCopier.CreateRedactedCopy(auditableTournament);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
@@ -596,7 +540,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableTournament = CreateAuditableCopy(tournament);
+            var auditableTournament = _stoolballEntityCopier.CreateAuditableCopy(tournament);
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
@@ -636,7 +580,7 @@ namespace Stoolball.Data.SqlServer
                         await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE TournamentSeasonId = @TournamentSeasonId", new { season.tournamentSeasonId }, transaction).ConfigureAwait(false);
                     }
 
-                    var redacted = CreateRedactedCopy(auditableTournament);
+                    var redacted = _stoolballEntityCopier.CreateRedactedCopy(auditableTournament);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
@@ -675,7 +619,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableTournament = CreateAuditableCopy(tournament);
+            var auditableTournament = _stoolballEntityCopier.CreateAuditableCopy(tournament);
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
@@ -724,7 +668,7 @@ namespace Stoolball.Data.SqlServer
                         }
                     }
 
-                    var redacted = CreateRedactedCopy(auditableTournament);
+                    var redacted = _stoolballEntityCopier.CreateRedactedCopy(auditableTournament);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
@@ -756,7 +700,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(tournament));
             }
 
-            var auditableTournament = CreateAuditableCopy(tournament);
+            var auditableTournament = _stoolballEntityCopier.CreateAuditableCopy(tournament);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -803,7 +747,7 @@ namespace Stoolball.Data.SqlServer
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableTournament.TournamentRoute, transaction).ConfigureAwait(false);
 
-                    var redacted = CreateRedactedCopy(auditableTournament);
+                    var redacted = _stoolballEntityCopier.CreateRedactedCopy(auditableTournament);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Delete,
