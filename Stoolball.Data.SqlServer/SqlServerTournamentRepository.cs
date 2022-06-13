@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -195,6 +196,11 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
+        private class OverSetDto : OverSet
+        {
+            public Guid MatchInningsId { get; set; }
+        }
+
 
         /// <summary>
         /// Updates a stoolball tournament
@@ -252,17 +258,7 @@ namespace Stoolball.Data.SqlServer
                         auditableTournament.TournamentId
                     }, transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($@"DELETE FROM {Tables.OverSet} WHERE 
-                        TournamentId = @TournamentId OR 
-                        MatchInningsId IN (
-                            SELECT MatchInningsId FROM {Tables.MatchInnings} mi INNER JOIN {Tables.Match} m ON mi.MatchId = m.MatchId WHERE m.TournamentId = @TournamentId
-                        )",
-                        new
-                        {
-                            auditableTournament.TournamentId
-                        },
-                        transaction).ConfigureAwait(false);
-                    await InsertOverSets(auditableTournament, transaction).ConfigureAwait(false);
+                    await UpdateOverSets(auditableTournament, transaction);
 
                     // Set approximate start time based on 45 mins per match
                     await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET
@@ -359,6 +355,124 @@ namespace Stoolball.Data.SqlServer
             }
 
             return auditableTournament;
+        }
+
+        private static async Task UpdateOverSets(Tournament auditableTournament, IDbTransaction transaction)
+        {
+            if (auditableTournament.DefaultOverSets.Any())
+            {
+                await transaction.Connection.ExecuteAsync($@"DELETE FROM {Tables.OverSet} WHERE TournamentId = @TournamentId AND OverSetNumber NOT IN (@OverSetNumbers)",
+                    new
+                    {
+                        auditableTournament.TournamentId,
+                        OverSetNumbers = auditableTournament.DefaultOverSets.Select(x => x.OverSetNumber)
+                    },
+                    transaction);
+
+                var existingDefaultOversets = await transaction.Connection.QueryAsync<OverSet>(
+                    $"SELECT OverSetId, OverSetNumber FROM {Tables.OverSet} WHERE TournamentId = @TournamentId",
+                    new { auditableTournament.TournamentId }, transaction
+                    );
+
+                foreach (var overSet in auditableTournament.DefaultOverSets)
+                {
+                    var existingOverset = existingDefaultOversets.SingleOrDefault(x => x.OverSetNumber == overSet.OverSetNumber);
+                    if (existingOverset != null)
+                    {
+                        await transaction.Connection.ExecuteAsync(
+                            $@"UPDATE {Tables.OverSet} SET
+                                      Overs = @Overs,
+                                      BallsPerOver = @BallsPerOver
+                                      WHERE OverSetId = @OverSetId",
+                            new
+                            {
+                                overSet.Overs,
+                                overSet.BallsPerOver,
+                                existingOverset.OverSetId
+                            }, transaction
+                        );
+                    }
+                    else
+                    {
+                        overSet.OverSetId = Guid.NewGuid();
+                        await transaction.Connection.ExecuteAsync(
+                            $@"INSERT INTO {Tables.OverSet} (OverSetId, TournamentId, OverSetNumber, Overs, BallsPerOver) 
+                                       VALUES (@OverSetId, @TournamentId, @OverSetNumber, @Overs, @BallsPerOver)",
+                            new
+                            {
+                                overSet.OverSetId,
+                                auditableTournament.TournamentId,
+                                overSet.OverSetNumber,
+                                overSet.Overs,
+                                overSet.BallsPerOver
+                            },
+                            transaction);
+                    }
+                }
+
+                // Replace overset for matches only if the tournament is in the future
+                if (auditableTournament.StartTime > DateTimeOffset.UtcNow)
+                {
+                    var matchInningsIds = await transaction.Connection.QueryAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} mi INNER JOIN {Tables.Match} m ON mi.MatchId = m.MatchId WHERE m.TournamentId = @TournamentId", new { auditableTournament.TournamentId }, transaction);
+                    await transaction.Connection.ExecuteAsync($@"DELETE FROM {Tables.OverSet} WHERE MatchInningsId IN @matchInningsIds AND OverSetNumber NOT IN (@OverSetNumbers)",
+                    new
+                    {
+                        matchInningsIds,
+                        OverSetNumbers = auditableTournament.DefaultOverSets.Select(x => x.OverSetNumber)
+                    },
+                    transaction);
+
+                    var existingMatchOversets = await transaction.Connection.QueryAsync<OverSetDto>(
+                        $"SELECT OverSetId, MatchInningsId, OverSetNumber FROM {Tables.OverSet} WHERE MatchInningsId IN @matchInningsIds",
+                        new { matchInningsIds }, transaction
+                    );
+
+                    foreach (var overSet in auditableTournament.DefaultOverSets)
+                    {
+                        foreach (var matchInningsId in matchInningsIds)
+                        {
+                            var existingOverset = existingMatchOversets.SingleOrDefault(x => x.MatchInningsId == matchInningsId && x.OverSetNumber == overSet.OverSetNumber);
+
+                            if (existingOverset != null)
+                            {
+                                await transaction.Connection.ExecuteAsync(
+                                    $@"UPDATE {Tables.OverSet} SET
+                                                  Overs = @Overs,
+                                                  BallsPerOver = @BallsPerOver
+                                                  WHERE OverSetId = @OverSetId",
+                                    new
+                                    {
+                                        overSet.Overs,
+                                        overSet.BallsPerOver,
+                                        existingOverset.OverSetId
+                                    }, transaction
+                                );
+                            }
+                            else
+                            {
+                                overSet.OverSetId = Guid.NewGuid();
+                                await transaction.Connection.ExecuteAsync(
+                                    $@"INSERT INTO {Tables.OverSet} (OverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver) 
+                                       VALUES (@OverSetId, @matchInningsId, @OverSetNumber, @Overs, @BallsPerOver)",
+                                    new
+                                    {
+                                        overSet.OverSetId,
+                                        matchInningsId,
+                                        overSet.OverSetNumber,
+                                        overSet.Overs,
+                                        overSet.BallsPerOver
+                                    },
+                                    transaction);
+                            }
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+                await transaction.Connection.ExecuteAsync($@"DELETE FROM {Tables.OverSet} WHERE TournamentId = @TournamentId", new { auditableTournament.TournamentId }, transaction);
+            }
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Dapper uses it.")]

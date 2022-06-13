@@ -791,7 +791,18 @@ namespace Stoolball.Testing
                         x.Seasons.Any() &&
                         teamsInMatches.Select(t => t.TeamId).Contains(x.TeamId)
             );
-            testData.TournamentWithFullDetails.Teams.Add(new TeamInTournament { Team = testData.TeamWithFullDetails, TeamRole = TournamentTeamRole.Confirmed });
+            var teamInTournament = new TeamInTournament { Team = testData.TeamWithFullDetails, TeamRole = TournamentTeamRole.Confirmed };
+            testData.TournamentWithFullDetails.Teams.Add(teamInTournament);
+
+            var matchInTournament = CreateMatchBetween(testData.TeamWithFullDetails, new List<PlayerIdentity>(), testData.TeamWithFullDetails, new List<PlayerIdentity>(), true);
+            matchInTournament.Tournament = testData.TournamentWithFullDetails;
+            testData.Matches.Add(matchInTournament);
+            testData.TournamentWithFullDetails.Matches.Add(new MatchInTournament
+            {
+                MatchId = matchInTournament.MatchId,
+                MatchName = matchInTournament.MatchName,
+                Teams = new List<TeamInTournament> { teamInTournament }
+            });
 
             testData.MatchLocations = testData.Matches.Where(m => m.MatchLocation != null).Select(m => m.MatchLocation)
                 .Union(testData.Tournaments.Where(t => t.TournamentLocation != null).Select(t => t.TournamentLocation))
@@ -1322,7 +1333,8 @@ namespace Stoolball.Testing
                 Byes = _randomiser.Next(30),
                 BonusOrPenaltyRuns = _randomiser.Next(-5, 5),
                 Runs = _randomiser.Next(100, 250),
-                Wickets = _randomiser.Next(11)
+                Wickets = _randomiser.Next(11),
+                OverSets = CreateOverSets()
             };
         }
 
@@ -1341,7 +1353,7 @@ namespace Stoolball.Testing
             }
 
             // sometimes pick a random player to bat twice in the innings
-            if (FiftyFiftyChance())
+            if (FiftyFiftyChance() && battingPlayers.Any() && bowlingPlayers.Any())
             {
                 innings.PlayerInnings.Add(CreateRandomPlayerInnings(match, battingPlayers.Count, battingPlayers[_randomiser.Next(battingPlayers.Count)], bowlingPlayers[_randomiser.Next(bowlingPlayers.Count)], bowlingPlayers[_randomiser.Next(bowlingPlayers.Count)]));
             }
@@ -1354,7 +1366,7 @@ namespace Stoolball.Testing
             var playerWithMultipleIdentitiesInThisTeam = bowlingPlayers.FirstOrDefault(x => bowlingPlayers.Count(p => p.Player.PlayerId == x.Player.PlayerId) > 1);
             if (playerWithMultipleIdentitiesInThisTeam != null) { bowlers.Add(playerWithMultipleIdentitiesInThisTeam); }
 
-            while (bowlers.Count < 4)
+            while (bowlers.Count < 4 && bowlingPlayers.Count >= 4)
             {
                 var potentialBowler = bowlingPlayers[_randomiser.Next(bowlingPlayers.Count)];
                 if (!bowlers.Contains(potentialBowler, comparer)) { bowlers.Add(potentialBowler); }
@@ -1369,7 +1381,7 @@ namespace Stoolball.Testing
                 Overs = _randomiser.Next(8, 13),
                 BallsPerOver = 8
             });
-            if (hasBowlingData)
+            if (hasBowlingData && bowlers.Count >= 4)
             {
                 for (var i = 1; i <= innings.OverSets[0].Overs; i++)
                 {
