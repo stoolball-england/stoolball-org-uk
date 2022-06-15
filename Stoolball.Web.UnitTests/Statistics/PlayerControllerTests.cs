@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Statistics;
@@ -12,30 +11,27 @@ using Xunit;
 
 namespace Stoolball.Web.UnitTests.Statistics
 {
-    public class PlayerBattingControllerTests : UmbracoBaseTest
+    public class PlayerControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
         private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
-        private readonly Mock<IPlayerSummaryStatisticsDataSource> _playerSummaryDataSource = new();
-        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumaniser = new();
 
-        public PlayerBattingControllerTests()
+        public PlayerControllerTests()
         {
             Setup();
         }
 
-        private PlayerBattingController CreateController()
+        private PlayerController CreateController()
         {
-            return new PlayerBattingController(
-                Mock.Of<ILogger<PlayerBattingController>>(),
+            return new PlayerController(
+                Mock.Of<ILogger<PlayerController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _playerDataSource.Object,
-                _playerSummaryDataSource.Object,
-                _bestPerformanceDataSource.Object,
                 _statisticsFilterQueryStringParser.Object,
-                _statisticsFilterHumaniser.Object)
+                _statisticsFilterHumaniser.Object
+                )
             {
                 ControllerContext = ControllerContext
             };
@@ -44,7 +40,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         [Fact]
         public async Task Route_not_matching_player_returns_404()
         {
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
             _playerDataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult<Player>(null));
 
             using (var controller = CreateController())
@@ -56,16 +52,16 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Route_matching_player_returns_PlayerBattingViewModel()
+        public async Task Route_matching_player_returns_PlayerSummaryViewModel()
         {
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult<Player>(new Player()));
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult(new Player()));
 
             using (var controller = CreateController())
             {
                 var result = await controller.Index();
 
-                Assert.IsType<PlayerBattingViewModel>(((ViewResult)result).Model);
+                Assert.IsType<PlayerSummaryViewModel>(((ViewResult)result).Model);
             }
         }
 
@@ -86,7 +82,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.Equal(appliedFilter, ((PlayerBattingViewModel)(((ViewResult)result).Model)).AppliedFilter);
+                Assert.Equal(appliedFilter, ((PlayerSummaryViewModel)(((ViewResult)result).Model)).AppliedFilter);
             }
         }
 
@@ -100,7 +96,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.True(((PlayerBattingViewModel)(((ViewResult)result).Model)).Breadcrumbs.Count > 0);
+                Assert.True(((PlayerSummaryViewModel)(((ViewResult)result).Model)).Breadcrumbs.Count > 0);
             }
         }
 
@@ -117,7 +113,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                var model = (PlayerBattingViewModel)((ViewResult)result).Model;
+                var model = (PlayerSummaryViewModel)((ViewResult)result).Model;
                 Assert.Contains("filter text", model.FilterDescription);
                 Assert.Contains("filter text", model.Metadata.PageTitle);
             }
@@ -143,7 +139,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                var model = (PlayerBattingViewModel)((ViewResult)result).Model;
+                var model = (PlayerSummaryViewModel)((ViewResult)result).Model;
                 Assert.Contains("Player one", model.Metadata.PageTitle);
                 Assert.Contains("Player one", model.Metadata.Description);
             }
@@ -169,32 +165,9 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                var model = (PlayerBattingViewModel)((ViewResult)result).Model;
+                var model = (PlayerSummaryViewModel)((ViewResult)result).Model;
                 Assert.Contains("Example team", model.Metadata.Description);
             }
         }
-
-        [Fact]
-        public async Task Statistics_are_filtered_and_added_to_model()
-        {
-            var appliedFilter = new StatisticsFilter();
-            var battingStatistics = new BattingStatistics();
-            var playerInnings = new List<StatisticsResult<PlayerInnings>>();
-
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(appliedFilter);
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult(new Player()));
-            _playerSummaryDataSource.Setup(x => x.ReadBattingStatistics(appliedFilter)).Returns(Task.FromResult(battingStatistics));
-            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(appliedFilter, StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(playerInnings as IEnumerable<StatisticsResult<PlayerInnings>>));
-
-            using (var controller = CreateController())
-            {
-                var result = await controller.Index();
-
-                var model = (PlayerBattingViewModel)((ViewResult)result).Model;
-                Assert.Equal(battingStatistics, model.BattingStatistics);
-                Assert.Equal(playerInnings, model.PlayerInnings);
-            }
-        }
-
     }
 }

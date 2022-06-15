@@ -76,6 +76,7 @@
         Statistics,
         EditStatistics,
         Player,
+        PlayerBatting,
         PlayerBowling,
         PlayerFielding,
         PlayersForTeam,

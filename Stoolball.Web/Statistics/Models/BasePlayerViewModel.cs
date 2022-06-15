@@ -13,5 +13,6 @@ namespace Stoolball.Web.Statistics
         public Player? Player { get; set; }
         public StatisticsFilter DefaultFilter { get; set; } = new StatisticsFilter();
         public StatisticsFilter AppliedFilter { get; set; } = new StatisticsFilter();
+        public string? FilterDescription { get; set; }
     }
 }

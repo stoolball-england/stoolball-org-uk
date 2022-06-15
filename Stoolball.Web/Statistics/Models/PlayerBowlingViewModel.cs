@@ -12,6 +12,5 @@ namespace Stoolball.Web.Statistics.Models
         }
         public List<StatisticsResult<BowlingFigures>> BowlingFigures { get; internal set; } = new List<StatisticsResult<BowlingFigures>>();
         public BowlingStatistics BowlingStatistics { get; set; } = new BowlingStatistics();
-        public string? FilterDescription { get; set; }
     }
 }
