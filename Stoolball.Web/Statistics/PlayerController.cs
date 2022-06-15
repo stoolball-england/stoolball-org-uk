@@ -18,6 +18,7 @@ namespace Stoolball.Web.Statistics
     public class PlayerController : RenderController, IRenderControllerAsync
     {
         private readonly IPlayerDataSource _playerDataSource;
+        private readonly IPlayerSummaryStatisticsDataSource _summaryStatisticsDataSource;
         private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
@@ -25,11 +26,13 @@ namespace Stoolball.Web.Statistics
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
             IPlayerDataSource playerDataSource,
+            IPlayerSummaryStatisticsDataSource summaryStatisticsDataSource,
             IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
             IStatisticsFilterHumanizer statisticsFilterHumanizer)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
+            _summaryStatisticsDataSource = summaryStatisticsDataSource ?? throw new ArgumentNullException(nameof(summaryStatisticsDataSource));
             _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
             _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
@@ -52,10 +55,20 @@ namespace Stoolball.Web.Statistics
                 model.DefaultFilter = new StatisticsFilter { Player = model.Player };
                 model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
 
+                var battingTask = _summaryStatisticsDataSource.ReadBattingStatistics(model.AppliedFilter);
+                var bowlingTask = _summaryStatisticsDataSource.ReadBowlingStatistics(model.AppliedFilter);
+                var fieldingTask = _summaryStatisticsDataSource.ReadFieldingStatistics(model.AppliedFilter);
+                Task.WaitAll(battingTask, bowlingTask, fieldingTask);
+
+                model.BattingStatistics = battingTask.Result;
+                model.BowlingStatistics = bowlingTask.Result;
+                model.FieldingStatistics = fieldingTask.Result;
+
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
 
                 var filter = _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
                 model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", filter);
+
 
                 var teams = model.Player.PlayerIdentities.Select(x => x.Team.TeamName).Distinct().ToList();
                 model.Metadata.PageTitle = $"{model.Player.PlayerName()}{filter}";

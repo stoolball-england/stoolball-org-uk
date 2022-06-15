@@ -47,9 +47,21 @@
         to = Model.AppliedFilter.UntilDate
     })
 
-    <p>
+    <p class="matches-played">
         @(Model.Player?.PlayerName()) played @totalMatches
         @(totalMatches > 1 ? "matches" : "match") for @Html.Raw(Model.Player!.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
     </p>
 
+    <div class="statistics-pair">
+        <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__runs"><span class="statistics-pair__value">@Model.BattingStatistics.TotalRunsScored</span><span class="statistics-pair__label">@(Model.BattingStatistics.TotalRunsScored == 1 ? "run" : "runs")</span></p>
+        <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@Model.BattingStatistics.BestInningsRunsScored@(Model.BattingStatistics.BestInningsWasDismissed == false ? "*" : string.Empty)</span><span class="statistics-pair__label">best</span></p>
+    </div>
+    <div class="statistics-pair">
+        <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__wickets"><span class="statistics-pair__value">@Model.BowlingStatistics.TotalWickets</span><span class="statistics-pair__label">@(Model.BowlingStatistics.TotalWickets == 1 ? "wicket" : "wickets")</span></p>
+        <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@(Model.BowlingStatistics.BestInningsWickets.HasValue ? Model.BowlingStatistics.BestInningsWickets + "/" + (Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–") : "–")</span><span class="statistics-pair__label">best</span></p>
+    </div>
+    <div class="statistics-pair">
+        <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__catches"><span class="statistics-pair__value">@Model.FieldingStatistics.TotalCatches</span><span class="statistics-pair__label">@(Model.FieldingStatistics.TotalCatches == 1 ? "catch" : "catches")</span></p>
+        <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@Model.FieldingStatistics.TotalRunOuts</span><span class="statistics-pair__label">@(Model.FieldingStatistics.TotalRunOuts == 1 ? "run-out" : "run-outs")</span></p>
+    </div>
 </div>
