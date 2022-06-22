@@ -28,7 +28,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await dataSource.ReadBowlingStatistics(null).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await dataSource.ReadBattingStatistics(null).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await dataSource.ReadBowlingStatistics(new StatisticsFilter()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentException>(async () => await dataSource.ReadBattingStatistics(new StatisticsFilter()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = new Player() }).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentException>(async () => await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = new Player() }).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         private async Task TestTotalInnings(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
@@ -59,7 +59,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
+                var result = await dataSource.ReadBattingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
                 Assert.Equal(matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.DismissalType != DismissalType.DidNotBat), result.TotalInnings);
@@ -76,7 +76,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
+                var result = await dataSource.ReadBattingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
                 Assert.Equal(matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue), result.TotalInningsWithRunsScored);
@@ -93,7 +93,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
+                var result = await dataSource.ReadBattingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
                 Assert.Equal(matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue && x.BallsFaced.HasValue), result.TotalInningsWithRunsScoredAndBallsFaced);
@@ -110,7 +110,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
+                var result = await dataSource.ReadBattingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
                 var expectedNotOuts = matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Count(x => x.Batter.Player.PlayerId == player.PlayerId &&
@@ -130,7 +130,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
+                var result = await dataSource.ReadBattingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
                 Assert.Equal(matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue).Sum(x => x.RunsScored), result.TotalRunsScored);
@@ -147,7 +147,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
+                var result = await dataSource.ReadBattingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
                 Assert.Equal(matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored >= 50), result.Fifties);
@@ -164,7 +164,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
+                var result = await dataSource.ReadBattingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
                 Assert.Equal(matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored >= 100), result.Hundreds);
@@ -181,7 +181,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
+                var result = await dataSource.ReadBattingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
 
@@ -209,7 +209,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
+                var result = await dataSource.ReadBattingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
 
@@ -237,7 +237,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
+                var result = await dataSource.ReadBattingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
 

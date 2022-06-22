@@ -43,7 +43,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         public async Task Route_not_matching_player_returns_404()
         {
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path)).Returns(Task.FromResult<Player>(null));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, null)).Returns(Task.FromResult<Player>(null));
 
             using (var controller = CreateController())
             {
@@ -57,7 +57,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         public async Task Route_matching_player_returns_PlayerSummaryViewModel()
         {
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path)).Returns(Task.FromResult(new Player()));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(new Player()));
 
             using (var controller = CreateController())
             {
@@ -68,17 +68,17 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Filter_is_default_filter_modified_by_querystring()
+        public async Task Filter_for_ReadPlayerByRoute_is_default_filter_modified_by_querystring()
         {
             var player = new Player();
             var appliedFilter = new StatisticsFilter();
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value))
-                .Callback<StatisticsFilter, string>((filter, queryString) =>
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(appliedFilter);
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, appliedFilter))
+                .Callback<string, StatisticsFilter>((queryString, filter) =>
                 {
-                    Assert.Equal(player, filter.Player);
+                    Assert.Null(filter.Player); // Player filter is unwanted because we're selecting the player by route
                 })
-                .Returns(appliedFilter);
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path)).Returns(Task.FromResult(player));
+                .Returns(Task.FromResult(player));
 
             using (var controller = CreateController())
             {
@@ -92,7 +92,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         public async Task Breadcrumbs_are_set()
         {
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path)).Returns(Task.FromResult(new Player()));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(new Player()));
 
             using (var controller = CreateController())
             {
@@ -107,7 +107,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             var appliedFilter = new StatisticsFilter();
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(appliedFilter);
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path)).Returns(Task.FromResult(new Player()));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(new Player()));
             _statisticsFilterHumaniser.Setup(x => x.MatchingUserFilter(appliedFilter)).Returns("filter text");
             _statisticsFilterHumaniser.Setup(x => x.EntitiesMatchingFilter("Statistics", "filter text")).Returns("filter text");
 
@@ -135,7 +135,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 }
             };
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path)).Returns(Task.FromResult(player));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(player));
 
             using (var controller = CreateController())
             {
@@ -161,7 +161,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 }
             };
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path)).Returns(Task.FromResult(player));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(player));
 
             using (var controller = CreateController())
             {
@@ -179,12 +179,28 @@ namespace Stoolball.Web.UnitTests.Statistics
             var battingStatistics = new BattingStatistics();
             var bowlingStatistics = new BowlingStatistics();
             var fieldingStatistics = new FieldingStatistics();
+            var player = new Player();
 
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(appliedFilter);
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path)).Returns(Task.FromResult(new Player()));
-            _summaryStatisticsDataSource.Setup(x => x.ReadBattingStatistics(appliedFilter)).Returns(Task.FromResult(battingStatistics));
-            _summaryStatisticsDataSource.Setup(x => x.ReadBowlingStatistics(appliedFilter)).Returns(Task.FromResult(bowlingStatistics));
-            _summaryStatisticsDataSource.Setup(x => x.ReadFieldingStatistics(appliedFilter)).Returns(Task.FromResult(fieldingStatistics));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(player));
+            _summaryStatisticsDataSource.Setup(x => x.ReadBattingStatistics(appliedFilter))
+                .Callback<StatisticsFilter>((filter) =>
+                {
+                    Assert.Equal(player, filter.Player);
+                })
+                .Returns(Task.FromResult(battingStatistics));
+            _summaryStatisticsDataSource.Setup(x => x.ReadBowlingStatistics(appliedFilter))
+                .Callback<StatisticsFilter>((filter) =>
+                {
+                    Assert.Equal(player, filter.Player);
+                })
+                .Returns(Task.FromResult(bowlingStatistics));
+            _summaryStatisticsDataSource.Setup(x => x.ReadFieldingStatistics(appliedFilter))
+                .Callback<StatisticsFilter>((filter) =>
+                {
+                    Assert.Equal(player, filter.Player);
+                })
+                .Returns(Task.FromResult(fieldingStatistics));
 
             using (var controller = CreateController())
             {

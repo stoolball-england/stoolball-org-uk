@@ -13,18 +13,20 @@ namespace Stoolball.Data.Cache
         private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
         private readonly ICacheablePlayerDataSource _playerDataSource;
         private readonly IPlayerFilterSerializer _playerFilterSerializer;
+        private readonly IStatisticsFilterQueryStringSerializer _statisticsFilterSerialiser;
 
-        public CachedPlayerDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheablePlayerDataSource playerDataSource, IPlayerFilterSerializer playerFilterSerializer)
+        public CachedPlayerDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheablePlayerDataSource playerDataSource, IPlayerFilterSerializer playerFilterSerializer, IStatisticsFilterQueryStringSerializer statisticsFilterSerialiser)
         {
             _policyRegistry = policyRegistry ?? throw new System.ArgumentNullException(nameof(policyRegistry));
             _playerDataSource = playerDataSource ?? throw new System.ArgumentNullException(nameof(playerDataSource));
             _playerFilterSerializer = playerFilterSerializer ?? throw new System.ArgumentNullException(nameof(playerFilterSerializer));
+            _statisticsFilterSerialiser = statisticsFilterSerialiser ?? throw new System.ArgumentNullException(nameof(statisticsFilterSerialiser));
         }
 
-        public async Task<Player> ReadPlayerByRoute(string route)
+        public async Task<Player> ReadPlayerByRoute(string route, StatisticsFilter filter = null)
         {
             var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _playerDataSource.ReadPlayerByRoute(route).ConfigureAwait(false), new Context(nameof(ReadPlayerByRoute) + route));
+            return await cachePolicy.ExecuteAsync(async context => await _playerDataSource.ReadPlayerByRoute(route, filter).ConfigureAwait(false), new Context(nameof(ReadPlayerByRoute) + route + _statisticsFilterSerialiser.Serialize(filter)));
         }
 
         public async Task<List<PlayerIdentity>> ReadPlayerIdentities(PlayerFilter filter)

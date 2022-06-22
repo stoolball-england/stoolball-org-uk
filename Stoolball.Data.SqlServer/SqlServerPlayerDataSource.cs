@@ -17,11 +17,13 @@ namespace Stoolball.Data.SqlServer
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IRouteNormaliser _routeNormaliser;
+        private readonly IStatisticsQueryBuilder _statisticsQueryBuilder;
 
-        public SqlServerPlayerDataSource(IDatabaseConnectionFactory databaseConnectionFactory, IRouteNormaliser routeNormaliser)
+        public SqlServerPlayerDataSource(IDatabaseConnectionFactory databaseConnectionFactory, IRouteNormaliser routeNormaliser, IStatisticsQueryBuilder statisticsQueryBuilder)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
+            _statisticsQueryBuilder = statisticsQueryBuilder ?? throw new ArgumentNullException(nameof(statisticsQueryBuilder));
         }
 
         /// <inheritdoc/>
@@ -136,17 +138,24 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc />
-        public async Task<Player> ReadPlayerByRoute(string route)
+        public async Task<Player> ReadPlayerByRoute(string route, StatisticsFilter filter = null)
         {
             var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "players");
+
+            if (filter == null) { filter = new StatisticsFilter(); }
+            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
+            parameters.Add("Route", normalisedRoute);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var playerData = await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(
                     $@"SELECT PlayerId, PlayerRoute,
-                        PlayerIdentityId, PlayerIdentityName, COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed, MAX(MatchStartTime) AS LastPlayed, 
+                        PlayerIdentityId, PlayerIdentityName, 
+                        (SELECT COUNT(DISTINCT MatchId) AS TotalMatches FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = identities.PlayerIdentityId {where}) AS TotalMatches,
+                        (SELECT MIN(MatchStartTime) AS FirstPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = identities.PlayerIdentityId {where}) AS FirstPlayed,
+                        (SELECT MAX(MatchStartTime) AS LastPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = identities.PlayerIdentityId {where}) AS LastPlayed,
                         TeamName, TeamRoute
-                        FROM {Tables.PlayerInMatchStatistics} 
+                        FROM {Tables.PlayerInMatchStatistics} identities
                         WHERE LOWER(PlayerRoute) = @Route
                         GROUP BY PlayerId, PlayerRoute, PlayerIdentityId, PlayerIdentityName, TeamName, TeamRoute",
                         (player, playerIdentity, team) =>
@@ -155,7 +164,7 @@ namespace Stoolball.Data.SqlServer
                             player.PlayerIdentities.Add(playerIdentity);
                             return player;
                         },
-                        new { Route = normalisedRoute },
+                        parameters,
                         splitOn: "PlayerIdentityId, TeamName"
                         ).ConfigureAwait(false);
 

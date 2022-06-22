@@ -41,10 +41,9 @@ namespace Stoolball.Web.Statistics
         [ContentSecurityPolicy]
         public async new Task<IActionResult> Index()
         {
-            var model = new PlayerSummaryViewModel(CurrentPage)
-            {
-                Player = await _playerDataSource.ReadPlayerByRoute(Request.Path),
-            };
+            var model = new PlayerSummaryViewModel(CurrentPage);
+            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
+            model.Player = await _playerDataSource.ReadPlayerByRoute(Request.Path, model.AppliedFilter);
 
             if (model.Player == null)
             {
@@ -52,8 +51,7 @@ namespace Stoolball.Web.Statistics
             }
             else
             {
-                model.DefaultFilter = new StatisticsFilter { Player = model.Player };
-                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
+                model.AppliedFilter.Player = model.Player;
 
                 var battingTask = _summaryStatisticsDataSource.ReadBattingStatistics(model.AppliedFilter);
                 var bowlingTask = _summaryStatisticsDataSource.ReadBowlingStatistics(model.AppliedFilter);
