@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Stoolball.Security
@@ -16,7 +14,7 @@ namespace Stoolball.Security
         /// </summary>
         public (string token, DateTime expires) TokenFor(int id)
         {
-            return ($"{id}-{Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture)}", DateTime.UtcNow.AddDays(1));
+            return ($"{id}-{Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture)}", DateTime.UtcNow.AddDays(2));
         }
 
         /// <summary>
