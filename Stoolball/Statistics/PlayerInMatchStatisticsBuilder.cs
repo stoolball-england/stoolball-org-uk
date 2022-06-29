@@ -207,29 +207,21 @@ namespace Stoolball.Statistics
             if (playerInnings != null && StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(playerInnings.DismissalType))
             {
                 record.BowledByPlayerIdentityId = playerInnings.Bowler?.PlayerIdentityId;
-                record.BowledByPlayerIdentityName = playerInnings.Bowler?.PlayerIdentityName;
-                record.BowledByPlayerRoute = playerInnings.Bowler?.Player?.PlayerRoute;
             }
 
             if (playerInnings != null && playerInnings.DismissalType == DismissalType.Caught)
             {
                 record.CaughtByPlayerIdentityId = playerInnings.DismissedBy?.PlayerIdentityId;
-                record.CaughtByPlayerIdentityName = playerInnings.DismissedBy?.PlayerIdentityName;
-                record.CaughtByPlayerRoute = playerInnings.DismissedBy?.Player?.PlayerRoute;
             }
 
             if (playerInnings != null && playerInnings.DismissalType == DismissalType.CaughtAndBowled)
             {
                 record.CaughtByPlayerIdentityId = playerInnings.Bowler?.PlayerIdentityId;
-                record.CaughtByPlayerIdentityName = playerInnings.Bowler?.PlayerIdentityName;
-                record.CaughtByPlayerRoute = playerInnings.Bowler?.Player?.PlayerRoute;
             }
 
             if (playerInnings != null && playerInnings.DismissalType == DismissalType.RunOut)
             {
                 record.RunOutByPlayerIdentityId = playerInnings.DismissedBy?.PlayerIdentityId;
-                record.RunOutByPlayerIdentityName = playerInnings.DismissedBy?.PlayerIdentityName;
-                record.RunOutByPlayerRoute = playerInnings.DismissedBy?.Player?.PlayerRoute;
             }
         }
 
@@ -242,18 +234,10 @@ namespace Stoolball.Statistics
             {
                 PlayerId = identity.Player.PlayerId.Value,
                 PlayerIdentityId = identity.PlayerIdentityId.Value,
-                PlayerIdentityName = identity.PlayerIdentityName,
-                PlayerRoute = identity.Player.PlayerRoute,
                 MatchId = match.MatchId.Value,
-                MatchName = match.MatchName,
-                MatchType = match.MatchType,
-                MatchPlayerType = match.PlayerType,
-                MatchRoute = match.MatchRoute,
-                MatchStartTime = match.StartTime,
                 TournamentId = match.Tournament?.TournamentId,
                 MatchLocationId = match.MatchLocation?.MatchLocationId,
                 SeasonId = match.Season?.SeasonId,
-                CompetitionId = match.Season?.Competition?.CompetitionId,
                 MatchInningsPair = innings.InningsPair(),
                 TeamRunsScored = isOnBattingTeam ? innings.Runs : pairedInnings.Runs,
                 TeamWicketsLost = isOnBattingTeam ? innings.Wickets : pairedInnings.Wickets,
@@ -264,13 +248,8 @@ namespace Stoolball.Statistics
                 TeamByesConceded = isOnBattingTeam ? pairedInnings.Byes : innings.Byes,
                 TeamWicketsTaken = isOnBattingTeam ? pairedInnings.Wickets : innings.Wickets,
                 MatchTeamId = team.MatchTeamId.Value,
-                ClubId = team.Team.Club?.ClubId,
                 TeamId = team.Team.TeamId.Value,
-                TeamName = team.Team.TeamName,
-                TeamRoute = team.Team.TeamRoute,
-                OppositionTeamId = opposition.Team.TeamId.Value,
-                OppositionTeamName = opposition.Team.TeamName,
-                OppositionTeamRoute = opposition.Team.TeamRoute,
+                OppositionTeamId = opposition.Team.TeamId.Value
             };
         }
     }

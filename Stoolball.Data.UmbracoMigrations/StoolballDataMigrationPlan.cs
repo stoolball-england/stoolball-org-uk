@@ -47,7 +47,8 @@ namespace Stoolball.Data.UmbracoMigrations
                 .To<NotificationSubscriptionAddTable>(typeof(NotificationSubscriptionAddTable).ToString())
                 // Initial state when website launched Easter 2021
                 .To<CommentRemoveMemberNameAndMakeMemberKeyNullable>(typeof(CommentRemoveMemberNameAndMakeMemberKeyNullable).ToString())
-                .To<StatisticsAddProbability>(typeof(StatisticsAddProbability).ToString());
+                .To<StatisticsAddProbability>(typeof(StatisticsAddProbability).ToString())
+                .To<Add_fnTeamName>(typeof(Add_fnTeamName).ToString());
         }
     }
 }
