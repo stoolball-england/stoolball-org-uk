@@ -28,22 +28,14 @@ namespace Stoolball.UnitTests.Statistics
         private static void AssertPlayerFields(PlayerIdentity identity, PlayerInMatchStatisticsRecord playerRecord)
         {
             Assert.Equal(identity.Player?.PlayerId, playerRecord.PlayerId);
-            Assert.Equal(identity.PlayerIdentityName, playerRecord.PlayerIdentityName);
-            Assert.Equal(identity.Player?.PlayerRoute, playerRecord.PlayerRoute);
         }
 
         private void AssertMatchFields(PlayerInMatchStatisticsRecord playerRecord)
         {
             Assert.Equal(_matchFixture.Match.MatchId, playerRecord.MatchId);
-            Assert.Equal(_matchFixture.Match.MatchName, playerRecord.MatchName);
-            Assert.Equal(_matchFixture.Match.MatchType, playerRecord.MatchType);
-            Assert.Equal(_matchFixture.Match.PlayerType, playerRecord.MatchPlayerType);
-            Assert.Equal(_matchFixture.Match.MatchRoute, playerRecord.MatchRoute);
-            Assert.Equal(_matchFixture.Match.StartTime, playerRecord.MatchStartTime);
             Assert.Equal(_matchFixture.Match.Tournament?.TournamentId, playerRecord.TournamentId);
             Assert.Equal(_matchFixture.Match.MatchLocation.MatchLocationId, playerRecord.MatchLocationId);
             Assert.Equal(_matchFixture.Match.Season.SeasonId, playerRecord.SeasonId);
-            Assert.Equal(_matchFixture.Match.Season.Competition.CompetitionId, playerRecord.CompetitionId);
             if (_matchFixture.Match.InningsOrderIsKnown)
             {
                 Assert.Equal(_matchFixture.Match.MatchInnings[0].BattingTeam.MatchTeamId == playerRecord.MatchTeamId, playerRecord.BattedFirst);
@@ -62,13 +54,7 @@ namespace Stoolball.UnitTests.Statistics
 
             Assert.Equal(isOnBattingTeam ? innings.BattingTeam.MatchTeamId : innings.BowlingTeam.MatchTeamId, playerRecord.MatchTeamId);
             Assert.Equal(isOnBattingTeam ? innings.BattingTeam.Team.TeamId : innings.BowlingTeam.Team.TeamId, playerRecord.TeamId);
-            Assert.Equal(isOnBattingTeam ? innings.BattingTeam.Team.TeamName : innings.BowlingTeam.Team.TeamName, playerRecord.TeamName);
-            Assert.Equal(isOnBattingTeam ? innings.BattingTeam.Team.TeamRoute : innings.BowlingTeam.Team.TeamRoute, playerRecord.TeamRoute);
-            Assert.Equal(isOnBattingTeam ? innings.BattingTeam.Team.Club?.ClubId : innings.BowlingTeam.Team.Club?.ClubId, playerRecord.ClubId);
-
             Assert.Equal(isOnBattingTeam ? innings.BowlingTeam.Team.TeamId : innings.BattingTeam.Team.TeamId, playerRecord.OppositionTeamId);
-            Assert.Equal(isOnBattingTeam ? innings.BowlingTeam.Team.TeamName : innings.BattingTeam.Team.TeamName, playerRecord.OppositionTeamName);
-            Assert.Equal(isOnBattingTeam ? innings.BowlingTeam.Team.TeamRoute : innings.BattingTeam.Team.TeamRoute, playerRecord.OppositionTeamRoute);
         }
 
         private static void AssertTeamTotals(MatchInnings battingInnings, MatchInnings bowlingInnings, PlayerInMatchStatisticsRecord playerRecord)
@@ -506,14 +492,10 @@ namespace Stoolball.UnitTests.Statistics
                     if (StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(playerInnings.DismissalType) && playerInnings.Bowler != null)
                     {
                         Assert.Equal(playerInnings.Bowler.PlayerIdentityId, playerRecord.BowledByPlayerIdentityId);
-                        Assert.Equal(playerInnings.Bowler.PlayerIdentityName, playerRecord.BowledByPlayerIdentityName);
-                        Assert.Equal(playerInnings.Bowler.Player.PlayerRoute, playerRecord.BowledByPlayerRoute);
                     }
                     else
                     {
                         Assert.Null(playerRecord.BowledByPlayerIdentityId);
-                        Assert.Null(playerRecord.BowledByPlayerIdentityName);
-                        Assert.Null(playerRecord.BowledByPlayerRoute);
                     }
                 }
             }
@@ -548,20 +530,14 @@ namespace Stoolball.UnitTests.Statistics
                     if (playerInnings.DismissalType == DismissalType.Caught && playerInnings.DismissedBy != null)
                     {
                         Assert.Equal(playerInnings.DismissedBy.PlayerIdentityId, playerRecord.CaughtByPlayerIdentityId);
-                        Assert.Equal(playerInnings.DismissedBy.PlayerIdentityName, playerRecord.CaughtByPlayerIdentityName);
-                        Assert.Equal(playerInnings.DismissedBy.Player.PlayerRoute, playerRecord.CaughtByPlayerRoute);
                     }
                     else if (playerInnings.DismissalType == DismissalType.CaughtAndBowled && playerInnings.Bowler != null)
                     {
                         Assert.Equal(playerInnings.Bowler.PlayerIdentityId, playerRecord.CaughtByPlayerIdentityId);
-                        Assert.Equal(playerInnings.Bowler.PlayerIdentityName, playerRecord.CaughtByPlayerIdentityName);
-                        Assert.Equal(playerInnings.Bowler.Player.PlayerRoute, playerRecord.CaughtByPlayerRoute);
                     }
                     else
                     {
                         Assert.Null(playerRecord.CaughtByPlayerIdentityId);
-                        Assert.Null(playerRecord.CaughtByPlayerIdentityName);
-                        Assert.Null(playerRecord.CaughtByPlayerRoute);
                     }
                 }
             }
@@ -596,14 +572,10 @@ namespace Stoolball.UnitTests.Statistics
                     if (playerInnings.DismissalType == DismissalType.RunOut && playerInnings.DismissedBy != null)
                     {
                         Assert.Equal(playerInnings.DismissedBy.PlayerIdentityId, playerRecord.RunOutByPlayerIdentityId);
-                        Assert.Equal(playerInnings.DismissedBy.PlayerIdentityName, playerRecord.RunOutByPlayerIdentityName);
-                        Assert.Equal(playerInnings.DismissedBy.Player.PlayerRoute, playerRecord.RunOutByPlayerRoute);
                     }
                     else
                     {
                         Assert.Null(playerRecord.RunOutByPlayerIdentityId);
-                        Assert.Null(playerRecord.RunOutByPlayerIdentityName);
-                        Assert.Null(playerRecord.RunOutByPlayerRoute);
                     }
                 }
             }

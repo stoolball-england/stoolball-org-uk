@@ -1,6 +1,5 @@
 ﻿using System;
 using Stoolball.Matches;
-using Stoolball.Teams;
 
 namespace Stoolball.Statistics
 {
@@ -12,43 +11,17 @@ namespace Stoolball.Statistics
 
         public Guid PlayerIdentityId { get; set; }
 
-        public string PlayerIdentityName { get; set; }
-
-        public string PlayerRoute { get; set; }
-
         public Guid MatchId { get; set; }
-
-        public DateTimeOffset MatchStartTime { get; set; }
-
-        public MatchType MatchType { get; set; }
-
-        public PlayerType MatchPlayerType { get; set; }
-
-        public string MatchName { get; set; }
-
-        public string MatchRoute { get; set; }
 
         public Guid? TournamentId { get; set; }
 
         public Guid? SeasonId { get; set; }
 
-        public Guid? CompetitionId { get; set; }
-
         public Guid MatchTeamId { get; set; }
-
-        public Guid? ClubId { get; set; }
 
         public Guid TeamId { get; set; }
 
-        public string TeamName { get; set; }
-
-        public string TeamRoute { get; set; }
-
         public Guid OppositionTeamId { get; set; }
-
-        public string OppositionTeamName { get; set; }
-
-        public string OppositionTeamRoute { get; set; }
 
         public Guid? MatchLocationId { get; set; }
 
@@ -104,21 +77,9 @@ namespace Stoolball.Statistics
 
         public Guid? BowledByPlayerIdentityId { get; set; }
 
-        public string BowledByPlayerIdentityName { get; set; }
-
-        public string BowledByPlayerRoute { get; set; }
-
         public Guid? CaughtByPlayerIdentityId { get; set; }
 
-        public string CaughtByPlayerIdentityName { get; set; }
-
-        public string CaughtByPlayerRoute { get; set; }
-
         public Guid? RunOutByPlayerIdentityId { get; set; }
-
-        public string RunOutByPlayerIdentityName { get; set; }
-
-        public string RunOutByPlayerRoute { get; set; }
 
         public int? RunsScored { get; set; }
 
