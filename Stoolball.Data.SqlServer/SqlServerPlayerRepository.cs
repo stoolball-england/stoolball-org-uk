@@ -16,15 +16,22 @@ namespace Stoolball.Data.SqlServer
     /// </summary>
     public class SqlServerPlayerRepository : IPlayerRepository
     {
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger<SqlServerPlayerRepository> _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IStoolballEntityCopier _copier;
         private readonly IPlayerNameFormatter _playerNameFormatter;
 
-        public SqlServerPlayerRepository(IAuditRepository auditRepository, ILogger<SqlServerPlayerRepository> logger, IRouteGenerator routeGenerator, IStoolballEntityCopier copier,
+        public SqlServerPlayerRepository(
+            IDatabaseConnectionFactory databaseConnectionFactory,
+            IAuditRepository auditRepository,
+            ILogger<SqlServerPlayerRepository> logger,
+            IRouteGenerator routeGenerator,
+            IStoolballEntityCopier copier,
             IPlayerNameFormatter playerNameFormatter)
         {
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
@@ -81,7 +88,7 @@ namespace Stoolball.Data.SqlServer
                         playerIdentity.Team.TeamId
                     },
                     transaction,
-                    splitOn: "PlayerId").ConfigureAwait(false)).FirstOrDefault();
+                    splitOn: "PlayerId")).FirstOrDefault();
 
             if (matchedPlayerIdentity != null && matchedPlayerIdentity.PlayerIdentityId.HasValue && matchedPlayerIdentity.Player.PlayerId.HasValue)
             {
@@ -98,8 +105,8 @@ namespace Stoolball.Data.SqlServer
             player.PlayerIdentities.Add(auditablePlayerIdentity);
 
             player.PlayerRoute = await _routeGenerator.GenerateUniqueRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute,
-               async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { PlayerRoute = route }, transaction).ConfigureAwait(false)
-            ).ConfigureAwait(false);
+               async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { PlayerRoute = route }, transaction)
+            );
 
             await transaction.Connection.ExecuteAsync(
                   $@"INSERT INTO {Tables.Player} 
@@ -110,7 +117,7 @@ namespace Stoolball.Data.SqlServer
                   {
                       player.PlayerId,
                       player.PlayerRoute
-                  }, transaction).ConfigureAwait(false);
+                  }, transaction);
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity} 
                                 (PlayerIdentityId, PlayerId, PlayerIdentityName, ComparableName, TeamId) 
@@ -122,7 +129,7 @@ namespace Stoolball.Data.SqlServer
                        auditablePlayerIdentity.PlayerIdentityName,
                        ComparableName = auditablePlayerIdentity.ComparableName(),
                        auditablePlayerIdentity.Team.TeamId
-                   }, transaction).ConfigureAwait(false);
+                   }, transaction);
 
             var serialisedPlayer = JsonConvert.SerializeObject(player);
             await _auditRepository.CreateAudit(new AuditRecord
@@ -134,7 +141,7 @@ namespace Stoolball.Data.SqlServer
                 State = serialisedPlayer,
                 RedactedState = serialisedPlayer,
                 AuditDate = DateTime.UtcNow
-            }, transaction).ConfigureAwait(false);
+            }, transaction);
 
             _logger.Info(LoggingTemplates.Created, player, memberName, memberKey, GetType(), nameof(CreateOrMatchPlayerIdentity));
 
@@ -143,5 +150,37 @@ namespace Stoolball.Data.SqlServer
             return auditablePlayerIdentity;
         }
 
+        public async Task LinkPlayerToMemberAccount(Player player, Guid memberKey, string memberName)
+        {
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    await connection.ExecuteAsync($"UPDATE {Tables.Player} SET MemberKey = @memberKey WHERE PlayerId = @PlayerId", new { memberKey, player.PlayerId }, transaction);
+
+                    var serialisedPlayer = JsonConvert.SerializeObject(_copier.CreateAuditableCopy(player));
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Update,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = player.EntityUri,
+                        State = serialisedPlayer,
+                        RedactedState = serialisedPlayer,
+                        AuditDate = DateTime.UtcNow
+                    }, transaction);
+
+                    transaction.Commit();
+
+                    _logger.Info(LoggingTemplates.Updated, serialisedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerToMemberAccount));
+                }
+            }
+        }
     }
 }

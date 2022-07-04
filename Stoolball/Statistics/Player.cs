@@ -16,6 +16,8 @@ namespace Stoolball.Statistics
 
         public string PlayerRoute { get; set; }
 
+        public Guid? MemberKey { get; set; }
+
         public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
 
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();

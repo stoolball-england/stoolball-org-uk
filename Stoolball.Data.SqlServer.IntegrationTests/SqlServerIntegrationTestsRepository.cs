@@ -513,14 +513,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public void CreatePlayer(Player player)
         {
             _connection.Execute($@"INSERT INTO {Tables.Player} 
-                    (PlayerId, PlayerRoute)
+                    (PlayerId, PlayerRoute, MemberKey)
                     VALUES
-                    (@PlayerId, @PlayerRoute)",
-                   new
-                   {
-                       PlayerId = player.PlayerId,
-                       PlayerRoute = player.PlayerRoute
-                   });
+                    (@PlayerId, @PlayerRoute, @MemberKey)",
+                   player);
         }
 
         public void CreateMember((Guid memberId, string memberName) member)

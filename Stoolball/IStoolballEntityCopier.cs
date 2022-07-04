@@ -13,6 +13,7 @@ namespace Stoolball
         Club CreateAuditableCopy(Club club);
         Team CreateAuditableCopy(Team team);
         Team CreateRedactedCopy(Team team);
+        Player CreateAuditableCopy(Player player);
         PlayerIdentity CreateAuditableCopy(PlayerIdentity playerIdentity);
         MatchLocation CreateAuditableCopy(MatchLocation matchLocation);
         MatchLocation CreateRedactedCopy(MatchLocation matchLocation);

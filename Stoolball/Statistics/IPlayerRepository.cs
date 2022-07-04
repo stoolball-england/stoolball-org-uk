@@ -11,5 +11,7 @@ namespace Stoolball.Statistics
         /// </summary>
         /// <returns>The <see cref="PlayerIdentity"/> of the created or matched player identity</returns>
         Task<PlayerIdentity> CreateOrMatchPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName, IDbTransaction transaction);
+
+        Task LinkPlayerToMemberAccount(Player player, Guid memberKey, string memberName);
     }
 }

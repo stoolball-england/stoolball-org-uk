@@ -838,7 +838,7 @@ namespace Stoolball.Testing
                 identity.LastPlayed = matchesPlayedByThisTeam.Max(x => x.StartTime);
             }
 
-            // Find any player who has multiple identities and bowled
+            // Find any player who has multiple identities and bowled, and associate them to a member
             testData.BowlerWithMultipleIdentities = testData.Matches
                 .SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.BowlingFigures)
@@ -847,6 +847,7 @@ namespace Stoolball.Testing
                 .First();
             testData.BowlerWithMultipleIdentities.PlayerIdentities.Clear();
             testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
+            testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberId;
 
             // Get all batting records
             testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();

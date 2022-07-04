@@ -148,8 +148,14 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
+                // Get MemberKey from the Player table rather than copying it to PlayerInMatchStatistics because it will be updated when
+                // a member associates their account with a player. If there are many PlayerInMatchStatistics records to update this will 
+                // take time and should not be done in the response, yet the response (and responses to other requests with filters applied)
+                // will cache the result of this method so it must include the new value immediately.
+
+                // This assumes it should only be needed here, not in other statistics queries.
                 var playerData = await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(
-                    $@"SELECT PlayerId, PlayerRoute,
+                    $@"SELECT PlayerId, PlayerRoute, (SELECT MemberKey FROM {Tables.Player} WHERE PlayerRoute = @Route) AS MemberKey,
                         PlayerIdentityId, PlayerIdentityName, 
                         (SELECT COUNT(DISTINCT MatchId) AS TotalMatches FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = identities.PlayerIdentityId {where}) AS TotalMatches,
                         (SELECT MIN(MatchStartTime) AS FirstPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = identities.PlayerIdentityId {where}) AS FirstPlayed,

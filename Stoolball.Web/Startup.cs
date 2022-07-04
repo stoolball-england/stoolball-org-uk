@@ -226,6 +226,8 @@ namespace Stoolball.Web
             });
             services.AddTransient<ICacheClearer<Tournament>, TournamentCacheClearer>();
             services.AddTransient<ICacheClearer<Match>, MatchCacheClearer>();
+            services.AddTransient<ICacheClearer<Player>, PlayerCacheClearer>();
+            services.AddTransient<IReadThroughCache, ReadThroughCache>();
 
             // Repositories
             services.AddTransient<IAuditRepository, SqlServerAuditRepository>();

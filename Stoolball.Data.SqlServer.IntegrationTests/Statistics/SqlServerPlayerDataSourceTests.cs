@@ -241,6 +241,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerId, result.PlayerId);
             Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, result.PlayerRoute);
+            Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.MemberKey, result.MemberKey);
             Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Count, result.PlayerIdentities.Count);
             foreach (var identity in _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities)
             {

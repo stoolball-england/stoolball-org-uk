@@ -10,6 +10,7 @@ using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics.Models;
+using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Web.Common.Controllers;
 
@@ -21,6 +22,7 @@ namespace Stoolball.Web.Statistics
         private readonly IPlayerSummaryStatisticsDataSource _summaryStatisticsDataSource;
         private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
+        private readonly IMemberManager _memberManager;
 
         public PlayerController(ILogger<PlayerController> logger,
             ICompositeViewEngine compositeViewEngine,
@@ -28,13 +30,15 @@ namespace Stoolball.Web.Statistics
             IPlayerDataSource playerDataSource,
             IPlayerSummaryStatisticsDataSource summaryStatisticsDataSource,
             IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
-            IStatisticsFilterHumanizer statisticsFilterHumanizer)
+            IStatisticsFilterHumanizer statisticsFilterHumanizer,
+            IMemberManager memberManager)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _summaryStatisticsDataSource = summaryStatisticsDataSource ?? throw new ArgumentNullException(nameof(summaryStatisticsDataSource));
             _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
             _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
+            _memberManager = memberManager;
         }
 
         [HttpGet]
@@ -51,6 +55,12 @@ namespace Stoolball.Web.Statistics
             }
             else
             {
+                if (model.Player.MemberKey.HasValue)
+                {
+                    var currentMember = await _memberManager.GetCurrentMemberAsync();
+                    model.IsCurrentMember = model.Player.MemberKey == currentMember?.Key;
+                }
+
                 model.AppliedFilter.Player = model.Player;
 
                 var battingTask = _summaryStatisticsDataSource.ReadBattingStatistics(model.AppliedFilter);
@@ -62,15 +72,14 @@ namespace Stoolball.Web.Statistics
                 model.BowlingStatistics = bowlingTask.Result;
                 model.FieldingStatistics = fieldingTask.Result;
 
-                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
-
                 var filter = _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
                 model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", filter);
-
 
                 var teams = model.Player.PlayerIdentities.Select(x => x.Team.TeamName).Distinct().ToList();
                 model.Metadata.PageTitle = $"{model.Player.PlayerName()}{filter}";
                 model.Metadata.Description = $"{model.Player.PlayerName()}, a player for {teams.Humanize()} stoolball {(teams.Count > 1 ? "teams" : "team")}";
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }
