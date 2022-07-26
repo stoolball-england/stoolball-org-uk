@@ -25,10 +25,8 @@ namespace Stoolball.Web.UnitTests.Account
         private readonly Mock<IMember> _currentMember = new();
         private readonly Mock<ILogger<PersonalDetailsSurfaceController>> _logger = new();
 
-        public PersonalDetailsSurfaceControllerTests()
+        public PersonalDetailsSurfaceControllerTests() : base()
         {
-            base.Setup();
-
             _currentMember.Setup(x => x.Id).Returns(123);
             _currentMember.Setup(x => x.Key).Returns(Guid.NewGuid());
             _currentMember.Setup(x => x.Name).Returns("Current Member");
@@ -63,11 +61,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void UpdatePersonalDetails_has_content_security_policy_allows_forms()
         {
-            var method = typeof(PersonalDetailsSurfaceController).GetMethod(nameof(PersonalDetailsSurfaceController.UpdatePersonalDetails));
+            var method = typeof(PersonalDetailsSurfaceController).GetMethod(nameof(PersonalDetailsSurfaceController.UpdatePersonalDetails))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.True(attribute.Forms);
+            Assert.True(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);
@@ -78,7 +76,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void UpdatePersonalDetails_has_form_post_attributes()
         {
-            var method = typeof(PersonalDetailsSurfaceController).GetMethod(nameof(PersonalDetailsSurfaceController.UpdatePersonalDetails));
+            var method = typeof(PersonalDetailsSurfaceController).GetMethod(nameof(PersonalDetailsSurfaceController.UpdatePersonalDetails))!;
 
             var httpPostAttribute = method.GetCustomAttributes(typeof(HttpPostAttribute), false).SingleOrDefault();
             Assert.NotNull(httpPostAttribute);

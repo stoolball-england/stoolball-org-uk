@@ -32,7 +32,7 @@ namespace Stoolball.Web.Account
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<IActionResult> UpdatePersonalDetails([Bind(Prefix = "formData")] PersonalDetailsFormData model)
+        public async Task<IActionResult> UpdatePersonalDetails([Bind(Prefix = "formData")] PersonalDetailsFormData? model)
         {
             if (ModelState.IsValid && model != null)
             {

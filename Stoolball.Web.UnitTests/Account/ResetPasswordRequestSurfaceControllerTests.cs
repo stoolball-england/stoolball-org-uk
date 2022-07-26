@@ -40,10 +40,8 @@ namespace Stoolball.Web.UnitTests.Account
         private const string APPROVE_MEMBER_BODY = "Account not approved body";
         private const string REQUEST_URL_AUTHORITY = "www.stoolball.org.uk";
 
-        public ResetPasswordRequestSurfaceControllerTests()
+        public ResetPasswordRequestSurfaceControllerTests() : base()
         {
-            base.Setup();
-
             _currentMember.Setup(x => x.Id).Returns(123);
             _currentMember.Setup(x => x.Key).Returns(Guid.NewGuid());
             _currentMember.Setup(x => x.Name).Returns("Current Member");
@@ -86,11 +84,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void RequestPasswordReset_has_content_security_policy_allows_forms()
         {
-            var method = typeof(ResetPasswordRequestSurfaceController).GetMethod(nameof(ResetPasswordRequestSurfaceController.RequestPasswordReset));
+            var method = typeof(ResetPasswordRequestSurfaceController).GetMethod(nameof(ResetPasswordRequestSurfaceController.RequestPasswordReset))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.True(attribute.Forms);
+            Assert.True(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);
@@ -101,7 +99,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void RequestPasswordReset_has_form_post_attributes()
         {
-            var method = typeof(ResetPasswordRequestSurfaceController).GetMethod(nameof(ResetPasswordRequestSurfaceController.RequestPasswordReset));
+            var method = typeof(ResetPasswordRequestSurfaceController).GetMethod(nameof(ResetPasswordRequestSurfaceController.RequestPasswordReset))!;
 
             var httpPostAttribute = method.GetCustomAttributes(typeof(HttpPostAttribute), false).SingleOrDefault();
             Assert.NotNull(httpPostAttribute);
@@ -475,7 +473,11 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var formData = new ResetPasswordRequestFormData { Email = "email@example.org" };
+
+#nullable disable
                 MemberService.Setup(x => x.GetByEmail(formData.Email)).Returns((IMember)null);
+#nullable enable
+
                 _emailFormatter.Setup(x => x.FormatEmailContent(CREATE_MEMBER_SUBJECT, CREATE_MEMBER_BODY, It.IsAny<Dictionary<string, string>>()))
                     .Callback<string, string, Dictionary<string, string>>((subject, body, tokens) =>
                     {
@@ -504,7 +506,10 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var formData = new ResetPasswordRequestFormData { Email = "email@example.org" };
+
+#nullable disable
                 MemberService.Setup(x => x.GetByEmail(formData.Email)).Returns((IMember)null);
+#nullable enable
 
                 var result = await controller.RequestPasswordReset(new ResetPasswordRequestFormData { Email = "email@example.org" });
 
@@ -518,7 +523,10 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var formData = new ResetPasswordRequestFormData { Email = "email@example.org" };
+
+#nullable disable
                 MemberService.Setup(x => x.GetByEmail(formData.Email)).Returns((IMember)null);
+#nullable enable
 
                 var result = await controller.RequestPasswordReset(new ResetPasswordRequestFormData { Email = "email@example.org" });
 
@@ -533,7 +541,10 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var formData = new ResetPasswordRequestFormData { Email = "email@example.org" };
+
+#nullable disable
                 MemberService.Setup(x => x.GetByEmail(formData.Email)).Returns((IMember)null);
+#nullable enable
 
                 var result = await controller.RequestPasswordReset(new ResetPasswordRequestFormData { Email = "email@example.org" });
 
@@ -547,7 +558,10 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 var formData = new ResetPasswordRequestFormData { Email = "email@example.org" };
+
+#nullable disable
                 MemberService.Setup(x => x.GetByEmail(formData.Email)).Returns((IMember)null);
+#nullable enable
 
                 var result = await controller.RequestPasswordReset(new ResetPasswordRequestFormData { Email = "email@example.org" });
 

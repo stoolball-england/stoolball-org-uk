@@ -21,9 +21,8 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IPlayerPerformanceStatisticsDataSource> _playerPerformanceDataSource = new();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumaniser = new();
 
-        public PlayerFieldingControllerTests()
+        public PlayerFieldingControllerTests() : base()
         {
-            Setup();
         }
 
         private PlayerFieldingController CreateController()
@@ -62,7 +61,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         public async Task Route_not_matching_player_returns_404()
         {
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>(), null)).Returns(Task.FromResult<Player>(null));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>(), null)).Returns(Task.FromResult<Player?>(null));
 
             using (var controller = CreateController())
             {
@@ -197,8 +196,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             _playerPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>()))
                 .Callback<StatisticsFilter>(filter =>
                 {
-                    if (firstCall) { Assert.Contains(player.PlayerIdentities[0].PlayerIdentityId.Value, filter.CaughtByPlayerIdentityIds); firstCall = false; }
-                    else { Assert.Contains(player.PlayerIdentities[0].PlayerIdentityId.Value, filter.RunOutByPlayerIdentityIds); }
+                    if (firstCall) { Assert.Contains(player.PlayerIdentities[0].PlayerIdentityId!.Value, filter.CaughtByPlayerIdentityIds); firstCall = false; }
+                    else { Assert.Contains(player.PlayerIdentities[0].PlayerIdentityId!.Value, filter.RunOutByPlayerIdentityIds); }
                 })
                 .Returns(firstCall
                         ? Task.FromResult(catches as IEnumerable<StatisticsResult<PlayerInnings>>)

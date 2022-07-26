@@ -14,9 +14,8 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class LogoutMemberControllerTests : UmbracoBaseTest
     {
-        public LogoutMemberControllerTests()
+        public LogoutMemberControllerTests() : base()
         {
-            base.Setup();
         }
 
         [Fact]
@@ -40,11 +39,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Index_has_content_security_policy()
         {
-            var method = typeof(LogoutMemberController).GetMethod(nameof(LogoutMemberController.Index));
+            var method = typeof(LogoutMemberController).GetMethod(nameof(LogoutMemberController.Index))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.False(attribute.Forms);
+            Assert.False(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);

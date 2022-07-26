@@ -22,9 +22,8 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IMatchDataSource> _matchDataSource = new();
         private readonly Mock<ICommentsDataSource<Stoolball.Matches.Match>> _commentsDataSource = new();
 
-        public MatchControllerTests()
+        public MatchControllerTests() : base()
         {
-            Setup();
         }
 
         private MatchController CreateController()
@@ -48,7 +47,7 @@ namespace Stoolball.Web.UnitTests.Matches
         [Fact]
         public async Task Route_not_matching_match_returns_404()
         {
-            _matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match>(null));
+            _matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match?>(null));
 
             using (var controller = CreateController())
             {

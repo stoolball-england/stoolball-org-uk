@@ -28,10 +28,8 @@ namespace Stoolball.Web.UnitTests.Account
         private Mock<ILogger<ConfirmEmailAddressController>> _logger = new();
         private const string REQUESTED_EMAIL = "new@example.org";
 
-        public ConfirmEmailAddressControllerTests()
+        public ConfirmEmailAddressControllerTests() : base()
         {
-            base.Setup();
-
             CurrentPage.Setup(x => x.Name).Returns(CURRENT_PAGE_NAME);
             SetupPropertyValue(CurrentPage, "description", CURRENT_PAGE_DESCRIPTION);
 
@@ -78,11 +76,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Index_has_content_security_policy_allows_forms()
         {
-            var method = typeof(ConfirmEmailAddressController).GetMethod(nameof(ConfirmEmailAddressController.Index));
+            var method = typeof(ConfirmEmailAddressController).GetMethod(nameof(ConfirmEmailAddressController.Index))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.False(attribute.Forms);
+            Assert.False(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);

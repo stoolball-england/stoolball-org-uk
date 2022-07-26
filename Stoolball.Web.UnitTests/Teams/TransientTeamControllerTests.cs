@@ -20,9 +20,8 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
         private readonly Mock<IMatchListingDataSource> _matchDataSource = new();
 
-        public TransientTeamControllerTests()
+        public TransientTeamControllerTests() : base()
         {
-            Setup();
         }
 
         private TransientTeamController CreateController()
@@ -44,7 +43,7 @@ namespace Stoolball.Web.UnitTests.Teams
         [Fact]
         public async Task Route_not_matching_team_returns_404()
         {
-            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team>(null));
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team?>(null));
 
             using (var controller = CreateController())
             {

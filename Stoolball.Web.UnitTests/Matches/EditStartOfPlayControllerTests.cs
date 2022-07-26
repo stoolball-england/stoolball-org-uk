@@ -24,9 +24,8 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
         private readonly Mock<IEditMatchHelper> _editMatchHelper = new();
 
-        public EditStartOfPlayControllerTests()
+        public EditStartOfPlayControllerTests() : base()
         {
-            Setup();
         }
 
         private EditStartOfPlayController CreateController()
@@ -49,7 +48,7 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_not_matching_match_returns_404()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/not-a-match"));
-            _matchDataSource.Setup(x => x.ReadMatchByRoute(Request.Object.Path)).Returns(Task.FromResult<Stoolball.Matches.Match>(null));
+            _matchDataSource.Setup(x => x.ReadMatchByRoute(Request.Object.Path)).Returns(Task.FromResult<Stoolball.Matches.Match?>(null));
 
             using (var controller = CreateController())
             {

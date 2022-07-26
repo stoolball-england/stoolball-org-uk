@@ -23,9 +23,8 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<ICreateMatchSeasonSelector> _createMatchSeasonSelector = new();
         private readonly Mock<IMatchFilterQueryStringParser> _matchFilterQueryStringParser = new();
 
-        public MatchesForTeamControllerTests()
+        public MatchesForTeamControllerTests() : base()
         {
-            Setup();
         }
 
         private MatchesForTeamController CreateController()
@@ -51,7 +50,7 @@ namespace Stoolball.Web.UnitTests.Teams
         [Fact]
         public async Task Route_not_matching_team_returns_404()
         {
-            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team>(null));
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team?>(null));
 
             var filter = new MatchFilter();
             _matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(filter);

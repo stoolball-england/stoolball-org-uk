@@ -19,9 +19,8 @@ namespace Stoolball.Web.UnitTests.Account
     {
         private readonly Mock<IMemberSignInManager> _memberSignInManager = new Mock<IMemberSignInManager>();
 
-        public LogoutMemberSurfaceControllerTests()
+        public LogoutMemberSurfaceControllerTests() : base()
         {
-            base.Setup();
         }
 
         private LogoutMemberSurfaceController CreateController()
@@ -42,11 +41,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void HandleLogout_has_content_security_policy()
         {
-            var method = typeof(LogoutMemberSurfaceController).GetMethod(nameof(LogoutMemberSurfaceController.HandleLogout));
+            var method = typeof(LogoutMemberSurfaceController).GetMethod(nameof(LogoutMemberSurfaceController.HandleLogout))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.False(attribute.Forms);
+            Assert.False(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);
@@ -57,7 +56,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void HandleLogout_has_form_post_attributes()
         {
-            var method = typeof(LogoutMemberSurfaceController).GetMethod(nameof(LogoutMemberSurfaceController.HandleLogout));
+            var method = typeof(LogoutMemberSurfaceController).GetMethod(nameof(LogoutMemberSurfaceController.HandleLogout))!;
 
             var httpPostAttribute = method.GetCustomAttributes(typeof(HttpPostAttribute), false).SingleOrDefault();
             Assert.NotNull(httpPostAttribute);

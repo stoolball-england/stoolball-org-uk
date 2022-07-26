@@ -16,9 +16,8 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IPlayerSummaryViewModelFactory> _viewModelFactory = new();
         private readonly Mock<IMemberManager> _memberManager = new();
 
-        public PlayerControllerTests()
+        public PlayerControllerTests() : base()
         {
-            Setup();
         }
 
         private PlayerController CreateController()
@@ -65,7 +64,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         public async Task IsCurrentMember_is_false_if_member_not_logged_in()
         {
             _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = new Player() }));
-            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult((MemberIdentityUser)null));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult((MemberIdentityUser?)null));
 
             using (var controller = CreateController())
             {

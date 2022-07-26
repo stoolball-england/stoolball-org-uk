@@ -19,9 +19,8 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<IMatchListingDataSource> _matchListingDataSource = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
 
-        public DeleteTeamControllerTests()
+        public DeleteTeamControllerTests() : base()
         {
-            Setup();
         }
 
         private DeleteTeamController CreateController()
@@ -42,7 +41,7 @@ namespace Stoolball.Web.UnitTests.Teams
         [Fact]
         public async Task Route_not_matching_team_returns_404()
         {
-            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team>(null));
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team?>(null));
 
             using (var controller = CreateController())
             {

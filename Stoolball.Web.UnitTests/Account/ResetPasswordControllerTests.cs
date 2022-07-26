@@ -25,10 +25,8 @@ namespace Stoolball.Web.UnitTests.Account
         private readonly Mock<ILogger<ResetPasswordController>> _logger = new();
         private string _token = Guid.NewGuid().ToString();
 
-        public ResetPasswordControllerTests()
+        public ResetPasswordControllerTests() : base()
         {
-            base.Setup();
-
             CurrentPage.Setup(x => x.Name).Returns("Reset password");
             SetupPropertyValue(CurrentPage, "description", "This is the description");
 
@@ -39,11 +37,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Has_content_security_policy_allows_forms()
         {
-            var method = typeof(ResetPasswordController).GetMethod(nameof(ResetPasswordController.Index));
+            var method = typeof(ResetPasswordController).GetMethod(nameof(ResetPasswordController.Index))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.True(attribute.Forms);
+            Assert.True(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);

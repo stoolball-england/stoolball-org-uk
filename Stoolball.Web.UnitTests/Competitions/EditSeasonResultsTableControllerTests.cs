@@ -14,9 +14,8 @@ namespace Stoolball.Web.UnitTests.Competitions
     public class EditSeasonResultsTableControllerTests : UmbracoBaseTest
     {
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
-        public EditSeasonResultsTableControllerTests()
+        public EditSeasonResultsTableControllerTests() : base()
         {
-            Setup();
         }
 
         private EditSeasonResultsTableController CreateController()
@@ -36,7 +35,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public async Task Route_not_matching_season_returns_404()
         {
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(null));
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season?>(null));
 
             using (var controller = CreateController())
             {

@@ -22,9 +22,8 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IPlayerRepository> _playerRepository = new();
         private readonly Mock<ICacheClearer<Player>> _cacheClearer = new();
 
-        public PlayerSurfaceControllerTests()
+        public PlayerSurfaceControllerTests() : base()
         {
-            Setup();
         }
 
         private PlayerSurfaceController CreateController()
@@ -80,7 +79,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             var player = new Player();
             _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = player }));
-            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult((MemberIdentityUser)null));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult((MemberIdentityUser?)null));
 
             using (var controller = CreateController())
             {
@@ -97,7 +96,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             var player = new Player();
             _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = player }));
-            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult((MemberIdentityUser)null));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult((MemberIdentityUser?)null));
 
             using (var controller = CreateController())
             {
@@ -107,7 +106,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var model = ((PlayerSummaryViewModel)(((ViewResult)result).Model));
                 Assert.False(model.IsCurrentMember);
                 Assert.False(model.LinkedByThisRequest);
-                Assert.Null(model.Player.MemberKey);
+                Assert.Null(model.Player?.MemberKey);
                 _playerRepository.Verify(x => x.LinkPlayerToMemberAccount(player, It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
             }
         }
@@ -161,7 +160,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var model = ((PlayerSummaryViewModel)(((ViewResult)result).Model));
                 Assert.True(model.IsCurrentMember);
                 Assert.True(model.LinkedByThisRequest);
-                Assert.Equal(model.Player.MemberKey, assignedMemberKey);
+                Assert.Equal(model.Player?.MemberKey, assignedMemberKey);
                 _playerRepository.Verify(x => x.LinkPlayerToMemberAccount(player, assignedMemberKey, "Assigned member"), Times.Once);
             }
         }

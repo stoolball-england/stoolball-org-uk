@@ -22,9 +22,8 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         private readonly Mock<IMatchLocationDataSource> _matchLocationDataSource = new();
         private readonly Mock<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>> _listingsModelBuilder = new();
 
-        public MatchLocationsControllerTests()
+        public MatchLocationsControllerTests() : base()
         {
-            base.Setup();
         }
 
         private MatchLocationsController CreateController()
@@ -43,11 +42,11 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         [Fact]
         public void Has_content_security_policy()
         {
-            var method = typeof(MatchLocationsController).GetMethod(nameof(MatchLocationsController.Index));
+            var method = typeof(MatchLocationsController).GetMethod(nameof(MatchLocationsController.Index))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.False(attribute.Forms);
+            Assert.False(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);
@@ -87,7 +86,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         [Fact]
         public async Task Index_sets_TeamTypes_filter()
         {
-            MatchLocationsViewModel model = null;
+            MatchLocationsViewModel? model = null;
             _listingsModelBuilder.Setup(x => x.BuildModel(
                 It.IsAny<Func<MatchLocationsViewModel>>(),
                 _matchLocationDataSource.Object.ReadTotalMatchLocations,
@@ -107,7 +106,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
             {
                 var result = await controller.Index();
 
-                Assert.True(model.Filter.TeamTypes.Any());
+                Assert.True(model!.Filter.TeamTypes.Any());
             }
         }
     }

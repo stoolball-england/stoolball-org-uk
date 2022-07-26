@@ -21,9 +21,8 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IMatchInningsUrlParser> _urlParser = new();
         private readonly Mock<IPlayerInningsScaffolder> _playerInningsScaffolder = new();
 
-        public EditBattingScorecardControllerTests()
+        public EditBattingScorecardControllerTests() : base()
         {
-            Setup();
         }
 
         private EditBattingScorecardController CreateController()
@@ -46,7 +45,7 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_not_matching_match_returns_404()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/not-a-match"));
-            _matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match>(null));
+            _matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match?>(null));
 
             _urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns(1);
 

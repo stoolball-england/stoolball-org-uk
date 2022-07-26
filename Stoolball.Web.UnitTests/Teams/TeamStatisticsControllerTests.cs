@@ -21,9 +21,8 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new();
 
-        public TeamStatisticsControllerTests()
+        public TeamStatisticsControllerTests() : base()
         {
-            base.Setup();
         }
 
         private TeamStatisticsController CreateController()
@@ -47,7 +46,7 @@ namespace Stoolball.Web.UnitTests.Teams
         [Fact]
         public async Task Route_not_matching_team_returns_404()
         {
-            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team>(null));
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team?>(null));
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
 
             using (var controller = CreateController())

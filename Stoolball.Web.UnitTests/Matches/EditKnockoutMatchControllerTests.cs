@@ -23,9 +23,8 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
         private readonly Mock<IEditMatchHelper> _editMatchHelper = new();
 
-        public EditKnockoutMatchControllerTests()
+        public EditKnockoutMatchControllerTests() : base()
         {
-            Setup();
         }
 
         private EditKnockoutMatchController CreateController()
@@ -48,7 +47,7 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_not_matching_match_returns_404()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/not-a-match"));
-            _matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match>(null));
+            _matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match?>(null));
 
             using (var controller = CreateController())
             {
@@ -114,7 +113,7 @@ namespace Stoolball.Web.UnitTests.Matches
             {
                 var result = await controller.Index();
 
-                Assert.Equal(season.SeasonId, ((IEditMatchViewModel)((ViewResult)result).Model).Match.Season.SeasonId);
+                Assert.Equal(season.SeasonId, ((IEditMatchViewModel)((ViewResult)result).Model).Match?.Season.SeasonId);
             }
         }
 
@@ -136,7 +135,7 @@ namespace Stoolball.Web.UnitTests.Matches
             {
                 var result = await controller.Index();
 
-                Assert.Equal(season.SeasonId, ((IEditMatchViewModel)((ViewResult)result).Model).Season.SeasonId);
+                Assert.Equal(season.SeasonId, ((IEditMatchViewModel)((ViewResult)result).Model).Season?.SeasonId);
             }
         }
 

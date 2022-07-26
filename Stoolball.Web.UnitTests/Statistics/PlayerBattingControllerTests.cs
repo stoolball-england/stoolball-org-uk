@@ -20,9 +20,8 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumaniser = new();
 
-        public PlayerBattingControllerTests()
+        public PlayerBattingControllerTests() : base()
         {
-            Setup();
         }
 
         private PlayerBattingController CreateController()
@@ -45,7 +44,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         public async Task Route_not_matching_player_returns_404()
         {
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>(), null)).Returns(Task.FromResult<Player>(null));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>(), null)).Returns(Task.FromResult<Player?>(null));
 
             using (var controller = CreateController())
             {
