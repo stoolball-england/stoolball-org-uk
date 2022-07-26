@@ -2,41 +2,52 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
+using Stoolball.Caching;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Statistics;
 using Stoolball.Web.Statistics.Models;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Logging;
+using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Infrastructure.Persistence;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Statistics
 {
-    public class PlayerControllerTests : UmbracoBaseTest
+    public class PlayerSurfaceControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
         private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IPlayerSummaryStatisticsDataSource> _summaryStatisticsDataSource = new();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumaniser = new();
         private readonly Mock<IMemberManager> _memberManager = new();
+        private readonly Mock<IPlayerRepository> _playerRepository = new();
+        private readonly Mock<ICacheClearer<Player>> _cacheClearer = new();
 
-        public PlayerControllerTests()
+        public PlayerSurfaceControllerTests()
         {
             Setup();
         }
 
-        private PlayerController CreateController()
+        private PlayerSurfaceController CreateController()
         {
-            return new PlayerController(
-                Mock.Of<ILogger<PlayerController>>(),
-                CompositeViewEngine.Object,
+            return new PlayerSurfaceController(
                 UmbracoContextAccessor.Object,
+                Mock.Of<IUmbracoDatabaseFactory>(),
+                ServiceContext,
+                AppCaches.NoCache,
+                Mock.Of<IProfilingLogger>(),
+                Mock.Of<IPublishedUrlProvider>(),
+                _memberManager.Object,
                 _playerDataSource.Object,
                 _summaryStatisticsDataSource.Object,
+                _playerRepository.Object,
                 _statisticsFilterQueryStringParser.Object,
                 _statisticsFilterHumaniser.Object,
-                _memberManager.Object
+                _cacheClearer.Object
                 )
             {
                 ControllerContext = ControllerContext
@@ -51,23 +62,26 @@ namespace Stoolball.Web.UnitTests.Statistics
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                var result = await controller.LinkPlayerToMemberAccount();
 
                 Assert.IsType<NotFoundResult>(result);
             }
         }
 
         [Fact]
-        public async Task Route_matching_player_returns_PlayerSummaryViewModel()
+        public async Task Route_matching_player_if_ModelState_invalid_returns_PlayerSummaryViewModel_and_Player_view()
         {
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
             _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(new Player()));
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                controller.ModelState.AddModelError(string.Empty, "Any error");
+                var result = await controller.LinkPlayerToMemberAccount();
 
-                Assert.IsType<PlayerSummaryViewModel>(((ViewResult)result).Model);
+                var viewResult = ((ViewResult)result);
+                Assert.IsType<PlayerSummaryViewModel>(viewResult.Model);
+                Assert.Equal("Player", viewResult.ViewName);
             }
         }
 
@@ -86,28 +100,29 @@ namespace Stoolball.Web.UnitTests.Statistics
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                var result = await controller.LinkPlayerToMemberAccount();
 
                 Assert.Equal(appliedFilter, ((PlayerSummaryViewModel)(((ViewResult)result).Model)).AppliedFilter);
             }
         }
 
         [Fact]
-        public async Task Breadcrumbs_are_set()
+        public async Task Breadcrumbs_are_set_if_ModelState_invalid()
         {
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
             _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(new Player()));
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                controller.ModelState.AddModelError(string.Empty, "Any error");
+                var result = await controller.LinkPlayerToMemberAccount();
 
                 Assert.True(((PlayerSummaryViewModel)(((ViewResult)result).Model)).Breadcrumbs.Count > 0);
             }
         }
 
         [Fact]
-        public async Task Filter_is_added_to_filter_description_and_page_title()
+        public async Task Filter_is_added_to_filter_description_and_page_title_if_ModelState_invalid()
         {
             var appliedFilter = new StatisticsFilter();
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(appliedFilter);
@@ -117,7 +132,8 @@ namespace Stoolball.Web.UnitTests.Statistics
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                controller.ModelState.AddModelError(string.Empty, "Any error");
+                var result = await controller.LinkPlayerToMemberAccount();
 
                 var model = (PlayerSummaryViewModel)((ViewResult)result).Model;
                 Assert.Contains("filter text", model.FilterDescription);
@@ -126,7 +142,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Player_name_is_in_page_title_and_description()
+        public async Task Player_name_is_in_page_title_and_description_if_ModelState_invalid()
         {
             var player = new Player
             {
@@ -143,7 +159,8 @@ namespace Stoolball.Web.UnitTests.Statistics
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                controller.ModelState.AddModelError(string.Empty, "Any error");
+                var result = await controller.LinkPlayerToMemberAccount();
 
                 var model = (PlayerSummaryViewModel)((ViewResult)result).Model;
                 Assert.Contains("Player one", model.Metadata.PageTitle);
@@ -152,7 +169,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Player_team_is_in_page_description()
+        public async Task Player_team_is_in_page_description_if_ModelState_invalid()
         {
             var player = new Player
             {
@@ -169,7 +186,8 @@ namespace Stoolball.Web.UnitTests.Statistics
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                controller.ModelState.AddModelError(string.Empty, "Any error");
+                var result = await controller.LinkPlayerToMemberAccount();
 
                 var model = (PlayerSummaryViewModel)((ViewResult)result).Model;
                 Assert.Contains("Example team", model.Metadata.Description);
@@ -177,7 +195,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Statistics_are_filtered_and_added_to_model()
+        public async Task Statistics_are_filtered_and_added_to_model_if_ModelState_invalid()
         {
             var appliedFilter = new StatisticsFilter();
             var battingStatistics = new BattingStatistics();
@@ -208,7 +226,8 @@ namespace Stoolball.Web.UnitTests.Statistics
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                controller.ModelState.AddModelError(string.Empty, "Any error");
+                var result = await controller.LinkPlayerToMemberAccount();
 
                 var model = (PlayerSummaryViewModel)((ViewResult)result).Model;
                 Assert.Equal(battingStatistics, model.BattingStatistics);
@@ -218,22 +237,46 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task IsCurrentMember_is_false_if_member_not_logged_in()
+        public async Task IsCurrentMember_is_false_and_member_not_linked_if_ModelState_invalid_and_member_not_logged_in()
         {
+            var player = new Player();
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(new Player()));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(player));
             _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult((MemberIdentityUser)null));
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                controller.ModelState.AddModelError(string.Empty, "Any error");
+                var result = await controller.LinkPlayerToMemberAccount();
 
                 Assert.False(((PlayerSummaryViewModel)(((ViewResult)result).Model)).IsCurrentMember);
+                _playerRepository.Verify(x => x.LinkPlayerToMemberAccount(player, It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
             }
         }
 
         [Fact]
-        public async Task IsCurrentMember_is_false_if_current_member_is_not_assigned_member()
+        public async Task IsCurrentMember_is_false_and_member_not_linked_if_ModelState_valid_and_member_not_logged_in()
+        {
+            var player = new Player();
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(player));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult((MemberIdentityUser)null));
+
+            using (var controller = CreateController())
+            {
+                controller.ModelState.Clear();
+                var result = await controller.LinkPlayerToMemberAccount();
+
+                var model = ((PlayerSummaryViewModel)(((ViewResult)result).Model));
+                Assert.False(model.IsCurrentMember);
+                Assert.False(model.LinkedByThisRequest);
+                Assert.Null(model.Player.MemberKey);
+                _playerRepository.Verify(x => x.LinkPlayerToMemberAccount(player, It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
+            }
+        }
+
+        [Fact]
+        public async Task IsCurrentMember_is_false_if_ModelState_invalid_and_current_member_is_not_assigned_member()
         {
             var assignedMemberKey = Guid.NewGuid();
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
@@ -242,14 +285,15 @@ namespace Stoolball.Web.UnitTests.Statistics
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                controller.ModelState.AddModelError(string.Empty, "Any error");
+                var result = await controller.LinkPlayerToMemberAccount();
 
                 Assert.False(((PlayerSummaryViewModel)(((ViewResult)result).Model)).IsCurrentMember);
             }
         }
 
         [Fact]
-        public async Task IsCurrentMember_is_true_if_current_member_is_assigned_member()
+        public async Task IsCurrentMember_is_true_if_ModelState_invalid_and_current_member_is_assigned_member()
         {
             var assignedMemberKey = Guid.NewGuid();
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
@@ -258,9 +302,69 @@ namespace Stoolball.Web.UnitTests.Statistics
 
             using (var controller = CreateController())
             {
-                var result = await controller.Index();
+                controller.ModelState.AddModelError(string.Empty, "Any error");
+                var result = await controller.LinkPlayerToMemberAccount();
 
                 Assert.True(((PlayerSummaryViewModel)(((ViewResult)result).Model)).IsCurrentMember);
+            }
+        }
+
+
+        [Fact]
+        public async Task IsCurrentMember_is_true_and_member_linked_if_ModelState_valid_and_current_member_is_assigned_member()
+        {
+            var assignedMemberKey = Guid.NewGuid();
+            var player = new Player { MemberKey = assignedMemberKey };
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(player));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = assignedMemberKey, Name = "Assigned member" }));
+
+            using (var controller = CreateController())
+            {
+                controller.ModelState.Clear();
+                var result = await controller.LinkPlayerToMemberAccount();
+
+                var model = ((PlayerSummaryViewModel)(((ViewResult)result).Model));
+                Assert.True(model.IsCurrentMember);
+                Assert.True(model.LinkedByThisRequest);
+                Assert.Equal(model.Player.MemberKey, assignedMemberKey);
+                _playerRepository.Verify(x => x.LinkPlayerToMemberAccount(player, assignedMemberKey, "Assigned member"), Times.Once);
+            }
+        }
+
+        [Fact]
+        public async Task Cache_not_cleared_if_ModelState_invalid_and_current_member_is_assigned_member()
+        {
+            var assignedMemberKey = Guid.NewGuid();
+            var player = new Player { MemberKey = assignedMemberKey };
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(player));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = assignedMemberKey }));
+
+            using (var controller = CreateController())
+            {
+                controller.ModelState.AddModelError(string.Empty, "Any error");
+                var result = await controller.LinkPlayerToMemberAccount();
+
+                _cacheClearer.Verify(x => x.ClearCacheFor(player), Times.Never);
+            }
+        }
+
+        [Fact]
+        public async Task Cache_cleared_if_ModelState_valid_and_current_member_is_assigned_member()
+        {
+            var assignedMemberKey = Guid.NewGuid();
+            var player = new Player { MemberKey = assignedMemberKey };
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(player));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = assignedMemberKey }));
+
+            using (var controller = CreateController())
+            {
+                controller.ModelState.Clear();
+                var result = await controller.LinkPlayerToMemberAccount();
+
+                _cacheClearer.Verify(x => x.ClearCacheFor(player), Times.Once);
             }
         }
     }

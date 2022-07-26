@@ -39,6 +39,7 @@ namespace Stoolball.Web.UnitTests
 
             ServiceContext = ServiceContext.CreatePartial(
                 memberService: MemberService.Object,
+                userService: Mock.Of<IUserService>(),
                 localizationService: Mock.Of<ILocalizationService>()
             );
         }
