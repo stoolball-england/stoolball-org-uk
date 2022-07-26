@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Dapper;
 using Humanizer;
 using Moq;
+using Newtonsoft.Json;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Routing;
@@ -32,7 +34,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(null, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(null, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -40,7 +42,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = null, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = null, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -48,7 +50,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = string.Empty, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = string.Empty, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -56,7 +58,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), null, Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -64,7 +66,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), string.Empty, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), string.Empty, Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -72,7 +74,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1" }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1" }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -80,7 +82,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", null).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", null));
         }
 
         [Fact]
@@ -99,7 +101,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
             var transaction = new Mock<IDbTransaction>();
 
-            var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), null, transaction.Object).ConfigureAwait(false);
+            var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), null, transaction.Object);
 
             Assert.Equal(playerIdentity, result);
             transaction.Verify(x => x.Connection, Times.Never);
@@ -115,12 +117,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     var dataForAnyPlayerIdentity = await connection.QuerySingleAsync<(Guid playerIdentityId, Guid playerId, string comparableName, Guid teamId)>(
                         $"SELECT TOP 1 PlayerIdentityId, PlayerId, ComparableName, TeamId FROM {Tables.PlayerIdentity}"
-                    ).ConfigureAwait(false);
+                    );
                     var playerIdentity = new PlayerIdentity { PlayerIdentityName = dataForAnyPlayerIdentity.comparableName, Team = new Team { TeamId = dataForAnyPlayerIdentity.teamId } };
 
                     var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
 
-                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", transaction).ConfigureAwait(false);
+                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", transaction);
 
                     Assert.NotNull(result);
                     Assert.Equal(dataForAnyPlayerIdentity.playerIdentityId, result.PlayerIdentityId);
@@ -164,7 +166,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
                     var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), routeGenerator.Object, copier.Object, playerNameFormatter.Object);
 
-                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", transaction).ConfigureAwait(false);
+                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", transaction);
 
                     Assert.NotNull(result);
                     copier.Verify(x => x.CreateAuditableCopy(playerIdentity), Times.Once);
@@ -174,7 +176,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     var identityResult = await transaction.Connection.QuerySingleAsync<PlayerIdentityResult>(
                         $"SELECT PlayerId, PlayerIdentityName, ComparableName, TeamId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityName = @PlayerIdentityName",
                         new { playerIdentity.PlayerIdentityName },
-                        transaction).ConfigureAwait(false);
+                        transaction);
 
                     Assert.NotNull(identityResult);
                     Assert.Equal(playerIdentity.PlayerIdentityName, identityResult.PlayerIdentityName);
@@ -184,7 +186,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     var playerResult = await transaction.Connection.QuerySingleAsync<Player>(
                         $"SELECT PlayerRoute FROM {Tables.Player} WHERE PlayerId = @PlayerId",
                         new { identityResult.PlayerId },
-                        transaction).ConfigureAwait(false);
+                        transaction);
 
                     Assert.NotNull(playerResult);
                     Assert.Equal(playerRoute, playerResult.PlayerRoute);
@@ -221,13 +223,75 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
+                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, memberKey, memberName, transaction);
                     transaction.Rollback();
                 }
             }
 
             auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
             logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<Player>(), memberName, memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.CreateOrMatchPlayerIdentity)));
+        }
+
+        [Fact]
+        public async Task LinkPlayerToMemberAccount_throws_ArgumentException_if_PlayerId_is_null()
+        {
+            var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerToMemberAccount(new Player(), Guid.NewGuid(), null));
+        }
+
+        [Fact]
+        public async Task LinkPlayerToMemberAccount_throws_ArgumentNullException_if_memberName_is_null()
+        {
+            var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.LinkPlayerToMemberAccount(new Player { PlayerId = Guid.NewGuid() }, Guid.NewGuid(), null));
+        }
+
+        [Fact]
+        public async Task LinkPlayerToMemberAccount_throws_ArgumentNullException_if_memberName_is_empty_string()
+        {
+            var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IStoolballEntityCopier>(), Mock.Of<IPlayerNameFormatter>());
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.LinkPlayerToMemberAccount(new Player { PlayerId = Guid.NewGuid() }, Guid.NewGuid(), string.Empty));
+        }
+
+        [Fact]
+        public async Task LinkPlayerToMemberAccount_updates_player()
+        {
+            var player = _databaseFixture.TestData.Players.Skip(2).Take(1).Single();
+            var playerCopy = new Player { PlayerId = player.PlayerId };
+            var copier = new Mock<IStoolballEntityCopier>();
+            copier.Setup(x => x.CreateAuditableCopy(player)).Returns(playerCopy);
+            var memberKey = _databaseFixture.TestData.Members.First().memberId;
+
+            var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), copier.Object, Mock.Of<IPlayerNameFormatter>());
+            await repo.LinkPlayerToMemberAccount(player, memberKey, "Member name");
+
+            using var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection();
+            connection.Open();
+            var result = await connection.QuerySingleAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", playerCopy);
+
+            Assert.Equal(memberKey, result);
+        }
+
+        [Fact]
+        public async Task LinkPlayerToMemberAccount_audits_and_logs()
+        {
+            var player = _databaseFixture.TestData.Players.First();
+            var playerCopy = new Player { PlayerId = player.PlayerId };
+            var copier = new Mock<IStoolballEntityCopier>();
+            copier.Setup(x => x.CreateAuditableCopy(player)).Returns(playerCopy);
+            var auditRepository = new Mock<IAuditRepository>();
+            var logger = new Mock<ILogger<SqlServerPlayerRepository>>();
+            var memberName = "Member name";
+            var memberKey = _databaseFixture.TestData.Members.First().memberId;
+
+            var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, auditRepository.Object, logger.Object, Mock.Of<IRouteGenerator>(), copier.Object, Mock.Of<IPlayerNameFormatter>());
+            await repo.LinkPlayerToMemberAccount(player, memberKey, memberName);
+
+            auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            logger.Verify(x => x.Info(LoggingTemplates.Updated, JsonConvert.SerializeObject(playerCopy), memberName, memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
         }
 
         public void Dispose() => _scope.Dispose();

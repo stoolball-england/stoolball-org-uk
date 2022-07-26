@@ -150,8 +150,14 @@ namespace Stoolball.Data.SqlServer
             return auditablePlayerIdentity;
         }
 
+        /// <inheritdoc />
         public async Task LinkPlayerToMemberAccount(Player player, Guid memberKey, string memberName)
         {
+            if (player == null || !player.PlayerId.HasValue)
+            {
+                throw new ArgumentException(nameof(player), $"{nameof(player)} cannot be null and must have a PlayerId");
+            }
+
             if (string.IsNullOrWhiteSpace(memberName))
             {
                 throw new ArgumentNullException(nameof(memberName));

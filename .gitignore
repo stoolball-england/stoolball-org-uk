@@ -438,6 +438,7 @@ ApplicationInsights.config
 Smidge
 Stoolball.Web/web.config
 coverage
+ood.flag
 
 # Work with Umbraco Cloud in a separate repo
 .UmbracoCloud
