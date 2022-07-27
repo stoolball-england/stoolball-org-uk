@@ -184,5 +184,18 @@ namespace Stoolball.Data.SqlServer
                 return playerToReturn;
             }
         }
+
+        /// <inheritdoc />
+        public async Task<Player> ReadPlayerByMemberKey(Guid key)
+        {
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                return await connection.QuerySingleOrDefaultAsync<Player>(
+                    $@"SELECT TOP 1 PlayerRoute
+                        FROM {Tables.Player}
+                        WHERE MemberKey = @MemberKey",
+                        new { MemberKey = key });
+            }
+        }
     }
 }

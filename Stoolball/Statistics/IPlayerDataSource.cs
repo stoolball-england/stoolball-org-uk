@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
@@ -34,5 +35,11 @@ namespace Stoolball.Statistics
         /// <param name="filter"></param>
         /// <returns></returns>
         Task<Player> ReadPlayerByRoute(string route, StatisticsFilter filter = null);
+
+        /// <summary>
+        /// Read a single player by the GUID of the member it is linked to
+        /// </summary>
+        /// <returns>A matching player, or <c>null</c> if no player is linked</returns>
+        Task<Player> ReadPlayerByMemberKey(Guid key);
     }
 }

@@ -17,6 +17,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
     {
         private readonly SqlServerTestDataFixture _databaseFixture;
         private readonly Mock<IStatisticsQueryBuilder> _statisticsQueryBuilder = new();
+        private readonly Mock<IRouteNormaliser> _routeNormaliser = new();
 
         public SqlServerPlayerDataSourceTests(SqlServerTestDataFixture databaseFixture)
         {
@@ -26,10 +27,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_players_returns_player_with_identities_and_teams()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
-            var results = await playerDataSource.ReadPlayers(null).ConfigureAwait(false);
+            var results = await playerDataSource.ReadPlayers(null);
 
             foreach (var player in _databaseFixture.TestData.Players)
             {
@@ -53,10 +53,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_players_supports_no_filter()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
-            var results = await playerDataSource.ReadPlayers(null).ConfigureAwait(false);
+            var results = await playerDataSource.ReadPlayers(null);
 
             Assert.Equal(_databaseFixture.TestData.Players.Count, results.Count);
             foreach (var player in _databaseFixture.TestData.Players)
@@ -68,11 +67,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_players_supports_filter_by_player_id()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
             var expectedIds = _databaseFixture.TestData.Players.Take(3).Select(x => x.PlayerId.Value).ToList();
 
-            var results = await playerDataSource.ReadPlayers(new PlayerFilter { PlayerIds = expectedIds }).ConfigureAwait(false);
+            var results = await playerDataSource.ReadPlayers(new PlayerFilter { PlayerIds = expectedIds });
 
             Assert.Equal(expectedIds.Count, results.Count);
             foreach (var playerId in expectedIds)
@@ -84,10 +82,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_returns_basic_fields()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
-            var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
+            var results = await playerDataSource.ReadPlayerIdentities(null);
 
             foreach (var identity in _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities)
             {
@@ -104,10 +101,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_returns_player()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
-            var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
+            var results = await playerDataSource.ReadPlayerIdentities(null);
 
             foreach (var identity in _databaseFixture.TestData.PlayerIdentities)
             {
@@ -122,10 +118,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_returns_team()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
-            var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
+            var results = await playerDataSource.ReadPlayerIdentities(null);
 
             foreach (var identity in _databaseFixture.TestData.PlayerIdentities)
             {
@@ -140,10 +135,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_supports_no_filter()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
-            var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
+            var results = await playerDataSource.ReadPlayerIdentities(null);
 
             Assert.Equal(_databaseFixture.TestData.PlayerIdentities.Count, results.Count);
             foreach (var identity in _databaseFixture.TestData.PlayerIdentities)
@@ -155,14 +149,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_supports_case_insensitive_filter_by_name()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
             var expected = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.First();
 
             var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter
             {
                 Query = expected.PlayerIdentityName.ToLower(CultureInfo.CurrentCulture).Substring(0, 5) + expected.PlayerIdentityName.ToUpperInvariant().Substring(5)
-            }).ConfigureAwait(false);
+            });
 
             Assert.Single(results);
             Assert.Equal(expected.PlayerIdentityId, results[0].PlayerIdentityId);
@@ -171,10 +164,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_supports_filter_by_team_id()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
-            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { TeamIds = new List<Guid> { _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities[0].Team.TeamId.Value } }).ConfigureAwait(false);
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { TeamIds = new List<Guid> { _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities[0].Team.TeamId.Value } });
 
             var expected = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team.TeamId == _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities[0].Team.TeamId.Value);
             Assert.Equal(expected.Count(), results.Count);
@@ -187,10 +179,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_supports_filter_by_player_identity_id()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
-            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { PlayerIdentityIds = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList() }).ConfigureAwait(false);
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { PlayerIdentityIds = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList() });
 
             Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Count, results.Count);
             foreach (var identity in _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities)
@@ -202,10 +193,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_sorts_by_team_first_then_probability()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
-            var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
+            var results = await playerDataSource.ReadPlayerIdentities(null);
 
             Guid? expectedTeam = null;
             var previousTeams = new List<Guid>();
@@ -232,12 +222,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_by_route_supports_no_filter_returns_multiple_player_identities_with_teams()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, "players")).Returns(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute);
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, "players")).Returns(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
             _statisticsQueryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((string.Empty, new Dictionary<string, object>()));
 
-            var result = await playerDataSource.ReadPlayerByRoute(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, null).ConfigureAwait(false);
+            var result = await playerDataSource.ReadPlayerByRoute(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, null);
 
             Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerId, result.PlayerId);
             Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, result.PlayerRoute);
@@ -260,9 +249,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_by_route_supports_filter_statistics_by_date_and_returns_all_identities()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, "players")).Returns(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute);
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, "players")).Returns(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
             var firstMatch = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Min(x => x.FirstPlayed);
             var lastMatch = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Min(x => x.FirstPlayed);
@@ -270,7 +258,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var filter = new StatisticsFilter { FromDate = firstMatch, UntilDate = midDate };
             _statisticsQueryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate", new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } }));
 
-            var result = await playerDataSource.ReadPlayerByRoute(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, filter).ConfigureAwait(false);
+            var result = await playerDataSource.ReadPlayerByRoute(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, filter);
 
             Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerId, result.PlayerId);
             Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Count, result.PlayerIdentities.Count);
@@ -309,15 +297,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_by_route_returns_all_identities_when_statistics_are_excluded_by_filter()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, "players")).Returns(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute);
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, "players")).Returns(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
 
             var firstMatch = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Min(x => x.FirstPlayed);
             var filter = new StatisticsFilter { FromDate = firstMatch.Value.AddDays(-1), UntilDate = firstMatch.Value.AddDays(-1) };
             _statisticsQueryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate", new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } }));
 
-            var result = await playerDataSource.ReadPlayerByRoute(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, filter).ConfigureAwait(false);
+            var result = await playerDataSource.ReadPlayerByRoute(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, filter);
 
             Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerId, result.PlayerId);
             Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Count, result.PlayerIdentities.Count);
@@ -330,6 +317,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Assert.Null(resultIdentity.FirstPlayed);
                 Assert.Null(resultIdentity.LastPlayed);
             }
+        }
+
+        [Fact]
+        public async Task ReadPlayerByMemberKey_returns_PlayerRoute_for_matching_player()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+
+            var result = await playerDataSource.ReadPlayerByMemberKey(_databaseFixture.TestData.BowlerWithMultipleIdentities.MemberKey.Value);
+
+            Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerRoute, result.PlayerRoute);
+        }
+
+        [Fact]
+        public async Task ReadPlayerByMemberKey_returns_null_for_no_match()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+
+            var result = await playerDataSource.ReadPlayerByMemberKey(Guid.NewGuid());
+
+            Assert.Null(result);
         }
     }
 }
