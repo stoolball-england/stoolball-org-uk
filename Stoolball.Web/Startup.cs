@@ -330,6 +330,7 @@ namespace Stoolball.Web
             services.AddTransient<EditSeasonTeamsController>();
             services.AddTransient<DeleteSeasonController>();
 
+            services.AddTransient<IPlayerSummaryViewModelFactory, PlayerSummaryViewModelFactory>();
             services.AddTransient<PlayerController>();
             services.AddTransient<PlayerBattingController>();
             services.AddTransient<PlayerBowlingController>();
