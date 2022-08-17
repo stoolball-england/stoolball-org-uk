@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using Dapper;
@@ -99,7 +98,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 }
             }
 
-            var probabilities = new Dictionary<Guid, int>();
             foreach (var match in data.Matches)
             {
                 CreateMatch(match);
@@ -107,10 +105,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 var statisticsRecords = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(match);
                 foreach (var record in statisticsRecords)
                 {
-                    var random = new Random();
-                    if (!probabilities.ContainsKey(record.PlayerIdentityId)) { probabilities.Add(record.PlayerIdentityId, random.Next(-999, 999)); }
-                    record.Probability = probabilities[record.PlayerIdentityId];
-
                     CreatePlayerInMatchStatisticsRecord(record);
                 }
             }
@@ -774,7 +768,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                      BowlingFiguresId, OverNumberOfFirstOverBowled, BallsBowled, Overs, Maidens, NoBalls, Wides, RunsConceded, HasRunsConceded, Wickets, WicketsWithBowling, 
                      WonToss, BattedFirst, PlayerInningsNumber, PlayerInningsId, BattingPosition, DismissalType, PlayerWasDismissed, BowledByPlayerIdentityId, BowledByPlayerIdentityName, BowledByPlayerRoute, 
                      CaughtByPlayerIdentityId, CaughtByPlayerIdentityName, CaughtByPlayerRoute, RunOutByPlayerIdentityId, RunOutByPlayerIdentityName, RunOutByPlayerRoute, 
-                     RunsScored, BallsFaced, Catches, RunOuts, WonMatch, PlayerOfTheMatch, Probability)
+                     RunsScored, BallsFaced, Catches, RunOuts, WonMatch, PlayerOfTheMatch)
                     VALUES
                     (@PlayerInMatchStatisticsId, @PlayerId, @PlayerIdentityId, 
                         (SELECT PlayerIdentityName FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId), 
@@ -806,7 +800,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                      @RunOutByPlayerIdentityId, 
                         (SELECT CASE WHEN @RunOutByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerIdentityName FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @RunOutByPlayerIdentityId) END),
                         (SELECT CASE WHEN @RunOutByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerRoute FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId WHERE PlayerIdentityId = @RunOutByPlayerIdentityId) END),
-                     @RunsScored, @BallsFaced, @Catches, @RunOuts, @WonMatch, @PlayerOfTheMatch, @Probability)",
+                     @RunsScored, @BallsFaced, @Catches, @RunOuts, @WonMatch, @PlayerOfTheMatch)",
                         new
                         {
                             PlayerInMatchStatisticsId = Guid.NewGuid(),
@@ -854,8 +848,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                             record.Catches,
                             record.RunOuts,
                             record.WonMatch,
-                            record.PlayerOfTheMatch,
-                            record.Probability
+                            record.PlayerOfTheMatch
                         });
         }
     }

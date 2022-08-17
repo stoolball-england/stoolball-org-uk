@@ -51,6 +51,11 @@ namespace Stoolball.Web.Statistics
             model.DefaultFilter = await _statisticsFilterFactory.FromRoute(Request.Path);
             model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
 
+            if (model.AppliedFilter.Player == null)
+            {
+                return NotFound();
+            }
+
             var runOutsFilter = model.AppliedFilter.Clone();
             runOutsFilter.Player = null;
             runOutsFilter.RunOutByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList();

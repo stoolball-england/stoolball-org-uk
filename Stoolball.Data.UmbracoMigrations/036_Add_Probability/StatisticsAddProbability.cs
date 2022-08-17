@@ -5,7 +5,7 @@ using Umbraco.Cms.Infrastructure.Migrations;
 namespace Stoolball.Data.UmbracoMigrations
 {
     /// <summary>
-    /// Adds a column for recording the probability that a partial player name matches a player identity
+    /// Adds a probability column and a stored procedure to populate it. Probability is used to order player name suggestions.
     /// </summary>
     public partial class StatisticsAddProbability : MigrationBase
     {

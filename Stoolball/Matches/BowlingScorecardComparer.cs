@@ -37,6 +37,8 @@ namespace Stoolball.Matches
             var identitiesAfter = oversAfter.Select(x => x.Bowler.PlayerIdentityName).Distinct();
             comparison.PlayerIdentitiesAdded.AddRange(identitiesAfter.Where(x => !identitiesBefore.Contains(x)));
             comparison.PlayerIdentitiesRemoved.AddRange(identitiesBefore.Where(x => !identitiesAfter.Contains(x)));
+            comparison.PlayerIdentitiesAffected.AddRange(comparison.PlayerIdentitiesAdded);
+            comparison.PlayerIdentitiesAffected.AddRange(comparison.PlayerIdentitiesRemoved);
 
             var index = 0;
             Over overBefore = null, overAfter = null;
@@ -72,11 +74,11 @@ namespace Stoolball.Matches
                     {
                         comparison.OversChanged.Add((overBefore, overAfter));
 
-                        if (!comparison.PlayerIdentitiesRemoved.Contains(overBefore.Bowler.PlayerIdentityName) && !comparison.PlayerIdentitiesAffected.Contains(overBefore.Bowler.PlayerIdentityName))
+                        if (!comparison.PlayerIdentitiesAffected.Contains(overBefore.Bowler.PlayerIdentityName))
                         {
                             comparison.PlayerIdentitiesAffected.Add(overBefore.Bowler.PlayerIdentityName);
                         }
-                        if (!comparison.PlayerIdentitiesAdded.Contains(overAfter.Bowler.PlayerIdentityName) && !comparison.PlayerIdentitiesAffected.Contains(overAfter.Bowler.PlayerIdentityName))
+                        if (!comparison.PlayerIdentitiesAffected.Contains(overAfter.Bowler.PlayerIdentityName))
                         {
                             comparison.PlayerIdentitiesAffected.Add(overAfter.Bowler.PlayerIdentityName);
                         }

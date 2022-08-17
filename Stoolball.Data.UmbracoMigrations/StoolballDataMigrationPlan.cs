@@ -49,6 +49,7 @@ namespace Stoolball.Data.UmbracoMigrations
                 .To<CommentRemoveMemberNameAndMakeMemberKeyNullable>(typeof(CommentRemoveMemberNameAndMakeMemberKeyNullable).ToString())
                 .To<StatisticsAddProbability>(typeof(StatisticsAddProbability).ToString())
                 .To<Add_fnTeamName>(typeof(Add_fnTeamName).ToString())
+                .To<StatisticsRemoveProbability>(typeof(StatisticsRemoveProbability).ToString())
                 .To<LinkPlayerToMember>(typeof(LinkPlayerToMember).ToString());
         }
     }

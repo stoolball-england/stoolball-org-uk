@@ -198,7 +198,7 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void Added_PlayerIdentity_is_identified()
+        public void Added_PlayerIdentity_is_identified_and_added_to_affected_identities()
         {
             var playerOne = new PlayerIdentity { PlayerIdentityName = "Player one" };
             var playerTwo = new PlayerIdentity { PlayerIdentityName = "Player two" };
@@ -213,10 +213,13 @@ namespace Stoolball.UnitTests.Matches
 
             Assert.Single(result.PlayerIdentitiesAdded);
             Assert.Contains(playerThree.PlayerIdentityName, result.PlayerIdentitiesAdded);
+
+            Assert.Equal(2, result.PlayerIdentitiesAffected.Count);
+            Assert.Contains(playerThree.PlayerIdentityName, result.PlayerIdentitiesAffected);
         }
 
         [Fact]
-        public void Affected_PlayerIdentity_is_identified()
+        public void Changed_PlayerIdentity_is_identified_and_added_to_affected_identities()
         {
             var playerOne = new PlayerIdentity { PlayerIdentityName = "Player one" };
             var playerTwo = new PlayerIdentity { PlayerIdentityName = "Player two" };
@@ -233,7 +236,7 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void Removed_PlayerIdentity_is_identified()
+        public void Removed_PlayerIdentity_is_identified_and_added_to_affected_identities()
         {
             var playerOne = new PlayerIdentity { PlayerIdentityName = "Player one" };
             var playerTwo = new PlayerIdentity { PlayerIdentityName = "Player two" };
@@ -248,6 +251,9 @@ namespace Stoolball.UnitTests.Matches
 
             Assert.Single(result.PlayerIdentitiesRemoved);
             Assert.Contains(playerTwo.PlayerIdentityName, result.PlayerIdentitiesRemoved);
+
+            Assert.Equal(2, result.PlayerIdentitiesAffected.Count);
+            Assert.Contains(playerTwo.PlayerIdentityName, result.PlayerIdentitiesAffected);
         }
     }
 }
