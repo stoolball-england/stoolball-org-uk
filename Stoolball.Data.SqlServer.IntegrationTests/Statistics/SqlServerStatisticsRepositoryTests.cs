@@ -348,7 +348,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                 AND DismissalType IS NULL
                                 AND RunsScored IS NULL
                                 AND BallsFaced IS NULL
-                                AND ClubId = @clubId
+                                AND (ClubId = @clubId OR (ClubId IS NULL AND @clubId IS NULL)) 
                                 AND TournamentId IS NULL
                                 AND SeasonId IS NULL
                                 AND CompetitionId IS NULL
