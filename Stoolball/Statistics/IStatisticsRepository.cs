@@ -19,6 +19,5 @@ namespace Stoolball.Statistics
         /// </summary>
         Task<IList<BowlingFigures>> UpdateBowlingFigures(MatchInnings innings, Guid memberKey, string memberName, IDbTransaction transaction);
         Task UpdatePlayerStatistics(IEnumerable<PlayerInMatchStatisticsRecord> statisticsData, IDbTransaction transaction);
-        Task UpdatePlayerProbability(Guid? teamId, IDbTransaction transaction);
     }
 }

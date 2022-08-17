@@ -1052,7 +1052,6 @@ namespace Stoolball.Data.SqlServer
                     await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId.Value, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
-                    foreach (var teamId in auditableMatch.Teams.Select(x => x.Team.TeamId)) { await _statisticsRepository.UpdatePlayerProbability(teamId, transaction).ConfigureAwait(false); }
 
                     var serialisedInnings = JsonConvert.SerializeObject(auditableInnings);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -1214,7 +1213,6 @@ namespace Stoolball.Data.SqlServer
                     await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId.Value, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
-                    await _statisticsRepository.UpdatePlayerProbability(auditableInnings.BowlingTeam.Team.TeamId, transaction).ConfigureAwait(false);
 
                     var serialisedInnings = JsonConvert.SerializeObject(auditableInnings);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -1288,6 +1286,17 @@ namespace Stoolball.Data.SqlServer
                         },
                         transaction).ConfigureAwait(false);
 
+
+                    var awardsBefore = await connection.QueryAsync<(Guid playerIdentityId, string playerIdentityName, Guid teamId)>(
+                            $@"SELECT pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TeamId 
+                                FROM {Tables.AwardedTo} a INNER JOIN {Tables.PlayerIdentity} pi ON a.PlayerIdentityId = pi.PlayerIdentityId 
+                                WHERE a.MatchId = @MatchId",
+                            new { auditableMatch.MatchId },
+                            transaction).ConfigureAwait(false);
+
+                    var playerIdentitiesWithAwardsBefore = awardsBefore.Select(x => x.playerIdentityId).ToList();
+                    var playerIdentitiesAffectedByAwards = new List<(Guid playerIdentityId, string playerIdentityName, Guid teamId)>();
+
                     await connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
                     var awardId = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT AwardId FROM {Tables.Award} WHERE AwardName = 'Player of the match'", null, transaction).ConfigureAwait(false);
                     if (awardId.HasValue)
@@ -1330,14 +1339,21 @@ namespace Stoolball.Data.SqlServer
                                         award.Reason
                                     },
                                     transaction).ConfigureAwait(false);
+
+                            // If this is a new award, add to affected player identities
+                            if (!playerIdentitiesWithAwardsBefore.Contains(award.PlayerIdentity.PlayerIdentityId.Value))
+                            {
+                                playerIdentitiesAffectedByAwards.Add((award.PlayerIdentity.PlayerIdentityId.Value, award.PlayerIdentity.PlayerIdentityName, award.PlayerIdentity.Team.TeamId.Value));
+                            }
                         }
                     }
+                    // If awards removed, add those player identities to affected identities
+                    playerIdentitiesAffectedByAwards.AddRange(awardsBefore.Where(x => !auditableMatch.Awards.Select(award => award.PlayerIdentity.PlayerIdentityId).Contains(x.playerIdentityId)));
 
                     var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
 
                     await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId.Value, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
-                    foreach (var teamId in auditableMatch.Teams.Select(x => x.Team.TeamId)) { await _statisticsRepository.UpdatePlayerProbability(teamId, transaction).ConfigureAwait(false); }
 
                     var redacted = CreateRedactedCopy(auditableMatch);
                     await _auditRepository.CreateAudit(new AuditRecord

@@ -92,13 +92,14 @@ namespace Stoolball.Data.SqlServer
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var sql = $@"SELECT stats.PlayerIdentityId, stats.PlayerIdentityName, stats.Probability, 
+                const string PROBABILITY_CALCULATION = "COUNT(DISTINCT MatchId)*10-DATEDIFF(DAY,MAX(MatchStartTime),GETDATE())";
+                var sql = $@"SELECT stats.PlayerIdentityId, stats.PlayerIdentityName, {PROBABILITY_CALCULATION} AS Probability, 
                             COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed,
                             stats.PlayerId, stats.PlayerRoute, stats.TeamId, stats.TeamName
                             FROM {Tables.PlayerInMatchStatistics} AS stats 
                             <<WHERE>>
-                            GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName, stats.Probability
-                            ORDER BY stats.TeamId ASC, Probability DESC, stats.PlayerIdentityName ASC";
+                            GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName 
+                            ORDER BY stats.TeamId ASC, {PROBABILITY_CALCULATION} DESC, stats.PlayerIdentityName ASC";
 
                 var where = new List<string>();
                 var parameters = new Dictionary<string, object>();

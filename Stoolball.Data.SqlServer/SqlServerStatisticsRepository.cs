@@ -210,14 +210,5 @@ namespace Stoolball.Data.SqlServer
                         transaction).ConfigureAwait(false);
             }
         }
-
-        public async Task UpdatePlayerProbability(Guid? teamId, IDbTransaction transaction)
-        {
-            if (transaction is null)
-            {
-                throw new ArgumentNullException(nameof(transaction));
-            }
-            await transaction.Connection.ExecuteAsync("EXEC usp_Statistics_UpdateProbability @TeamId", new { TeamId = teamId }, transaction).ConfigureAwait(false);
-        }
     }
 }

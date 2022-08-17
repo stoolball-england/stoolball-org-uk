@@ -5,7 +5,7 @@ using Umbraco.Cms.Infrastructure.Migrations;
 namespace Stoolball.Data.UmbracoMigrations
 {
     /// <summary>
-    /// Adds a table for recording the home grounds and venues of stoolball teams which can change over time
+    /// Adds a probability column and a stored procedure to populate it. Probability is used to order player name suggestions.
     /// </summary>
     public partial class StatisticsAddProbability : MigrationBase
     {

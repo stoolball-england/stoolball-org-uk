@@ -142,13 +142,6 @@ namespace Stoolball.Web.Statistics.Admin
                             _taskTracker.IncrementErrorsBy(taskId, 1);
                         }
                     }
-
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        await _statisticsRepository.UpdatePlayerProbability(null, transaction);
-                        transaction.Commit();
-                    }
-
                     _logger.Info("Completed updating match statistics for all matches in {Type:l}.{Method:l}.", GetType(), nameof(UpdateStatistics));
                 }
             }

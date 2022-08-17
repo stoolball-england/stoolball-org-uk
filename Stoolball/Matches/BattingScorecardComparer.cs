@@ -41,6 +41,10 @@ namespace Stoolball.Matches
             comparison.BowlingPlayerIdentitiesAdded.AddRange(bowlingIdentitiesAfter.Where(x => !bowlingIdentitiesBefore.Contains(x)));
             comparison.BattingPlayerIdentitiesRemoved.AddRange(battingIdentitiesBefore.Where(x => !battingIdentitiesAfter.Contains(x)));
             comparison.BowlingPlayerIdentitiesRemoved.AddRange(bowlingIdentitiesBefore.Where(x => !bowlingIdentitiesAfter.Contains(x)));
+            comparison.BattingPlayerIdentitiesAffected.AddRange(comparison.BattingPlayerIdentitiesAdded);
+            comparison.BattingPlayerIdentitiesAffected.AddRange(comparison.BattingPlayerIdentitiesRemoved);
+            comparison.BowlingPlayerIdentitiesAffected.AddRange(comparison.BowlingPlayerIdentitiesAdded);
+            comparison.BowlingPlayerIdentitiesAffected.AddRange(comparison.BowlingPlayerIdentitiesRemoved);
 
             var index = 0;
             PlayerInnings inningsBefore = null, inningsAfter = null;
@@ -77,32 +81,32 @@ namespace Stoolball.Matches
                     {
                         comparison.PlayerInningsChanged.Add((inningsBefore, inningsAfter));
 
-                        if (!comparison.BattingPlayerIdentitiesRemoved.Contains(inningsBefore.Batter.PlayerIdentityName) && !comparison.BattingPlayerIdentitiesAffected.Contains(inningsBefore.Batter.PlayerIdentityName))
+                        if (!comparison.BattingPlayerIdentitiesAffected.Contains(inningsBefore.Batter.PlayerIdentityName))
                         {
                             comparison.BattingPlayerIdentitiesAffected.Add(inningsBefore.Batter.PlayerIdentityName);
                         }
 
-                        if (inningsBefore.DismissedBy != null && !comparison.BowlingPlayerIdentitiesRemoved.Contains(inningsBefore.DismissedBy.PlayerIdentityName) && !comparison.BowlingPlayerIdentitiesAffected.Contains(inningsBefore.DismissedBy.PlayerIdentityName))
+                        if (inningsBefore.DismissedBy != null && !comparison.BowlingPlayerIdentitiesAffected.Contains(inningsBefore.DismissedBy.PlayerIdentityName))
                         {
                             comparison.BowlingPlayerIdentitiesAffected.Add(inningsBefore.DismissedBy.PlayerIdentityName);
                         }
 
-                        if (inningsBefore.Bowler != null && !comparison.BowlingPlayerIdentitiesRemoved.Contains(inningsBefore.Bowler.PlayerIdentityName) && !comparison.BowlingPlayerIdentitiesAffected.Contains(inningsBefore.Bowler.PlayerIdentityName))
+                        if (inningsBefore.Bowler != null && !comparison.BowlingPlayerIdentitiesAffected.Contains(inningsBefore.Bowler.PlayerIdentityName))
                         {
                             comparison.BowlingPlayerIdentitiesAffected.Add(inningsBefore.Bowler.PlayerIdentityName);
                         }
 
-                        if (!comparison.BattingPlayerIdentitiesAdded.Contains(inningsAfter.Batter.PlayerIdentityName) && !comparison.BattingPlayerIdentitiesAffected.Contains(inningsAfter.Batter.PlayerIdentityName))
+                        if (!comparison.BattingPlayerIdentitiesAffected.Contains(inningsAfter.Batter.PlayerIdentityName))
                         {
                             comparison.BattingPlayerIdentitiesAffected.Add(inningsAfter.Batter.PlayerIdentityName);
                         }
 
-                        if (inningsAfter.DismissedBy != null && !comparison.BowlingPlayerIdentitiesRemoved.Contains(inningsAfter.DismissedBy.PlayerIdentityName) && !comparison.BowlingPlayerIdentitiesAffected.Contains(inningsAfter.DismissedBy.PlayerIdentityName))
+                        if (inningsAfter.DismissedBy != null && !comparison.BowlingPlayerIdentitiesAffected.Contains(inningsAfter.DismissedBy.PlayerIdentityName))
                         {
                             comparison.BowlingPlayerIdentitiesAffected.Add(inningsAfter.DismissedBy.PlayerIdentityName);
                         }
 
-                        if (inningsAfter.Bowler != null && !comparison.BowlingPlayerIdentitiesRemoved.Contains(inningsAfter.Bowler.PlayerIdentityName) && !comparison.BowlingPlayerIdentitiesAffected.Contains(inningsAfter.Bowler.PlayerIdentityName))
+                        if (inningsAfter.Bowler != null && !comparison.BowlingPlayerIdentitiesAffected.Contains(inningsAfter.Bowler.PlayerIdentityName))
                         {
                             comparison.BowlingPlayerIdentitiesAffected.Add(inningsAfter.Bowler.PlayerIdentityName);
                         }
