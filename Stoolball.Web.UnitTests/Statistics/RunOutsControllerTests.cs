@@ -42,6 +42,23 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
+        public async Task Player_not_found_returns_404()
+        {
+            var defaultFilter = new StatisticsFilter { Player = null };
+            var appliedFilter = defaultFilter.Clone();
+
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(defaultFilter, It.IsAny<string>())).Returns(appliedFilter);
+            _statisticsFilterFactory.Setup(x => x.FromRoute(Request.Object.Path)).Returns(Task.FromResult(defaultFilter));
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                Assert.IsType<NotFoundResult>(result);
+            }
+        }
+
+        [Fact]
         public async Task Player_with_no_run_outs_returns_StatisticsViewModel()
         {
             var playerId = Guid.NewGuid();
