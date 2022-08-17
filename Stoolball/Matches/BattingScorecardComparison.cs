@@ -7,7 +7,7 @@ namespace Stoolball.Matches
         public List<PlayerInnings> PlayerInningsAdded { get; internal set; } = new List<PlayerInnings>();
         public List<(PlayerInnings, PlayerInnings)> PlayerInningsChanged { get; internal set; } = new List<(PlayerInnings, PlayerInnings)>();
         public List<PlayerInnings> PlayerInningsRemoved { get; internal set; } = new List<PlayerInnings>();
-        public List<PlayerInnings> PlayerInningsUnchanged { get; internal set; } = new List<PlayerInnings>();
+        public List<(PlayerInnings, PlayerInnings)> PlayerInningsUnchanged { get; internal set; } = new List<(PlayerInnings, PlayerInnings)>();
 
         /// <summary>
         /// Batter identities which were not featured in the 'before' scorecard.

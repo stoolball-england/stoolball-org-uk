@@ -113,7 +113,7 @@ namespace Stoolball.Matches
                     }
                     else
                     {
-                        comparison.PlayerInningsUnchanged.Add(inningsBefore);
+                        comparison.PlayerInningsUnchanged.Add((inningsBefore, inningsAfter));
                     }
                 }
 

@@ -1006,7 +1006,11 @@ namespace Stoolball.Data.SqlServer
                                 after.BallsFaced,
                                 after.PlayerInningsId
                             }, transaction).ConfigureAwait(false);
+                    }
 
+                    foreach (var (before, after) in comparison.PlayerInningsUnchanged)
+                    {
+                        after.PlayerInningsId = before.PlayerInningsId;
                     }
 
                     await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE PlayerInningsId IN @PlayerInningsIds", new { PlayerInningsIds = comparison.PlayerInningsRemoved.Select(x => x.PlayerInningsId) }, transaction).ConfigureAwait(false);
