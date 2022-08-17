@@ -235,9 +235,6 @@ namespace Stoolball.Statistics
                 PlayerId = identity.Player.PlayerId.Value,
                 PlayerIdentityId = identity.PlayerIdentityId.Value,
                 MatchId = match.MatchId.Value,
-                TournamentId = match.Tournament?.TournamentId,
-                MatchLocationId = match.MatchLocation?.MatchLocationId,
-                SeasonId = match.Season?.SeasonId,
                 MatchInningsPair = innings.InningsPair(),
                 TeamRunsScored = isOnBattingTeam ? innings.Runs : pairedInnings.Runs,
                 TeamWicketsLost = isOnBattingTeam ? innings.Wickets : pairedInnings.Wickets,
@@ -248,7 +245,6 @@ namespace Stoolball.Statistics
                 TeamByesConceded = isOnBattingTeam ? pairedInnings.Byes : innings.Byes,
                 TeamWicketsTaken = isOnBattingTeam ? pairedInnings.Wickets : innings.Wickets,
                 MatchTeamId = team.MatchTeamId.Value,
-                TeamId = team.Team.TeamId.Value,
                 OppositionTeamId = opposition.Team.TeamId.Value
             };
         }

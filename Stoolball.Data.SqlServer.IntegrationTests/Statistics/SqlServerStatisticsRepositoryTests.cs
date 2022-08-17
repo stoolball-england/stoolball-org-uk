@@ -274,10 +274,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 using (var transaction = connection.BeginTransaction())
                 {
                     var data = await connection.QuerySingleAsync<(
-                        Guid matchId, DateTimeOffset startTime, MatchType matchType, PlayerType playerType, string matchName, string matchRoute,
-                        Guid matchTeamId, Guid teamId, string teamRoute, string teamName, Guid? clubId, Guid oppositionTeamId, string oppositionTeamRoute, string oppositionTeamName,
-                        Guid playerId, string playerRoute, Guid playerIdentityId, string playerIdentityName)>(
-                        @$"SELECT TOP 1 m.MatchId, m.StartTime, m.MatchType, m.PlayerType, m.MatchName, m.MatchRoute,
+                        Guid matchId, DateTimeOffset startTime, MatchType matchType, PlayerType playerType, string matchName, string matchRoute, Guid? matchLocationId,
+                        Guid? tournamentId, Guid? seasonId, Guid? competitionId, Guid matchTeamId, Guid teamId, string teamRoute, string teamName, Guid? clubId,
+                        Guid oppositionTeamId, string oppositionTeamRoute, string oppositionTeamName, Guid playerId, string playerRoute, Guid playerIdentityId, string playerIdentityName)>(
+                        @$"SELECT TOP 1 m.MatchId, m.StartTime, m.MatchType, m.PlayerType, m.MatchName, m.MatchRoute, m.MatchLocationId, m.TournamentId, m.SeasonId, s.CompetitionId,
                            home.MatchTeamId, home.TeamId, homeTeam.TeamRoute, dbo.fn_TeamName(home.TeamId, m.StartTime) AS TeamName, homeTeam.ClubId,
                            away.TeamId AS OppositionTeamId, awayTeam.TeamRoute AS OppositionTeamRoute, dbo.fn_TeamName(away.TeamId, m.StartTime) AS OppositionTeamName,
                            p.PlayerId, p.PlayerRoute, pi.PlayerIdentityId, pi.PlayerIdentityName
@@ -286,7 +286,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                            INNER JOIN {Tables.MatchTeam} away ON m.MatchId = away.MatchId AND away.TeamRole = '{TeamRole.Away.ToString()}'
                            INNER JOIN {Tables.Team} awayTeam ON away.TeamId = awayTeam.TeamId
                            INNER JOIN {Tables.PlayerIdentity} pi ON home.TeamId = pi.TeamId AND pi.PlayerIdentityId = (SELECT TOP 1 PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = home.TeamId)
-                           INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId",
+                           INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId
+                           LEFT JOIN {Tables.Season} s ON m.SeasonId = s.SeasonId",
                            transaction: transaction).ConfigureAwait(false);
 
                     var stats = new PlayerInMatchStatisticsRecord
@@ -295,7 +296,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                         PlayerIdentityId = data.playerIdentityId,
                         MatchId = data.matchId,
                         MatchTeamId = data.matchTeamId,
-                        TeamId = data.teamId,
                         OppositionTeamId = data.oppositionTeamId,
                         MatchInningsPair = 1,
                         HasRunsConceded = false,
@@ -348,11 +348,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                 AND DismissalType IS NULL
                                 AND RunsScored IS NULL
                                 AND BallsFaced IS NULL
-                                AND ClubId = @clubId
-                                AND TournamentId IS NULL
-                                AND SeasonId IS NULL
-                                AND CompetitionId IS NULL
-                                AND MatchLocationId IS NULL
+                                AND (ClubId = @clubId OR (ClubId IS NULL AND @clubId IS NULL)) 
+                                AND (TournamentId = @tournamentId OR (TournamentId IS NULL AND @tournamentId IS NULL)) 
+                                AND (SeasonId = @seasonId OR (SeasonId IS NULL AND @seasonId IS NULL)) 
+                                AND (CompetitionId = @competitionId OR (CompetitionId IS NULL AND @competitionId IS NULL)) 
+                                AND (MatchLocationId = @matchLocationId OR (MatchLocationId IS NULL AND @matchLocationId IS NULL)) 
                                 AND Overs IS NULL
                                 AND OverNumberOfFirstOverBowled IS NULL
                                 AND BallsBowled IS NULL
@@ -385,10 +385,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                data.matchName,
                                                data.matchRoute,
                                                stats.MatchTeamId,
-                                               stats.TeamId,
+                                               data.teamId,
                                                data.teamName,
                                                data.teamRoute,
                                                data.clubId,
+                                               data.tournamentId,
+                                               data.seasonId,
+                                               data.competitionId,
+                                               data.matchLocationId,
                                                stats.OppositionTeamId,
                                                data.oppositionTeamName,
                                                data.oppositionTeamRoute,
@@ -421,8 +425,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     // For this test the data doesn't need to be real (ie the team doesn't have to be right for the players, dismissals can be caught and run-out)  
                     // but the IDs do need to be valid foreign keys.
 
-                    var matchData = (await connection.QueryAsync<(Guid matchId, Guid homeMatchTeamId, Guid awayMatchTeamId, Guid teamId, Guid oppositionTeamId, Guid matchLocationId)>(
-                        @$"SELECT TOP 3 m.MatchId, home.MatchTeamId AS HomeMatchTeamId, away.MatchTeamId AS AwayMatchTeamId, home.TeamId, away.TeamId AS OppositionTeamId, m.MatchLocationId
+                    var matchData = (await connection.QueryAsync<(Guid matchId, Guid homeMatchTeamId, Guid awayMatchTeamId, Guid oppositionTeamId)>(
+                        @$"SELECT TOP 3 m.MatchId, home.MatchTeamId AS HomeMatchTeamId, away.MatchTeamId AS AwayMatchTeamId, away.TeamId AS OppositionTeamId
                            FROM {Tables.Match} m 
                            INNER JOIN {Tables.MatchTeam} home ON m.MatchId = home.MatchId AND home.TeamRole = '{TeamRole.Home.ToString()}'
                            INNER JOIN {Tables.Team} homeTeam ON home.TeamId = homeTeam.TeamId
@@ -432,11 +436,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
                     var playerData = (await connection.QueryAsync<(Guid playerId, Guid playerIdentityId)>(
                         $"SELECT TOP 12 PlayerId, PlayerIdentityId FROM {Tables.PlayerIdentity}", transaction: transaction).ConfigureAwait(false)).AsList();
-
-                    var competitionData = (await connection.QueryAsync<(Guid seasonId, Guid tournamentId)>(
-                        @$"SELECT TOP 3 s.SeasonId, t.TournamentId FROM {Tables.Tournament} t
-                           INNER JOIN {Tables.TournamentSeason} ts ON t.TournamentId = ts.TournamentId
-                           INNER JOIN {Tables.Season} s ON ts.SeasonId = s.SeasonId", transaction: transaction).ConfigureAwait(false)).AsList();
 
                     var bowlingFiguresData = (await connection.QueryAsync<Guid>($"SELECT TOP 3 BowlingFiguresId FROM {Tables.BowlingFigures}", transaction: transaction).ConfigureAwait(false)).AsList();
                     var playerInningsData = (await connection.QueryAsync<Guid>($"SELECT TOP 3 PlayerInningsId FROM {Tables.PlayerInnings}", transaction: transaction).ConfigureAwait(false)).AsList();
@@ -454,7 +453,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                             PlayerIdentityId = playerData[playerIndex].playerIdentityId,
                             MatchId = matchData[i].matchId,
                             MatchTeamId = matchData[i].homeMatchTeamId,
-                            TeamId = matchData[i].teamId,
                             OppositionTeamId = matchData[i].oppositionTeamId,
                             MatchInningsPair = isEven ? 2 : 1,
                             HasRunsConceded = isEven,
@@ -473,9 +471,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                             DismissalType = isEven ? DismissalType.CaughtAndBowled : DismissalType.Bowled,
                             RunsScored = 33 + i,
                             BallsFaced = 30 + i,
-                            TournamentId = competitionData[i].tournamentId,
-                            SeasonId = competitionData[i].seasonId,
-                            MatchLocationId = matchData[i].matchLocationId,
                             Overs = (decimal)2.5 + i,
                             OverNumberOfFirstOverBowled = 7 + i,
                             BallsBowled = 16 + i,
@@ -507,7 +502,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                 AND PlayerIdentityId = @PlayerIdentityId
                                 AND MatchId = @MatchId
                                 AND MatchTeamId = @MatchTeamId
-                                AND TeamId = @TeamId
                                 AND OppositionTeamId = @OppositionTeamId
                                 AND MatchInningsPair = @MatchInningsPair
                                 AND HasRunsConceded = @HasRunsConceded
@@ -526,9 +520,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                 AND DismissalType = @DismissalType
                                 AND RunsScored = @RunsScored
                                 AND BallsFaced = @BallsFaced
-                                AND TournamentId = @TournamentId
-                                AND SeasonId = @SeasonId
-                                AND MatchLocationId = @MatchLocationId
                                 AND Overs = @Overs
                                 AND OverNumberOfFirstOverBowled = @OverNumberOfFirstOverBowled
                                 AND BallsBowled = @BallsBowled
@@ -554,7 +545,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                     record.PlayerIdentityId,
                                     record.MatchId,
                                     record.MatchTeamId,
-                                    record.TeamId,
                                     record.OppositionTeamId,
                                     record.MatchInningsPair,
                                     record.HasRunsConceded,
@@ -573,9 +563,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                     record.DismissalType,
                                     record.RunsScored,
                                     record.BallsFaced,
-                                    record.TournamentId,
-                                    record.SeasonId,
-                                    record.MatchLocationId,
                                     record.Overs,
                                     record.OverNumberOfFirstOverBowled,
                                     record.BallsBowled,

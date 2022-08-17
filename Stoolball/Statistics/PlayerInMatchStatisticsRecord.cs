@@ -13,17 +13,9 @@ namespace Stoolball.Statistics
 
         public Guid MatchId { get; set; }
 
-        public Guid? TournamentId { get; set; }
-
-        public Guid? SeasonId { get; set; }
-
         public Guid MatchTeamId { get; set; }
 
-        public Guid TeamId { get; set; }
-
         public Guid OppositionTeamId { get; set; }
-
-        public Guid? MatchLocationId { get; set; }
 
         public int MatchInningsPair { get; set; }
         public int? TeamRunsScored { get; set; }
