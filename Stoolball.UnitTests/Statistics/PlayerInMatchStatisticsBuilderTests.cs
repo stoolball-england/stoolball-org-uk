@@ -33,9 +33,6 @@ namespace Stoolball.UnitTests.Statistics
         private void AssertMatchFields(PlayerInMatchStatisticsRecord playerRecord)
         {
             Assert.Equal(_matchFixture.Match.MatchId, playerRecord.MatchId);
-            Assert.Equal(_matchFixture.Match.Tournament?.TournamentId, playerRecord.TournamentId);
-            Assert.Equal(_matchFixture.Match.MatchLocation.MatchLocationId, playerRecord.MatchLocationId);
-            Assert.Equal(_matchFixture.Match.Season.SeasonId, playerRecord.SeasonId);
             if (_matchFixture.Match.InningsOrderIsKnown)
             {
                 Assert.Equal(_matchFixture.Match.MatchInnings[0].BattingTeam.MatchTeamId == playerRecord.MatchTeamId, playerRecord.BattedFirst);
@@ -53,7 +50,6 @@ namespace Stoolball.UnitTests.Statistics
             Assert.Equal(innings.InningsPair(), playerRecord.MatchInningsPair);
 
             Assert.Equal(isOnBattingTeam ? innings.BattingTeam.MatchTeamId : innings.BowlingTeam.MatchTeamId, playerRecord.MatchTeamId);
-            Assert.Equal(isOnBattingTeam ? innings.BattingTeam.Team.TeamId : innings.BowlingTeam.Team.TeamId, playerRecord.TeamId);
             Assert.Equal(isOnBattingTeam ? innings.BowlingTeam.Team.TeamId : innings.BattingTeam.Team.TeamId, playerRecord.OppositionTeamId);
         }
 
