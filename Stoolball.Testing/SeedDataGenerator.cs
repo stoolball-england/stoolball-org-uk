@@ -829,13 +829,18 @@ namespace Stoolball.Testing
                 }
             }
 
-            // Since all player identities in a team get used, we can update individual participation stats from the team
             foreach (var identity in testData.PlayerIdentities)
             {
-                var matchesPlayedByThisTeam = testData.Matches.Where(x => x.Teams.Any(t => t.Team.TeamId == identity.Team.TeamId)).ToList();
-                identity.TotalMatches = matchesPlayedByThisTeam.Count;
-                identity.FirstPlayed = matchesPlayedByThisTeam.Min(x => x.StartTime);
-                identity.LastPlayed = matchesPlayedByThisTeam.Max(x => x.StartTime);
+                var matchesPlayedByThisIdentity = testData.Matches.Where(
+                    match => match.MatchInnings.Any(mi =>
+                        mi.OversBowled.Any(o => o.Bowler.PlayerIdentityId == identity.PlayerIdentityId) ||
+                        mi.PlayerInnings.Any(pi => pi.Batter.PlayerIdentityId == identity.PlayerIdentityId) ||
+                        mi.PlayerInnings.Any(pi => pi.DismissedBy?.PlayerIdentityId == identity.PlayerIdentityId) ||
+                        mi.PlayerInnings.Any(pi => pi.Bowler?.PlayerIdentityId == identity.PlayerIdentityId)) ||
+                        match.Awards.Any(aw => aw.PlayerIdentity?.PlayerIdentityId == identity.PlayerIdentityId));
+                identity.TotalMatches = matchesPlayedByThisIdentity.Select(x => x.MatchId).Distinct().Count();
+                identity.FirstPlayed = matchesPlayedByThisIdentity.Min(x => x.StartTime);
+                identity.LastPlayed = matchesPlayedByThisIdentity.Max(x => x.StartTime);
             }
 
             // Find any player who has multiple identities and bowled
