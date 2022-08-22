@@ -25,7 +25,7 @@ namespace Stoolball.Testing
         private readonly IFakerFactory<MatchLocation> _matchLocationFakerFactory;
         private readonly IFakerFactory<School> _schoolFakerFactory;
         private readonly IOversHelper _oversHelper;
-        private List<(Team team, List<PlayerIdentity> identities)> _teams;
+        private List<(Team team, List<PlayerIdentity> identities)> _teams = new();
         private List<MatchLocation> _matchLocations = new List<MatchLocation>();
         private List<Competition> _competitions = new List<Competition>();
 
@@ -792,7 +792,7 @@ namespace Stoolball.Testing
                         teamsInMatches.Select(t => t.TeamId).Contains(x.TeamId)
             );
             var teamInTournament = new TeamInTournament { Team = testData.TeamWithFullDetails, TeamRole = TournamentTeamRole.Confirmed };
-            testData.TournamentWithFullDetails.Teams.Add(teamInTournament);
+            testData.TournamentWithFullDetails!.Teams.Add(teamInTournament);
 
             var matchInTournament = CreateMatchBetween(testData.TeamWithFullDetails, new List<PlayerIdentity>(), testData.TeamWithFullDetails, new List<PlayerIdentity>(), true);
             matchInTournament.Tournament = testData.TournamentWithFullDetails;
@@ -926,7 +926,7 @@ namespace Stoolball.Testing
 
         private class PlayerTotal
         {
-            internal Player Player { get; set; }
+            internal Player? Player { get; set; }
             internal int Total { get; set; }
         }
 
@@ -945,7 +945,7 @@ namespace Stoolball.Testing
             {
                 if (allPlayers[i].Total == 0)
                 {
-                    AddRunOutForPlayer(testData.Matches, allPlayers[i].Player);
+                    AddRunOutForPlayer(testData.Matches, allPlayers[i].Player!);
                     allPlayers[i].Total++;
                 }
             }
@@ -955,7 +955,7 @@ namespace Stoolball.Testing
 
             while (differenceBetweenFifthAndSixth > 0)
             {
-                AddRunOutForPlayer(testData.Matches, sixthPlayer.Player);
+                AddRunOutForPlayer(testData.Matches, sixthPlayer.Player!);
 
                 differenceBetweenFifthAndSixth--;
             }
@@ -964,7 +964,7 @@ namespace Stoolball.Testing
         private static void AddRunOutForPlayer(List<Match> matches, Player player)
         {
             var matchInningsWherePlayerSixCouldCompleteRunOuts = matches.SelectMany(m => m.MatchInnings)
-                                               .Where(mi => player.PlayerIdentities.Select(pi => pi.Team.TeamId.Value).Contains(mi.BowlingTeam.Team.TeamId.Value) &&
+                                               .Where(mi => player.PlayerIdentities.Select(pi => pi.Team.TeamId!.Value).Contains(mi.BowlingTeam.Team.TeamId!.Value) &&
                                                             mi.PlayerInnings.Any(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType))
                                                ).First();
 
@@ -989,7 +989,7 @@ namespace Stoolball.Testing
             {
                 if (allPlayers[i].Total == 0)
                 {
-                    AddCatchForPlayer(testData.Matches, allPlayers[i].Player);
+                    AddCatchForPlayer(testData.Matches, allPlayers[i].Player!);
                     allPlayers[i].Total++;
                 }
             }
@@ -999,7 +999,7 @@ namespace Stoolball.Testing
 
             while (differenceBetweenFifthAndSixth > 0)
             {
-                AddCatchForPlayer(testData.Matches, sixthPlayer.Player);
+                AddCatchForPlayer(testData.Matches, sixthPlayer.Player!);
 
                 differenceBetweenFifthAndSixth--;
             }
@@ -1008,7 +1008,7 @@ namespace Stoolball.Testing
         private void AddCatchForPlayer(List<Match> matches, Player player)
         {
             var matchInningsWherePlayerSixCouldTakeCatches = matches.SelectMany(m => m.MatchInnings)
-                                               .Where(mi => player.PlayerIdentities.Select(pi => pi.Team.TeamId.Value).Contains(mi.BowlingTeam.Team.TeamId.Value) &&
+                                               .Where(mi => player.PlayerIdentities.Select(pi => pi.Team.TeamId!.Value).Contains(mi.BowlingTeam.Team.TeamId!.Value) &&
                                                             mi.PlayerInnings.Any(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType))
                                                ).First();
 
@@ -1054,7 +1054,7 @@ namespace Stoolball.Testing
             while (differenceBetweenFifthAndSixth > 0)
             {
                 var matchInningsWherePlayerSixCouldTakeWickets = testData.Matches.SelectMany(m => m.MatchInnings)
-                                                   .Where(mi => sixthPlayer.Player.PlayerIdentities.Select(pi => pi.Team.TeamId.Value).Contains(mi.BowlingTeam.Team.TeamId.Value) &&
+                                                   .Where(mi => sixthPlayer.Player.PlayerIdentities.Select(pi => pi.Team.TeamId!.Value).Contains(mi.BowlingTeam.Team.TeamId!.Value) &&
                                                                 mi.PlayerInnings.Any(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType))
                                                    ).First();
 
@@ -1117,7 +1117,7 @@ namespace Stoolball.Testing
 
                 // On a different team
                 var player3 = playerIdentities[_randomiser.Next(playerIdentities.Count)];
-                (Team targetTeam, List<PlayerIdentity> targetIdentities) = (null, null);
+                (Team? targetTeam, List<PlayerIdentity>? targetIdentities) = (null, null);
                 do
                 {
                     (targetTeam, targetIdentities) = _teams[_randomiser.Next(_teams.Count)];
@@ -1139,7 +1139,7 @@ namespace Stoolball.Testing
                 var homeTeamBatsFirst = FiftyFiftyChance();
 
                 var (teamA, teamAPlayers) = _teams[_randomiser.Next(_teams.Count)];
-                (Team teamB, List<PlayerIdentity> teamBPlayers) = (null, null);
+                (Team? teamB, List<PlayerIdentity>? teamBPlayers) = (null, null);
                 do
                 {
                     (teamB, teamBPlayers) = _teams[_randomiser.Next(_teams.Count)];
@@ -1240,7 +1240,7 @@ namespace Stoolball.Testing
             // 1. Find any player with identities on two teams
             var anyPlayerWithIdentitiesOnMultipleTeams = _teams.SelectMany(x => x.identities)
                 .GroupBy(x => x.Player.PlayerId, x => x, (playerId, playerIdentities) => new Player { PlayerId = playerId, PlayerIdentities = playerIdentities.ToList() })
-                .Where(x => x.PlayerIdentities.Select(t => t.Team.TeamId.Value).Distinct().Count() > 1)
+                .Where(x => x.PlayerIdentities.Select(t => t.Team.TeamId!.Value).Distinct().Count() > 1)
                 .First();
 
             // 2. Create a match between those teams
@@ -1422,10 +1422,10 @@ namespace Stoolball.Testing
             };
         }
 
-        private PlayerInnings CreateRandomPlayerInnings(Match match, int battingPosition, PlayerIdentity batter, PlayerIdentity fielderOrMissingData, PlayerIdentity bowlerOrMissingData)
+        private PlayerInnings CreateRandomPlayerInnings(Match match, int battingPosition, PlayerIdentity batter, PlayerIdentity? fielderOrMissingData, PlayerIdentity? bowlerOrMissingData)
         {
             var dismissalTypes = Enum.GetValues(typeof(DismissalType));
-            var dismissal = (DismissalType)dismissalTypes.GetValue(_randomiser.Next(dismissalTypes.Length));
+            var dismissal = (DismissalType)dismissalTypes.GetValue(_randomiser.Next(dismissalTypes.Length))!;
             if (dismissal != DismissalType.Caught || dismissal != DismissalType.RunOut)
             {
                 fielderOrMissingData = null;
