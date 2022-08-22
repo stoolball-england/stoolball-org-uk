@@ -319,7 +319,7 @@ namespace Stoolball.Data.SqlServer
 
             foreach (var team in auditableMatch.Teams)
             {
-                Guid matchTeamId;
+                Guid? matchTeamId = null;
                 if (team.TeamRole == TeamRole.Home)
                 {
                     homeMatchTeamId = Guid.NewGuid();

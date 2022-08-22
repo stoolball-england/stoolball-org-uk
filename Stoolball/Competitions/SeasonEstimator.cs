@@ -9,8 +9,6 @@ namespace Stoolball.Competitions
     {
         public (DateTimeOffset fromDate, DateTimeOffset untilDate) EstimateSeasonDates(DateTimeOffset dateToEstimateFrom)
         {
-            if (dateToEstimateFrom == null) { throw new ArgumentNullException(nameof(dateToEstimateFrom)); }
-
             var summerSeasonStartMonth = 4;
             var winterSeasonStartMonth = 10;
 
