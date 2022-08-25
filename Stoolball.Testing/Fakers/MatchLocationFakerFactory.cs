@@ -9,7 +9,7 @@ namespace Stoolball.Testing.Fakers
     {
         public Faker<MatchLocation> Create()
         {
-            Func<string, int, string> maxLength = (string text, int max) => text != null && text.Length > max ? text.Substring(0, max) : text;
+            Func<string?, int, string?> maxLength = (string? text, int max) => text != null && text.Length > max ? text.Substring(0, max) : text;
 
             return new Faker<MatchLocation>()
                 .RuleFor(x => x.MatchLocationId, () => Guid.NewGuid())
