@@ -252,7 +252,9 @@ namespace Stoolball.Web
             services.AddScoped<DelegatedContentSecurityPolicyAttribute>();
 
             // Routing controllers for stoolball data pages.
+            services.AddTransient<IRouteTokeniser, RouteTokeniser>();
             services.AddTransient<IRouteGenerator, RouteGenerator>();
+            services.AddTransient<IBestRouteSelector, BestRouteSelector>();
             services.AddTransient<IStoolballRouteParser, StoolballRouteParser>();
             services.AddTransient<IStoolballRouteTypeMapper, StoolballRouteTypeMapper>();
             services.AddTransient<IStoolballRouterController, StoolballRouterController>();

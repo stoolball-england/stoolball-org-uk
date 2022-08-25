@@ -29,7 +29,7 @@ namespace Stoolball.UnitTests
         [InlineData("/competitions/EXAMPLE/2021/page", StoolballEntityType.Season)]
         [InlineData("/competitions/example/2021-2022", StoolballEntityType.Season)]
         [InlineData("/competitions/Example-Competition/2021-2022/some/page", StoolballEntityType.Season)]
-        public void Route_is_parsed_coorectly(string route, StoolballEntityType? expected)
+        public void Route_is_parsed_correctly(string route, StoolballEntityType? expected)
         {
             var parser = new StoolballEntityRouteParser();
 

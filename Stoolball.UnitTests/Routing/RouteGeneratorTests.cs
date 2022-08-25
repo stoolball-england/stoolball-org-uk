@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Moq;
 using Stoolball.Routing;
 using Xunit;
 
@@ -7,11 +8,14 @@ namespace Stoolball.UnitTests.Routing
 {
     public class RouteGeneratorTests
     {
+        private readonly Mock<IRouteTokeniser> _tokeniser = new();
+
         [Fact]
         public void Route_is_lowercase()
         {
             var original = "MiXeD";
-            var generator = new RouteGenerator();
+            _tokeniser.Setup(x => x.TokeniseRoute(original)).Returns((original, null));
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = generator.GenerateRoute(string.Empty, original, Array.Empty<string>());
 
@@ -22,7 +26,8 @@ namespace Stoolball.UnitTests.Routing
         public void Punctuation_is_removed()
         {
             var original = "example? route's punctuation; good! example.";
-            var generator = new RouteGenerator();
+            _tokeniser.Setup(x => x.TokeniseRoute(original)).Returns((original, null));
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = generator.GenerateRoute(string.Empty, original, Array.Empty<string>());
 
@@ -33,7 +38,8 @@ namespace Stoolball.UnitTests.Routing
         public void Noise_word_removed_from_start()
         {
             var original = "stoolball-ladies";
-            var generator = new RouteGenerator();
+            _tokeniser.Setup(x => x.TokeniseRoute(original)).Returns((original, null));
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = generator.GenerateRoute(string.Empty, original, new[] { "stoolball" });
 
@@ -44,7 +50,8 @@ namespace Stoolball.UnitTests.Routing
         public void Noise_word_removed_from_middle()
         {
             var original = "some-stoolball-friends";
-            var generator = new RouteGenerator();
+            _tokeniser.Setup(x => x.TokeniseRoute(original)).Returns((original, null));
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = generator.GenerateRoute(string.Empty, original, new[] { "stoolball" });
 
@@ -55,7 +62,8 @@ namespace Stoolball.UnitTests.Routing
         public void Noise_word_removed_from_end()
         {
             var original = "somewhere-club";
-            var generator = new RouteGenerator();
+            _tokeniser.Setup(x => x.TokeniseRoute(original)).Returns((original, null));
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = generator.GenerateRoute(string.Empty, original, new[] { "club" });
 
@@ -68,7 +76,8 @@ namespace Stoolball.UnitTests.Routing
         {
             var prefix = "prefix";
             var original = "example";
-            var generator = new RouteGenerator();
+            _tokeniser.Setup(x => x.TokeniseRoute(original)).Returns((original, null));
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = generator.GenerateRoute(prefix, original, Array.Empty<string>());
 
@@ -79,7 +88,8 @@ namespace Stoolball.UnitTests.Routing
         public void Increment_adds_1_where_no_counter()
         {
             var original = "example";
-            var generator = new RouteGenerator();
+            _tokeniser.Setup(x => x.TokeniseRoute(original)).Returns((original, null));
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = generator.IncrementRoute(original);
 
@@ -90,7 +100,8 @@ namespace Stoolball.UnitTests.Routing
         public void Increment_adds_1_to_existing_counter()
         {
             var original = "example-1";
-            var generator = new RouteGenerator();
+            _tokeniser.Setup(x => x.TokeniseRoute(original)).Returns(("example", 1));
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = generator.IncrementRoute(original);
 
@@ -101,7 +112,8 @@ namespace Stoolball.UnitTests.Routing
         public void Increment_adds_1_to_existing_counter_greater_than_9()
         {
             var original = "example-10";
-            var generator = new RouteGenerator();
+            _tokeniser.Setup(x => x.TokeniseRoute(original)).Returns(("example", 10));
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = generator.IncrementRoute(original);
 
@@ -115,7 +127,11 @@ namespace Stoolball.UnitTests.Routing
         [InlineData("/original", "/something-went-wrong", false)]
         public void Routes_should_match_disregarding_counter(string original, string generated, bool shouldMatch)
         {
-            var generator = new RouteGenerator();
+            _tokeniser.Setup(x => x.TokeniseRoute("/original")).Returns(("/original", null));
+            _tokeniser.Setup(x => x.TokeniseRoute("/original-1")).Returns(("/original", 1));
+            _tokeniser.Setup(x => x.TokeniseRoute("/original-2")).Returns(("/original", 2));
+            _tokeniser.Setup(x => x.TokeniseRoute("/something-went-wrong")).Returns(("/something-went-wrong", null));
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = generator.IsMatchingRoute(original, generated);
 
@@ -125,7 +141,7 @@ namespace Stoolball.UnitTests.Routing
         [Fact]
         public async Task GenerateUniqueRoute_returns_route_with_no_counter_when_current_route_is_empty_string()
         {
-            var generator = new RouteGenerator();
+            var generator = new RouteGenerator(_tokeniser.Object);
 
             var result = await generator.GenerateUniqueRoute(string.Empty, null, "Example thing", Array.Empty<string>(), x => Task.FromResult(0)).ConfigureAwait(false);
 
