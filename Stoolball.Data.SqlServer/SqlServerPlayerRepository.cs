@@ -168,7 +168,7 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await connection.ExecuteAsync($"UPDATE {Tables.Player} SET MemberKey = @memberKey WHERE PlayerId = @PlayerId", new { memberKey, player.PlayerId }, transaction);
+                    await connection.ExecuteAsync($"EXEC usp_Link_Player_To_Member @MemberKey, @PlayerId", new { MemberKey = memberKey, player.PlayerId }, transaction);
 
                     var serialisedPlayer = JsonConvert.SerializeObject(_copier.CreateAuditableCopy(player));
                     await _auditRepository.CreateAudit(new AuditRecord
