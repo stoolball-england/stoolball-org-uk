@@ -1,4 +1,4 @@
-﻿const version = "1.0.0";
+﻿const version = "1.0.1";
 const coreCache = version + "_core";
 const cacheIDs = [coreCache];
 
@@ -12,6 +12,7 @@ self.addEventListener("install", function (event) {
       cache.add(new Request("/favicon.ico"));
       cache.add(new Request("/images/logos/stoolball-england-icon.svg"));
       cache.add(new Request("/images/logos/stoolball-england.svg"));
+      cache.add(new Request("/images/photos/duck.jpg"));
       cache.add(new Request("/fonts/mada-v9-latin-regular.woff2"));
       cache.add(new Request("/fonts/mada-v9-latin-700.woff2"));
       cache.add(new Request("/fonts/assistant-v6-latin-600.woff2"));
