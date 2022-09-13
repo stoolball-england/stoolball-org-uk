@@ -5,7 +5,7 @@ using Umbraco.Cms.Infrastructure.Migrations;
 namespace Stoolball.Data.UmbracoMigrations
 {
     /// <summary>
-    /// Adds a table and stored procedures for linking a player to a member account
+    /// Adds a column for linking a player to a member account
     /// </summary>
     public partial class LinkPlayerToMember : MigrationBase
     {
@@ -20,7 +20,6 @@ namespace Stoolball.Data.UmbracoMigrations
             if (!ColumnExists(Tables.Player, "MemberKey"))
             {
                 Create.Column("MemberKey").OnTable(Tables.Player).AsGuid().Nullable().ForeignKey("umbracoNode", "uniqueId").Do();
-                Execute.SqlFromFile("039_LinkPlayerToMember.usp_Link_Player_To_Member.sql").Do();
             }
             else
             {

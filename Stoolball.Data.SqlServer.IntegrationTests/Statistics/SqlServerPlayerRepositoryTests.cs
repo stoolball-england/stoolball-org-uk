@@ -257,22 +257,80 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task LinkPlayerToMemberAccount_updates_player()
+        public async Task LinkPlayerToMemberAccount_where_member_has_no_previous_player_updates_player()
         {
-            var player = _databaseFixture.TestData.Players.Skip(2).Take(1).Single();
+            Guid memberWithNoExistingPlayer;
+            Guid playerNotLinkedToMember;
+            using (var connectionForArrange = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connectionForArrange.Open();
+                memberWithNoExistingPlayer = await connectionForArrange.QuerySingleAsync<Guid>($"SELECT TOP 1 uniqueId FROM umbracoNode WHERE id IN (SELECT nodeId from cmsMember) AND uniqueId NOT IN (SELECT DISTINCT MemberKey FROM {Tables.Player} WHERE MemberKey IS NOT NULL)");
+                playerNotLinkedToMember = await connectionForArrange.QuerySingleAsync<Guid>($"SELECT TOP 1 PlayerId FROM {Tables.Player} WHERE MemberKey IS NULL");
+            }
+
+            var player = new Player { PlayerId = playerNotLinkedToMember };
             var playerCopy = new Player { PlayerId = player.PlayerId };
             var copier = new Mock<IStoolballEntityCopier>();
             copier.Setup(x => x.CreateAuditableCopy(player)).Returns(playerCopy);
-            var memberKey = _databaseFixture.TestData.Members.First().memberId;
 
             var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), copier.Object, Mock.Of<IPlayerNameFormatter>());
-            await repo.LinkPlayerToMemberAccount(player, memberKey, "Member name");
+            await repo.LinkPlayerToMemberAccount(player, memberWithNoExistingPlayer, "Member name");
 
-            using var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection();
-            connection.Open();
-            var result = await connection.QuerySingleAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", playerCopy);
+            using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connectionForAssert.Open();
+                var result = await connectionForAssert.QuerySingleAsync<Guid>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", playerCopy);
 
-            Assert.Equal(memberKey, result);
+                Assert.Equal(memberWithNoExistingPlayer, result);
+            }
+        }
+
+
+        [Fact]
+        public async Task LinkPlayerToMemberAccount_where_member_has_previous_player_merges_players()
+        {
+            (Guid memberKey, Guid playerId) memberWithExistingPlayer;
+            Guid playerNotLinkedToMember;
+            using (var connectionForArrange = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connectionForArrange.Open();
+                memberWithExistingPlayer = await connectionForArrange.QuerySingleAsync<(Guid, Guid)>($"SELECT TOP 1 MemberKey, PlayerId FROM {Tables.Player} WHERE MemberKey IS NOT NULL");
+                playerNotLinkedToMember = await connectionForArrange.QuerySingleAsync<Guid>($"SELECT TOP 1 p.* FROM {Tables.Player} p INNER JOIN {Tables.PlayerIdentity} pi ON p.PlayerId = pi.PlayerId WHERE p.MemberKey IS NULL");
+            }
+
+            var playerAlreadyLinked = _databaseFixture.TestData.Players.Single(x => x.PlayerId == memberWithExistingPlayer.playerId);
+            var playerAlreadyLinkedCopy = new Player { PlayerId = playerAlreadyLinked.PlayerId };
+            var secondPlayer = _databaseFixture.TestData.Players.Single(x => x.PlayerId == playerNotLinkedToMember);
+            var secondPlayerCopy = new Player { PlayerId = secondPlayer.PlayerId };
+            var copier = new Mock<IStoolballEntityCopier>();
+            copier.Setup(x => x.CreateAuditableCopy(playerAlreadyLinked)).Returns(playerAlreadyLinkedCopy);
+            copier.Setup(x => x.CreateAuditableCopy(secondPlayer)).Returns(secondPlayerCopy);
+
+            var repo = new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerPlayerRepository>>(), Mock.Of<IRouteGenerator>(), copier.Object, Mock.Of<IPlayerNameFormatter>());
+            await repo.LinkPlayerToMemberAccount(secondPlayer, memberWithExistingPlayer.memberKey, "Member name");
+
+            using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connectionForAssert.Open();
+
+                var originalPlayerStillLinkedToMember = await connectionForAssert.QuerySingleAsync<Guid>($"SELECT PlayerId FROM {Tables.Player} WHERE MemberKey = @memberKey", new { memberWithExistingPlayer.memberKey });
+                Assert.Equal(memberWithExistingPlayer.playerId, originalPlayerStillLinkedToMember);
+
+                foreach (var identity in secondPlayer.PlayerIdentities)
+                {
+                    var alreadyLinkedPlayerIdNowLinkedToPlayerIdentityFromSecondPlayer = await connectionForAssert.QuerySingleAsync<Guid>($"SELECT PlayerId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId", identity);
+                    Assert.Equal(playerAlreadyLinked.PlayerId, alreadyLinkedPlayerIdNowLinkedToPlayerIdentityFromSecondPlayer);
+
+                    var playerIdsForIdentitiesBelongingToSecondPlayer = await connectionForAssert.QueryAsync<Guid>($"SELECT PlayerId FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = @PlayerIdentityId", identity);
+                    foreach (var playerIdNowLinkedToSecondPlayerIdentityInStatistics in playerIdsForIdentitiesBelongingToSecondPlayer)
+                    {
+                        Assert.Equal(playerAlreadyLinked.PlayerId, playerIdNowLinkedToSecondPlayerIdentityInStatistics);
+                    }
+                }
+
+                var secondPlayerShouldBeRemoved = await connectionForAssert.QuerySingleOrDefaultAsync<int>($"SELECT COUNT(PlayerId) FROM {Tables.Player} WHERE PlayerId = @PlayerId", secondPlayerCopy);
+                Assert.Equal(0, secondPlayerShouldBeRemoved);
+            }
         }
 
         [Fact]

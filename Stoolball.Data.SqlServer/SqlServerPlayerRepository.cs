@@ -168,7 +168,29 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await connection.ExecuteAsync($"EXEC usp_Link_Player_To_Member @MemberKey, @PlayerId", new { MemberKey = memberKey, player.PlayerId }, transaction);
+                    // Is the player already claimed, either by this member or someone else?
+                    var existingMemberForPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", player, transaction);
+                    if (existingMemberForPlayer.HasValue)
+                    {
+                        transaction.Rollback();
+                        return;
+                    }
+
+                    // Is this member already linked to a player?
+                    var existingPlayerForMember = await connection.QuerySingleOrDefaultAsync<Player>($"SELECT TOP 1 PlayerId, PlayerRoute FROM {Tables.Player} WHERE MemberKey = @memberKey", new { memberKey }, transaction);
+                    if (existingPlayerForMember == null)
+                    {
+                        // Link member to player record
+                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET MemberKey = @memberKey WHERE PlayerId = @PlayerId", new { memberKey, player.PlayerId }, transaction);
+                    }
+                    else
+                    {
+                        // Move the player identities from this player id to the member's player id
+                        var replaceWithExistingPlayer = new { ExistingPlayerId = existingPlayerForMember.PlayerId, ExistingPlayerRoute = existingPlayerForMember.PlayerRoute, PlayerId = player.PlayerId };
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @ExistingPlayerId WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction);
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @ExistingPlayerId, PlayerRoute = @ExistingPlayerRoute WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.Player} WHERE PlayerId = @PlayerId", player, transaction);
+                    }
 
                     var serialisedPlayer = JsonConvert.SerializeObject(_copier.CreateAuditableCopy(player));
                     await _auditRepository.CreateAudit(new AuditRecord
