@@ -17,7 +17,7 @@
 
     var totalMatches = Model.Player!.PlayerIdentities.Sum(x => x.TotalMatches);
     var firstMatch = Model.Player!.PlayerIdentities.Min(x => x.FirstPlayed);
-    var lastMatch = Model.Player!.PlayerIdentities.Min(x => x.LastPlayed);
+    var lastMatch = Model.Player!.PlayerIdentities.Max(x => x.LastPlayed);
     var matchYears = firstMatch.HasValue && lastMatch.HasValue ? (firstMatch.Value.Year == lastMatch.Value.Year) ? $"in {firstMatch.Value.Year}" : $"from {firstMatch.Value.Year} to {lastMatch.Value.Year}" : filterHumanizer.MatchingUserFilter(Model.AppliedFilter);
 }
 <div class="container-xl">
