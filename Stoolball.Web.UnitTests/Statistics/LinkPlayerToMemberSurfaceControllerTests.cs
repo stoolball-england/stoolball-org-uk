@@ -88,33 +88,41 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Route_matching_player_returns_PlayerSummaryViewModel_and_LinkPlayerToMember_view()
+        public async Task Route_matching_player_redirects_to_route_returned_by_repository()
         {
-            _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = new Player() }));
-            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = Guid.NewGuid() }));
+            var playerToLink = new Player();
+            var linkedPlayer = new Player { PlayerRoute = "/after" };
+            var memberKey = Guid.NewGuid();
+            var memberName = "Member name";
+            _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = playerToLink }));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = memberKey, Name = memberName }));
+            _playerRepository.Setup(x => x.LinkPlayerToMemberAccount(playerToLink, memberKey, memberName)).Returns(Task.FromResult(linkedPlayer));
 
             using (var controller = CreateController())
             {
                 var result = await controller.LinkPlayerToMemberAccount();
 
-                var viewResult = ((ViewResult)result);
-                Assert.IsType<PlayerSummaryViewModel>(viewResult.Model);
-                Assert.Equal("LinkPlayerToMember", viewResult.ViewName);
+                Assert.IsType<RedirectResult>(result);
+                Assert.Equal(linkedPlayer.PlayerRoute, ((RedirectResult)result).Url);
             }
         }
 
         [Fact]
         public async Task Route_matching_player_clears_cache()
         {
-            var player = new Player();
-            _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = player }));
-            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = Guid.NewGuid() }));
+            var playerToLink = new Player();
+            var linkedPlayer = new Player { PlayerRoute = "/after" };
+            var memberKey = Guid.NewGuid();
+            var memberName = "Member name";
+            _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = playerToLink }));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = memberKey, Name = memberName }));
+            _playerRepository.Setup(x => x.LinkPlayerToMemberAccount(playerToLink, memberKey, memberName)).Returns(Task.FromResult(linkedPlayer));
 
             using (var controller = CreateController())
             {
                 var result = await controller.LinkPlayerToMemberAccount();
 
-                _cacheClearer.Verify(x => x.ClearCacheFor(player), Times.Once);
+                _cacheClearer.Verify(x => x.ClearCacheFor(linkedPlayer), Times.Once);
             }
         }
     }

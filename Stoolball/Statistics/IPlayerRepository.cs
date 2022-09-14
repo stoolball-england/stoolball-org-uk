@@ -18,6 +18,7 @@ namespace Stoolball.Statistics
         /// <param name="player">The player to update</param>
         /// <param name="memberKey">The MemberKey to associate to the member, and the key of the member to update</param>
         /// <param name="memberName">The name of the member making the update</param>
-        Task LinkPlayerToMemberAccount(Player player, Guid memberKey, string memberName);
+        /// <returns>The combined player, with updated <c>PlayerId</c>, <c>PlayerRoute</c> and <c>MemberKey</c> if appropriate.</returns>
+        Task<Player> LinkPlayerToMemberAccount(Player player, Guid memberKey, string memberName);
     }
 }

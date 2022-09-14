@@ -513,12 +513,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                    player);
         }
 
-        public void CreateMember((Guid memberId, string memberName) member)
+        public void CreateMember((Guid memberKey, string memberName) member)
         {
             var nodeId = _connection.QuerySingle<int>("SELECT MAX(Id) + 1 FROM umbracoNode");
             _connection.Execute("SET IDENTITY_INSERT umbracoNode ON");
-            _connection.Execute($"INSERT INTO umbracoNode (id, uniqueid, parentid, level, path, sortOrder, text, nodeObjectType) VALUES (@nodeId, @memberId, @nodeId, 1, CONCAT('-1,', @nodeId), 0, @memberName, '9B5416FB-E72F-45A9-A07B-5A9A2709CE43')",
-                                new { nodeId, member.memberId, member.memberName });
+            _connection.Execute($"INSERT INTO umbracoNode (id, uniqueid, parentid, level, path, sortOrder, text, nodeObjectType) VALUES (@nodeId, @memberKey, @nodeId, 1, CONCAT('-1,', @nodeId), 0, @memberName, '9B5416FB-E72F-45A9-A07B-5A9A2709CE43')",
+                                new { nodeId, member.memberKey, member.memberName });
             _connection.Execute("SET IDENTITY_INSERT umbracoNode OFF");
             _connection.Execute("INSERT INTO umbracoContent (nodeId, contentTypeId) VALUES(@nodeId, (SELECT id FROM umbracoNode WHERE text = 'Member' AND nodeObjectType = '9B5416FB-E72F-45A9-A07B-5A9A2709CE43'))", new { nodeId });
             _connection.Execute("INSERT INTO cmsMember (nodeId, Email) VALUES(@nodeId, @email)", new { nodeId, email = member.memberName.ToLower(CultureInfo.CurrentCulture).Replace(" ", ".") + "@example.org" });

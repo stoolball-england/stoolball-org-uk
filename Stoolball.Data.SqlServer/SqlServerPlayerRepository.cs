@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,24 +20,30 @@ namespace Stoolball.Data.SqlServer
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger<SqlServerPlayerRepository> _logger;
+        private readonly IRedirectsRepository _redirectsRepository;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IStoolballEntityCopier _copier;
         private readonly IPlayerNameFormatter _playerNameFormatter;
+        private readonly IBestRouteSelector _bestRouteSelector;
 
         public SqlServerPlayerRepository(
             IDatabaseConnectionFactory databaseConnectionFactory,
             IAuditRepository auditRepository,
             ILogger<SqlServerPlayerRepository> logger,
+            IRedirectsRepository redirectsRepository,
             IRouteGenerator routeGenerator,
             IStoolballEntityCopier copier,
-            IPlayerNameFormatter playerNameFormatter)
+            IPlayerNameFormatter playerNameFormatter,
+            IBestRouteSelector bestRouteSelector)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _copier = copier ?? throw new ArgumentNullException(nameof(copier));
             _playerNameFormatter = playerNameFormatter ?? throw new ArgumentNullException(nameof(playerNameFormatter));
+            _bestRouteSelector = bestRouteSelector ?? throw new ArgumentNullException(nameof(bestRouteSelector));
         }
 
         /// <summary>
@@ -151,11 +158,11 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc />
-        public async Task LinkPlayerToMemberAccount(Player player, Guid memberKey, string memberName)
+        public async Task<Player> LinkPlayerToMemberAccount(Player player, Guid memberKey, string memberName)
         {
-            if (player == null || !player.PlayerId.HasValue)
+            if (player == null || !player.PlayerId.HasValue || string.IsNullOrEmpty(player.PlayerRoute))
             {
-                throw new ArgumentException(nameof(player), $"{nameof(player)} cannot be null and must have a PlayerId");
+                throw new ArgumentException(nameof(player), $"{nameof(player)} cannot be null and must have a PlayerId and PlayerRoute");
             }
 
             if (string.IsNullOrWhiteSpace(memberName))
@@ -168,31 +175,59 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    // Is the player already claimed, either by this member or someone else?
-                    var existingMemberForPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", player, transaction);
+                    var auditablePlayer = _copier.CreateAuditableCopy(player);
+
+                    // Is the player already linked, either to this member or someone else?
+                    var existingMemberForPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
                     if (existingMemberForPlayer.HasValue)
                     {
                         transaction.Rollback();
-                        return;
+                        throw new InvalidOperationException($"Unable to link player {auditablePlayer.PlayerId} to member {memberKey} because it is already linked to member {existingMemberForPlayer}");
                     }
 
                     // Is this member already linked to a player?
-                    var existingPlayerForMember = await connection.QuerySingleOrDefaultAsync<Player>($"SELECT TOP 1 PlayerId, PlayerRoute FROM {Tables.Player} WHERE MemberKey = @memberKey", new { memberKey }, transaction);
+                    var existingPlayerForMember = await connection.QuerySingleOrDefaultAsync<Player>($"SELECT TOP 1 PlayerId, PlayerRoute, MemberKey FROM {Tables.Player} WHERE MemberKey = @memberKey", new { memberKey }, transaction);
                     if (existingPlayerForMember == null)
                     {
                         // Link member to player record
-                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET MemberKey = @memberKey WHERE PlayerId = @PlayerId", new { memberKey, player.PlayerId }, transaction);
+                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET MemberKey = @memberKey WHERE PlayerId = @PlayerId", new { memberKey, auditablePlayer.PlayerId }, transaction);
+
+                        auditablePlayer.MemberKey = memberKey;
                     }
                     else
                     {
+                        var awaitThese = new List<Task>();
+
+                        // Select the best route from the two players, and redirect
+                        var bestRoute = _bestRouteSelector.SelectBestRoute(existingPlayerForMember.PlayerRoute, auditablePlayer.PlayerRoute);
+                        var obsoleteRoute = bestRoute == existingPlayerForMember.PlayerRoute ? auditablePlayer.PlayerRoute : existingPlayerForMember.PlayerRoute;
+                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, null, transaction));
+                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/batting", transaction));
+                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/bowling", transaction));
+                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/fielding", transaction));
+                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/individual-scores", transaction));
+                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/bowling-figures", transaction));
+                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/catches", transaction));
+                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/run-outs", transaction));
+
                         // Move the player identities from this player id to the member's player id
-                        var replaceWithExistingPlayer = new { ExistingPlayerId = existingPlayerForMember.PlayerId, ExistingPlayerRoute = existingPlayerForMember.PlayerRoute, PlayerId = player.PlayerId };
-                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @ExistingPlayerId WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction);
-                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @ExistingPlayerId, PlayerRoute = @ExistingPlayerRoute WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.Player} WHERE PlayerId = @PlayerId", player, transaction);
+                        var replaceWithExistingPlayer = new { ExistingPlayerId = existingPlayerForMember.PlayerId, PlayerRoute = bestRoute, PlayerId = auditablePlayer.PlayerId };
+                        if (bestRoute != existingPlayerForMember.PlayerRoute)
+                        {
+                            awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, PlayerId = existingPlayerForMember.PlayerId }, transaction));
+                        }
+                        awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @ExistingPlayerId WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction));
+                        awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @ExistingPlayerId, PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction));
+                        Task.WaitAll(awaitThese.ToArray());
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.Player} WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
+
+                        // Update the player to return with new details assigned to it
+                        auditablePlayer.PlayerId = existingPlayerForMember.PlayerId;
+                        auditablePlayer.PlayerRoute = bestRoute;
+                        auditablePlayer.MemberKey = existingPlayerForMember.MemberKey;
                     }
 
-                    var serialisedPlayer = JsonConvert.SerializeObject(_copier.CreateAuditableCopy(player));
+                    var serialisedPlayer = JsonConvert.SerializeObject(auditablePlayer);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
@@ -207,6 +242,8 @@ namespace Stoolball.Data.SqlServer
                     transaction.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, serialisedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerToMemberAccount));
+
+                    return auditablePlayer;
                 }
             }
         }

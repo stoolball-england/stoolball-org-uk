@@ -13,7 +13,6 @@ namespace Stoolball.Web.Statistics.Models
         public BattingStatistics BattingStatistics { get; set; } = new();
         public BowlingStatistics BowlingStatistics { get; set; } = new();
         public FieldingStatistics FieldingStatistics { get; set; } = new();
-        public bool LinkedByThisRequest { get; set; }
         public bool IsCurrentMember { get; set; }
     }
 }

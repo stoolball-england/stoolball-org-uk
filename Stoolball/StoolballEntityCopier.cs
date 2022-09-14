@@ -38,8 +38,9 @@ namespace Stoolball
             return new Player
             {
                 PlayerId = player.PlayerId,
+                PlayerRoute = player.PlayerRoute,
                 MemberKey = player.MemberKey,
-                PlayerIdentities = player.PlayerIdentities.Select(x => new PlayerIdentity { PlayerIdentityId = x.PlayerIdentityId }).ToList()
+                PlayerIdentities = player.PlayerIdentities.Select(x => CreateAuditableCopy(x)).ToList()
             };
         }
 

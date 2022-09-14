@@ -522,7 +522,7 @@ namespace Stoolball.Testing
             };
         }
 
-        public Tournament CreateTournamentInThePastWithFullDetails(List<(Guid memberId, string memberName)> members)
+        public Tournament CreateTournamentInThePastWithFullDetails(List<(Guid memberKey, string memberName)> members)
         {
             var competition1 = CreateCompetitionWithMinimalDetails();
             var competition2 = CreateCompetitionWithMinimalDetails();
@@ -708,7 +708,7 @@ namespace Stoolball.Testing
             };
         }
 
-        public List<HtmlComment> CreateComments(int howMany, List<(Guid memberId, string memberName)> members)
+        public List<HtmlComment> CreateComments(int howMany, List<(Guid memberKey, string memberName)> members)
         {
             var randomiser = new Random();
             var comments = new List<HtmlComment>();
@@ -719,7 +719,7 @@ namespace Stoolball.Testing
                 comments.Add(new HtmlComment
                 {
                     CommentId = Guid.NewGuid(),
-                    MemberKey = member.memberId,
+                    MemberKey = member.memberKey,
                     MemberName = member.memberName,
                     CommentDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddDays(i * -1),
                     Comment = $"<p>This is comment number <b>{i}</b>.</p>"
@@ -773,7 +773,7 @@ namespace Stoolball.Testing
                             i.BowlingFigures.Any()
                         )
                     );
-            testData.Members = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberId: x.MemberKey, memberName: x.MemberName)).Distinct(new MemberEqualityComparer()).ToList();
+            testData.Members = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberKey: x.MemberKey, memberName: x.MemberName)).Distinct(new MemberEqualityComparer()).ToList();
             for (var i = 0; i < 10; i++)
             {
                 testData.TournamentWithFullDetails = CreateTournamentInThePastWithFullDetails(testData.Members);
@@ -852,7 +852,7 @@ namespace Stoolball.Testing
                 .First();
             testData.BowlerWithMultipleIdentities.PlayerIdentities.Clear();
             testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
-            testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberId;
+            testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberKey;
 
             // Get all batting records
             testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();

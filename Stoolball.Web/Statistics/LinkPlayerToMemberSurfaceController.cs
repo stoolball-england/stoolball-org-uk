@@ -56,13 +56,11 @@ namespace Stoolball.Web.Statistics
                 return Forbid();
             }
 
-            await _playerRepository.LinkPlayerToMemberAccount(model.Player, currentMember.Key, currentMember.Name);
-            model.Player.MemberKey = currentMember.Key;
-            model.LinkedByThisRequest = true;
+            model.Player = await _playerRepository.LinkPlayerToMemberAccount(model.Player, currentMember.Key, currentMember.Name);
 
             await _playerCacheClearer.ClearCacheFor(model.Player);
 
-            return View("LinkPlayerToMember", model);
+            return Redirect(model.Player.PlayerRoute);
         }
     }
 }
