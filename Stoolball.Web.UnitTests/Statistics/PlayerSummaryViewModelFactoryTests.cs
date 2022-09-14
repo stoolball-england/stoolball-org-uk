@@ -75,6 +75,20 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
+        public async Task Player_is_set_on_default_and_applied_filters()
+        {
+            var player = new Player();
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), REQUEST_QUERYSTRING)).Returns(new StatisticsFilter());
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(REQUEST_PATH, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(player));
+
+            var factory = CreateFactory();
+            var result = await factory.CreateViewModel(_currentPage.Object, REQUEST_PATH, REQUEST_QUERYSTRING);
+
+            Assert.Equal(player, result.DefaultFilter.Player);
+            Assert.Equal(player, result.AppliedFilter.Player);
+        }
+
+        [Fact]
         public async Task Filter_is_added_to_filter_description_and_page_title()
         {
             var appliedFilter = new StatisticsFilter();

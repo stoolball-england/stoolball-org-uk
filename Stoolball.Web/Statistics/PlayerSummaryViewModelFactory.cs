@@ -43,6 +43,7 @@ namespace Stoolball.Web.Statistics
             if (model.Player != null)
             {
                 _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
+                model.DefaultFilter.Player = model.Player;
                 model.AppliedFilter.Player = model.Player;
 
                 var battingTask = _summaryStatisticsDataSource.ReadBattingStatistics(model.AppliedFilter);
