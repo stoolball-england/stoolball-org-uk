@@ -89,6 +89,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.PlayerBatting, typeof(PlayerBattingController) },
             { StoolballRouteType.PlayerBowling, typeof(PlayerBowlingController) },
             { StoolballRouteType.PlayerFielding, typeof(PlayerFieldingController) },
+            { StoolballRouteType.LinkPlayerToMember, typeof(LinkPlayerToMemberController) },
             { StoolballRouteType.PlayersForTeam, typeof(PlayersForTeamController) },
             { StoolballRouteType.ClubStatistics, typeof(ClubStatisticsController) },
             { StoolballRouteType.TeamStatistics, typeof(TeamStatisticsController) },

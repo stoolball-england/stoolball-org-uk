@@ -23,75 +23,58 @@
 <div class="container-xl">
     <h1>@(Model.Player?.PlayerName())</h1>
 
-    @if (Model.LinkedByThisRequest)
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <em class="nav-link active">Summary</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Player!.PlayerRoute/batting@(queryString)">Batting</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Player!.PlayerRoute/bowling@(queryString)">Bowling</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Player.PlayerRoute/fielding@(queryString)">Fielding</a>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+    </ul>
+    @await Html.PartialAsync("_Filters", new FilterViewModel
     {
-        <p class="alert alert-info">This player is now linked to your account.</p>
+        FilteredItemTypeSingular = "Statistics",
+        FilteredItemTypePlural = "Statistics",
+        FilterDescription = Model.FilterDescription,
+        from = Model.AppliedFilter.FromDate,
+        to = Model.AppliedFilter.UntilDate
+    })
+
+    <p class="lead">
+        @(Model.Player?.PlayerName()) played @totalMatches
+        @(totalMatches == 1 ? "match" : "matches") for @Html.Raw(Model.Player!.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
+    </p>
+
+    <div class="statistics-pair">
+        <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__runs"><span class="statistics-pair__value">@Model.BattingStatistics.TotalRunsScored</span><span class="statistics-pair__label">@(Model.BattingStatistics.TotalRunsScored == 1 ? "run" : "runs")</span></p>
+        <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@Model.BattingStatistics.BestInningsRunsScored@(Model.BattingStatistics.BestInningsWasDismissed == false ? "*" : string.Empty)</span><span class="statistics-pair__label">best</span></p>
+    </div>
+    <div class="statistics-pair">
+        <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__wickets"><span class="statistics-pair__value">@Model.BowlingStatistics.TotalWickets</span><span class="statistics-pair__label">@(Model.BowlingStatistics.TotalWickets == 1 ? "wicket" : "wickets")</span></p>
+        <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@(Model.BowlingStatistics.BestInningsWickets.HasValue ? Model.BowlingStatistics.BestInningsWickets + "/" + (Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–") : "–")</span><span class="statistics-pair__label">best</span></p>
+    </div>
+    <div class="statistics-pair">
+        <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__catches"><span class="statistics-pair__value">@Model.FieldingStatistics.TotalCatches</span><span class="statistics-pair__label">@(Model.FieldingStatistics.TotalCatches == 1 ? "catch" : "catches")</span></p>
+        <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@Model.FieldingStatistics.TotalRunOuts</span><span class="statistics-pair__label">@(Model.FieldingStatistics.TotalRunOuts == 1 ? "run-out" : "run-outs")</span></p>
+    </div>
+
+    @if (!Model.Player.MemberKey.HasValue)
+    {
+        <hr />
+        <p><a href="@Model.Player.PlayerRoute/link-to-my-account" class="btn btn-secondary">Link this player to my account</a></p>
     }
-
-    @if (Context.Request.Method == HttpMethod.Get.ToString() || User.Identity?.IsAuthenticated == true)
+    else if (Model.IsCurrentMember)
     {
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <em class="nav-link active">Summary</em>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Model.Player!.PlayerRoute/batting@(queryString)">Batting</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Model.Player!.PlayerRoute/bowling@(queryString)">Bowling</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Model.Player.PlayerRoute/fielding@(queryString)">Fielding</a>
-            </li>
-            <li class="nav-item nav-item-admin">
-                <button type="button" class="nav-link nav-link-filter">Edit filter</button>
-            </li>
-        </ul>
-        @await Html.PartialAsync("_Filters", new FilterViewModel
-        {
-            FilteredItemTypeSingular = "Statistics",
-            FilteredItemTypePlural = "Statistics",
-            FilterDescription = Model.FilterDescription,
-            from = Model.AppliedFilter.FromDate,
-            to = Model.AppliedFilter.UntilDate
-        })
-
-        <p class="lead">
-            @(Model.Player?.PlayerName()) played @totalMatches
-            @(totalMatches == 1 ? "match" : "matches") for @Html.Raw(Model.Player!.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
-        </p>
-
-        <div class="statistics-pair">
-            <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__runs"><span class="statistics-pair__value">@Model.BattingStatistics.TotalRunsScored</span><span class="statistics-pair__label">@(Model.BattingStatistics.TotalRunsScored == 1 ? "run" : "runs")</span></p>
-            <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@Model.BattingStatistics.BestInningsRunsScored@(Model.BattingStatistics.BestInningsWasDismissed == false ? "*" : string.Empty)</span><span class="statistics-pair__label">best</span></p>
-        </div>
-        <div class="statistics-pair">
-            <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__wickets"><span class="statistics-pair__value">@Model.BowlingStatistics.TotalWickets</span><span class="statistics-pair__label">@(Model.BowlingStatistics.TotalWickets == 1 ? "wicket" : "wickets")</span></p>
-            <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@(Model.BowlingStatistics.BestInningsWickets.HasValue ? Model.BowlingStatistics.BestInningsWickets + "/" + (Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–") : "–")</span><span class="statistics-pair__label">best</span></p>
-        </div>
-        <div class="statistics-pair">
-            <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__catches"><span class="statistics-pair__value">@Model.FieldingStatistics.TotalCatches</span><span class="statistics-pair__label">@(Model.FieldingStatistics.TotalCatches == 1 ? "catch" : "catches")</span></p>
-            <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@Model.FieldingStatistics.TotalRunOuts</span><span class="statistics-pair__label">@(Model.FieldingStatistics.TotalRunOuts == 1 ? "run-out" : "run-outs")</span></p>
-        </div>
-
-        @if (!Model.Player.MemberKey.HasValue)
-        {
-            <h2>Are you @Model.Player.PlayerName()?</h2>
-            <p>Link this player to your account for quick access.</p>
-            <p>If you have other player pages (for example, if you play for multiple teams) link them all to combine your statistics.</p>
-            @using (Html.BeginUmbracoForm<PlayerSurfaceController>(nameof(PlayerSurfaceController.LinkPlayerToMemberAccount)))
-            {    
-                <button type="submit" class="btn btn-secondary">Link this player to my account</button>
-            }
-        }
-        else if (Model.IsCurrentMember && !Model.LinkedByThisRequest)
-        {
-            <h2>My statistics</h2>
-            <p>This player is linked to your account.</p>
-        }
-    }
-    else
-    {
-        @await Html.PartialAsync("_Login")
+        <hr />
+        <p class="linked">This player is linked to your account.</p>
     }
 </div>

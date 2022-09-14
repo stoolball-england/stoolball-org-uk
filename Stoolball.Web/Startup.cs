@@ -337,6 +337,7 @@ namespace Stoolball.Web
             services.AddTransient<PlayerBattingController>();
             services.AddTransient<PlayerBowlingController>();
             services.AddTransient<PlayerFieldingController>();
+            services.AddTransient<LinkPlayerToMemberController>();
 
             services.AddTransient<SchoolsController>();
 

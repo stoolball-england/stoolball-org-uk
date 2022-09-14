@@ -1,0 +1,16 @@
+{
+  "Name": "Link Player To Member",
+  "Alias": "LinkPlayerToMember",
+  "File": "umb://template-file/LinkPlayerToMember.cshtml",
+  "Master": null,
+  "Udi": "umb://template/122d77c4da354047a0f093e65d489b4a",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/LinkPlayerToMember.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.4.2"
+}

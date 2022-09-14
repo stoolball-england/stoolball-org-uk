@@ -150,6 +150,10 @@ svg {
     pointer-events: none;
 }
 
+button {
+    margin-bottom: $spacer;
+}
+
 .btn-primary::after, .btn-secondary::after {
     content: '❯';
     padding-left: .5em;

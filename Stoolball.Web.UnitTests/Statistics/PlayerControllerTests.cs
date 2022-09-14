@@ -75,10 +75,10 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task IsCurrentMember_is_false_if_current_member_is_not_assigned_member()
+        public async Task IsCurrentMember_is_false_if_current_member_is_not_linked_member()
         {
-            var assignedMemberKey = Guid.NewGuid();
-            _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = new Player { MemberKey = assignedMemberKey } }));
+            var linkedMemberKey = Guid.NewGuid();
+            _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = new Player { MemberKey = linkedMemberKey } }));
             _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = Guid.NewGuid() }));
 
             using (var controller = CreateController())
@@ -90,11 +90,11 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task IsCurrentMember_is_true_if_current_member_is_assigned_member()
+        public async Task IsCurrentMember_is_true_if_current_member_is_linked_member()
         {
-            var assignedMemberKey = Guid.NewGuid();
-            _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = new Player { MemberKey = assignedMemberKey } }));
-            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = assignedMemberKey }));
+            var linkedMemberKey = Guid.NewGuid();
+            _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = new Player { MemberKey = linkedMemberKey } }));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = linkedMemberKey }));
 
             using (var controller = CreateController())
             {

@@ -79,6 +79,7 @@
         PlayerBatting,
         PlayerBowling,
         PlayerFielding,
+        LinkPlayerToMember,
         PlayersForTeam,
         ClubStatistics,
         TeamStatistics,

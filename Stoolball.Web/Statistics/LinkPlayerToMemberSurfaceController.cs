@@ -16,14 +16,14 @@ using Umbraco.Cms.Web.Website.Controllers;
 
 namespace Stoolball.Web.Statistics
 {
-    public class PlayerSurfaceController : SurfaceController
+    public class LinkPlayerToMemberSurfaceController : SurfaceController
     {
         private readonly IPlayerSummaryViewModelFactory _viewModelFactory;
         private readonly IMemberManager _memberManager;
         private readonly IPlayerRepository _playerRepository;
         private readonly ICacheClearer<Player> _playerCacheClearer;
 
-        public PlayerSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory,
+        public LinkPlayerToMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory,
             ServiceContext serviceContext, AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider,
             IPlayerSummaryViewModelFactory viewModelFactory,
             IMemberManager memberManager,
@@ -45,27 +45,24 @@ namespace Stoolball.Web.Statistics
         {
             var model = await _viewModelFactory.CreateViewModel(CurrentPage, Request.Path, Request.QueryString.Value);
 
-            if (model.Player == null)
+            if (model.Player == null || model.Player.MemberKey.HasValue)
             {
                 return NotFound();
             }
 
             var currentMember = await _memberManager.GetCurrentMemberAsync();
-            if (ModelState.IsValid && currentMember != null)
+            if (currentMember == null)
             {
-                await _playerRepository.LinkPlayerToMemberAccount(model.Player, currentMember.Key, currentMember.Name);
-                model.Player.MemberKey = currentMember.Key;
-                model.IsCurrentMember = true;
-                model.LinkedByThisRequest = true;
-
-                await _playerCacheClearer.ClearCacheFor(model.Player);
-            }
-            else
-            {
-                model.IsCurrentMember = currentMember != null && model.Player.MemberKey == currentMember.Key;
+                return Forbid();
             }
 
-            return View("Player", model);
+            await _playerRepository.LinkPlayerToMemberAccount(model.Player, currentMember.Key, currentMember.Name);
+            model.Player.MemberKey = currentMember.Key;
+            model.LinkedByThisRequest = true;
+
+            await _playerCacheClearer.ClearCacheFor(model.Player);
+
+            return View("LinkPlayerToMember", model);
         }
     }
 }
