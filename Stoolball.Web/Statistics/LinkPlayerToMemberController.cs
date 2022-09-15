@@ -14,7 +14,7 @@ namespace Stoolball.Web.Statistics
     {
         private readonly IPlayerSummaryViewModelFactory _viewModelFactory;
 
-        public LinkPlayerToMemberController(ILogger<PlayerController> logger,
+        public LinkPlayerToMemberController(ILogger<LinkPlayerToMemberController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
             IPlayerSummaryViewModelFactory viewModelFactory)

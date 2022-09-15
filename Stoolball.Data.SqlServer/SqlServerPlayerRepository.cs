@@ -247,5 +247,94 @@ namespace Stoolball.Data.SqlServer
                 }
             }
         }
+
+        /// <inheritdoc />
+        public async Task UnlinkPlayerIdentityFromMemberAccount(PlayerIdentity playerIdentity, Guid memberKey, string memberName)
+        {
+            if (playerIdentity == null || !playerIdentity.PlayerIdentityId.HasValue || string.IsNullOrEmpty(playerIdentity.PlayerIdentityName))
+            {
+                throw new ArgumentException(nameof(playerIdentity), $"{nameof(playerIdentity)} cannot be null and must have a PlayerIdentityId and PlayerIdentityName");
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var result = await connection.QuerySingleAsync<(int totalIdentitiesLinkedToMember, Guid playerId)>($"SELECT COUNT(*), PlayerId FROM {Tables.PlayerIdentity} WHERE PlayerId = (SELECT PlayerId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId) GROUP BY PlayerId", playerIdentity, transaction).ConfigureAwait(false);
+
+                    if (result.totalIdentitiesLinkedToMember == 1)
+                    {
+                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET MemberKey = NULL WHERE MemberKey = @memberKey", new { memberKey }, transaction).ConfigureAwait(false);
+
+                        var player = new Player { PlayerId = result.playerId };
+                        var serialisedPlayer = JsonConvert.SerializeObject(player);
+                        await _auditRepository.CreateAudit(new AuditRecord
+                        {
+                            Action = AuditAction.Update,
+                            MemberKey = memberKey,
+                            ActorName = memberName,
+                            EntityUri = player.EntityUri,
+                            State = serialisedPlayer,
+                            RedactedState = serialisedPlayer,
+                            AuditDate = DateTime.UtcNow
+                        }, transaction);
+
+                        transaction.Commit();
+
+                        _logger.Info(LoggingTemplates.Updated, serialisedPlayer, memberName, memberKey, GetType(), nameof(UnlinkPlayerIdentityFromMemberAccount));
+                    }
+                    else
+                    {
+                        // Create new player 
+                        var player = new Player { PlayerId = Guid.NewGuid() };
+                        player.PlayerIdentities.Add(playerIdentity);
+
+                        player.PlayerRoute = await _routeGenerator.GenerateUniqueRoute($"/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute,
+                           async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { PlayerRoute = route }, transaction)
+                        );
+
+                        await transaction.Connection.ExecuteAsync(
+                              $@"INSERT INTO {Tables.Player} 
+                                               (PlayerId, PlayerRoute) 
+                                               VALUES 
+                                               (@PlayerId, @PlayerRoute)",
+                              new
+                              {
+                                  player.PlayerId,
+                                  player.PlayerRoute
+                              }, transaction);
+
+                        // Update identity to point to new player
+                        // Update statistics to point to new player and new player route
+                        var awaitThese = new List<Task>();
+                        awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", new { player.PlayerId, playerIdentity.PlayerIdentityId }, transaction));
+                        awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @PlayerId, PlayerRoute = @PlayerRoute WHERE PlayerIdentityId = @PlayerIdentityId", new { player.PlayerId, player.PlayerRoute, playerIdentity.PlayerIdentityId }, transaction));
+                        Task.WaitAll(awaitThese.ToArray());
+
+                        var serialisedPlayer = JsonConvert.SerializeObject(_copier.CreateAuditableCopy(player));
+                        await _auditRepository.CreateAudit(new AuditRecord
+                        {
+                            Action = AuditAction.Create,
+                            MemberKey = memberKey,
+                            ActorName = memberName,
+                            EntityUri = player.EntityUri,
+                            State = serialisedPlayer,
+                            RedactedState = serialisedPlayer,
+                            AuditDate = DateTime.UtcNow
+                        }, transaction);
+
+                        transaction.Commit();
+
+                        _logger.Info(LoggingTemplates.Created, serialisedPlayer, memberName, memberKey, GetType(), nameof(UnlinkPlayerIdentityFromMemberAccount));
+                    }
+                }
+            }
+        }
     }
 }

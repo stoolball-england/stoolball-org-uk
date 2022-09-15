@@ -21,7 +21,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         private LinkPlayerToMemberController CreateController()
         {
             return new LinkPlayerToMemberController(
-                Mock.Of<ILogger<PlayerController>>(),
+                Mock.Of<ILogger<LinkPlayerToMemberController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _viewModelFactory.Object

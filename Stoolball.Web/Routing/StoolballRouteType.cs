@@ -80,6 +80,7 @@
         PlayerBowling,
         PlayerFielding,
         LinkPlayerToMember,
+        LinkedPlayersForMember,
         PlayersForTeam,
         ClubStatistics,
         TeamStatistics,

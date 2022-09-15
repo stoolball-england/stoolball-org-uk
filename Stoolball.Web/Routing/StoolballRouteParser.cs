@@ -218,7 +218,10 @@ namespace Stoolball.Web.Routing
                 { $"play{SLASH}statistics{SLASH}bowling-average{OPTIONAL_SLASH}", StoolballRouteType.BowlingAverage },
                 { $"play{SLASH}statistics{SLASH}economy-rate{OPTIONAL_SLASH}", StoolballRouteType.EconomyRate },
                 { $"play{SLASH}statistics{SLASH}batting-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BattingStrikeRate },
-                { $"play{SLASH}statistics{SLASH}bowling-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BowlingStrikeRate }
+                { $"play{SLASH}statistics{SLASH}bowling-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BowlingStrikeRate },
+
+                // Match /account/linked-players
+                { $"account{SLASH}linked-players{OPTIONAL_SLASH}", StoolballRouteType.LinkedPlayersForMember }
             };
 
             foreach (var routePattern in routeTypes.Keys)

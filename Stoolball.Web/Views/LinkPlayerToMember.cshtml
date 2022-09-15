@@ -26,7 +26,7 @@
 
         <p>If you have other player pages (for example, if you changed your name or you play for multiple teams), you should link them all to your account.</p>
         <p>This will combine all the player pages into one so that you can see your true statistics.</p>
-        <p class="alert alert-warning"><strong>Statistics may not update immediately.</strong> It may take a couple of hours in some places.</p>
+        @await Html.PartialAsync("_StatisticsCacheWarning")
         @using (Html.BeginUmbracoForm<LinkPlayerToMemberSurfaceController>(nameof(LinkPlayerToMemberSurfaceController.LinkPlayerToMemberAccount)))
         {    
             <button type="submit" class="btn btn-primary">Link this player to my account</button>

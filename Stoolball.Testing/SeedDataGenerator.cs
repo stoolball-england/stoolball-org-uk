@@ -854,6 +854,9 @@ namespace Stoolball.Testing
             testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
             testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberKey;
 
+            // Find any player who has a single identity, and associate them to a different member
+            testData.Players.First(x => x.PlayerIdentities.Count == 1).MemberKey = testData.Members[1].memberKey;
+
             // Get all batting records
             testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
 
