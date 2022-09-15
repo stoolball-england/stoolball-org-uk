@@ -217,7 +217,7 @@ namespace Stoolball.Data.SqlServer
                             awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, PlayerId = existingPlayerForMember.PlayerId }, transaction));
                         }
                         awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @ExistingPlayerId WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction));
-                        awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @ExistingPlayerId, PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction));
+                        awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @ExistingPlayerId, PlayerRoute = @PlayerRoute WHERE PlayerId IN (@ExistingPlayerId, @PlayerId)", replaceWithExistingPlayer, transaction));
                         Task.WaitAll(awaitThese.ToArray());
                         await connection.ExecuteAsync($"DELETE FROM {Tables.Player} WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
 
