@@ -30,7 +30,7 @@
         @using (Html.BeginUmbracoForm<LinkPlayerToMemberSurfaceController>(nameof(LinkPlayerToMemberSurfaceController.LinkPlayerToMemberAccount)))
         {    
             <button type="submit" class="btn btn-primary">Link this player to my account</button>
-            <p><a href="@Model.Player.PlayerRoute" class="">Cancel</a></p>
+            <p><a href="@Model.Player.PlayerRoute">Cancel</a></p>
         }
     }
     else

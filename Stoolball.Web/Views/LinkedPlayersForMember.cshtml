@@ -1,6 +1,6 @@
 ﻿@using Stoolball.Web.Statistics
 @using Stoolball.Web.Statistics.Models
-@inherits UmbracoViewPage<PlayersLinkedToMemberViewModel>
+@inherits UmbracoViewPage<LinkedPlayersForMemberViewModel>
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -28,6 +28,7 @@
         {
             using (Html.BeginUmbracoForm<LinkedPlayersForMemberSurfaceController>(nameof(LinkedPlayersForMemberSurfaceController.UpdateLinkedPlayers)))
             {
+                @Html.HiddenFor(m => Model.PreferredNextRoute)
                 <table class="table table-hover related-items linked-players" data-related-item="player">
                     <thead class="thead-dark">
                         <tr><th scope="col" class="linked-players__player">Player name</th><th scope="col" class="linked-players__team"><span class="related-items__if-not-empty">Team</span></th><th scope="col" class="d-none d-sm-table-cell"><span class="related-items__if-not-empty">When</span></th><th scope="col"></th></tr>
@@ -61,7 +62,7 @@
                 @await Html.PartialAsync("_StatisticsCacheWarning")
      
                 <button class="btn btn-primary" type="submit">Save players</button>
-                <p><a href="/account" class="">Cancel</a></p>
+                <p><a href="@Model.PreferredNextRoute">Cancel</a></p>
             }
         }
         else

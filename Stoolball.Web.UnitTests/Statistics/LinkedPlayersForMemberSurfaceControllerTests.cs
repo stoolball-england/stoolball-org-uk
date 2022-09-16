@@ -81,7 +81,7 @@ namespace Stoolball.Web.UnitTests.Statistics
 
 
         [Fact]
-        public async Task Member_without_linked_player_does_not_unlink_player_and_returns_Redirect()
+        public async Task Member_without_linked_player_does_not_unlink_player()
         {
             var memberKey = Guid.NewGuid();
             var memberName = "Member name";
@@ -94,12 +94,11 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var result = await controller.UpdateLinkedPlayers(new LinkedPlayersFormData());
 
                 _playerRepository.Verify(x => x.UnlinkPlayerIdentityFromMemberAccount(It.IsAny<PlayerIdentity>(), memberKey, memberName), Times.Never);
-                Assert.IsType<RedirectResult>(result);
             }
         }
 
         [Fact]
-        public async Task Only_identities_missing_from_post_data_are_unlinked_and_returns_Redirect()
+        public async Task Only_identities_missing_from_post_data_are_unlinked()
         {
             var memberKey = Guid.NewGuid();
             var memberName = "Member name";
@@ -119,7 +118,6 @@ namespace Stoolball.Web.UnitTests.Statistics
                 _playerRepository.Verify(x => x.UnlinkPlayerIdentityFromMemberAccount(player.PlayerIdentities[1], memberKey, memberName), Times.Never);
                 _playerRepository.Verify(x => x.UnlinkPlayerIdentityFromMemberAccount(player.PlayerIdentities[2], memberKey, memberName), Times.Once);
                 _playerRepository.Verify(x => x.UnlinkPlayerIdentityFromMemberAccount(player.PlayerIdentities[3], memberKey, memberName), Times.Once);
-                Assert.IsType<RedirectResult>(result);
             }
         }
 
@@ -162,6 +160,53 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var result = await controller.UpdateLinkedPlayers(formData);
 
                 _cacheClearer.Verify(x => x.ClearCacheFor(player), Times.Once);
+            }
+        }
+
+        [Fact]
+        public async Task Redirects_to_preferred_route_if_valid()
+        {
+            var memberKey = Guid.NewGuid();
+            var memberName = "Member name";
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = memberKey, Name = memberName }));
+
+            var player = CreatePlayerWith4PlayerIdentities();
+            var formData = new LinkedPlayersFormData { PlayerIdentities = player.PlayerIdentities, PreferredNextRoute = "/players/valid-next-route" };
+
+            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).Returns(Task.FromResult(player));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute, null)).Returns(Task.FromResult(player));
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.UpdateLinkedPlayers(formData);
+
+                Assert.Equal(formData.PreferredNextRoute, ((RedirectResult)result).Url.ToString());
+            }
+        }
+
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        [InlineData("https://example.org/offsite-link")]
+        [InlineData("/wrong-page")]
+        public async Task Missing_or_invalid_preferred_route_redirects_to_account(string? invalidNextRoute)
+        {
+            var memberKey = Guid.NewGuid();
+            var memberName = "Member name";
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = memberKey, Name = memberName }));
+
+            var player = CreatePlayerWith4PlayerIdentities();
+            var formData = new LinkedPlayersFormData { PlayerIdentities = player.PlayerIdentities, PreferredNextRoute = invalidNextRoute };
+
+            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).Returns(Task.FromResult(player));
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute, null)).Returns(Task.FromResult(player));
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.UpdateLinkedPlayers(formData);
+
+                Assert.Equal(Constants.Pages.AccountUrl, ((RedirectResult)result).Url.ToString());
             }
         }
     }

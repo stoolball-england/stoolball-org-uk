@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,7 @@ namespace Stoolball.Web.Statistics
         [ContentSecurityPolicy]
         public async new Task<IActionResult> Index()
         {
-            var model = new PlayersLinkedToMemberViewModel(CurrentPage);
+            var model = new LinkedPlayersForMemberViewModel(CurrentPage);
 
             var member = await _memberManager.GetCurrentMemberAsync();
             if (member != null)
@@ -49,6 +50,9 @@ namespace Stoolball.Web.Statistics
             model.Metadata.PageTitle = "Players linked to my account";
             model.Breadcrumbs.RemoveAt(model.Breadcrumbs.Count - 1);
             model.Breadcrumbs.Add(new Breadcrumb { Name = "My account", Url = new Uri("/account", UriKind.Relative) });
+
+            var referrer = Request.GetTypedHeaders().Referer;
+            if (referrer != null) { model.PreferredNextRoute = referrer.AbsolutePath; }
 
             return CurrentTemplate(model);
         }

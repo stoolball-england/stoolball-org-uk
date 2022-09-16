@@ -71,7 +71,7 @@ namespace Stoolball.Web.Statistics
                 }
             }
 
-            return Redirect("/account");
+            return Redirect(formData.PreferredNextRoute != null && formData.PreferredNextRoute.StartsWith("/players/") ? formData.PreferredNextRoute : Constants.Pages.AccountUrl);
         }
     }
 }
