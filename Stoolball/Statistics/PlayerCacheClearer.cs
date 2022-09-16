@@ -15,8 +15,19 @@ namespace Stoolball.Statistics
 
         public Task ClearCacheFor(Player cacheable)
         {
-            var cacheKey = nameof(IPlayerDataSource.ReadPlayerByRoute) + cacheable.PlayerRoute;
-            _readThroughCache.InvalidateCache(cacheKey);
+            if (cacheable is null)
+            {
+                throw new ArgumentNullException(nameof(cacheable));
+            }
+
+            if (string.IsNullOrEmpty(cacheable.PlayerRoute))
+            {
+                throw new ArgumentException($"{nameof(cacheable.PlayerRoute)} cannot be null or empty string");
+            }
+
+            _readThroughCache.InvalidateCache(nameof(IPlayerDataSource.ReadPlayerByRoute) + cacheable.PlayerRoute);
+            _readThroughCache.InvalidateCache(nameof(IPlayerDataSource.ReadPlayerByMemberKey) + cacheable.MemberKey);
+
             return Task.CompletedTask;
         }
     }

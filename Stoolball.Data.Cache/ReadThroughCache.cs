@@ -16,6 +16,7 @@ namespace Stoolball.Data.Cache
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
         }
 
+        /// <inheritdoc/>
         public void InvalidateCache(string key)
         {
             var cancellationKey = CancellationKey(key);
@@ -26,6 +27,7 @@ namespace Stoolball.Data.Cache
             }
         }
 
+        /// <inheritdoc/>
         public async Task<TResult> ReadThroughCacheAsync<TResult>(Func<Task<TResult>> cacheThis, TimeSpan absoluteCacheExpiration, string key, string dependentKey)
         {
             var cancellationKey = CancellationKey(key);
