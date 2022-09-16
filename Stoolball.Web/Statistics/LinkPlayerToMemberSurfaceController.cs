@@ -56,9 +56,13 @@ namespace Stoolball.Web.Statistics
                 return Forbid();
             }
 
-            model.Player = await _playerRepository.LinkPlayerToMemberAccount(model.Player, currentMember.Key, currentMember.Name);
+            var updatedPlayer = await _playerRepository.LinkPlayerToMemberAccount(model.Player, currentMember.Key, currentMember.Name);
 
+            // Clear the cache for both the old player route and the new, so that the obsolete player route redirects rather than returning a cached result
             await _playerCacheClearer.ClearCacheFor(model.Player);
+            await _playerCacheClearer.ClearCacheFor(updatedPlayer);
+
+            model.Player = updatedPlayer;
 
             return Redirect(model.Player.PlayerRoute);
         }

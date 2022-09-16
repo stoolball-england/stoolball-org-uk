@@ -59,7 +59,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Route_matching_player_with_linked_member_returns_404()
+        public async Task Player_with_linked_member_returns_404()
         {
             _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = new Player { MemberKey = Guid.NewGuid() } }));
 
@@ -88,7 +88,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Route_matching_player_redirects_to_route_returned_by_repository()
+        public async Task Links_player_and_redirects_to_route_returned_by_repository()
         {
             var playerToLink = new Player();
             var linkedPlayer = new Player { PlayerRoute = "/after" };
@@ -108,7 +108,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Route_matching_player_clears_cache()
+        public async Task Clears_cache_for_both_players()
         {
             var playerToLink = new Player();
             var linkedPlayer = new Player { PlayerRoute = "/after" };
@@ -122,6 +122,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.LinkPlayerToMemberAccount();
 
+                _cacheClearer.Verify(x => x.ClearCacheFor(playerToLink), Times.Once);
                 _cacheClearer.Verify(x => x.ClearCacheFor(linkedPlayer), Times.Once);
             }
         }
