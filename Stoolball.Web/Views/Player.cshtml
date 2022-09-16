@@ -70,7 +70,7 @@
     @if (!Model.Player.MemberKey.HasValue)
     {
         <hr />
-        <p><a href="@Model.Player.PlayerRoute/link-to-my-account" class="btn btn-secondary">Link this player to my account</a></p>
+        <p class="linked"><a href="@Model.Player.PlayerRoute/link-to-my-account">Link this player to my account</a></p>
     }
     else if (Model.IsCurrentMember)
     {
