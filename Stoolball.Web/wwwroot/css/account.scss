@@ -1,4 +1,5 @@
 ﻿@import "../../../node_modules/bootstrap/scss/_functions.scss";
+@import "../../../node_modules/bootstrap/scss/_mixins.scss";
 @import "../../../node_modules/bootstrap/scss/_variables.scss";
 
 /* Display a Gravatar next to its content 
@@ -12,4 +13,26 @@
 .gravatar > img {
     border-radius: 50%;
     margin-right: $spacer;
+}
+
+/* On the list of linked players set fixed column widths, so that when the last player identity is removed 
+   the column headings do not animate due to changing column widths before disappearing.
+*/
+.linked-players__player {
+    width: 45%;
+}
+
+.linked-players__team {
+    width: 45%;
+}
+
+
+@include media-breakpoint-up(sm) {
+    .linked-players__player {
+        width: 25%;
+    }
+
+    .linked-players__team {
+        width: 25%;
+    }
 }

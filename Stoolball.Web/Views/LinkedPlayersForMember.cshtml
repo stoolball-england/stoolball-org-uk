@@ -4,6 +4,9 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+@{
+    SmidgeHelper.RequiresCss(new CssFile("~/css/account.min.css") { Order = 100 });
+}
 @await Html.PartialAsync("_RelatedItems")
 <div class="container-xl">
     <h1>@Model.Metadata.PageTitle</h1>
@@ -25,9 +28,9 @@
         {
             using (Html.BeginUmbracoForm<LinkedPlayersForMemberSurfaceController>(nameof(LinkedPlayersForMemberSurfaceController.UpdateLinkedPlayers)))
             {
-                <table class="table table-hover related-items" data-related-item="player">
+                <table class="table table-hover related-items linked-players" data-related-item="player">
                     <thead class="thead-dark">
-                        <tr><th scope="col">Player name</th><th scope="col">Team</th><th scope="col" class="d-none d-sm-table-cell">When</th><th scope="col"></th></tr>
+                        <tr><th scope="col" class="linked-players__player">Player name</th><th scope="col" class="linked-players__team"><span class="related-items__if-not-empty">Team</span></th><th scope="col" class="d-none d-sm-table-cell"><span class="related-items__if-not-empty">When</span></th><th scope="col"></th></tr>
                     </thead>
                     <tbody>
                         @for (var i = 0; i < Model.Player.PlayerIdentities.Count; i++)
@@ -49,6 +52,9 @@
                                 </td>
                             </tr>
                         }
+                    </tbody>
+                    <tbody>
+                        <tr class="related-items__if-empty"><td colspan="3">All players will be unlinked from your account.</td></tr>
                     </tbody>
                 </table>
      
