@@ -28,13 +28,13 @@ namespace Stoolball.Data.Cache
 
         public async Task<Player> ReadPlayerByMemberKey(Guid key)
         {
-            var cacheKey = nameof(ReadPlayerByMemberKey) + key;
+            var cacheKey = nameof(IPlayerDataSource) + nameof(ReadPlayerByMemberKey) + key;
             return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayerByMemberKey(key), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         public async Task<Player> ReadPlayerByRoute(string route, StatisticsFilter? filter = null)
         {
-            var cacheKey = nameof(ReadPlayerByRoute) + route;
+            var cacheKey = nameof(IPlayerDataSource) + nameof(ReadPlayerByRoute) + route;
             var dependentCacheKey = cacheKey + _statisticsFilterSerialiser.Serialize(filter);
             return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayerByRoute(route, filter), CacheConstants.StatisticsExpiration(), cacheKey, dependentCacheKey);
         }

@@ -25,8 +25,11 @@ namespace Stoolball.Statistics
                 throw new ArgumentException($"{nameof(cacheable.PlayerRoute)} cannot be null or empty string");
             }
 
-            _readThroughCache.InvalidateCache(nameof(IPlayerDataSource.ReadPlayerByRoute) + cacheable.PlayerRoute);
-            _readThroughCache.InvalidateCache(nameof(IPlayerDataSource.ReadPlayerByMemberKey) + cacheable.MemberKey);
+            _readThroughCache.InvalidateCache(nameof(IPlayerDataSource) + nameof(IPlayerDataSource.ReadPlayerByRoute) + cacheable.PlayerRoute);
+            _readThroughCache.InvalidateCache(nameof(IPlayerDataSource) + nameof(IPlayerDataSource.ReadPlayerByMemberKey) + cacheable.MemberKey);
+            _readThroughCache.InvalidateCache(nameof(IPlayerSummaryStatisticsDataSource) + nameof(IPlayerSummaryStatisticsDataSource.ReadBattingStatistics) + cacheable.PlayerRoute);
+            _readThroughCache.InvalidateCache(nameof(IPlayerSummaryStatisticsDataSource) + nameof(IPlayerSummaryStatisticsDataSource.ReadBowlingStatistics) + cacheable.PlayerRoute);
+            _readThroughCache.InvalidateCache(nameof(IPlayerSummaryStatisticsDataSource) + nameof(IPlayerSummaryStatisticsDataSource.ReadFieldingStatistics) + cacheable.PlayerRoute);
 
             return Task.CompletedTask;
         }
