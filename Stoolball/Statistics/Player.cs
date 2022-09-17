@@ -100,7 +100,7 @@ namespace Stoolball.Statistics
                 if (firstSpace > -1)
                 {
                     var lastSpace = name.Name.LastIndexOf(" ");
-                    if (firstSpace == lastSpace && lastSpace == name.Name.Length - 2)
+                    if (firstSpace == lastSpace && (lastSpace == name.Name.Length - 2 || lastSpace == 1))
                     {
                         group2.Add(name);
                     }

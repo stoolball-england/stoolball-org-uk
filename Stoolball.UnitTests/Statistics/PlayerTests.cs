@@ -69,9 +69,11 @@ namespace Stoolball.UnitTests.Statistics
         }
 
         [Theory]
-        [InlineData("Name Complete")]
-        [InlineData("Name von Complete")]
-        public void Player_name_prefers_complete_names(string completeName)
+        [InlineData("Name Complete", "Name A")]
+        [InlineData("Name Complete", "A Name")]
+        [InlineData("Name von Complete", "Name A")]
+        [InlineData("Name von Complete", "A Name")]
+        public void Player_name_prefers_complete_names(string completeName, string initialOnly)
         {
             var player = new Player
             {
@@ -83,7 +85,7 @@ namespace Stoolball.UnitTests.Statistics
                         LastPlayed = DateTimeOffset.Now.Date
                     },
                     new PlayerIdentity {
-                        PlayerIdentityName = "Name A",
+                        PlayerIdentityName = initialOnly,
                         TotalMatches = 2,
                         LastPlayed = DateTimeOffset.Now.Date
                     },
@@ -100,7 +102,7 @@ namespace Stoolball.UnitTests.Statistics
 
             Assert.Equal(completeName, preferredName);
             Assert.Equal(2, alternativeNames.Count);
-            Assert.Equal("Name A", alternativeNames[0]);
+            Assert.Equal(initialOnly, alternativeNames[0]);
             Assert.Equal("Name", alternativeNames[1]);
         }
 
