@@ -5,6 +5,7 @@
 @using Stoolball.Web.Statistics
 @using Stoolball.Web.Statistics.Models
 @using Stoolball.Matches
+@using Stoolball.Teams
 @using Stoolball.Web.Filtering
 @using Humanizer
 @using System.Net.Http
@@ -51,7 +52,7 @@
 
     <p class="lead">
         @(Model.Player?.PlayerName()) played @totalMatches
-        @(totalMatches == 1 ? "match" : "matches") for @Html.Raw(Model.Player!.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
+        @(totalMatches == 1 ? "match" : "matches") for @Html.Raw(Model.Player!.PlayerIdentities.Select(x => x.Team).ToList().Distinct(new TeamEqualityComparer()).Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
     </p>
 
     <div class="statistics-pair">
