@@ -376,7 +376,7 @@ namespace Stoolball.Web.UnitTests.Routing
         [InlineData("https://example.org/schools/find/", StoolballRouteType.Schools)]
         [InlineData("https://example.org/schools/FIND", StoolballRouteType.Schools)]
         [InlineData("https://example.org/account/linked-players/", StoolballRouteType.LinkedPlayersForMember)]
-        [InlineData("https://example.org/schools/LINKED-PLAYERS", StoolballRouteType.LinkedPlayersForMember)]
+        [InlineData("https://example.org/account/LINKED-PLAYERS", StoolballRouteType.LinkedPlayersForMember)]
         public void Correct_route_should_match(string route, StoolballRouteType expectedType)
         {
             var requestUrl = new Uri(route);
