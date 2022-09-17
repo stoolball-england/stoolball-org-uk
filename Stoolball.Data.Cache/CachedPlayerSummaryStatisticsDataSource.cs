@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Stoolball.Caching;
 using Stoolball.Statistics;
 
@@ -19,26 +20,47 @@ namespace Stoolball.Data.Cache
 
         public async Task<BattingStatistics> ReadBattingStatistics(StatisticsFilter filter)
         {
-            filter = filter ?? new StatisticsFilter();
+            ThrowExceptionIfNoPlayerRoute(filter);
+
+            var cacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadBattingStatistics) + filter.Player.PlayerRoute;
             var dependentCacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadBattingStatistics) + _statisticsFilterSerializer.Serialize(filter);
-            var cacheKey = string.IsNullOrEmpty(filter.Player?.PlayerRoute) ? dependentCacheKey : nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadBattingStatistics) + filter.Player.PlayerRoute;
             return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerSummaryStatisticsDataSource.ReadBattingStatistics(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, dependentCacheKey);
         }
 
         public async Task<BowlingStatistics> ReadBowlingStatistics(StatisticsFilter filter)
         {
-            filter = filter ?? new StatisticsFilter();
+            ThrowExceptionIfNoPlayerRoute(filter);
+
+            var cacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadBowlingStatistics) + filter.Player.PlayerRoute;
             var dependentCacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadBowlingStatistics) + _statisticsFilterSerializer.Serialize(filter);
-            var cacheKey = string.IsNullOrEmpty(filter.Player?.PlayerRoute) ? dependentCacheKey : nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadBowlingStatistics) + filter.Player.PlayerRoute;
             return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerSummaryStatisticsDataSource.ReadBowlingStatistics(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, dependentCacheKey);
         }
 
         public async Task<FieldingStatistics> ReadFieldingStatistics(StatisticsFilter filter)
         {
-            filter = filter ?? new StatisticsFilter();
+            ThrowExceptionIfNoPlayerRoute(filter);
+
+            var cacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadFieldingStatistics) + filter.Player.PlayerRoute;
             var dependentCacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadFieldingStatistics) + _statisticsFilterSerializer.Serialize(filter);
-            var cacheKey = string.IsNullOrEmpty(filter.Player?.PlayerRoute) ? dependentCacheKey : nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadFieldingStatistics) + filter.Player.PlayerRoute;
             return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerSummaryStatisticsDataSource.ReadFieldingStatistics(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, dependentCacheKey);
+        }
+
+        private static void ThrowExceptionIfNoPlayerRoute(StatisticsFilter filter)
+        {
+            if (filter is null)
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+
+            if (filter.Player is null)
+            {
+                throw new ArgumentException($"The {nameof(filter.Player)} property of {nameof(filter)} cannot be null");
+            }
+
+            if (string.IsNullOrEmpty(filter.Player.PlayerRoute))
+            {
+                throw new ArgumentException($"The {nameof(filter.Player.PlayerRoute)} property of {nameof(filter)}.{nameof(filter.Player)} cannot be null or empty");
+            }
         }
     }
 }
