@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -196,29 +195,26 @@ namespace Stoolball.Data.SqlServer
                     }
                     else
                     {
-                        var awaitThese = new List<Task>();
-
                         // Select the best route from the two players, and redirect
                         var bestRoute = _bestRouteSelector.SelectBestRoute(existingPlayerForMember.PlayerRoute, auditablePlayer.PlayerRoute);
                         var obsoleteRoute = bestRoute == existingPlayerForMember.PlayerRoute ? auditablePlayer.PlayerRoute : existingPlayerForMember.PlayerRoute;
-                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, null, transaction));
-                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/batting", transaction));
-                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/bowling", transaction));
-                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/fielding", transaction));
-                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/individual-scores", transaction));
-                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/bowling-figures", transaction));
-                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/catches", transaction));
-                        awaitThese.Add(_redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/run-outs", transaction));
+                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, null, transaction);
+                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/batting", transaction);
+                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/bowling", transaction);
+                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/fielding", transaction);
+                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/individual-scores", transaction);
+                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/bowling-figures", transaction);
+                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/catches", transaction);
+                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/run-outs", transaction);
 
                         // Move the player identities from this player id to the member's player id
                         var replaceWithExistingPlayer = new { ExistingPlayerId = existingPlayerForMember.PlayerId, PlayerRoute = bestRoute, PlayerId = auditablePlayer.PlayerId };
                         if (bestRoute != existingPlayerForMember.PlayerRoute)
                         {
-                            awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, PlayerId = existingPlayerForMember.PlayerId }, transaction));
+                            await connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, PlayerId = existingPlayerForMember.PlayerId }, transaction);
                         }
-                        awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @ExistingPlayerId WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction));
-                        awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @ExistingPlayerId, PlayerRoute = @PlayerRoute WHERE PlayerId IN (@ExistingPlayerId, @PlayerId)", replaceWithExistingPlayer, transaction));
-                        Task.WaitAll(awaitThese.ToArray());
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @ExistingPlayerId WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction);
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @ExistingPlayerId, PlayerRoute = @PlayerRoute WHERE PlayerId IN (@ExistingPlayerId, @PlayerId)", replaceWithExistingPlayer, transaction);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.Player} WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
 
                         // Update the player to return with new details assigned to it
@@ -311,11 +307,10 @@ namespace Stoolball.Data.SqlServer
                               }, transaction);
 
                         // Update identity to point to new player
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", new { player.PlayerId, playerIdentity.PlayerIdentityId }, transaction);
+
                         // Update statistics to point to new player and new player route
-                        var awaitThese = new List<Task>();
-                        awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", new { player.PlayerId, playerIdentity.PlayerIdentityId }, transaction));
-                        awaitThese.Add(connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @PlayerId, PlayerRoute = @PlayerRoute WHERE PlayerIdentityId = @PlayerIdentityId", new { player.PlayerId, player.PlayerRoute, playerIdentity.PlayerIdentityId }, transaction));
-                        Task.WaitAll(awaitThese.ToArray());
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @PlayerId, PlayerRoute = @PlayerRoute WHERE PlayerIdentityId = @PlayerIdentityId", new { player.PlayerId, player.PlayerRoute, playerIdentity.PlayerIdentityId }, transaction);
 
                         var serialisedPlayer = JsonConvert.SerializeObject(_copier.CreateAuditableCopy(player));
                         await _auditRepository.CreateAudit(new AuditRecord
