@@ -21,20 +21,20 @@
     var matchYears = firstMatch.HasValue && lastMatch.HasValue ? (firstMatch.Value.Year == lastMatch.Value.Year) ? $"in {firstMatch.Value.Year}" : $"from {firstMatch.Value.Year} to {lastMatch.Value.Year}" : filterHumanizer.MatchingUserFilter(Model.AppliedFilter);
 }
 <div class="container-xl">
-    <h1>@(Model.Player?.PlayerName())</h1>
+    @await Html.PartialAsync("_PlayerHeader", Model.Player)
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <em class="nav-link active">Summary</em>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Player!.PlayerRoute/batting@(queryString)">Batting</a>
+            <a class="nav-link" href="@Model.Player?.PlayerRoute/batting@(queryString)">Batting</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Player!.PlayerRoute/bowling@(queryString)">Bowling</a>
+            <a class="nav-link" href="@Model.Player?.PlayerRoute/bowling@(queryString)">Bowling</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Player.PlayerRoute/fielding@(queryString)">Fielding</a>
+            <a class="nav-link" href="@Model.Player?.PlayerRoute/fielding@(queryString)">Fielding</a>
         </li>
         <li class="nav-item nav-item-admin">
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>

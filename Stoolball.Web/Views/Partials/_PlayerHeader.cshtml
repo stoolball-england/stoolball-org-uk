@@ -1,0 +1,14 @@
+﻿@using Humanizer
+@model Stoolball.Statistics.Player?
+@if (Model != null)
+{
+<h1>@(Model.PlayerName())
+@if (Model.AlternativeNames().Any())
+{
+    // Wrapping is better if we don't allow inline display, so only apply inline class for relatively short strings
+    var altNameLength = Model.AlternativeNames().Humanize().Length;
+    var allowInline = (Model.PlayerName().Length <= 30 && altNameLength <= 50) ? " player-aka--inline" : string.Empty;
+    <small class="player-aka@(allowInline)">also known as @Html.Raw(Model.AlternativeNames().Humanize(name => $"<strong>{Html.Encode(name)}</strong>"))</small>
+}
+</h1>
+}

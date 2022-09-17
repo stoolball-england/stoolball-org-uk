@@ -3,6 +3,21 @@
 @import "../../../node_modules/bootstrap/scss/_mixins.scss";
 @import "../../../node_modules/bootstrap/scss/_variables.scss";
 
+// Header on player pages
+.player-aka {
+    display: block;
+    margin-left: 1px;
+    margin-bottom: $spacer*1.5;
+    font-size: 1rem;
+}
+
+@include media-breakpoint-up(md){
+    .player-aka--inline {
+        display: inline;
+        margin-left: 0;
+    }
+}
+
 .statistics .table-as-cards__label {
     width: 5em;
 }

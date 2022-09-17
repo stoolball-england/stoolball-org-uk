@@ -17,7 +17,7 @@
     var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 }
 <div class="container-xl">
-    <h1>@(Model.Player?.PlayerName())</h1>
+    @await Html.PartialAsync("_PlayerHeader", Model.Player)
 
     <ul class="nav nav-tabs">
          <li class="nav-item">
