@@ -51,21 +51,13 @@ namespace Stoolball.Data.SqlServer
 
             var sql = $@"SELECT DISTINCT PlayerId, PlayerRoute, 
                                 PlayerIdentityId, PlayerIdentityName, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed, 
-                                TeamName 
+                                TeamId, TeamName 
                                 FROM {Tables.PlayerInMatchStatistics} AS stats 
                                 <<WHERE>>
-                                GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamName";
+                                GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName";
 
-            var where = new List<string>();
-            var parameters = new Dictionary<string, object>();
-
-            if (filter?.PlayerIds?.Count > 0)
-            {
-                where.Add("stats.PlayerId IN @PlayerIds");
-                parameters.Add("@PlayerIds", filter.PlayerIds.Select(x => x.ToString()));
-            }
-
-            sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
+            var (where, parameters) = BuildWhereClause(filter);
+            sql = sql.Replace("<<WHERE>>", $"WHERE 1=1 {where}");
 
             var rawResults = (await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(sql,
                 (player, identity, team) =>
@@ -76,7 +68,7 @@ namespace Stoolball.Data.SqlServer
                     return player;
                 },
                 new DynamicParameters(parameters),
-                splitOn: "PlayerIdentityId, TeamName").ConfigureAwait(false)).ToList();
+                splitOn: "PlayerIdentityId, TeamId").ConfigureAwait(false)).ToList();
 
             return rawResults.GroupBy(x => x.PlayerId).Select(group =>
             {
@@ -103,28 +95,8 @@ namespace Stoolball.Data.SqlServer
                             GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName 
                             ORDER BY stats.TeamId ASC, {PROBABILITY_CALCULATION} DESC, stats.PlayerIdentityName ASC";
 
-                var where = new List<string>();
-                var parameters = new Dictionary<string, object>();
-
-                if (!string.IsNullOrEmpty(filter?.Query))
-                {
-                    where.Add("stats.PlayerIdentityName LIKE @Query");
-                    parameters.Add("@Query", $"%{filter.Query.Replace(" ", "%")}%");
-                }
-
-                if (filter?.TeamIds?.Count > 0)
-                {
-                    where.Add("stats.TeamId IN @TeamIds");
-                    parameters.Add("@TeamIds", filter.TeamIds.Select(x => x.ToString()));
-                }
-
-                if (filter?.PlayerIdentityIds?.Count > 0)
-                {
-                    where.Add("stats.PlayerIdentityId IN @PlayerIdentityIds");
-                    parameters.Add("@PlayerIdentityIds", filter.PlayerIdentityIds.Select(x => x.ToString()));
-                }
-
-                sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
+                var (where, parameters) = BuildWhereClause(filter);
+                sql = sql.Replace("<<WHERE>>", $"WHERE 1=1 {where}");
 
                 return (await connection.QueryAsync<PlayerIdentity, Player, Team, PlayerIdentity>(sql,
                     (identity, player, team) =>
@@ -136,6 +108,65 @@ namespace Stoolball.Data.SqlServer
                     new DynamicParameters(parameters),
                     splitOn: "PlayerId, TeamId").ConfigureAwait(false)).ToList();
             }
+        }
+
+        /// <summary> 
+        /// Adds standard filters to the WHERE clause
+        /// </summary> 
+        private (string where, Dictionary<string, object> parameters) BuildWhereClause(PlayerFilter filter)
+        {
+            var where = new List<string>();
+            var parameters = new Dictionary<string, object>();
+
+            if (filter?.PlayerIds?.Count > 0)
+            {
+                where.Add("stats.PlayerId IN @PlayerIds");
+                parameters.Add("@PlayerIds", filter.PlayerIds.Select(x => x.ToString()));
+            }
+
+            if (filter?.PlayerIdentityIds?.Count > 0)
+            {
+                where.Add("stats.PlayerIdentityId IN @PlayerIdentityIds");
+                parameters.Add("@PlayerIdentityIds", filter.PlayerIdentityIds.Select(x => x.ToString()));
+            }
+
+            if (!string.IsNullOrEmpty(filter?.Query))
+            {
+                where.Add("stats.PlayerIdentityName LIKE @Query");
+                parameters.Add("@Query", $"%{filter.Query.Replace(" ", "%")}%");
+            }
+
+            if (filter?.ClubIds?.Count > 0)
+            {
+                where.Add("stats.ClubId IN @ClubIds");
+                parameters.Add("@ClubIds", filter.ClubIds.Select(x => x.ToString()));
+            }
+
+            if (filter?.TeamIds?.Count > 0)
+            {
+                where.Add("stats.TeamId IN @TeamIds");
+                parameters.Add("@TeamIds", filter.TeamIds.Select(x => x.ToString()));
+            }
+
+            if (filter?.MatchLocationIds?.Count > 0)
+            {
+                where.Add("stats.MatchLocationId IN @MatchLocationIds");
+                parameters.Add("@MatchLocationIds", filter.MatchLocationIds.Select(x => x.ToString()));
+            }
+
+            if (filter?.CompetitionIds?.Count > 0)
+            {
+                where.Add("stats.CompetitionId IN @CompetitionIds");
+                parameters.Add("@CompetitionIds", filter.CompetitionIds.Select(x => x.ToString()));
+            }
+
+            if (filter?.SeasonIds?.Count > 0)
+            {
+                where.Add("stats.SeasonId IN @SeasonIds");
+                parameters.Add("@SeasonIds", filter.SeasonIds.Select(x => x.ToString()));
+            }
+
+            return (where.Count > 0 ? " AND " + string.Join(" AND ", where) : string.Empty, parameters);
         }
 
         /// <inheritdoc />

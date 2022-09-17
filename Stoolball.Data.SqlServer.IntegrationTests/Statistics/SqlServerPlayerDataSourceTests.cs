@@ -44,6 +44,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     Assert.Equal(identity.PlayerIdentityName, resultIdentity.PlayerIdentityName);
                     Assert.Equal(identity.FirstPlayed?.AccurateToTheMinute(), resultIdentity.FirstPlayed?.AccurateToTheMinute());
                     Assert.Equal(identity.LastPlayed?.AccurateToTheMinute(), resultIdentity.LastPlayed?.AccurateToTheMinute());
+                    Assert.Equal(identity.Team.TeamId, resultIdentity.Team.TeamId);
                     Assert.Equal(identity.Team.TeamName, resultIdentity.Team.TeamName);
                 }
             }
@@ -68,15 +69,147 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_players_supports_filter_by_player_id()
         {
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
-            var expectedIds = _databaseFixture.TestData.Players.Take(3).Select(x => x.PlayerId.Value).ToList();
+            var expectedPlayers = _databaseFixture.TestData.Players.Where(x => x.PlayerId != _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerId).Take(3).ToList();
+            expectedPlayers.Add(_databaseFixture.TestData.BowlerWithMultipleIdentities);
 
-            var results = await playerDataSource.ReadPlayers(new PlayerFilter { PlayerIds = expectedIds });
+            var results = await playerDataSource.ReadPlayers(new PlayerFilter { PlayerIds = expectedPlayers.Select(x => x.PlayerId.Value).ToList() });
 
-            Assert.Equal(expectedIds.Count, results.Count);
-            foreach (var playerId in expectedIds)
+            Assert.Equal(expectedPlayers.Count, results.Count);
+            foreach (var player in expectedPlayers)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.PlayerId == playerId));
+                var result = results.SingleOrDefault(x => x.PlayerId == player.PlayerId);
+                Assert.NotNull(result);
+                Assert.Equal(player.PlayerIdentities.Count, result.PlayerIdentities.Count);
             }
+        }
+
+        [Fact]
+        public async Task Read_players_supports_case_insensitive_filter_by_name()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var expected = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.First();
+
+            var results = await playerDataSource.ReadPlayers(new PlayerFilter
+            {
+                Query = expected.PlayerIdentityName.ToLower(CultureInfo.CurrentCulture).Substring(0, 5) + expected.PlayerIdentityName.ToUpperInvariant().Substring(5)
+            });
+
+            Assert.Single(results);
+            // When filtering by an aspect of the identity, don't return non-matching identities even for the same player
+            Assert.Single(results[0].PlayerIdentities);
+            Assert.Equal(expected.PlayerIdentityId, results[0].PlayerIdentities[0].PlayerIdentityId);
+        }
+
+        [Fact]
+        public async Task Read_players_supports_filter_by_club_id()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var clubIds = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team?.Club?.ClubId != null).Take(2).Select(x => x.Team.Club.ClubId.Value).ToList();
+            Assert.NotEmpty(clubIds);
+
+            var results = await playerDataSource.ReadPlayers(new PlayerFilter { ClubIds = clubIds });
+
+            var identitiesInSelectedClubs = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team?.Club?.ClubId != null && clubIds.Contains(x.Team.Club.ClubId.Value));
+            var playerIdentityIdsInSelectedClubs = identitiesInSelectedClubs.Select(x => x.PlayerIdentityId.Value);
+            var expectedPlayers = identitiesInSelectedClubs.Select(x => x.Player).Distinct(new PlayerEqualityComparer());
+            Assert.Equal(expectedPlayers.Count(), results.Count);
+            foreach (var player in expectedPlayers)
+            {
+                var result = results.SingleOrDefault(x => x.PlayerId == player.PlayerId);
+                Assert.NotNull(result);
+
+                // When filtering by an aspect of the identity, don't return non-matching identities even for the same player
+                Assert.DoesNotContain(result.PlayerIdentities, x => !playerIdentityIdsInSelectedClubs.Contains(x.PlayerIdentityId.Value));
+            }
+        }
+
+        [Fact]
+        public async Task Read_players_supports_filter_by_team_id()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var expectedTeamId = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities[0].Team.TeamId.Value;
+
+            var results = await playerDataSource.ReadPlayers(new PlayerFilter { TeamIds = new List<Guid> { expectedTeamId } });
+
+            var expected = _databaseFixture.TestData.Players.Where(x => x.PlayerIdentities.Any(pi => pi.Team.TeamId == expectedTeamId));
+            Assert.Equal(expected.Count(), results.Count);
+            foreach (var player in expected)
+            {
+                var result = results.SingleOrDefault(x => x.PlayerId == player.PlayerId);
+                Assert.NotNull(result);
+
+                // When filtering by an aspect of the identity, don't return non-matching identities even for the same player
+                Assert.DoesNotContain(result.PlayerIdentities, x => x.Team.TeamId != expectedTeamId);
+            }
+        }
+
+        [Fact]
+        public async Task Read_players_supports_filter_by_match_location_id()
+        {
+            var matchLocationId = _databaseFixture.TestData.MatchInThePastWithFullDetails.MatchLocation.MatchLocationId.Value;
+            var matches = _databaseFixture.TestData.Matches.Where(x => x.MatchLocation?.MatchLocationId == matchLocationId);
+            var playerFilter = new PlayerFilter { MatchLocationIds = new List<Guid> { matchLocationId } };
+
+            await Read_players_supports_filter_by_involvement_in_a_set_of_matches(matches, playerFilter);
+        }
+
+        [Fact]
+        public async Task Read_players_supports_filter_by_competition_id()
+        {
+            var competitionId = _databaseFixture.TestData.MatchInThePastWithFullDetails.Season.Competition.CompetitionId.Value;
+            var matches = _databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == competitionId);
+            var playerFilter = new PlayerFilter { CompetitionIds = new List<Guid> { competitionId } };
+
+            await Read_players_supports_filter_by_involvement_in_a_set_of_matches(matches, playerFilter);
+        }
+
+        [Fact]
+        public async Task Read_players_supports_filter_by_season_id()
+        {
+            var seasonId = _databaseFixture.TestData.MatchInThePastWithFullDetails.Season.SeasonId.Value;
+            var matches = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == seasonId);
+            var playerFilter = new PlayerFilter { SeasonIds = new List<Guid> { seasonId } };
+
+            await Read_players_supports_filter_by_involvement_in_a_set_of_matches(matches, playerFilter);
+        }
+
+        private async Task Read_players_supports_filter_by_involvement_in_a_set_of_matches(IEnumerable<Stoolball.Matches.Match> matches, PlayerFilter playerFilter)
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerIdentities = new List<PlayerIdentity>();
+            var playerIdentityFinder = new PlayerIdentityFinder();
+            foreach (var match in matches)
+            {
+                playerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(match));
+            }
+            var players = playerIdentities.Select(x => x.Player).Distinct(new PlayerEqualityComparer()).ToList();
+            var playerIdentityIds = playerIdentities.Select(x => x.PlayerIdentityId).Distinct().ToList();
+
+            var results = await playerDataSource.ReadPlayers(playerFilter);
+
+            Assert.Equal(players.Count, results.Count);
+            foreach (var player in players)
+            {
+                var result = results.SingleOrDefault(x => x.PlayerId == player.PlayerId);
+                Assert.NotNull(result);
+
+                // When filtering by an aspect of the identity, don't return non-matching identities even for the same player
+                Assert.DoesNotContain(result.PlayerIdentities, x => !playerIdentityIds.Contains(x.PlayerIdentityId.Value));
+            }
+        }
+
+        [Fact]
+        public async Task Read_players_supports_filter_by_player_identity_id()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var player = _databaseFixture.TestData.BowlerWithMultipleIdentities;
+
+            var results = await playerDataSource.ReadPlayers(new PlayerFilter { PlayerIdentityIds = new List<Guid> { player.PlayerIdentities.First().PlayerIdentityId.Value } });
+
+            Assert.Single(results);
+            Assert.Equal(player.PlayerId, results[0].PlayerId);
+            // When filtering by an aspect of the identity, don't return non-matching identities even for the same player
+            Assert.Single(results[0].PlayerIdentities);
         }
 
         [Fact]
@@ -147,6 +280,21 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
+        public async Task Read_player_identities_supports_filter_by_player_id()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var expectedIds = _databaseFixture.TestData.Players.Where(x => x.PlayerIdentities.Count == 1).Take(3).Select(x => x.PlayerId.Value).ToList();
+
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { PlayerIds = expectedIds });
+
+            Assert.Equal(expectedIds.Count, results.Count);
+            foreach (var playerId in expectedIds)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.Player.PlayerId == playerId));
+            }
+        }
+
+        [Fact]
         public async Task Read_player_identities_supports_case_insensitive_filter_by_name()
         {
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
@@ -162,15 +310,82 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
+        public async Task Read_player_identities_supports_filter_by_club_id()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var clubIds = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team?.Club?.ClubId != null).Take(2).Select(x => x.Team.Club.ClubId.Value).ToList();
+            Assert.NotEmpty(clubIds);
+
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { ClubIds = clubIds });
+
+            var expected = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team?.Club?.ClubId != null && clubIds.Contains(x.Team.Club.ClubId.Value));
+            Assert.Equal(expected.Count(), results.Count);
+            foreach (var identity in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
+            }
+        }
+
+        [Fact]
         public async Task Read_player_identities_supports_filter_by_team_id()
         {
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var expectedTeamId = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities[0].Team.TeamId.Value;
 
-            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { TeamIds = new List<Guid> { _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities[0].Team.TeamId.Value } });
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { TeamIds = new List<Guid> { expectedTeamId } });
 
-            var expected = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team.TeamId == _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities[0].Team.TeamId.Value);
+            var expected = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team.TeamId == expectedTeamId);
             Assert.Equal(expected.Count(), results.Count);
             foreach (var identity in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_identities_supports_filter_by_match_location_id()
+        {
+            var expectedMatchLocationId = _databaseFixture.TestData.MatchInThePastWithFullDetails.MatchLocation.MatchLocationId.Value;
+            var matches = _databaseFixture.TestData.Matches.Where(x => x.MatchLocation?.MatchLocationId == expectedMatchLocationId);
+            var playerFilter = new PlayerFilter { MatchLocationIds = new List<Guid> { expectedMatchLocationId } };
+
+            await Read_player_identities_supports_filter_by_involvement_in_a_set_of_matches(matches, playerFilter);
+        }
+
+        [Fact]
+        public async Task Read_player_identities_supports_filter_by_competition_id()
+        {
+            var expectedCompetitionId = _databaseFixture.TestData.MatchInThePastWithFullDetails.Season.Competition.CompetitionId.Value;
+            var matches = _databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == expectedCompetitionId);
+            var playerFilter = new PlayerFilter { CompetitionIds = new List<Guid> { expectedCompetitionId } };
+
+            await Read_player_identities_supports_filter_by_involvement_in_a_set_of_matches(matches, playerFilter);
+        }
+
+        [Fact]
+        public async Task Read_player_identities_supports_filter_by_season_id()
+        {
+            var expectedSeasonId = _databaseFixture.TestData.MatchInThePastWithFullDetails.Season.SeasonId.Value;
+            var matches = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == expectedSeasonId);
+            var playerFilter = new PlayerFilter { SeasonIds = new List<Guid> { expectedSeasonId } };
+
+            await Read_player_identities_supports_filter_by_involvement_in_a_set_of_matches(matches, playerFilter);
+        }
+
+        private async Task Read_player_identities_supports_filter_by_involvement_in_a_set_of_matches(IEnumerable<Stoolball.Matches.Match> matches, PlayerFilter playerFilter)
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerIdentities = new List<PlayerIdentity>();
+            var playerIdentityFinder = new PlayerIdentityFinder();
+            foreach (var match in matches)
+            {
+                playerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(match));
+            }
+
+            var results = await playerDataSource.ReadPlayerIdentities(playerFilter);
+
+            Assert.Equal(playerIdentities.Count, results.Count);
+            foreach (var identity in playerIdentities)
             {
                 Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
             }
@@ -180,11 +395,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_player_identities_supports_filter_by_player_identity_id()
         {
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var identities = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities;
 
-            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { PlayerIdentityIds = _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList() });
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { PlayerIdentityIds = identities.Select(x => x.PlayerIdentityId.Value).ToList() });
 
-            Assert.Equal(_databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities.Count, results.Count);
-            foreach (var identity in _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerIdentities)
+            Assert.Equal(identities.Count, results.Count);
+            foreach (var identity in identities)
             {
                 Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
             }

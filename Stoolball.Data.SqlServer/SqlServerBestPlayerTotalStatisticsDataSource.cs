@@ -179,7 +179,9 @@ namespace Stoolball.Data.SqlServer
                     splitOn: $"TotalMatches",
                     commandTimeout: 60).ConfigureAwait(false);
 
-                var players = await _playerDataSource.ReadPlayers(new PlayerFilter { PlayerIds = results.Select(x => x.Result.Player.PlayerId.Value).ToList() }).ConfigureAwait(false);
+                var playerFilter = filter.ToPlayerFilter();
+                playerFilter.PlayerIds = results.Select(x => x.Result.Player.PlayerId.Value).ToList();
+                var players = await _playerDataSource.ReadPlayers(playerFilter).ConfigureAwait(false);
                 foreach (var result in results)
                 {
                     result.Result.Player = players.Single(x => x.PlayerId == result.Result.Player.PlayerId);
