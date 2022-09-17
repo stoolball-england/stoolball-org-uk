@@ -9,10 +9,12 @@
     "umb://template/0622a0f5f57140e1b80417d9724f7b28",
     "umb://template/069d0e902ed44a68bacd81983a98f048",
     "umb://template/07aa3f0c6fc24d2fa2473da20ad9b400",
+    "umb://template/0af281457c0a4acb834d6ee8d90e9019",
     "umb://template/0e110fcc538f401fac402cdfd8916af4",
     "umb://template/0e91f8c950fc49bdb885c844dc58e6ca",
     "umb://template/0f52b305ec8140ccac40056ef18b76a9",
     "umb://template/120b2463988a40b886de1036b758087d",
+    "umb://template/122d77c4da354047a0f093e65d489b4a",
     "umb://template/15aeb712cd3d498cb575bb381c342f9c",
     "umb://template/18d4bbdabcad454e9df615feacb65451",
     "umb://template/19b067bfa44940cc94c9709af58fedc3",
@@ -47,6 +49,7 @@
     "umb://template/6e0724f7aa52495d9b0e5e17fb2c729a",
     "umb://template/6fc791655bfa4316859a17601cbd5b2a",
     "umb://template/7770c3e197814c2fb06aea342782894e",
+    "umb://template/7da93e9f4b3b49dd9a85b033f2033a12",
     "umb://template/7dd8ace8ec06495394a3325d64bfebea",
     "umb://template/7e20e79a091e4213924cdc4784b1152b",
     "umb://template/7e2209f722e043f78946bd091b0f3ece",
@@ -159,6 +162,11 @@
       "Mode": 0
     },
     {
+      "Udi": "umb://template/0af281457c0a4acb834d6ee8d90e9019",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
       "Udi": "umb://template/0e110fcc538f401fac402cdfd8916af4",
       "Ordering": true,
       "Mode": 0
@@ -175,6 +183,11 @@
     },
     {
       "Udi": "umb://template/120b2463988a40b886de1036b758087d",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/122d77c4da354047a0f093e65d489b4a",
       "Ordering": true,
       "Mode": 0
     },
@@ -345,6 +358,11 @@
     },
     {
       "Udi": "umb://template/7770c3e197814c2fb06aea342782894e",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/7da93e9f4b3b49dd9a85b033f2033a12",
       "Ordering": true,
       "Mode": 0
     },
@@ -605,5 +623,5 @@
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "9.4.2"
 }

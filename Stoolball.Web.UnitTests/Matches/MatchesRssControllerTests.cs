@@ -24,9 +24,8 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<ICompetitionDataSource> _competitionDataSource = new();
         private readonly Mock<IMatchLocationDataSource> _matchLocationDataSource = new();
 
-        public MatchesRssControllerTests()
+        public MatchesRssControllerTests() : base()
         {
-            Setup();
         }
 
         private MatchesRssController CreateController()

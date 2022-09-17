@@ -9,6 +9,13 @@ namespace Stoolball.Routing
 {
     public class RouteGenerator : IRouteGenerator
     {
+        private readonly IRouteTokeniser _tokeniser;
+
+        public RouteGenerator(IRouteTokeniser tokeniser)
+        {
+            _tokeniser = tokeniser ?? throw new ArgumentNullException(nameof(tokeniser));
+        }
+
         public async Task<string> GenerateUniqueRoute(string prefix, string name, IEnumerable<string> noiseWords, Func<string, Task<int>> findMatchingRoutes)
         {
             return await GenerateUniqueRoute(string.Empty, prefix, name, noiseWords, findMatchingRoutes).ConfigureAwait(false);
@@ -71,28 +78,14 @@ namespace Stoolball.Routing
                 throw new System.ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
             }
 
-            var (baseRoute, counter) = SplitRouteAndCounter(route);
+            var (baseRoute, counter) = _tokeniser.TokeniseRoute(route);
             if (counter != null)
             {
-                var updatedCounter = int.Parse(counter, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                return $"{baseRoute}-{++updatedCounter}";
+                return $"{baseRoute}-{++counter}";
             }
             else
             {
                 return route + "-1";
-            }
-        }
-
-        private static (string baseRoute, string counter) SplitRouteAndCounter(string route)
-        {
-            var match = Regex.Match(route, "-(?<counter>[0-9]+)$");
-            if (match.Success)
-            {
-                return (route.Substring(0, match.Index), match.Groups["counter"].Value);
-            }
-            else
-            {
-                return (route, null);
             }
         }
 
@@ -109,8 +102,8 @@ namespace Stoolball.Routing
                 throw new System.ArgumentException($"'{nameof(routeAfter)}' cannot be null or empty", nameof(routeAfter));
             }
 
-            var (baseRouteBefore, _) = SplitRouteAndCounter(routeBefore);
-            var (baseRouteAfter, _) = SplitRouteAndCounter(routeAfter);
+            var (baseRouteBefore, _) = _tokeniser.TokeniseRoute(routeBefore);
+            var (baseRouteAfter, _) = _tokeniser.TokeniseRoute(routeAfter);
             return (baseRouteAfter == baseRouteBefore);
         }
     }

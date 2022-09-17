@@ -1,0 +1,40 @@
+﻿@inherits UmbracoViewPage<PlayerSummaryViewModel>
+@inject IStatisticsFilterQueryStringSerializer serialiser
+@inject IStatisticsFilterHumanizer filterHumanizer
+@using Stoolball.Statistics
+@using Stoolball.Web.Statistics
+@using Stoolball.Web.Statistics.Models
+@using Stoolball.Matches
+@using Stoolball.Web.Filtering
+@using Humanizer
+@using System.Net.Http
+<div class="container-xl">
+    <h1>Link this player to my account</h1>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        var totalMatches = Model.Player!.PlayerIdentities.Sum(x => x.TotalMatches);
+        var firstMatch = Model.Player!.PlayerIdentities.Min(x => x.FirstPlayed);
+        var lastMatch = Model.Player!.PlayerIdentities.Max(x => x.LastPlayed);
+        var matchYears = firstMatch.HasValue && lastMatch.HasValue ? (firstMatch.Value.Year == lastMatch.Value.Year) ? $"in {firstMatch.Value.Year}" : $"from {firstMatch.Value.Year} to {lastMatch.Value.Year}" : filterHumanizer.MatchingUserFilter(Model.AppliedFilter);
+        <p>You should link this player to your account if:</p>
+        <ul>
+            <li>you are @(Model.Player?.PlayerName())</li>
+            <li>you played @totalMatches
+            @(totalMatches == 1 ? "match" : "matches") for @Model.Player!.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => x.TeamName) @matchYears</li>
+        </ul>
+
+        <p>If you have other player pages (for example, if you changed your name or you play for multiple teams), you should link them all to your account.</p>
+        <p>This will combine all the player pages into one so that you can see your true statistics.</p>
+        @await Html.PartialAsync("_StatisticsCacheWarning")
+        @using (Html.BeginUmbracoForm<LinkPlayerToMemberSurfaceController>(nameof(LinkPlayerToMemberSurfaceController.LinkPlayerToMemberAccount)))
+        {    
+            <button type="submit" class="btn btn-primary">Link this player to my account</button>
+            <p><a href="@Model.Player.PlayerRoute">Cancel</a></p>
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

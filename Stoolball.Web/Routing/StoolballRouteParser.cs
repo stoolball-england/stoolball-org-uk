@@ -58,12 +58,14 @@ namespace Stoolball.Web.Routing
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Tournament },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Player },
+                { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}batting{OPTIONAL_SLASH}", StoolballRouteType.PlayerBatting },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}bowling{OPTIONAL_SLASH}", StoolballRouteType.PlayerBowling },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}fielding{OPTIONAL_SLASH}", StoolballRouteType.PlayerFielding },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}catches{OPTIONAL_SLASH}", StoolballRouteType.Catches },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}run-outs{OPTIONAL_SLASH}", StoolballRouteType.RunOuts },
+                { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}link-to-my-account{OPTIONAL_SLASH}", StoolballRouteType.LinkPlayerToMember },
 
                 // Match /competitions/example-entity/2020, /competitions/example-entity/2020-21, 
                 // but not /competitions, /competitions/, /competitions/example-entity, /competitions/example-entity/invalid 
@@ -216,7 +218,10 @@ namespace Stoolball.Web.Routing
                 { $"play{SLASH}statistics{SLASH}bowling-average{OPTIONAL_SLASH}", StoolballRouteType.BowlingAverage },
                 { $"play{SLASH}statistics{SLASH}economy-rate{OPTIONAL_SLASH}", StoolballRouteType.EconomyRate },
                 { $"play{SLASH}statistics{SLASH}batting-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BattingStrikeRate },
-                { $"play{SLASH}statistics{SLASH}bowling-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BowlingStrikeRate }
+                { $"play{SLASH}statistics{SLASH}bowling-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BowlingStrikeRate },
+
+                // Match /account/linked-players
+                { $"account{SLASH}linked-players{OPTIONAL_SLASH}", StoolballRouteType.LinkedPlayersForMember }
             };
 
             foreach (var routePattern in routeTypes.Keys)

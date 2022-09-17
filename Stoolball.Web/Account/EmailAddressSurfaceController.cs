@@ -60,7 +60,7 @@ namespace Stoolball.Web.Account
         [ValidateAntiForgeryToken()]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<IActionResult> UpdateEmailAddress([Bind(Prefix = "formData")] EmailAddressFormData postedData)
+        public async Task<IActionResult> UpdateEmailAddress([Bind(Prefix = "formData")] EmailAddressFormData? postedData)
         {
             if (postedData == null)
             {

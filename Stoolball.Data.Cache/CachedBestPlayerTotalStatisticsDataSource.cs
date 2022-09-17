@@ -42,7 +42,8 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadMostRunsScored(filter).ConfigureAwait(false), new Context(nameof(ReadMostRunsScored) + _statisticsFilterSerializer.Serialize(filter)));
+            //return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadMostRunsScored(filter).ConfigureAwait(false), new Context(nameof(ReadMostRunsScored) + _statisticsFilterSerializer.Serialize(filter)));
+            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadMostRunsScored(filter).ConfigureAwait(false), new Context(nameof(ReadMostRunsScored) + Guid.NewGuid()));
         }
 
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostWickets(StatisticsFilter filter)

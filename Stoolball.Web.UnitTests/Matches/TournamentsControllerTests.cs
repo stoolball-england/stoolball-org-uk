@@ -15,9 +15,8 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IMatchFilterQueryStringParser> _matchFilterQueryStringParser = new();
         private readonly Mock<IMatchFilterHumanizer> _matchFilterHumanizer = new();
 
-        public TournamentsControllerTests()
+        public TournamentsControllerTests() : base()
         {
-            base.Setup();
         }
 
         private TournamentsController CreateController()

@@ -19,9 +19,8 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<ITeamListingDataSource> _teamDataSource = new();
         private readonly Mock<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>> _listingsModelBuilder = new();
 
-        public TeamsControllerTests()
+        public TeamsControllerTests() : base()
         {
-            base.Setup();
         }
 
         private TeamsController CreateController()
@@ -63,7 +62,7 @@ namespace Stoolball.Web.UnitTests.Teams
         [Fact]
         public async Task Index_sets_TeamTypes_filter_including_but_not_only_null()
         {
-            TeamsViewModel model = null;
+            TeamsViewModel? model = null;
             _listingsModelBuilder.Setup(x => x.BuildModel(
                 It.IsAny<Func<TeamsViewModel>>(),
                 _teamDataSource.Object.ReadTotalTeams,
@@ -83,7 +82,7 @@ namespace Stoolball.Web.UnitTests.Teams
             {
                 var result = await controller.Index();
 
-                Assert.Equal(1, model.Filter.TeamTypes.Count(x => x == null));
+                Assert.Equal(1, model!.Filter.TeamTypes.Count(x => x == null));
                 Assert.True(model.Filter.TeamTypes.Count > 1);
             }
         }

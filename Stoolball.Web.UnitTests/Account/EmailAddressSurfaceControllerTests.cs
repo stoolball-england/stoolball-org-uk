@@ -43,10 +43,8 @@ namespace Stoolball.Web.UnitTests.Account
         private const string CONFIRM_EMAIL_BODY = "Confirm your email address body";
         private const string REQUEST_URL_AUTHORITY = "www.stoolball.org.uk";
 
-        public EmailAddressSurfaceControllerTests()
+        public EmailAddressSurfaceControllerTests() : base()
         {
-            base.Setup();
-
             _member.Setup(x => x.Id).Returns(123);
             _member.Setup(x => x.Key).Returns(Guid.NewGuid());
             _member.Setup(x => x.Name).Returns("Current Member");
@@ -97,11 +95,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void UpdateEmailAddress_has_content_security_policy_allows_forms()
         {
-            var method = typeof(EmailAddressSurfaceController).GetMethod(nameof(EmailAddressSurfaceController.UpdateEmailAddress));
+            var method = typeof(EmailAddressSurfaceController).GetMethod(nameof(EmailAddressSurfaceController.UpdateEmailAddress))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.True(attribute.Forms);
+            Assert.True(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);
@@ -112,7 +110,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void UpdateEmailAddress_has_form_post_attributes()
         {
-            var method = typeof(EmailAddressSurfaceController).GetMethod(nameof(EmailAddressSurfaceController.UpdateEmailAddress));
+            var method = typeof(EmailAddressSurfaceController).GetMethod(nameof(EmailAddressSurfaceController.UpdateEmailAddress))!;
 
             var httpPostAttribute = method.GetCustomAttributes(typeof(HttpPostAttribute), false).SingleOrDefault();
             Assert.NotNull(httpPostAttribute);
@@ -131,7 +129,7 @@ namespace Stoolball.Web.UnitTests.Account
 
             var otherMember = SetupAnotherAccountUsingThisEmail(model.Requested);
 
-            Dictionary<string, string> receivedTokens = null;
+            Dictionary<string, string>? receivedTokens = null;
             _emailFormatter.Setup(x => x.FormatEmailContent(EMAIL_TAKEN_SUBJECT, EMAIL_TAKEN_BODY, It.IsAny<Dictionary<string, string>>()))
                 .Callback<string, string, Dictionary<string, string>>((subject, body, tokens) => receivedTokens = tokens)
                 .Returns(("email subject", "email body"));
@@ -140,7 +138,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 var result = await controller.UpdateEmailAddress(model);
 
-                Assert.Equal(otherMember.Object.Name, receivedTokens["name"]);
+                Assert.Equal(otherMember.Object.Name, receivedTokens!["name"]);
                 Assert.Equal(model.Requested, receivedTokens["email"]);
                 Assert.Equal(REQUEST_URL_AUTHORITY, receivedTokens["domain"]);
                 _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Once);
@@ -237,7 +235,7 @@ namespace Stoolball.Web.UnitTests.Account
             var tokenExpiry = DateTime.UtcNow.AddDays(1);
             _verificationToken.Setup(x => x.TokenFor(_member.Object.Id)).Returns((token, tokenExpiry));
 
-            Dictionary<string, string> receivedTokens = null;
+            Dictionary<string, string>? receivedTokens = null;
             _emailFormatter.Setup(x => x.FormatEmailContent(CONFIRM_EMAIL_SUBJECT, CONFIRM_EMAIL_BODY, It.IsAny<Dictionary<string, string>>()))
                 .Callback<string, string, Dictionary<string, string>>((subject, body, tokens) => receivedTokens = tokens)
                 .Returns((CONFIRM_EMAIL_SUBJECT, CONFIRM_EMAIL_BODY));
@@ -246,7 +244,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 var result = await controller.UpdateEmailAddress(model);
 
-                Assert.Equal(_member.Object.Name, receivedTokens["name"]);
+                Assert.Equal(_member.Object.Name, receivedTokens!["name"]);
                 Assert.Equal(model.Requested, receivedTokens["email"]);
                 Assert.Equal(REQUEST_URL_AUTHORITY, receivedTokens["domain"]);
                 Assert.Equal(token, receivedTokens["token"]);

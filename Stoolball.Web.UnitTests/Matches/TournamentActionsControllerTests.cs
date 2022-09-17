@@ -17,9 +17,8 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<ITournamentDataSource> _tournamentDataSource = new();
         private readonly Mock<IMatchListingDataSource> _matchDataSource = new();
 
-        public TournamentActionsControllerTests()
+        public TournamentActionsControllerTests() : base()
         {
-            Setup();
         }
 
         private TournamentActionsController CreateController()
@@ -39,7 +38,7 @@ namespace Stoolball.Web.UnitTests.Matches
         [Fact]
         public async Task Route_not_matching_tournament_returns_404()
         {
-            _tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).Returns(Task.FromResult<Tournament>(null));
+            _tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).Returns(Task.FromResult<Tournament?>(null));
 
             using (var controller = CreateController())
             {

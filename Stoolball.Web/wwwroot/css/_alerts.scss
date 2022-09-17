@@ -39,7 +39,16 @@
 }
 
 // Don't use green links on a red background!
-.alert-danger a:link, .alert-danger a:visited {
+.alert-warning a:link, .alert-warning a:visited {
     color: inherit;
     border-color: inherit;
+}
+
+
+.alert-warning {
+    background-image: url(/images/icons/iconmonstr-error-lined.svg);
+    background-repeat: no-repeat;
+    background-size: 24px;
+    background-position: 10px 12px;
+    padding-left: 40px;
 }

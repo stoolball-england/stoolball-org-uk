@@ -2,7 +2,7 @@
 
 Connecting to the database is the both biggest performance bottleneck and the biggest source of errors, therefore caching content rather than fetching it from the database every time makes the site both faster and more reliable.
 
-Umbraco content is cached in memory by default. Stoolball data is cached using [read-through caching using Polly](https://github.com/App-vNext/Polly/wiki/Cache).
+Umbraco content is cached in memory by default. Stoolball data is cached using read-through caching, mostly [read-through caching using Polly](https://github.com/App-vNext/Polly/wiki/Cache).
 
 ## Cache strategies
 
@@ -28,14 +28,15 @@ There are three strategies used for caching:
 
   - match and tournament listings
   - match and tournament comments
+  - linking a player to a member account
 
 ## How it's implemented
 
 Each data source in the `Stoolball.Data.SqlServer` project that supports caching has a matching data source in `Stoolball.Data.Cache`. Both implement an interface like `IExampleDataSource` but the SQL Server version also implements `ICacheableExampleDataSource`. The cached data source can then inject the SQL Server data source as a dependency, allowing it to read data from the cache if it's available, or fall back to reading from SQL Server if not.
 
-In `DependencyInjectionComposer.cs` the application is configured to inject the cached data source into any class that requires an `IExampleDataSource`, and the SQL Server data source for any class that requires an `ICacheableExampleDataSource`. The consuming class does not need to know whether the data is cached, and caching can be completely disabled for testing by switching the registration of `IExampleDataSource` in `DependencyInjectionComposer.cs` to inject the SQL Server data source.
+In `Startup.cs` the application is configured to inject the cached data source into any class that requires an `IExampleDataSource`, and the SQL Server data source for any class that requires an `ICacheableExampleDataSource`. The consuming class does not need to know whether the data is cached, and caching can be completely disabled for testing by switching the registration of `IExampleDataSource` in `Startup.cs` to inject the SQL Server data source.
 
-The cached data sources each use a Polly cache policy which is also defined in `DependencyInjectionComposer.cs`, and this defines the length of time the cache lasts for, and whether it uses absolute or sliding expiration.
+The cached data sources define the length of time the cache lasts for, and whether it uses absolute or sliding expiration, using the `CacheConstants` class. In some cases these use a Polly cache policy which is defined in `Startup.cs`.
 
 When caches need to be updated immediately for all the controller requires an `ICacheClearer<T>` and calls the `ClearCacheFor` method with the object the cache needs to be cleared for. Where caches only need to be cleared for the editor, this is handled by requiring an `ICacheOverride` in the controller and calling a method on that to override the cache.
 

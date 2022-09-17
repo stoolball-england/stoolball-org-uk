@@ -20,9 +20,8 @@ namespace Stoolball.Web.UnitTests.Competitions
         private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
         private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new();
 
-        public CompetitionStatisticsControllerTests()
+        public CompetitionStatisticsControllerTests() : base()
         {
-            Setup();
         }
 
         private CompetitionStatisticsController CreateController()
@@ -45,7 +44,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public async Task Route_not_matching_competition_returns_404()
         {
-            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition>(null));
+            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition?>(null));
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
 
             using (var controller = CreateController())

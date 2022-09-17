@@ -20,9 +20,8 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new();
 
-        public MatchLocationStatisticsControllerTests()
+        public MatchLocationStatisticsControllerTests() : base()
         {
-            Setup();
         }
 
         private MatchLocationStatisticsController CreateController()
@@ -45,7 +44,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         public async Task Route_not_matching_location_returns_404()
         {
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
-            _matchLocationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation>(null));
+            _matchLocationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation?>(null));
 
             using (var controller = CreateController())
             {

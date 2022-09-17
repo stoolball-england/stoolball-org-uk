@@ -15,9 +15,8 @@ namespace Stoolball.Web.UnitTests.Competitions
     {
         private readonly Mock<ICompetitionDataSource> _competitionDataSource = new();
 
-        public CreateSeasonControllerTests()
+        public CreateSeasonControllerTests() : base()
         {
-            Setup();
         }
 
         private CreateSeasonController CreateController()
@@ -55,7 +54,7 @@ namespace Stoolball.Web.UnitTests.Competitions
             {
                 var result = await controller.Index();
 
-                Assert.Equal(DateTime.Today.Year, ((SeasonViewModel)((ViewResult)result).Model).Season.FromYear);
+                Assert.Equal(DateTime.Today.Year, ((SeasonViewModel)((ViewResult)result).Model).Season?.FromYear);
             }
         }
 
@@ -68,7 +67,7 @@ namespace Stoolball.Web.UnitTests.Competitions
             {
                 var result = await controller.Index();
 
-                Assert.Equal(0, ((SeasonViewModel)((ViewResult)result).Model).Season.UntilYear);
+                Assert.Equal(0, ((SeasonViewModel)((ViewResult)result).Model).Season?.UntilYear);
             }
         }
 
@@ -81,7 +80,7 @@ namespace Stoolball.Web.UnitTests.Competitions
             {
                 var result = await controller.Index();
 
-                Assert.Equal(11, ((SeasonViewModel)((ViewResult)result).Model).Season.PlayersPerTeam);
+                Assert.Equal(11, ((SeasonViewModel)((ViewResult)result).Model).Season?.PlayersPerTeam);
             }
         }
     }

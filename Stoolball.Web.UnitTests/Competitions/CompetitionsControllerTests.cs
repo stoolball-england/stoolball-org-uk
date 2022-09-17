@@ -21,9 +21,8 @@ namespace Stoolball.Web.UnitTests.Competitions
         private readonly Mock<ICompetitionDataSource> _competitionDataSource = new();
         private readonly Mock<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>> _listingsBuilder = new();
 
-        public CompetitionsControllerTests()
+        public CompetitionsControllerTests() : base()
         {
-            base.Setup();
         }
 
         private CompetitionsController CreateController()
@@ -43,11 +42,11 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public void Has_content_security_policy()
         {
-            var method = typeof(CompetitionsController).GetMethod(nameof(CompetitionsController.Index));
+            var method = typeof(CompetitionsController).GetMethod(nameof(CompetitionsController.Index))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.False(attribute.Forms);
+            Assert.False(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);

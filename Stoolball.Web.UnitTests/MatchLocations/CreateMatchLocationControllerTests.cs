@@ -13,9 +13,8 @@ namespace Stoolball.Web.UnitTests.MatchLocations
 {
     public class CreateMatchLocationControllerTests : UmbracoBaseTest
     {
-        public CreateMatchLocationControllerTests()
+        public CreateMatchLocationControllerTests() : base()
         {
-            Setup();
         }
 
         private CreateMatchLocationController CreateController()

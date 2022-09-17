@@ -1,6 +1,22 @@
-﻿@import "../../../node_modules/bootstrap/scss/_functions.scss";
+﻿@import "_theme.scss";
+@import "../../../node_modules/bootstrap/scss/_functions.scss";
 @import "../../../node_modules/bootstrap/scss/_mixins.scss";
 @import "../../../node_modules/bootstrap/scss/_variables.scss";
+
+// Header on player pages
+.player-aka {
+    display: block;
+    margin-left: 1px;
+    margin-bottom: $spacer*1.5;
+    font-size: 1rem;
+}
+
+@include media-breakpoint-up(md){
+    .player-aka--inline {
+        display: inline;
+        margin-left: 0;
+    }
+}
 
 .statistics .table-as-cards__label {
     width: 5em;
@@ -58,4 +74,62 @@
     .innings-statistics > table:last-child > caption {
         border-radius: 0 $border-radius 0 0;
     }
+}
+
+// Bubbles on player summary page
+.statistics-pair {
+    margin: $spacer*2 0;
+    display: inline-block;
+}
+
+.statistics-pair__statistic {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: $spacer*4;
+    font-weight: bold;
+    text-align: center;
+}
+
+.statistics-pair__primary {
+    background: no-repeat center/cover theme-color("primary");
+    color: $white;
+    width: 15rem;
+    height: 15rem;
+}
+
+.statistics-pair__runs {
+    background-image: url(/images/photos/batting-duotone.jpg);
+}
+
+.statistics-pair__wickets {
+    background-image: url(/images/photos/bowling-duotone.jpg);
+}
+
+.statistics-pair__catches {
+    background-image: url(/images/photos/catch-duotone.jpg);
+}
+
+.statistics-pair__secondary {
+    background: theme-color("secondary");
+    color: $white;
+    margin-top: -6rem;
+    margin-left: 8rem;
+    opacity: .9;
+    width: 12rem;
+    height: 12rem;
+}
+
+.statistics-pair__value {
+    display: block;
+    font-size: 4rem;
+    line-height: 1em;
+}
+
+.statistics-pair__label {
+    font-size: 2rem;
+    line-height: 1em;
+    white-space: nowrap;
 }

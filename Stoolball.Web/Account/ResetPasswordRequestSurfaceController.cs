@@ -49,7 +49,7 @@ namespace Stoolball.Web.Account
         [ValidateAntiForgeryToken()]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<IActionResult> RequestPasswordReset([Bind(Prefix = "resetPasswordRequest")] ResetPasswordRequestFormData model)
+        public async Task<IActionResult> RequestPasswordReset([Bind(Prefix = "resetPasswordRequest")] ResetPasswordRequestFormData? model)
         {
             var contentModel = new ResetPassword(CurrentPage, new PublishedValueFallback(Services, _variationContextAccessor));
             contentModel.Metadata = new ViewMetadata

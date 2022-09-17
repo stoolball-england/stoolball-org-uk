@@ -19,9 +19,8 @@ namespace Stoolball.Web.UnitTests.Competitions
         private readonly Mock<IMatchListingDataSource> _matchListingDataSource = new();
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
 
-        public DeleteCompetitionControllerTests()
+        public DeleteCompetitionControllerTests() : base()
         {
-            Setup();
         }
 
         private DeleteCompetitionController CreateController()
@@ -43,7 +42,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public async Task Route_not_matching_competition_returns_404()
         {
-            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition>(null));
+            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition?>(null));
 
             using (var controller = CreateController())
             {

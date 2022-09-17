@@ -43,20 +43,20 @@ namespace Stoolball.Statistics
             {
                 Club = Club,
                 Team = Team,
-                OppositionTeamIds = OppositionTeamIds,
+                OppositionTeamIds = new List<Guid>(OppositionTeamIds),
                 SwapTeamAndOppositionFilters = SwapTeamAndOppositionFilters,
                 Player = Player,
-                BowledByPlayerIdentityIds = BowledByPlayerIdentityIds,
-                CaughtByPlayerIdentityIds = CaughtByPlayerIdentityIds,
-                RunOutByPlayerIdentityIds = RunOutByPlayerIdentityIds,
+                BowledByPlayerIdentityIds = new List<Guid>(BowledByPlayerIdentityIds),
+                CaughtByPlayerIdentityIds = new List<Guid>(CaughtByPlayerIdentityIds),
+                RunOutByPlayerIdentityIds = new List<Guid>(RunOutByPlayerIdentityIds),
                 Season = Season,
                 Competition = Competition,
                 MatchLocation = MatchLocation,
-                TournamentIds = TournamentIds,
-                MatchTypes = MatchTypes,
-                PlayerTypes = PlayerTypes,
-                DismissalTypes = DismissalTypes,
-                BattingPositions = BattingPositions,
+                TournamentIds = new List<Guid>(TournamentIds),
+                MatchTypes = new List<MatchType>(MatchTypes),
+                PlayerTypes = new List<PlayerType>(PlayerTypes),
+                DismissalTypes = new List<DismissalType>(DismissalTypes),
+                BattingPositions = new List<int>(BattingPositions),
                 FromDate = FromDate,
                 UntilDate = UntilDate,
                 WonMatch = WonMatch,
@@ -67,6 +67,21 @@ namespace Stoolball.Statistics
                 MaxResultsAllowingExtraResultsIfValuesAreEqual = MaxResultsAllowingExtraResultsIfValuesAreEqual,
                 MinimumQualifyingInnings = MinimumQualifyingInnings
             };
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="PlayerFilter"/> with the criteria in this filter, where applicable
+        /// </summary>
+        public PlayerFilter ToPlayerFilter()
+        {
+            var filter = new PlayerFilter();
+            if (Club != null && Club.ClubId.HasValue) { filter.ClubIds.Add(Club.ClubId.Value); }
+            if (Team != null && Team.TeamId.HasValue) { filter.TeamIds.Add(Team.TeamId.Value); }
+            if (Player != null && Player.PlayerId.HasValue) { filter.PlayerIds.Add(Player.PlayerId.Value); }
+            if (MatchLocation != null && MatchLocation.MatchLocationId.HasValue) { filter.MatchLocationIds.Add(MatchLocation.MatchLocationId.Value); }
+            if (Competition != null && Competition.CompetitionId.HasValue) { filter.CompetitionIds.Add(Competition.CompetitionId.Value); }
+            if (Season != null && Season.SeasonId.HasValue) { filter.SeasonIds.Add(Season.SeasonId.Value); }
+            return filter;
         }
     }
 }

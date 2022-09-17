@@ -32,10 +32,8 @@ namespace Stoolball.Web.UnitTests.Account
     {
         private readonly Mock<IStoolballRouterController> _stoolballRouterController = new();
 
-        public LoginMemberSurfaceControllerTests()
+        public LoginMemberSurfaceControllerTests() : base()
         {
-            base.Setup();
-
             _stoolballRouterController.Setup(x => x.ModelState).Returns(new ModelStateDictionary());
             _stoolballRouterController.SetupProperty(x => x.ControllerContext);
             _stoolballRouterController.Setup(x => x.Index()).Returns(Task.FromResult(new ViewResult() as IActionResult));
@@ -84,11 +82,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Post_handler_has_content_security_policy_allows_forms()
         {
-            var method = typeof(LoginMemberSurfaceController).GetMethod(nameof(LoginMemberSurfaceController.Login));
+            var method = typeof(LoginMemberSurfaceController).GetMethod(nameof(LoginMemberSurfaceController.Login))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.True(attribute.Forms);
+            Assert.True(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);
@@ -99,7 +97,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Post_handler_has_form_post_attributes()
         {
-            var method = typeof(LoginMemberSurfaceController).GetMethod(nameof(LoginMemberSurfaceController.Login));
+            var method = typeof(LoginMemberSurfaceController).GetMethod(nameof(LoginMemberSurfaceController.Login))!;
 
             var httpPostAttribute = method.GetCustomAttributes(typeof(HttpPostAttribute), false).SingleOrDefault();
             Assert.NotNull(httpPostAttribute);
@@ -173,7 +171,9 @@ namespace Stoolball.Web.UnitTests.Account
         {
             var model = new LoginModel { Username = "invalid@example.org", Password = "password", RedirectUrl = "/" };
 
+#nullable disable
             MemberService.Setup(x => x.GetByEmail(model.Username)).Returns((IMember)null);
+#nullable enable
 
             using (var controller = CreateController(new UmbracoPageResult(Mock.Of<IProfilingLogger>())))
             {
@@ -435,7 +435,9 @@ namespace Stoolball.Web.UnitTests.Account
         {
             var model = new LoginModel { Username = "invalid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
 
+#nullable disable
             MemberService.Setup(x => x.GetByEmail(model.Username)).Returns((IMember)null);
+#nullable enable
 
             using (var controller = CreateController(new UmbracoPageResult(Mock.Of<IProfilingLogger>())))
             {

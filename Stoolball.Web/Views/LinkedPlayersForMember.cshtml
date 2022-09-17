@@ -1,0 +1,78 @@
+﻿@using Stoolball.Web.Statistics
+@using Stoolball.Web.Statistics.Models
+@inherits UmbracoViewPage<LinkedPlayersForMemberViewModel>
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    SmidgeHelper.RequiresCss(new CssFile("~/css/account.min.css") { Order = 100 });
+}
+@await Html.PartialAsync("_RelatedItems")
+<div class="container-xl">
+    <h1>@Model.Metadata.PageTitle</h1>
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        if (Model.Player != null)
+        {
+            var combined = Model.Player.PlayerIdentities.Count() > 1 ? "combined" : string.Empty;
+            <p>View your @combined player statistics on the player page for <a href="@Model.Player.PlayerRoute">@Model.Player.PlayerName()</a>.</p>
+        }
+        else
+        {
+            <p>If you've played stoolball and your statistics are on this website, find the player summary and link the player to your account.</p>
+        }
+        <p>If you changed your name or you play for multiple teams, your statistics may be spread over multiple players. You should link them all to your account.
+        This will combine all the player pages into one so that you can see your true statistics.</p>
+
+        @if (Model.Player != null)
+        {
+            using (Html.BeginUmbracoForm<LinkedPlayersForMemberSurfaceController>(nameof(LinkedPlayersForMemberSurfaceController.UpdateLinkedPlayers)))
+            {
+                @Html.HiddenFor(m => Model.PreferredNextRoute)
+                <table class="table table-hover related-items linked-players" data-related-item="player">
+                    <thead class="thead-dark">
+                        <tr><th scope="col" class="linked-players__player">Player name</th><th scope="col" class="linked-players__team"><span class="related-items__if-not-empty">Team</span></th><th scope="col" class="d-none d-sm-table-cell"><span class="related-items__if-not-empty">When</span></th><th scope="col"></th></tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.Player.PlayerIdentities.Count; i++)
+                        {
+                            var firstMatch = Model.Player.PlayerIdentities[i].FirstPlayed!;
+                            var lastMatch = Model.Player.PlayerIdentities[i].LastPlayed!;
+                            var matchYears = (firstMatch.Value.Year == lastMatch.Value.Year) ? $"in {firstMatch.Value.Year}" : $"from {firstMatch.Value.Year} to {lastMatch.Value.Year}" ;
+                            var when = $"{Model.Player.PlayerIdentities[i].TotalMatches} {(Model.Player.PlayerIdentities[i].TotalMatches == 1 ? "match" : "matches")} {matchYears}";
+
+                            <tr class="related-item__selected">
+                                <td class="related-item__selected__section"><div class="related-item__animate">@Model.Player.PlayerIdentities[i].PlayerIdentityName</div></td>
+                                <td class="related-item__selected__section"><div class="related-item__animate">@Model.Player.PlayerIdentities[i].Team.TeamName</div></td>
+                                <td class="related-item__selected__section d-none d-sm-table-cell"><div class="related-item__animate">@when</div></td>
+                                <td class="related-item__delete related-item__selected__section">
+                                    <div class="related-item__animate">
+                                        @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", Model.Player.PlayerIdentities[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = Model.Player.PlayerIdentities[i].PlayerIdentityId })
+                                        <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Unlink {Model.Player.PlayerIdentities[i].PlayerIdentityName} from your account")</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tbody>
+                        <tr class="related-items__if-empty"><td colspan="3">All players will be unlinked from your account.</td></tr>
+                    </tbody>
+                </table>
+     
+                @await Html.PartialAsync("_StatisticsCacheWarning")
+     
+                <button class="btn btn-primary" type="submit">Save players</button>
+                <p><a href="@Model.PreferredNextRoute">Cancel</a></p>
+            }
+        }
+        else
+        {
+            <p><strong>No players are linked to your account.</strong></p>
+            <p><a href="/account" class="btn btn-primary btn-back">Back to my account</a></p>       
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

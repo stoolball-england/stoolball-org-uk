@@ -151,6 +151,11 @@ main {
     }
 }
 
+// Remove default button margin
+.header__account__button {
+    margin-bottom: 0;
+}
+
 // Round off the account image when signed-in
 .header__account__account-image {
     border-radius: 50%;

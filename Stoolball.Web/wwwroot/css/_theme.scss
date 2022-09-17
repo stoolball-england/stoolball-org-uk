@@ -12,6 +12,9 @@ $alert-color-level: 8;
 $alert-link-color: #007a00;
 $alert-visited-color: #7B644C;
 
+// Adjust hr colour
+$hr-border-color: #ccc;
+
 // Don't use opacity for disabled buttons, as it'll break AA accessibility. Use grey instead.
 $btn-disabled-opacity: 1;
 .btn {

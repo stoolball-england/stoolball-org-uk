@@ -11,9 +11,8 @@ namespace Stoolball.Web.UnitTests.Teams
 {
     public class TeamsMapControllerTests : UmbracoBaseTest
     {
-        public TeamsMapControllerTests()
+        public TeamsMapControllerTests() : base()
         {
-            base.Setup();
         }
 
         private TeamsMapController CreateController()

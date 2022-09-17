@@ -45,12 +45,11 @@ namespace Stoolball.Web.UnitTests.Account
         private const string MEMBER_EXISTS_EMAIL_SUBJECT = "Member exists";
         private const string MEMBER_EXISTS_EMAIL_BODY = "Member exists body";
 
-        public CreateMemberSurfaceControllerTests()
+        public CreateMemberSurfaceControllerTests() : base()
         {
-            base.Setup();
         }
 
-        private CreateMemberSurfaceController CreateController(RegisterModel model, bool createMemberSucceeds = false, string emailFieldError = null)
+        private CreateMemberSurfaceController CreateController(RegisterModel model, bool createMemberSucceeds = false, string? emailFieldError = null)
         {
             var controller = new CreateMemberSurfaceController(UmbracoContextAccessor.Object,
                 Mock.Of<IVariationContextAccessor>(),
@@ -97,11 +96,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void CreateMember_has_content_security_policy_allows_forms()
         {
-            var method = typeof(CreateMemberSurfaceController).GetMethod(nameof(CreateMemberSurfaceController.CreateMember));
+            var method = typeof(CreateMemberSurfaceController).GetMethod(nameof(CreateMemberSurfaceController.CreateMember))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.True(attribute.Forms);
+            Assert.True(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);
@@ -112,7 +111,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void CreateMember_has_form_post_attributes()
         {
-            var method = typeof(CreateMemberSurfaceController).GetMethod(nameof(CreateMemberSurfaceController.CreateMember));
+            var method = typeof(CreateMemberSurfaceController).GetMethod(nameof(CreateMemberSurfaceController.CreateMember))!;
 
             var httpPostAttribute = method.GetCustomAttributes(typeof(HttpPostAttribute), false).SingleOrDefault();
             Assert.NotNull(httpPostAttribute);
@@ -142,6 +141,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async void Null_model_returns_UmbracoPageResult_and_does_not_attempt_to_create_member()
         {
+#nullable disable
             RegisterModel model = null;
             using (var controller = CreateController(model, createMemberSucceeds: true))
             {
@@ -150,6 +150,7 @@ namespace Stoolball.Web.UnitTests.Account
                 _createMemberExecuter.Verify(x => x.CreateMember(controller.HandleRegisterMember, model), Times.Never);
                 Assert.IsType<UmbracoPageResult>(result);
             }
+#nullable enable
         }
 
         [Fact]

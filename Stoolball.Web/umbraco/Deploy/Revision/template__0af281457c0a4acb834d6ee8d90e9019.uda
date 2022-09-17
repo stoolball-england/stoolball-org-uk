@@ -1,0 +1,16 @@
+{
+  "Name": "Linked Players for Member",
+  "Alias": "LinkedPlayersForMember",
+  "File": "umb://template-file/LinkedPlayersForMember.cshtml",
+  "Master": null,
+  "Udi": "umb://template/0af281457c0a4acb834d6ee8d90e9019",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/LinkedPlayersForMember.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.4.2"
+}

@@ -40,7 +40,7 @@
                         <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Player</span><a href="@Model.Results[i].Result.Player.PlayerRoute">@(Model.Results[i].Result.Player.PlayerName())</a></td>
                         @if (Model.ShowTeamsColumn)
                         {
-                            <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Teams</span><div>@Model.Results[i].Result.Player.PlayerIdentities.Select(x => x.Team.TeamName).Humanize()</div></td>
+                            <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Teams</span><div>@Model.Results[i].Result.Player.PlayerIdentities.Select(x => x.Team.TeamName).Distinct().Humanize()</div></td>
                         }
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Matches</span>@Model.Results[i].Result.TotalMatches</td>
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Run-outs</span>@Model.Results[i].Result.Total</td>

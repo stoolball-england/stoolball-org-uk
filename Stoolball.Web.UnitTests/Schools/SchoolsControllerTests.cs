@@ -21,9 +21,8 @@ namespace Stoolball.Web.UnitTests.Schools
         private readonly Mock<ISchoolDataSource> _schoolDataSource = new();
         private readonly Mock<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>> _listingsBuilder = new();
 
-        public SchoolsControllerTests()
+        public SchoolsControllerTests() : base()
         {
-            base.Setup();
         }
 
         private SchoolsController CreateController()
@@ -43,11 +42,11 @@ namespace Stoolball.Web.UnitTests.Schools
         [Fact]
         public void Has_content_security_policy()
         {
-            var method = typeof(SchoolsController).GetMethod(nameof(SchoolsController.Index));
+            var method = typeof(SchoolsController).GetMethod(nameof(SchoolsController.Index))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.False(attribute.Forms);
+            Assert.False(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);
@@ -101,8 +100,8 @@ namespace Stoolball.Web.UnitTests.Schools
             {
                 var result = await controller.Index();
 
-                var breadcrumbs = (((ViewResult)result).Model as BaseViewModel).Breadcrumbs;
-                Assert.Equal(2, breadcrumbs.Count);
+                var breadcrumbs = (((ViewResult)result).Model as BaseViewModel)?.Breadcrumbs;
+                Assert.Equal(2, breadcrumbs!.Count);
                 Assert.Equal(Constants.Pages.Home, breadcrumbs[0].Name);
                 Assert.Equal(Constants.Pages.Schools, breadcrumbs[1].Name);
             }

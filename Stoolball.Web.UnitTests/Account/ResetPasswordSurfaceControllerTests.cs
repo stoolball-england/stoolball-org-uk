@@ -62,10 +62,8 @@ namespace Stoolball.Web.UnitTests.Account
             }
         }
 
-        public ResetPasswordSurfaceControllerTests()
+        public ResetPasswordSurfaceControllerTests() : base()
         {
-            base.Setup();
-
             _currentMember.Setup(x => x.Id).Returns(123);
             _currentMember.Setup(x => x.Key).Returns(Guid.NewGuid());
             _currentMember.Setup(x => x.Name).Returns("Current Member");
@@ -104,11 +102,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void UpdatePassword_has_content_security_policy_allows_forms()
         {
-            var method = typeof(ResetPasswordSurfaceController).GetMethod(nameof(ResetPasswordSurfaceController.UpdatePassword));
+            var method = typeof(ResetPasswordSurfaceController).GetMethod(nameof(ResetPasswordSurfaceController.UpdatePassword))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.True(attribute.Forms);
+            Assert.True(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);
@@ -119,7 +117,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void UpdatePassword_has_form_post_attributes()
         {
-            var method = typeof(ResetPasswordSurfaceController).GetMethod(nameof(ResetPasswordSurfaceController.UpdatePassword));
+            var method = typeof(ResetPasswordSurfaceController).GetMethod(nameof(ResetPasswordSurfaceController.UpdatePassword))!;
 
             var httpPostAttribute = method.GetCustomAttributes(typeof(HttpPostAttribute), false).SingleOrDefault();
             Assert.NotNull(httpPostAttribute);
@@ -278,7 +276,10 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 _tokenReader.Setup(x => x.ExtractId(_token)).Returns(_currentMember.Object.Id);
-                base.MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns((IMember)null);
+
+#nullable disable
+                MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns((IMember)null);
+#nullable enable
 
                 var result = await controller.UpdatePassword(new ResetPasswordFormData());
 
@@ -292,7 +293,11 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 _tokenReader.Setup(x => x.ExtractId(_token)).Returns(_currentMember.Object.Id);
-                base.MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns((IMember)null);
+
+#nullable disable
+                MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns((IMember)null);
+#nullable enable
+
 
                 var result = await controller.UpdatePassword(new ResetPasswordFormData());
 
@@ -306,7 +311,10 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 _tokenReader.Setup(x => x.ExtractId(_token)).Returns(_currentMember.Object.Id);
-                base.MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns((IMember)null);
+
+#nullable disable
+                MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns((IMember)null);
+#nullable enable
 
                 var result = await controller.UpdatePassword(new ResetPasswordFormData());
 
@@ -321,7 +329,10 @@ namespace Stoolball.Web.UnitTests.Account
             using (var controller = CreateController())
             {
                 _tokenReader.Setup(x => x.ExtractId(_token)).Returns(_currentMember.Object.Id);
-                base.MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns((IMember)null);
+
+#nullable disable
+                MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns((IMember)null);
+#nullable enable
 
                 var result = await controller.UpdatePassword(new ResetPasswordFormData { NewPassword = "pa$$word" });
 

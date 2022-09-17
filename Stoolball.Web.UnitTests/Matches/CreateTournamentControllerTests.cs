@@ -16,9 +16,8 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
 
-        public CreateTournamentControllerTests()
+        public CreateTournamentControllerTests() : base()
         {
-            base.Setup();
         }
 
         private CreateTournamentController CreateController()
@@ -38,7 +37,7 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_not_matching_team_returns_404()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/teams/example/"));
-            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team>(null));
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team?>(null));
 
             using (var controller = CreateController())
             {
@@ -52,7 +51,7 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_not_matching_season_returns_404()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/competitions/example/2020/"));
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season>(null));
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season?>(null));
 
             using (var controller = CreateController())
             {

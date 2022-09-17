@@ -20,9 +20,8 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         private readonly Mock<IMatchFilterQueryStringParser> _matchFilterQueryStringParser = new();
         private readonly Mock<IMatchFilterFactory> _matchFilterFactory = new();
 
-        public MatchesForMatchLocationControllerTests()
+        public MatchesForMatchLocationControllerTests() : base()
         {
-            Setup();
         }
 
         private MatchesForMatchLocationController CreateController()
@@ -45,7 +44,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         [Fact]
         public async Task Route_not_matching_location_returns_404()
         {
-            _matchLocationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation>(null));
+            _matchLocationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation?>(null));
 
             var filter = new MatchFilter();
             _matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(filter);

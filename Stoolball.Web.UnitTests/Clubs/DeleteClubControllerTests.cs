@@ -13,9 +13,8 @@ namespace Stoolball.Web.UnitTests.Clubs
     {
         private readonly Mock<IClubDataSource> _clubDataSource = new();
 
-        public DeleteClubControllerTests()
+        public DeleteClubControllerTests() : base()
         {
-            Setup();
         }
 
         private DeleteClubController CreateController()
@@ -35,7 +34,7 @@ namespace Stoolball.Web.UnitTests.Clubs
         [Fact]
         public async Task Route_not_matching_club_returns_404()
         {
-            _clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).Returns(Task.FromResult<Club>(null));
+            _clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).Returns(Task.FromResult<Club?>(null));
 
             using (var controller = CreateController())
             {

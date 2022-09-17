@@ -16,9 +16,8 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestPlayerTotalDataSource = new();
 
-        public MostRunsControllerTests()
+        public MostRunsControllerTests() : base()
         {
-            Setup();
         }
 
         private MostRunsController CreateController()

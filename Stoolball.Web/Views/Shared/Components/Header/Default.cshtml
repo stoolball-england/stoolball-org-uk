@@ -1,7 +1,8 @@
-﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IHasViewMetadata>
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<HeaderViewModel>
 @using System.Text.RegularExpressions
 @using Stoolball.Account
 @using System.Net
+@using Stoolball.Web.Pages
 @{ 
     var headerPhoto = Model.HeaderPhotoWithInheritance();
     var rootUrlsForPlaySection = new List<string>(6) { "PLAY", "TEAMS", "COMPETITIONS", "MATCHES", "TOURNAMENTS", "LOCATIONS" };
@@ -94,6 +95,17 @@
                                 else
                                 {
                                     <li class="dropdown-item"><a href="/account">My account</a></li>
+                                }
+                                if (Model.Player != null)
+                                {
+                                    if (Context.Request.Path.Value == Model.Player.PlayerRoute)
+                                    {
+                                        <li class="dropdown-item"><em aria-selected="true">My statistics</em></li>
+                                    }
+                                    else
+                                    {
+                                        <li class="dropdown-item"><a href="@Model.Player.PlayerRoute">My statistics</a></li>
+                                    }
                                 }
                                 if (Context.Request.Path.Value!.StartsWith("/account/sign-out"))
                                 {

@@ -13,9 +13,8 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class MyAccountControllerTests : UmbracoBaseTest
     {
-        public MyAccountControllerTests()
+        public MyAccountControllerTests() : base()
         {
-            base.Setup();
         }
         private MyAccountController CreateController()
         {
@@ -50,11 +49,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Has_content_security_policy()
         {
-            var method = typeof(MyAccountController).GetMethod(nameof(MyAccountController.Index));
+            var method = typeof(MyAccountController).GetMethod(nameof(MyAccountController.Index))!;
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
-            Assert.False(attribute.Forms);
+            Assert.False(attribute!.Forms);
             Assert.False(attribute.TinyMCE);
             Assert.False(attribute.YouTube);
             Assert.False(attribute.GoogleMaps);

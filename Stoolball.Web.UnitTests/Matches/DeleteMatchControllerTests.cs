@@ -21,9 +21,8 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IPlayerIdentityFinder> _playerIdentityFinder = new();
         private readonly Mock<ICommentsDataSource<Stoolball.Matches.Match>> _commentsDataSource = new();
 
-        public DeleteMatchControllerTests()
+        public DeleteMatchControllerTests() : base()
         {
-            Setup();
         }
 
         private DeleteMatchController CreateController()
@@ -47,7 +46,7 @@ namespace Stoolball.Web.UnitTests.Matches
         [Fact]
         public async Task Route_not_matching_match_returns_404()
         {
-            _matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match>(null));
+            _matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match?>(null));
 
             using (var controller = CreateController())
             {

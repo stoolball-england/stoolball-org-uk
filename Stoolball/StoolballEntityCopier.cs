@@ -33,6 +33,17 @@ namespace Stoolball
             };
         }
 
+        public Player CreateAuditableCopy(Player player)
+        {
+            return new Player
+            {
+                PlayerId = player.PlayerId,
+                PlayerRoute = player.PlayerRoute,
+                MemberKey = player.MemberKey,
+                PlayerIdentities = player.PlayerIdentities.Select(x => CreateAuditableCopy(x)).ToList()
+            };
+        }
+
         public PlayerIdentity CreateAuditableCopy(PlayerIdentity playerIdentity)
         {
             if (playerIdentity == null) { return null; }

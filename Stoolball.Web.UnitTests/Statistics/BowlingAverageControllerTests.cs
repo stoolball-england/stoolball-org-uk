@@ -16,9 +16,8 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IBestPlayerAverageStatisticsDataSource> _bestAverageDataSource = new();
 
-        public BowlingAverageControllerTests()
+        public BowlingAverageControllerTests() : base()
         {
-            Setup();
         }
 
         private BowlingAverageController CreateController()

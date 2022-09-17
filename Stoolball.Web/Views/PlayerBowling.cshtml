@@ -20,11 +20,14 @@
     var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 }
 <div class="container-xl">
-    @await Html.PartialAsync("_PlayerHeader")
+    @await Html.PartialAsync("_PlayerHeader", Model.Player)
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Player!.PlayerRoute@(queryString)">Batting</a>
+            <a class="nav-link" href="@Model.Player!.PlayerRoute@(queryString)">Summary</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Player!.PlayerRoute/batting@(queryString)">Batting</a>
         </li>
         <li class="nav-item">
             <em class="nav-link active">Bowling</em>

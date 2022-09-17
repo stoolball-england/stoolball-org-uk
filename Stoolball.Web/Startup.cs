@@ -226,6 +226,8 @@ namespace Stoolball.Web
             });
             services.AddTransient<ICacheClearer<Tournament>, TournamentCacheClearer>();
             services.AddTransient<ICacheClearer<Match>, MatchCacheClearer>();
+            services.AddTransient<ICacheClearer<Player>, PlayerCacheClearer>();
+            services.AddTransient<IReadThroughCache, ReadThroughCache>();
 
             // Repositories
             services.AddTransient<IAuditRepository, SqlServerAuditRepository>();
@@ -250,7 +252,9 @@ namespace Stoolball.Web
             services.AddScoped<DelegatedContentSecurityPolicyAttribute>();
 
             // Routing controllers for stoolball data pages.
+            services.AddTransient<IRouteTokeniser, RouteTokeniser>();
             services.AddTransient<IRouteGenerator, RouteGenerator>();
+            services.AddTransient<IBestRouteSelector, BestRouteSelector>();
             services.AddTransient<IStoolballRouteParser, StoolballRouteParser>();
             services.AddTransient<IStoolballRouteTypeMapper, StoolballRouteTypeMapper>();
             services.AddTransient<IStoolballRouterController, StoolballRouterController>();
@@ -328,9 +332,13 @@ namespace Stoolball.Web
             services.AddTransient<EditSeasonTeamsController>();
             services.AddTransient<DeleteSeasonController>();
 
+            services.AddTransient<IPlayerSummaryViewModelFactory, PlayerSummaryViewModelFactory>();
             services.AddTransient<PlayerController>();
+            services.AddTransient<PlayerBattingController>();
             services.AddTransient<PlayerBowlingController>();
             services.AddTransient<PlayerFieldingController>();
+            services.AddTransient<LinkPlayerToMemberController>();
+            services.AddTransient<LinkedPlayersForMemberController>();
 
             services.AddTransient<SchoolsController>();
 

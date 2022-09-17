@@ -13,6 +13,5 @@ namespace Stoolball.Web.Statistics.Models
         }
         public List<StatisticsResult<PlayerInnings>> PlayerInnings { get; internal set; } = new List<StatisticsResult<PlayerInnings>>();
         public BattingStatistics BattingStatistics { get; set; } = new BattingStatistics();
-        public string? FilterDescription { get; set; }
     }
 }
