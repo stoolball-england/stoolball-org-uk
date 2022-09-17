@@ -187,7 +187,7 @@ namespace Stoolball.Data.SqlServer
 
                 // This assumes it should only be needed here, not in other statistics queries.
                 var playerData = await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(
-                    $@"SELECT PlayerId, PlayerRoute, (SELECT MemberKey FROM {Tables.Player} WHERE PlayerRoute = @Route) AS MemberKey,
+                    $@"SELECT PlayerId, PlayerRoute, (SELECT TOP 1 MemberKey FROM {Tables.Player} WHERE PlayerRoute = @Route) AS MemberKey,
                         PlayerIdentityId, PlayerIdentityName, 
                         (SELECT COUNT(DISTINCT MatchId) AS TotalMatches FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = identities.PlayerIdentityId {where}) AS TotalMatches,
                         (SELECT MIN(MatchStartTime) AS FirstPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = identities.PlayerIdentityId {where}) AS FirstPlayed,
