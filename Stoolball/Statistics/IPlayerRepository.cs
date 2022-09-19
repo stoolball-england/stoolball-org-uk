@@ -29,5 +29,11 @@ namespace Stoolball.Statistics
         /// <param name="membername">The name of the member making the update</param>
         /// <returns></returns>
         Task UnlinkPlayerIdentityFromMemberAccount(PlayerIdentity playerIdentity, Guid memberKey, string memberName);
+
+        /// <summary>
+        /// <see cref="LinkPlayerToMemberAccount"/> and <see cref="UnlinkPlayerIdentityFromMemberAccount"/> both leave updates to statistics and cleaning up unused resources incomplete, to be done asynchronously. This completes the work.
+        /// </summary>
+        /// <returns></returns>
+        Task ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
     }
 }

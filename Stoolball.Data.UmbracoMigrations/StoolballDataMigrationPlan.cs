@@ -50,7 +50,8 @@ namespace Stoolball.Data.UmbracoMigrations
                 .To<StatisticsAddProbability>(typeof(StatisticsAddProbability).ToString())
                 .To<Add_fnTeamName>(typeof(Add_fnTeamName).ToString())
                 .To<StatisticsRemoveProbability>(typeof(StatisticsRemoveProbability).ToString())
-                .To<LinkPlayerToMember>(typeof(LinkPlayerToMember).ToString());
+                .To<LinkPlayerToMember>(typeof(LinkPlayerToMember).ToString())
+                .To<LinkPlayerToMemberAsyncUpdate>(typeof(LinkPlayerToMemberAsyncUpdate).ToString());
         }
     }
 }

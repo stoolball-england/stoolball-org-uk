@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlTypes;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -180,22 +182,22 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                // Get MemberKey from the Player table rather than copying it to PlayerInMatchStatistics because it will be updated when
-                // a member associates their account with a player. If there are many PlayerInMatchStatistics records to update this will 
-                // take time and should not be done in the response, yet the response (and responses to other requests with filters applied)
-                // will cache the result of this method so it must include the new value immediately.
+                // Get Player and PlayerIdentity data from the original tables rather than PlayerInMatchStatistics because the original tables
+                // will be updated when a member associates their account with a player, and we need to see the change immediately.
+                // Updates to PlayerInMatchStatistics are done asynchronously and the data will not be updated by the time this is called again.
 
-                // This assumes it should only be needed here, not in other statistics queries.
                 var playerData = await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(
-                    $@"SELECT PlayerId, PlayerRoute, (SELECT TOP 1 MemberKey FROM {Tables.Player} WHERE PlayerRoute = @Route) AS MemberKey,
-                        PlayerIdentityId, PlayerIdentityName, 
-                        (SELECT COUNT(DISTINCT MatchId) AS TotalMatches FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = identities.PlayerIdentityId {where}) AS TotalMatches,
-                        (SELECT MIN(MatchStartTime) AS FirstPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = identities.PlayerIdentityId {where}) AS FirstPlayed,
-                        (SELECT MAX(MatchStartTime) AS LastPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = identities.PlayerIdentityId {where}) AS LastPlayed,
-                        TeamName, TeamRoute
-                        FROM {Tables.PlayerInMatchStatistics} identities
+                    $@"SELECT p.PlayerId, p.PlayerRoute, p.MemberKey,
+                        pi.PlayerIdentityId, pi.PlayerIdentityName,
+                        (SELECT COUNT(DISTINCT MatchId) AS TotalMatches FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS TotalMatches,
+                        (SELECT MIN(MatchStartTime) AS FirstPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS FirstPlayed,
+                        (SELECT MAX(MatchStartTime) AS LastPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS LastPlayed,
+                        tv.TeamName, t.TeamRoute
+                        FROM {Tables.Player} p INNER JOIN {Tables.PlayerIdentity} pi ON p.PlayerId = pi.PlayerId
+                        INNER JOIN {Tables.Team} t ON pi.TeamId = t.TeamId
+                        INNER JOIN {Tables.TeamVersion} tv ON t.TeamId = tv.TeamId
                         WHERE LOWER(PlayerRoute) = @Route
-                        GROUP BY PlayerId, PlayerRoute, PlayerIdentityId, PlayerIdentityName, TeamName, TeamRoute",
+                        AND tv.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
                         (player, playerIdentity, team) =>
                         {
                             playerIdentity.Team = team;

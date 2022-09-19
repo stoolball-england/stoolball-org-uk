@@ -27,14 +27,14 @@ namespace Stoolball.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Clears_cache_for_missing_MemberKey()
+        public async Task Skips_clearing_ReadPlayerByMemberKey_cache_for_missing_MemberKey()
         {
             var player = new Player { PlayerRoute = "/players/example", MemberKey = null };
             var cacheClearer = new PlayerCacheClearer(_cache.Object);
 
             await cacheClearer.ClearCacheFor(player);
 
-            _cache.Verify(x => x.InvalidateCache(nameof(IPlayerDataSource) + nameof(IPlayerDataSource.ReadPlayerByMemberKey)), Times.Once);
+            _cache.Verify(x => x.InvalidateCache(nameof(IPlayerDataSource) + nameof(IPlayerDataSource.ReadPlayerByMemberKey)), Times.Never);
         }
 
         [Fact]

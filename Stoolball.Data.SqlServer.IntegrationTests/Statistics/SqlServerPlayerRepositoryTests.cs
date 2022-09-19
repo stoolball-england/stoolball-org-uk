@@ -7,6 +7,7 @@ using Dapper;
 using Humanizer;
 using Moq;
 using Newtonsoft.Json;
+using Stoolball.Caching;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Routing;
@@ -29,6 +30,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         private readonly Mock<IRouteGenerator> _routeGenerator = new();
         private readonly Mock<IBestRouteSelector> _routeSelector = new();
         private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
+        private readonly Mock<ICacheClearer<Player>> _playerCacheClearer = new();
 
         public SqlServerPlayerRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
@@ -39,13 +41,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         private SqlServerPlayerRepository CreateRepository()
         {
             return new SqlServerPlayerRepository(_databaseFixture.ConnectionFactory,
+                new DapperWrapper(),
                 _auditRepository.Object,
                 _logger.Object,
                 _redirectsRepository.Object,
                 _routeGenerator.Object,
                 _copier.Object,
                 _playerNameFormatter.Object,
-                _routeSelector.Object);
+                _routeSelector.Object,
+                _playerCacheClearer.Object);
         }
 
         [Fact]
@@ -310,6 +314,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var repo = CreateRepository();
             var returnedPlayer = await repo.LinkPlayerToMemberAccount(playerNotLinkedToMember, memberWithExistingPlayer.memberKey, memberWithExistingPlayer.memberName);
+            await repo.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
 
             // The returned player should have the result of merging both players
             Assert.Equal(playerAlreadyLinked.PlayerId, returnedPlayer.PlayerId);
@@ -386,7 +391,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task LinkPlayerToMemberAccount_audits_and_logs()
+        public async Task LinkPlayerToMemberAccount_where_member_has_no_previous_player_audits_and_logs()
         {
             var player = AnyPlayerNotLinkedToMember();
             var playerCopy = new Player { PlayerId = player.PlayerId };
@@ -396,8 +401,32 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var repo = CreateRepository();
             await repo.LinkPlayerToMemberAccount(player, memberNotLinkedToPlayer.memberKey, memberNotLinkedToPlayer.memberName);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri.ToString().EndsWith(player.PlayerId.ToString())), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, JsonConvert.SerializeObject(playerCopy), memberNotLinkedToPlayer.memberName, memberNotLinkedToPlayer.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
+        }
+
+        [Fact]
+        public async Task LinkPlayerToMemberAccount_where_member_has_linked_player_audits_and_logs()
+        {
+            var memberWithExistingPlayer = AnyMemberLinkedToPlayer();
+            var playerAlreadyLinked = _databaseFixture.TestData.Players.First(x => x.MemberKey == memberWithExistingPlayer.memberKey);
+            var playerAlreadyLinkedCopy = new Player { PlayerId = playerAlreadyLinked.PlayerId, PlayerRoute = playerAlreadyLinked.PlayerRoute };
+            _copier.Setup(x => x.CreateAuditableCopy(playerAlreadyLinked)).Returns(playerAlreadyLinkedCopy);
+
+            var playerNotLinkedToMember = AnyPlayerNotLinkedToMember();
+            var playerNotLinkedToMemberCopy = new Player { PlayerId = playerNotLinkedToMember.PlayerId, PlayerRoute = playerNotLinkedToMember.PlayerRoute };
+            _copier.Setup(x => x.CreateAuditableCopy(playerNotLinkedToMember)).Returns(playerNotLinkedToMemberCopy);
+
+            _routeSelector.Setup(x => x.SelectBestRoute(playerAlreadyLinked.PlayerRoute, playerNotLinkedToMember.PlayerRoute)).Returns(playerNotLinkedToMember.PlayerRoute);
+
+            var repo = CreateRepository();
+            await repo.LinkPlayerToMemberAccount(playerNotLinkedToMember, memberWithExistingPlayer.memberKey, memberWithExistingPlayer.memberName);
+
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Delete && x.EntityUri.ToString().EndsWith(playerNotLinkedToMember.PlayerId.ToString())), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Deleted, It.Is<string>(x => x.Contains(playerNotLinkedToMember.PlayerId.ToString())), memberWithExistingPlayer.memberName, memberWithExistingPlayer.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
+
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri.ToString().EndsWith(playerAlreadyLinked.PlayerId.ToString())), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.Is<string>(x => x.Contains(playerAlreadyLinked.PlayerId.ToString())), memberWithExistingPlayer.memberName, memberWithExistingPlayer.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
         }
 
         [Fact]
@@ -443,6 +472,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var repo = CreateRepository();
 
             await repo.UnlinkPlayerIdentityFromMemberAccount(playerIdentity, member.memberKey, member.memberName);
+            await repo.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
 
             using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {

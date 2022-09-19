@@ -14,5 +14,6 @@ namespace Stoolball.Web.Statistics.Models
         public BowlingStatistics BowlingStatistics { get; set; } = new();
         public FieldingStatistics FieldingStatistics { get; set; } = new();
         public bool IsCurrentMember { get; set; }
+        public bool ShowPlayerLinkedToMemberConfirmation { get; set; }
     }
 }

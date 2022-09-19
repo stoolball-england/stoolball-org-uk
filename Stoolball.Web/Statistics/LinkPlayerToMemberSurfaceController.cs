@@ -64,7 +64,7 @@ namespace Stoolball.Web.Statistics
 
             model.Player = updatedPlayer;
 
-            return Redirect(model.Player.PlayerRoute);
+            return Redirect($"{model.Player.PlayerRoute}?{Constants.QueryParameters.ConfirmPlayerLinkedToMember}");
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Moq;
 using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
@@ -101,6 +104,27 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var result = await controller.Index();
 
                 Assert.True(((PlayerSummaryViewModel)(((ViewResult)result).Model)).IsCurrentMember);
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShowPlayerLinkedToMemberConfirmation_is_set_from_querystring(bool queryStringPresent)
+        {
+            _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = new Player() }));
+
+            if (queryStringPresent)
+            {
+                base.Request.SetupGet(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues> { { Constants.QueryParameters.ConfirmPlayerLinkedToMember, new StringValues() } }));
+            }
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                var expectedResult = queryStringPresent;
+                Assert.Equal(expectedResult, ((PlayerSummaryViewModel)(((ViewResult)result).Model)).ShowPlayerLinkedToMemberConfirmation);
             }
         }
     }

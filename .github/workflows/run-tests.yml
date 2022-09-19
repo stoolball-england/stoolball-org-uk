@@ -92,6 +92,35 @@ jobs:
         name: stoolball-unit-tests
         path: unit-tests.cobertura.xml
 
+  stoolball-sql-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore ./Stoolball.Data.SqlServer.UnitTests/Stoolball.Data.SqlServer.UnitTests.csproj
+
+    - name: Build unit tests
+      run: dotnet build --no-restore ./Stoolball.Data.SqlServer.UnitTests/Stoolball.Data.SqlServer.UnitTests.csproj
+
+    - name: Run Stoolball.Data.SqlServer.UnitTests 
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings ./Stoolball.Data.SqlServer.UnitTests/coverlet.runsettings ./Stoolball.Data.SqlServer.UnitTests/Stoolball.Data.SqlServer.UnitTests.csproj
+
+    - name: Move coverage to root
+      shell: pwsh
+      run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./unit-tests.cobertura.xml }
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: stoolball-sql-unit-tests
+        path: sql-unit-tests.cobertura.xml
+
   stoolball-integration-tests:
     runs-on: ubuntu-latest
     steps:
@@ -132,7 +161,7 @@ jobs:
 
   publish-to-codecov:
     runs-on: ubuntu-latest
-    needs: [stoolball-web-unit-tests, stoolball-unit-tests, stoolball-integration-tests, stoolball-web-js-tests]
+    needs: [stoolball-web-unit-tests, stoolball-unit-tests, stoolball-integration-tests, stoolball-web-js-tests, stoolball-sql-unit-tests]
     steps:
     - name: Download Stoolball.Web.UnitTests results
       uses: actions/download-artifact@v2
@@ -143,6 +172,11 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: stoolball-unit-tests
+
+    - name: Download Stoolball.Data.SqlServer.UnitTests results
+      uses: actions/download-artifact@v2
+      with:
+        name: stoolball-sql-unit-tests
 
     - name: Download Stoolball.Data.SqlServer.IntegrationTests results
       uses: actions/download-artifact@v2
@@ -166,13 +200,14 @@ jobs:
         shasum -a 256 -c codecov.SHA256SUM
         chmod +x codecov
         ./codecov -f unit-tests.cobertura.xml -t ${CODECOV_TOKEN}
+        ./codecov -f sql-unit-tests.cobertura.xml -t ${CODECOV_TOKEN}
         ./codecov -f integration-tests.cobertura.xml -t ${CODECOV_TOKEN}
         ./codecov -f web-unit-tests.cobertura.xml -t ${CODECOV_TOKEN}
         ./codecov -f web-js-tests.cobertura.xml -t ${CODECOV_TOKEN}
 
   publish-to-codacy:
     runs-on: ubuntu-latest
-    needs: [stoolball-web-unit-tests, stoolball-unit-tests, stoolball-integration-tests, stoolball-web-js-tests]
+    needs: [stoolball-web-unit-tests, stoolball-unit-tests, stoolball-integration-tests, stoolball-web-js-tests, stoolball-sql-unit-tests]
     steps:
     - name: Download Stoolball.Web.UnitTests results
       uses: actions/download-artifact@v2
@@ -183,6 +218,11 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: stoolball-unit-tests
+
+    - name: Download Stoolball.Data.SqlServer.UnitTests results
+      uses: actions/download-artifact@v2
+      with:
+        name: stoolball-sql-unit-tests
 
     - name: Download Stoolball.Data.SqlServer.IntegrationTests results
       uses: actions/download-artifact@v2
@@ -200,4 +240,4 @@ jobs:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       with:
         project-token: ${{ env.CODACY_PROJECT_TOKEN }}
-        coverage-reports: unit-tests.cobertura.xml,integration-tests.cobertura.xml,web-unit-tests.cobertura.xml,web-js-tests.cobertura.xml
+        coverage-reports: unit-tests.cobertura.xml,integration-tests.cobertura.xml,web-unit-tests.cobertura.xml,web-js-tests.cobertura.xml,sql-unit-tests.cobertura.xml

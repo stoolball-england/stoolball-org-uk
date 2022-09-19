@@ -45,6 +45,11 @@ namespace Stoolball.Web.Statistics
                     model.IsCurrentMember = model.Player.MemberKey == currentMember?.Key;
                 }
 
+                if (Request.Query.ContainsKey(Constants.QueryParameters.ConfirmPlayerLinkedToMember))
+                {
+                    model.ShowPlayerLinkedToMemberConfirmation = true;
+                }
+
                 return CurrentTemplate(model);
             }
         }

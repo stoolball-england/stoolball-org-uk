@@ -24,6 +24,11 @@
 <div class="container-xl">
     @await Html.PartialAsync("_PlayerHeader", Model.Player)
 
+    @if (Model.ShowPlayerLinkedToMemberConfirmation)
+    {
+        @await Html.PartialAsync("_StatisticsCacheWarning")
+    }
+
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <em class="nav-link active">Summary</em>

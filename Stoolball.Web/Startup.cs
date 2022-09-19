@@ -45,6 +45,7 @@ using Stoolball.Web.Schools;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics;
 using Stoolball.Web.Statistics.Admin;
+using Stoolball.Web.Statistics.BackgroundTasks;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
 using Umbraco.Cms.Core.DependencyInjection;
@@ -88,6 +89,7 @@ namespace Stoolball.Web
                 .AddWebsite()
                 .AddComposers()
                 .AddCsvExport()
+                .AddStatisticsBackgroundTasks()
                 .AddNotificationHandler<MemberDeletingNotification, DisableMemberDeleteNotificationHandler>()
                 .Build();
 #pragma warning restore IDE0022 // Use expression body for methods
@@ -102,6 +104,7 @@ namespace Stoolball.Web
             services.AddTransient<IBowlingFiguresCalculator, BowlingFiguresCalculator>();
             services.AddTransient<IBowlingScorecardComparer, BowlingScorecardComparer>();
             services.AddTransient<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>();
+            services.AddTransient<IDapperWrapper, DapperWrapper>();
             services.AddTransient<IDataRedactor, DataRedactor>();
             services.AddTransient<IDateTimeFormatter, DateTimeFormatter>();
             services.AddTransient<IEditMatchHelper, EditMatchHelper>();

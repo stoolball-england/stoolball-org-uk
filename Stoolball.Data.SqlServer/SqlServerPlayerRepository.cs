@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Newtonsoft.Json;
+using Stoolball.Caching;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Statistics;
@@ -17,6 +20,7 @@ namespace Stoolball.Data.SqlServer
     public class SqlServerPlayerRepository : IPlayerRepository
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
+        private readonly IDapperWrapper _dapperWrapper;
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger<SqlServerPlayerRepository> _logger;
         private readonly IRedirectsRepository _redirectsRepository;
@@ -24,18 +28,26 @@ namespace Stoolball.Data.SqlServer
         private readonly IStoolballEntityCopier _copier;
         private readonly IPlayerNameFormatter _playerNameFormatter;
         private readonly IBestRouteSelector _bestRouteSelector;
+        private readonly ICacheClearer<Player> _playerCacheClearer;
+        internal const string PROCESS_ASYNC_STORED_PROCEDURE = "usp_Link_Player_To_Member_Async_Update";
+        internal const string LOG_TEMPLATE_WARN_SQL_TIMEOUT = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " running. Caught SQL Timeout. {allowedRetries} retries remaining";
+        internal const string LOG_TEMPLATE_INFO_PLAYERS_AFFECTED = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " running. Players affected: {affectedRoutes}";
+        internal const string LOG_TEMPLATE_ERROR_SQL_EXCEPTION = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " threw SqlException: {message}";
 
         public SqlServerPlayerRepository(
             IDatabaseConnectionFactory databaseConnectionFactory,
+            IDapperWrapper dapperWrapper,
             IAuditRepository auditRepository,
             ILogger<SqlServerPlayerRepository> logger,
             IRedirectsRepository redirectsRepository,
             IRouteGenerator routeGenerator,
             IStoolballEntityCopier copier,
             IPlayerNameFormatter playerNameFormatter,
-            IBestRouteSelector bestRouteSelector)
+            IBestRouteSelector bestRouteSelector,
+            ICacheClearer<Player> playerCacheClearer)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
+            _dapperWrapper = dapperWrapper ?? throw new ArgumentNullException(nameof(dapperWrapper));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
@@ -43,6 +55,7 @@ namespace Stoolball.Data.SqlServer
             _copier = copier ?? throw new ArgumentNullException(nameof(copier));
             _playerNameFormatter = playerNameFormatter ?? throw new ArgumentNullException(nameof(playerNameFormatter));
             _bestRouteSelector = bestRouteSelector ?? throw new ArgumentNullException(nameof(bestRouteSelector));
+            _playerCacheClearer = playerCacheClearer ?? throw new ArgumentNullException(nameof(playerCacheClearer));
         }
 
         /// <summary>
@@ -192,6 +205,20 @@ namespace Stoolball.Data.SqlServer
                         await connection.ExecuteAsync($"UPDATE {Tables.Player} SET MemberKey = @memberKey WHERE PlayerId = @PlayerId", new { memberKey, auditablePlayer.PlayerId }, transaction);
 
                         auditablePlayer.MemberKey = memberKey;
+
+                        var serialisedPlayer = JsonConvert.SerializeObject(auditablePlayer);
+                        await _auditRepository.CreateAudit(new AuditRecord
+                        {
+                            Action = AuditAction.Update,
+                            MemberKey = memberKey,
+                            ActorName = memberName,
+                            EntityUri = player.EntityUri,
+                            State = serialisedPlayer,
+                            RedactedState = serialisedPlayer,
+                            AuditDate = DateTime.UtcNow
+                        }, transaction);
+
+                        _logger.Info(LoggingTemplates.Updated, serialisedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerToMemberAccount));
                     }
                     else
                     {
@@ -214,30 +241,46 @@ namespace Stoolball.Data.SqlServer
                             await connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, PlayerId = existingPlayerForMember.PlayerId }, transaction);
                         }
                         await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @ExistingPlayerId WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction);
-                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @ExistingPlayerId, PlayerRoute = @PlayerRoute WHERE PlayerId IN (@ExistingPlayerId, @PlayerId)", replaceWithExistingPlayer, transaction);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.Player} WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
+
+                        // We also need to update statistics, and delete the now-unused player that the identity has been moved away from. 
+                        // However this is done asynchronously by ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts, so we just need to mark the player as safe to delete.
+                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET ForAsyncDelete = 1 WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
+
+                        var serialisedDeletedPlayer = JsonConvert.SerializeObject(auditablePlayer);
+                        await _auditRepository.CreateAudit(new AuditRecord
+                        {
+                            Action = AuditAction.Delete,
+                            MemberKey = memberKey,
+                            ActorName = memberName,
+                            EntityUri = auditablePlayer.EntityUri,
+                            State = serialisedDeletedPlayer,
+                            RedactedState = serialisedDeletedPlayer,
+                            AuditDate = DateTime.UtcNow
+                        }, transaction);
+
+                        _logger.Info(LoggingTemplates.Deleted, serialisedDeletedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerToMemberAccount));
 
                         // Update the player to return with new details assigned to it
                         auditablePlayer.PlayerId = existingPlayerForMember.PlayerId;
                         auditablePlayer.PlayerRoute = bestRoute;
                         auditablePlayer.MemberKey = existingPlayerForMember.MemberKey;
+
+                        var serialisedUpdatedPlayer = JsonConvert.SerializeObject(auditablePlayer);
+                        await _auditRepository.CreateAudit(new AuditRecord
+                        {
+                            Action = AuditAction.Update,
+                            MemberKey = memberKey,
+                            ActorName = memberName,
+                            EntityUri = auditablePlayer.EntityUri,
+                            State = serialisedUpdatedPlayer,
+                            RedactedState = serialisedUpdatedPlayer,
+                            AuditDate = DateTime.UtcNow
+                        }, transaction);
+
+                        _logger.Info(LoggingTemplates.Updated, serialisedUpdatedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerToMemberAccount));
                     }
 
-                    var serialisedPlayer = JsonConvert.SerializeObject(auditablePlayer);
-                    await _auditRepository.CreateAudit(new AuditRecord
-                    {
-                        Action = AuditAction.Update,
-                        MemberKey = memberKey,
-                        ActorName = memberName,
-                        EntityUri = player.EntityUri,
-                        State = serialisedPlayer,
-                        RedactedState = serialisedPlayer,
-                        AuditDate = DateTime.UtcNow
-                    }, transaction);
-
                     transaction.Commit();
-
-                    _logger.Info(LoggingTemplates.Updated, serialisedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerToMemberAccount));
 
                     return auditablePlayer;
                 }
@@ -281,8 +324,6 @@ namespace Stoolball.Data.SqlServer
                             AuditDate = DateTime.UtcNow
                         }, transaction);
 
-                        transaction.Commit();
-
                         _logger.Info(LoggingTemplates.Updated, serialisedPlayer, memberName, memberKey, GetType(), nameof(UnlinkPlayerIdentityFromMemberAccount));
                     }
                     else
@@ -309,8 +350,8 @@ namespace Stoolball.Data.SqlServer
                         // Update identity to point to new player
                         await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", new { player.PlayerId, playerIdentity.PlayerIdentityId }, transaction);
 
-                        // Update statistics to point to new player and new player route
-                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET PlayerId = @PlayerId, PlayerRoute = @PlayerRoute WHERE PlayerIdentityId = @PlayerIdentityId", new { player.PlayerId, player.PlayerRoute, playerIdentity.PlayerIdentityId }, transaction);
+                        // We also need to update statistics to point to new player and new player route.
+                        // However this is done asynchronously by ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts, so there is nothing to do here.
 
                         var serialisedPlayer = JsonConvert.SerializeObject(_copier.CreateAuditableCopy(player));
                         await _auditRepository.CreateAudit(new AuditRecord
@@ -324,12 +365,59 @@ namespace Stoolball.Data.SqlServer
                             AuditDate = DateTime.UtcNow
                         }, transaction);
 
-                        transaction.Commit();
-
                         _logger.Info(LoggingTemplates.Created, serialisedPlayer, memberName, memberKey, GetType(), nameof(UnlinkPlayerIdentityFromMemberAccount));
                     }
+
+                    transaction.Commit();
                 }
             }
         }
+
+        /// <inheritdoc />
+        public async Task ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts()
+        {
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                IEnumerable<string> affectedRoutes = Array.Empty<string>();
+                int allowedRetries = 3;
+                bool retry = false;
+                do
+                {
+                    try
+                    {
+                        retry = false;
+                        affectedRoutes = await _dapperWrapper.QueryAsync<string>(connection, "usp_Link_Player_To_Member_Async_Update", commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+                        foreach (var route in affectedRoutes)
+                        {
+                            await _playerCacheClearer.ClearCacheFor(new Player { PlayerRoute = route });
+                        }
+                        _logger.Info(LOG_TEMPLATE_INFO_PLAYERS_AFFECTED, affectedRoutes.Any() ? string.Join<string>(", ", affectedRoutes) : "None");
+                    }
+                    catch (SqlException ex)
+                    {
+                        // This updates the heavily-indexed PlayerInMatchStatistics table which is prone to SQL timeouts, so catch them and allow for a limited number of retries.
+                        // If it fails every retry, the work will be picked up the next time this method is invoked.
+                        if (ex.Message.StartsWith("Timeout expired."))
+                        {
+                            _logger.Warn(LOG_TEMPLATE_WARN_SQL_TIMEOUT, allowedRetries);
+                            if (allowedRetries > 0)
+                            {
+                                retry = true;
+                            }
+                            allowedRetries--;
+                        }
+                        else
+                        {
+                            _logger.Error(LOG_TEMPLATE_ERROR_SQL_EXCEPTION, ex.Message);
+                            break;
+                        };
+                    }
+
+                }
+                while (affectedRoutes.Any() || retry);
+            }
+        }
+
     }
 }

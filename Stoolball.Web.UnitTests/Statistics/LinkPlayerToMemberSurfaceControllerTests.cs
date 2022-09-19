@@ -103,7 +103,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var result = await controller.LinkPlayerToMemberAccount();
 
                 Assert.IsType<RedirectResult>(result);
-                Assert.Equal(linkedPlayer.PlayerRoute, ((RedirectResult)result).Url);
+                Assert.Equal(linkedPlayer.PlayerRoute + "?" + Constants.QueryParameters.ConfirmPlayerLinkedToMember, ((RedirectResult)result).Url);
             }
         }
 
