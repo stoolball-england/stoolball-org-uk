@@ -23,7 +23,8 @@ namespace Stoolball.UnitTests.Statistics
         {
             var bowlingFiguresCalculator = new BowlingFiguresCalculator(_oversHelper);
             var playerIdentityFinder = new PlayerIdentityFinder();
-            var seedDataGenerator = new SeedDataGenerator(_oversHelper, bowlingFiguresCalculator, playerIdentityFinder,
+            var matchFinder = new MatchFinder();
+            var seedDataGenerator = new SeedDataGenerator(_oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
                 new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory());
 
             var homeTeam = new TeamInMatch
