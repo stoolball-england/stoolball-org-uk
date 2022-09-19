@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
+using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Statistics;
 using Stoolball.Testing;
@@ -28,6 +29,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_players_returns_player_with_identities_and_teams()
         {
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var matchFinder = new MatchFinder();
 
             var results = await playerDataSource.ReadPlayers(null);
 
@@ -44,6 +46,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     Assert.Equal(identity.PlayerIdentityName, resultIdentity.PlayerIdentityName);
                     Assert.Equal(identity.FirstPlayed?.AccurateToTheMinute(), resultIdentity.FirstPlayed?.AccurateToTheMinute());
                     Assert.Equal(identity.LastPlayed?.AccurateToTheMinute(), resultIdentity.LastPlayed?.AccurateToTheMinute());
+                    Assert.Equal(matchFinder.MatchesPlayedByPlayerIdentity(_databaseFixture.TestData.Matches, identity.PlayerIdentityId.Value).Count(), resultIdentity.TotalMatches);
                     Assert.Equal(identity.Team.TeamId, resultIdentity.Team.TeamId);
                     Assert.Equal(identity.Team.TeamName, resultIdentity.Team.TeamName);
                 }
@@ -178,6 +181,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
             var playerIdentities = new List<PlayerIdentity>();
             var playerIdentityFinder = new PlayerIdentityFinder();
+            var matchFinder = new MatchFinder();
             foreach (var match in matches)
             {
                 playerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(match));
@@ -195,6 +199,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
                 // When filtering by an aspect of the identity, don't return non-matching identities even for the same player
                 Assert.DoesNotContain(result.PlayerIdentities, x => !playerIdentityIds.Contains(x.PlayerIdentityId.Value));
+
+                // Total matches must be filtered by the same criteria
+                foreach (var identity in result.PlayerIdentities)
+                {
+                    Assert.Equal(matchFinder.MatchesPlayedByPlayerIdentity(matches, identity.PlayerIdentityId.Value).Count(), identity.TotalMatches);
+                }
             }
         }
 

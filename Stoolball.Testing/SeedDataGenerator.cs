@@ -21,6 +21,7 @@ namespace Stoolball.Testing
         private readonly Random _randomiser = new Random();
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly IPlayerIdentityFinder _playerIdentityFinder;
+        private readonly IMatchFinder _matchFinder;
         private readonly IFakerFactory<Team> _teamFakerFactory;
         private readonly IFakerFactory<MatchLocation> _matchLocationFakerFactory;
         private readonly IFakerFactory<School> _schoolFakerFactory;
@@ -29,12 +30,13 @@ namespace Stoolball.Testing
         private List<MatchLocation> _matchLocations = new List<MatchLocation>();
         private List<Competition> _competitions = new List<Competition>();
 
-        public SeedDataGenerator(IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder,
+        public SeedDataGenerator(IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
             IFakerFactory<Team> teamFakerFactory, IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory)
         {
             _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
+            _matchFinder = matchFinder ?? throw new ArgumentNullException(nameof(matchFinder));
             _teamFakerFactory = teamFakerFactory ?? throw new ArgumentNullException(nameof(teamFakerFactory));
             _matchLocationFakerFactory = matchLocationFakerFactory ?? throw new ArgumentNullException(nameof(matchLocationFakerFactory));
             _schoolFakerFactory = schoolFakerFactory ?? throw new ArgumentNullException(nameof(schoolFakerFactory));
@@ -831,13 +833,7 @@ namespace Stoolball.Testing
 
             foreach (var identity in testData.PlayerIdentities)
             {
-                var matchesPlayedByThisIdentity = testData.Matches.Where(
-                    match => match.MatchInnings.Any(mi =>
-                        mi.OversBowled.Any(o => o.Bowler.PlayerIdentityId == identity.PlayerIdentityId) ||
-                        mi.PlayerInnings.Any(pi => pi.Batter.PlayerIdentityId == identity.PlayerIdentityId) ||
-                        mi.PlayerInnings.Any(pi => pi.DismissedBy?.PlayerIdentityId == identity.PlayerIdentityId) ||
-                        mi.PlayerInnings.Any(pi => pi.Bowler?.PlayerIdentityId == identity.PlayerIdentityId)) ||
-                        match.Awards.Any(aw => aw.PlayerIdentity?.PlayerIdentityId == identity.PlayerIdentityId));
+                var matchesPlayedByThisIdentity = _matchFinder.MatchesPlayedByPlayerIdentity(testData.Matches, identity.PlayerIdentityId!.Value);
                 identity.TotalMatches = matchesPlayedByThisIdentity.Select(x => x.MatchId).Distinct().Count();
                 identity.FirstPlayed = matchesPlayedByThisIdentity.Min(x => x.StartTime);
                 identity.LastPlayed = matchesPlayedByThisIdentity.Max(x => x.StartTime);
@@ -876,8 +872,6 @@ namespace Stoolball.Testing
 
             return testData;
         }
-
-
 
         private void CreateSchoolTeamsForSchools(List<School> schools, Func<Faker<Team>> teamFakerMaker, Func<Faker<MatchLocation>> locationFakerMaker)
         {

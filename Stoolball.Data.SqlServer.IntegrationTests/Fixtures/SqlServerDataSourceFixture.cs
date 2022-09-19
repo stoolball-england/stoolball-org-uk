@@ -59,8 +59,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         {
             var oversHelper = new OversHelper();
             var playerIdentityFinder = new PlayerIdentityFinder();
+            var matchFinder = new MatchFinder();
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
-            var seedDataGenerator = new SeedDataGenerator(oversHelper, new BowlingFiguresCalculator(oversHelper), playerIdentityFinder,
+            var seedDataGenerator = new SeedDataGenerator(oversHelper, new BowlingFiguresCalculator(oversHelper), playerIdentityFinder, matchFinder,
                 new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory());
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {

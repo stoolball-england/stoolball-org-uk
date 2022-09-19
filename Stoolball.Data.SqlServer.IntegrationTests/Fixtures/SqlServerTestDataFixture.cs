@@ -17,11 +17,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var oversHelper = new OversHelper();
             var bowlingFiguresCalculator = new BowlingFiguresCalculator(oversHelper);
             var playerIdentityFinder = new PlayerIdentityFinder();
+            var matchFinder = new MatchFinder();
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
             var teamFakerFactory = new TeamFakerFactory();
             var matchLocationFakerFactory = new MatchLocationFakerFactory();
             var schoolFakerFactory = new SchoolFakerFactory();
-            var randomSeedDataGenerator = new SeedDataGenerator(oversHelper, bowlingFiguresCalculator, playerIdentityFinder, teamFakerFactory, matchLocationFakerFactory, schoolFakerFactory);
+            var randomSeedDataGenerator = new SeedDataGenerator(oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder, teamFakerFactory, matchLocationFakerFactory, schoolFakerFactory);
 
             // Use Bogus to generate Schools data
             Randomizer.Seed = new Random(85437684);

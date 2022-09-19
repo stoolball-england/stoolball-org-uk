@@ -52,7 +52,7 @@ namespace Stoolball.Data.SqlServer
             }
 
             var sql = $@"SELECT DISTINCT PlayerId, PlayerRoute, 
-                                PlayerIdentityId, PlayerIdentityName, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed, 
+                                PlayerIdentityId, PlayerIdentityName, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed, COUNT(DISTINCT MatchId) AS TotalMatches,
                                 TeamId, TeamName 
                                 FROM {Tables.PlayerInMatchStatistics} AS stats 
                                 <<WHERE>>
