@@ -88,6 +88,7 @@ progress::-moz-progress-bar {
     background-position: 12px 13px;
     background-size: 20px;
     padding: 0 0 0 $minimum-clickable-size;
+    margin-bottom: 0;
     width: 0;
     overflow: hidden;
     max-width: $minimum-clickable-size;
