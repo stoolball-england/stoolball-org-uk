@@ -22,9 +22,6 @@ namespace Stoolball.Web.Export
     public class SpogoCsvHostedService : RecurringHostedServiceBase
     {
         private readonly IRuntimeState _runtimeState;
-        private readonly IContentService _contentService;
-        private readonly IServerRoleAccessor _serverRoleAccessor;
-        private readonly IProfilingLogger _profilingLogger;
         private readonly ILogger<OnlySportCsvHostedService> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ITeamDataSource _teamDataSource;
@@ -45,9 +42,6 @@ namespace Stoolball.Web.Export
             : base(logger, HowOftenWeRepeat, DelayBeforeWeStart)
         {
             _runtimeState = runtimeState ?? throw new ArgumentNullException(nameof(runtimeState));
-            _contentService = contentService ?? throw new ArgumentNullException(nameof(contentService));
-            _serverRoleAccessor = serverRoleAccessor ?? throw new ArgumentNullException(nameof(serverRoleAccessor));
-            _profilingLogger = profilingLogger ?? throw new ArgumentNullException(nameof(profilingLogger));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
