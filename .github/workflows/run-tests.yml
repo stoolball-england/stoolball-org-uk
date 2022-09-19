@@ -113,7 +113,7 @@ jobs:
 
     - name: Move coverage to root
       shell: pwsh
-      run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./unit-tests.cobertura.xml }
+      run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./sql-unit-tests.cobertura.xml }
 
     - name: Upload test results
       uses: actions/upload-artifact@v2
