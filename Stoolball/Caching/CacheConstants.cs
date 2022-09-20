@@ -5,7 +5,6 @@ namespace Stoolball.Caching
     public static class CacheConstants
     {
         public static TimeSpan StatisticsExpiration() => TimeSpan.FromMinutes(120);
-        public const string StatisticsPolicy = "statistics";
         public const string MatchesPolicy = "matches";
         public const string TeamsPolicy = "teams";
         public const string MatchLocationsPolicy = "locations";

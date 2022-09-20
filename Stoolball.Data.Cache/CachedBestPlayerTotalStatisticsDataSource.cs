@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Polly;
-using Polly.Registry;
 using Stoolball.Caching;
 using Stoolball.Statistics;
 
@@ -10,13 +8,13 @@ namespace Stoolball.Data.Cache
 {
     public class CachedBestPlayerTotalStatisticsDataSource : IBestPlayerTotalStatisticsDataSource
     {
+        private readonly IReadThroughCache _readThroughCache;
         private readonly ICacheableBestPlayerTotalStatisticsDataSource _statisticsDataSource;
-        private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
         private readonly IStatisticsFilterQueryStringSerializer _statisticsFilterSerializer;
 
-        public CachedBestPlayerTotalStatisticsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableBestPlayerTotalStatisticsDataSource statisticsDataSource, IStatisticsFilterQueryStringSerializer statisticsFilterSerializer)
+        public CachedBestPlayerTotalStatisticsDataSource(IReadThroughCache readThroughCache, ICacheableBestPlayerTotalStatisticsDataSource statisticsDataSource, IStatisticsFilterQueryStringSerializer statisticsFilterSerializer)
         {
-            _policyRegistry = policyRegistry ?? throw new ArgumentNullException(nameof(policyRegistry));
+            _readThroughCache = readThroughCache ?? throw new ArgumentNullException(nameof(readThroughCache));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
             _statisticsFilterSerializer = statisticsFilterSerializer ?? throw new ArgumentNullException(nameof(statisticsFilterSerializer));
         }
@@ -25,62 +23,62 @@ namespace Stoolball.Data.Cache
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostCatches(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadMostCatches(filter).ConfigureAwait(false), new Context(nameof(ReadMostCatches) + _statisticsFilterSerializer.Serialize(filter)));
+            var cacheKey = nameof(ReadMostCatches) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostCatches(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunOuts(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadMostRunOuts(filter).ConfigureAwait(false), new Context(nameof(ReadMostRunOuts) + _statisticsFilterSerializer.Serialize(filter)));
+            var cacheKey = nameof(ReadMostRunOuts) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostRunOuts(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunsScored(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadMostRunsScored(filter).ConfigureAwait(false), new Context(nameof(ReadMostRunsScored) + _statisticsFilterSerializer.Serialize(filter)));
+            var cacheKey = nameof(ReadMostRunsScored) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostRunsScored(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostWickets(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadMostWickets(filter).ConfigureAwait(false), new Context(nameof(ReadMostWickets) + _statisticsFilterSerializer.Serialize(filter)));
+            var cacheKey = nameof(ReadMostWickets) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostWickets(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
         public async Task<int> ReadTotalPlayersWithCatches(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithCatches(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithCatches) + _statisticsFilterSerializer.Serialize(filter)));
+            var cacheKey = nameof(ReadTotalPlayersWithCatches) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithCatches(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
         public async Task<int> ReadTotalPlayersWithRunOuts(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithRunOuts(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithRunOuts) + _statisticsFilterSerializer.Serialize(filter)));
+            var cacheKey = nameof(ReadTotalPlayersWithRunOuts) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithRunOuts(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
         public async Task<int> ReadTotalPlayersWithRunsScored(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithRunsScored(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithRunsScored) + _statisticsFilterSerializer.Serialize(filter)));
+            var cacheKey = nameof(ReadTotalPlayersWithRunsScored) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithRunsScored(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         public async Task<int> ReadTotalPlayersWithWickets(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithWickets) + _statisticsFilterSerializer.Serialize(filter)));
+            var cacheKey = nameof(ReadTotalPlayersWithWickets) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
         }
     }
 }

@@ -217,7 +217,6 @@ namespace Stoolball.Web
                     logger!.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
                 });
 
-                registry.Add(CacheConstants.StatisticsPolicy, cachePolicy);
                 registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
                 registry.Add(CacheConstants.CommentsPolicy, cachePolicy);
                 registry.Add(CacheConstants.TeamsPolicy, cachePolicy);

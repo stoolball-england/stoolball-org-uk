@@ -1,6 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Polly;
-using Polly.Registry;
 using Stoolball.Caching;
 using Stoolball.Statistics;
 
@@ -8,13 +6,13 @@ namespace Stoolball.Data.Cache
 {
     public class CachedInningsStatisticsDataSource : IInningsStatisticsDataSource
     {
-        private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
+        private readonly IReadThroughCache _readThroughCache;
         private readonly ICacheableInningsStatisticsDataSource _inningsStatisticsDataSource;
         private readonly IStatisticsFilterQueryStringSerializer _statisticsFilterSerializer;
 
-        public CachedInningsStatisticsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableInningsStatisticsDataSource inningsStatisticsDataSource, IStatisticsFilterQueryStringSerializer statisticsFilterSerializer)
+        public CachedInningsStatisticsDataSource(IReadThroughCache readThroughCache, ICacheableInningsStatisticsDataSource inningsStatisticsDataSource, IStatisticsFilterQueryStringSerializer statisticsFilterSerializer)
         {
-            _policyRegistry = policyRegistry ?? throw new System.ArgumentNullException(nameof(policyRegistry));
+            _readThroughCache = readThroughCache ?? throw new System.ArgumentNullException(nameof(readThroughCache));
             _inningsStatisticsDataSource = inningsStatisticsDataSource ?? throw new System.ArgumentNullException(nameof(inningsStatisticsDataSource));
             _statisticsFilterSerializer = statisticsFilterSerializer ?? throw new System.ArgumentNullException(nameof(statisticsFilterSerializer));
         }
@@ -22,8 +20,8 @@ namespace Stoolball.Data.Cache
         public async Task<InningsStatistics> ReadInningsStatistics(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _inningsStatisticsDataSource.ReadInningsStatistics(filter).ConfigureAwait(false), new Context(nameof(ReadInningsStatistics) + _statisticsFilterSerializer.Serialize(filter)));
+            var cacheKey = nameof(ReadInningsStatistics) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _inningsStatisticsDataSource.ReadInningsStatistics(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
         }
     }
 }
