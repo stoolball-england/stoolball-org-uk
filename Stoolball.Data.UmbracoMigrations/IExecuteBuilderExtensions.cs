@@ -13,7 +13,7 @@ namespace Stoolball.Data.UmbracoMigrations
             if (Regex.IsMatch(folderAndFilename, "^[0-9]")) { folderAndFilename = "_" + folderAndFilename; }
 
             using var stream = typeof(IExecuteBuilderExtensions).Assembly.GetManifestResourceStream($"Stoolball.Data.UmbracoMigrations.{folderAndFilename}");
-            using var reader = new StreamReader(stream);
+            using var reader = new StreamReader(stream!);
             var sql = reader.ReadToEnd();
 
             sql = sql.Replace("@", "@@"); // parameters must be escaped, or they will be treated as expected parameters for the CREATE statement

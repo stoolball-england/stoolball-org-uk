@@ -1,4 +1,5 @@
-﻿using System;
+﻿# nullable disable // Point-in-time snapshot should not be changed
+using System;
 using NPoco;
 using Stoolball.Data.SqlServer;
 using Umbraco.Cms.Infrastructure.Persistence.DatabaseAnnotations;
