@@ -28,18 +28,18 @@ namespace Stoolball.Web.Competitions
         private readonly ICompetitionRepository _competitionRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
         private readonly IRouteGenerator _routeGenerator;
-        private readonly ICacheOverride _cacheOverride;
+        private readonly IListingCacheClearer<Competition> _cacheClearer;
 
         public CreateCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, ICompetitionRepository seasonRepository,
-            IAuthorizationPolicy<Competition> authorizationPolicy, IRouteGenerator routeGenerator, ICacheOverride cacheOverride)
+            IAuthorizationPolicy<Competition> authorizationPolicy, IRouteGenerator routeGenerator, IListingCacheClearer<Competition> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _competitionRepository = seasonRepository ?? throw new ArgumentNullException(nameof(seasonRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
-            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -95,7 +95,7 @@ namespace Stoolball.Web.Competitions
 
                 // Create the competition
                 var createdCompetition = await _competitionRepository.CreateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix).ConfigureAwait(false);
+                _cacheClearer.ClearCache();
 
                 // Redirect to the competition
                 return Redirect(createdCompetition.CompetitionRoute);

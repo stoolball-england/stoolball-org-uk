@@ -28,12 +28,12 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationRepository _matchLocationRepository;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
-        private readonly ICacheOverride _cacheOverride;
+        private readonly IListingCacheClearer<MatchLocation> _cacheClearer;
 
         public DeleteMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory,
             ServiceContext serviceContext, AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchLocationDataSource matchLocationDataSource, IMatchLocationRepository matchLocationRepository, IMatchListingDataSource matchDataSource,
-           IAuthorizationPolicy<MatchLocation> authorizationPolicy, ICacheOverride cacheOverride)
+            IAuthorizationPolicy<MatchLocation> authorizationPolicy, IListingCacheClearer<MatchLocation> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -41,7 +41,7 @@ namespace Stoolball.Web.MatchLocations
             _matchLocationRepository = matchLocationRepository ?? throw new ArgumentNullException(nameof(matchLocationRepository));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
-            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -71,7 +71,7 @@ namespace Stoolball.Web.MatchLocations
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _matchLocationRepository.DeleteMatchLocation(viewModel.MatchLocation, currentMember.Key, currentMember.Name);
-                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix);
+                _cacheClearer.ClearCache();
                 viewModel.Deleted = true;
             }
             else

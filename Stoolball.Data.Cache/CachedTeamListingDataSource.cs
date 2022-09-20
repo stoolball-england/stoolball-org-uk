@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Polly;
-using Polly.Registry;
 using Stoolball.Caching;
 using Stoolball.Teams;
 
@@ -10,27 +8,15 @@ namespace Stoolball.Data.Cache
 {
     public class CachedTeamListingDataSource : ITeamListingDataSource
     {
+        private readonly IReadThroughCache _readThroughCache;
         private readonly ICacheableTeamListingDataSource _teamListingDataSource;
-        private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
         private readonly ITeamListingFilterSerializer _teamListingFilterSerializer;
-        private readonly ICacheOverride _cacheOverride;
-        private bool? _cacheDisabled;
 
-        public CachedTeamListingDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableTeamListingDataSource teamListingDataSource, ITeamListingFilterSerializer teamListingFilterSerializer, ICacheOverride cacheOverride)
+        public CachedTeamListingDataSource(IReadThroughCache readThroughCache, ICacheableTeamListingDataSource teamListingDataSource, ITeamListingFilterSerializer teamListingFilterSerializer)
         {
-            _policyRegistry = policyRegistry ?? throw new ArgumentNullException(nameof(policyRegistry));
+            _readThroughCache = readThroughCache ?? throw new ArgumentNullException(nameof(readThroughCache));
             _teamListingDataSource = teamListingDataSource ?? throw new ArgumentNullException(nameof(teamListingDataSource));
             _teamListingFilterSerializer = teamListingFilterSerializer ?? throw new ArgumentNullException(nameof(teamListingFilterSerializer));
-            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
-        }
-
-        private async Task<bool> CacheDisabled()
-        {
-            if (!_cacheDisabled.HasValue)
-            {
-                _cacheDisabled = await _cacheOverride.IsCacheOverriddenForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);
-            }
-            return _cacheDisabled.Value;
         }
 
         /// <inheritdoc />
@@ -38,16 +24,9 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new TeamListingFilter();
 
-            if (await CacheDisabled().ConfigureAwait(false))
-            {
-                return await _teamListingDataSource.ReadTeamListings(filter).ConfigureAwait(false);
-            }
-            else
-            {
-                var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.TeamsPolicy);
-                var cacheKey = CacheConstants.TeamListingsCacheKeyPrefix + nameof(ReadTeamListings) + _teamListingFilterSerializer.Serialize(filter);
-                return await cachePolicy.ExecuteAsync(async context => await _teamListingDataSource.ReadTeamListings(filter).ConfigureAwait(false), new Context(cacheKey));
-            }
+            var cacheKey = nameof(ITeamListingDataSource) + nameof(ReadTeamListings);
+            var dependentCacheKey = cacheKey + _teamListingFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _teamListingDataSource.ReadTeamListings(filter).ConfigureAwait(false), CacheConstants.TeamsExpiration(), cacheKey, dependentCacheKey);
         }
 
         /// <inheritdoc />
@@ -55,16 +34,9 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new TeamListingFilter();
 
-            if (await CacheDisabled().ConfigureAwait(false))
-            {
-                return await _teamListingDataSource.ReadTotalTeams(filter).ConfigureAwait(false);
-            }
-            else
-            {
-                var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.TeamsPolicy);
-                var cacheKey = CacheConstants.TeamListingsCacheKeyPrefix + nameof(ReadTotalTeams) + _teamListingFilterSerializer.Serialize(filter);
-                return await cachePolicy.ExecuteAsync(async context => await _teamListingDataSource.ReadTotalTeams(filter).ConfigureAwait(false), new Context(cacheKey));
-            }
+            var cacheKey = nameof(ITeamListingDataSource) + nameof(ReadTotalTeams);
+            var dependentCacheKey = cacheKey + _teamListingFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _teamListingDataSource.ReadTotalTeams(filter).ConfigureAwait(false), CacheConstants.TeamsExpiration(), cacheKey, dependentCacheKey);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Caching;
+using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
@@ -25,17 +26,19 @@ namespace Stoolball.Web.Teams
         private readonly IMemberManager _memberManager;
         private readonly ITeamRepository _teamRepository;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
-        private readonly ICacheOverride _cacheOverride;
+        private readonly IListingCacheClearer<Team> _teamListingCacheClearer;
+        private readonly IListingCacheClearer<MatchLocation> _matchLocationCacheClearer;
 
         public CreateTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
-            ITeamRepository teamRepository, IAuthorizationPolicy<Team> authorizationPolicy, ICacheOverride cacheOverride)
+            ITeamRepository teamRepository, IAuthorizationPolicy<Team> authorizationPolicy, IListingCacheClearer<Team> teamListingCacheClearer, IListingCacheClearer<MatchLocation> matchLocationCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
-            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
+            _teamListingCacheClearer = teamListingCacheClearer ?? throw new ArgumentNullException(nameof(teamListingCacheClearer));
+            _matchLocationCacheClearer = matchLocationCacheClearer ?? throw new ArgumentNullException(nameof(matchLocationCacheClearer));
         }
 
         [HttpPost]
@@ -80,7 +83,8 @@ namespace Stoolball.Web.Teams
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var createdTeam = await _teamRepository.CreateTeam(team, currentMember.Key, (await _memberManager.GetCurrentMemberAsync()).UserName, currentMember.Name).ConfigureAwait(false);
 
-                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);
+                _teamListingCacheClearer.ClearCache();
+                _matchLocationCacheClearer.ClearCache(); // Because if a match location gets its first team, it should start appearing in listings
 
                 // Redirect to the team
                 return Redirect(createdTeam.TeamRoute);

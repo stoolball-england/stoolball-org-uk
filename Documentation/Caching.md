@@ -6,7 +6,7 @@ Umbraco content is cached in memory by default. Stoolball data is cached using r
 
 ## Cache strategies
 
-There are three strategies used for caching:
+There are two strategies used for caching:
 
 - **Update for all when cache expires**
 
@@ -14,20 +14,15 @@ There are three strategies used for caching:
 
   - stoolball statistics
 
-- **Update immediately for the editor's account**
-
-  Suitable for data that's not too time-sensitive, but is directly editable. If you update some data you want to see that change take effect so that you know it worked. In this strategy the cache is invalidated immediately for the account who made the update, but other accounts and users who are not signed in will see the update when the cache naturally expires. This is used for:
-
-  - competition listings
-  - club and team listings
-  - match location listings
-
 - **Update immediately for all**
 
-  Suitable for data that's time-sensitive and directly editable. If you update some data that people might need to see straight away, such as cancelling a match, the cache is invalidated immediately for all users. This is used for:
+  Suitable for data that's time-sensitive and directly editable. The cache is invalidated immediately for all users. If you update some data you want to see that change take effect so that you know it worked. If your update is time-sensitive people might need to see it straight away, such as cancelling a match. This is used for:
 
+  - club and team listings
+  - competition listings
   - match and tournament listings
   - match and tournament comments
+  - match location listings
   - linking a player to a member account
 
 ## How it's implemented
@@ -38,7 +33,7 @@ In `Startup.cs` the application is configured to inject the cached data source i
 
 The cached data sources define the length of time the cache lasts for, and whether it uses absolute or sliding expiration, using the `CacheConstants` class. In some cases these use a Polly cache policy which is defined in `Startup.cs`.
 
-When caches need to be updated immediately for all the controller requires an `ICacheClearer<T>` and calls the `ClearCacheFor` method with the object the cache needs to be cleared for. Where caches only need to be cleared for the editor, this is handled by requiring an `ICacheOverride` in the controller and calling a method on that to override the cache.
+When caches need to be updated immediately for all the controller either requires an `ICacheClearer<T>` and calls the `ClearCacheFor` method with the object the cache needs to be cleared for, or for listings it requires an `IListingCacheClearer<T>` and a call to `ClearCache`.
 
 ## Further caching with Examine
 

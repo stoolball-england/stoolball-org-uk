@@ -31,12 +31,12 @@ namespace Stoolball.Web.Teams
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
-        private readonly ICacheOverride _cacheOverride;
+        private readonly IListingCacheClearer<Team> _cacheClearer;
 
         public DeleteTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             ITeamDataSource teamDataSource, ITeamRepository teamRepository, IMatchListingDataSource matchDataSource, IPlayerDataSource playerDataSource,
-            IAuthorizationPolicy<Team> authorizationPolicy, ICacheOverride cacheOverride)
+            IAuthorizationPolicy<Team> authorizationPolicy, IListingCacheClearer<Team> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -45,7 +45,7 @@ namespace Stoolball.Web.Teams
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
-            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -75,7 +75,7 @@ namespace Stoolball.Web.Teams
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _teamRepository.DeleteTeam(model.Team, currentMember.Key, currentMember.Name);
-                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
+                _cacheClearer.ClearCache();
                 model.Deleted = true;
             }
             else

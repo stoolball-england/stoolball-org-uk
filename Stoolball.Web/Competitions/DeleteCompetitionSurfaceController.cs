@@ -30,12 +30,12 @@ namespace Stoolball.Web.Competitions
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly ITeamDataSource _teamDataSource;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
-        private readonly ICacheOverride _cacheOverride;
+        private readonly IListingCacheClearer<Competition> _cacheClearer;
 
         public DeleteCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, ICompetitionDataSource competitionDataSource,
             ICompetitionRepository competitionRepository, IMatchListingDataSource matchDataSource, ITeamDataSource teamDataSource, IAuthorizationPolicy<Competition> authorizationPolicy,
-            ICacheOverride cacheOverride)
+            IListingCacheClearer<Competition> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -44,7 +44,7 @@ namespace Stoolball.Web.Competitions
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
-            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -74,7 +74,7 @@ namespace Stoolball.Web.Competitions
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _competitionRepository.DeleteCompetition(viewModel.Competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix).ConfigureAwait(false);
+                _cacheClearer.ClearCache();
                 viewModel.Deleted = true;
             }
             else

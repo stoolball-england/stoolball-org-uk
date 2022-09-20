@@ -158,7 +158,6 @@ namespace Stoolball.Web
             // Data sources
             services.AddTransient<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();
             services.AddTransient<IRouteNormaliser, RouteNormaliser>();
-            services.AddTransient<ICacheOverride, CacheOverride>();
 
             services.AddTransient<IClubDataSource, SqlServerClubDataSource>();
             services.AddTransient<ICompetitionDataSource, CachedCompetitionDataSource>();
@@ -219,9 +218,6 @@ namespace Stoolball.Web
 
                 registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
                 registry.Add(CacheConstants.CommentsPolicy, cachePolicy);
-                registry.Add(CacheConstants.TeamsPolicy, cachePolicy);
-                registry.Add(CacheConstants.CompetitionsPolicy, cachePolicy);
-                registry.Add(CacheConstants.MatchLocationsPolicy, cachePolicy);
                 registry.Add(CacheConstants.MemberOverridePolicy, slidingPolicy);
                 return registry;
 
@@ -229,6 +225,9 @@ namespace Stoolball.Web
             services.AddTransient<ICacheClearer<Tournament>, TournamentCacheClearer>();
             services.AddTransient<ICacheClearer<Match>, MatchCacheClearer>();
             services.AddTransient<ICacheClearer<Player>, PlayerCacheClearer>();
+            services.AddTransient<IListingCacheClearer<Competition>, CompetitionListingCacheClearer>();
+            services.AddTransient<IListingCacheClearer<MatchLocation>, MatchLocationListingCacheClearer>();
+            services.AddTransient<IListingCacheClearer<Team>, TeamListingCacheClearer>();
             services.AddTransient<IReadThroughCache, ReadThroughCache>();
 
             // Repositories

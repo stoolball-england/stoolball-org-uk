@@ -27,11 +27,11 @@ namespace Stoolball.Web.Competitions
         private readonly ICompetitionRepository _competitionRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
         private readonly IPostSaveRedirector _postSaveRedirector;
-        private readonly ICacheOverride _cacheOverride;
+        private readonly IListingCacheClearer<Competition> _cacheClearer;
 
         public EditCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, ICompetitionDataSource competitionDataSource,
-            ICompetitionRepository competitionRepository, IAuthorizationPolicy<Competition> authorizationPolicy, IPostSaveRedirector postSaveRedirector, ICacheOverride cacheOverride)
+            ICompetitionRepository competitionRepository, IAuthorizationPolicy<Competition> authorizationPolicy, IPostSaveRedirector postSaveRedirector, IListingCacheClearer<Competition> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -39,7 +39,7 @@ namespace Stoolball.Web.Competitions
             _competitionRepository = competitionRepository ?? throw new ArgumentNullException(nameof(competitionRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _postSaveRedirector = postSaveRedirector ?? throw new ArgumentNullException(nameof(postSaveRedirector));
-            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -68,7 +68,7 @@ namespace Stoolball.Web.Competitions
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedCompetition = await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix).ConfigureAwait(false);
+                _cacheClearer.ClearCache();
 
                 return _postSaveRedirector.WorkOutRedirect(competition.CompetitionRoute, updatedCompetition.CompetitionRoute, "/edit", Request.Form["UrlReferrer"]);
             }

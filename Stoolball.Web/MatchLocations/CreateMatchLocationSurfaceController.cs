@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Routing;
@@ -28,19 +27,17 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationRepository _matchLocationRepository;
         private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
         private readonly IRouteGenerator _routeGenerator;
-        private readonly ICacheOverride _cacheOverride;
 
         public CreateMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchLocationRepository matchLocationRepository, IAuthorizationPolicy<MatchLocation> authorizationPolicy,
-            IRouteGenerator routeGenerator, ICacheOverride cacheOverride)
+            IRouteGenerator routeGenerator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _matchLocationRepository = matchLocationRepository ?? throw new ArgumentNullException(nameof(matchLocationRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
-            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
         [HttpPost]
@@ -92,9 +89,8 @@ namespace Stoolball.Web.MatchLocations
                     Services.MemberService.AssignRole(currentMember.Id, group!.Name);
                 }
 
-                // Create the location
+                // Create the location. No need to clear match location listing cache, because it will not be shown anyway until it has a team based there.
                 var createdMatchLocation = await _matchLocationRepository.CreateMatchLocation(location, currentMember.Key, currentMember.Name);
-                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix);
 
                 // Redirect to the location
                 return Redirect(createdMatchLocation.MatchLocationRoute);

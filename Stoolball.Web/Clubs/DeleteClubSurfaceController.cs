@@ -5,6 +5,7 @@ using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Logging;
@@ -24,19 +25,19 @@ namespace Stoolball.Web.Clubs
         private readonly IClubDataSource _clubDataSource;
         private readonly IClubRepository _clubRepository;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
-        private readonly ICacheOverride _cacheOverride;
+        private readonly IListingCacheClearer<Team> _cacheClearer;
 
         public DeleteClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IClubDataSource clubDataSource, IClubRepository clubRepository, IAuthorizationPolicy<Club> authorizationPolicy,
-            ICacheOverride cacheOverride)
+            IListingCacheClearer<Team> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _clubRepository = clubRepository ?? throw new ArgumentNullException(nameof(clubRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
-            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -66,7 +67,7 @@ namespace Stoolball.Web.Clubs
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _clubRepository.DeleteClub(viewModel.Club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix).ConfigureAwait(false);
+                _cacheClearer.ClearCache();
                 viewModel.Deleted = true;
             }
 

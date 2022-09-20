@@ -25,19 +25,19 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IMatchLocationRepository _matchLocationRepository;
         private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
-        private readonly ICacheOverride _cacheOverride;
+        private readonly IListingCacheClearer<MatchLocation> _cacheClearer;
 
         public EditMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchLocationDataSource matchLocationDataSource, IMatchLocationRepository matchLocationRepository,
-            IAuthorizationPolicy<MatchLocation> authorizationPolicy, ICacheOverride cacheOverride)
+            IAuthorizationPolicy<MatchLocation> authorizationPolicy, IListingCacheClearer<MatchLocation> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _matchLocationRepository = matchLocationRepository ?? throw new ArgumentNullException(nameof(matchLocationRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
-            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -59,7 +59,7 @@ namespace Stoolball.Web.MatchLocations
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedMatchLocation = await _matchLocationRepository.UpdateMatchLocation(location, currentMember.Key, currentMember.Name);
-                await _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix);
+                _cacheClearer.ClearCache();
 
                 return Redirect(updatedMatchLocation.MatchLocationRoute + "/edit");
             }
