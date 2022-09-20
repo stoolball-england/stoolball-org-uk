@@ -19,7 +19,7 @@ namespace Stoolball.Data.SqlServer
                 where.Add("PlayerOfTheMatch = 1");
             }
 
-            if (filter.Player != null)
+            if (filter.Player != null && filter.Player.PlayerId.HasValue)
             {
                 where.Add("PlayerId = @PlayerId");
                 parameters.Add("@PlayerId", filter.Player.PlayerId);
@@ -43,7 +43,7 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@RunOutByPlayerIdentityIds", filter.RunOutByPlayerIdentityIds);
             }
 
-            if (filter.Club != null)
+            if (filter.Club != null && filter.Club.ClubId.HasValue)
             {
                 where.Add("ClubId = @ClubId");
                 parameters.Add("@ClubId", filter.Club.ClubId);
@@ -53,7 +53,7 @@ namespace Stoolball.Data.SqlServer
             {
                 // When querying by the player id of a fielder, flip team && opposition because
                 // the fielder's team is the opposition_id
-                if (filter.Team != null)
+                if (filter.Team != null && filter.Team.TeamId.HasValue)
                 {
                     where.Add("OppositionTeamId = @OppositionTeamId");
                     parameters.Add("@OppositionTeamId", filter.Team.TeamId);
@@ -73,7 +73,7 @@ namespace Stoolball.Data.SqlServer
             }
             else
             {
-                if (filter.Team != null)
+                if (filter.Team != null && filter.Team.TeamId.HasValue)
                 {
                     where.Add("TeamId = @TeamId");
                     parameters.Add("@TeamId", filter.Team.TeamId);
@@ -92,19 +92,19 @@ namespace Stoolball.Data.SqlServer
                 }
             }
 
-            if (filter.Season != null)
+            if (filter.Season != null && filter.Season.SeasonId.HasValue)
             {
                 where.Add("SeasonId = @SeasonId");
                 parameters.Add("@SeasonId", filter.Season.SeasonId);
             }
 
-            if (filter.Competition != null)
+            if (filter.Competition != null && filter.Competition.CompetitionId.HasValue)
             {
                 where.Add("CompetitionId = @CompetitionId");
                 parameters.Add("@CompetitionId", filter.Competition.CompetitionId);
             }
 
-            if (filter.MatchLocation != null)
+            if (filter.MatchLocation != null && filter.MatchLocation.MatchLocationId.HasValue)
             {
                 where.Add("MatchLocationId = @MatchLocationId");
                 parameters.Add("@MatchLocationId", filter.MatchLocation.MatchLocationId);

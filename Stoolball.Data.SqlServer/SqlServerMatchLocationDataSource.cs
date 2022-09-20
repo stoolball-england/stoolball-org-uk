@@ -31,12 +31,12 @@ namespace Stoolball.Data.SqlServer
         /// <param name="route">/locations/example-location</param>
         /// <param name="includeRelated"><c>true</c> to include the teams based at the selected location; <c>false</c> otherwise</param>
         /// <returns>A matching <see cref="MatchLocation"/> or <c>null</c> if not found</returns>
-        public async Task<MatchLocation> ReadMatchLocationByRoute(string route, bool includeRelated = false)
+        public async Task<MatchLocation?> ReadMatchLocationByRoute(string route, bool includeRelated = false)
         {
             return await (includeRelated ? ReadMatchLocationWithRelatedDataByRoute(route) : ReadMatchLocationByRoute(route)).ConfigureAwait(false);
         }
 
-        private async Task<MatchLocation> ReadMatchLocationByRoute(string route)
+        private async Task<MatchLocation?> ReadMatchLocationByRoute(string route)
         {
             var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "locations");
 
@@ -53,7 +53,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private async Task<MatchLocation> ReadMatchLocationWithRelatedDataByRoute(string route)
+        private async Task<MatchLocation?> ReadMatchLocationWithRelatedDataByRoute(string route)
         {
             var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "locations");
 

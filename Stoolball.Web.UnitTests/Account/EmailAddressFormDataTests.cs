@@ -21,7 +21,7 @@ namespace Stoolball.Web.UnitTests.Account
 
             Assert.Contains(ValidateModel(formData),
                 v => v.MemberNames.Contains(nameof(EmailAddressFormData.Requested)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("EMAIL"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("EMAIL") ?? false));
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace Stoolball.Web.UnitTests.Account
 
             Assert.DoesNotContain(ValidateModel(formData),
                             v => v.MemberNames.Contains(nameof(EmailAddressFormData.Requested)) &&
-                                 v.ErrorMessage.ToUpperInvariant().Contains("EMAIL"));
+                                 (v.ErrorMessage?.ToUpperInvariant().Contains("EMAIL") ?? false));
         }
 
         [Theory]
@@ -49,7 +49,7 @@ namespace Stoolball.Web.UnitTests.Account
 
             Assert.Contains(ValidateModel(formData),
                 v => v.MemberNames.Contains(nameof(EmailAddressFormData.Password)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("PASSWORD"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("PASSWORD") ?? false));
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace Stoolball.Web.UnitTests.Account
 
             Assert.DoesNotContain(ValidateModel(formData),
                             v => v.MemberNames.Contains(nameof(EmailAddressFormData.Password)) &&
-                                 v.ErrorMessage.ToUpperInvariant().Contains("PASSWORD"));
+                                 (v.ErrorMessage?.ToUpperInvariant().Contains("PASSWORD") ?? false));
         }
     }
 }

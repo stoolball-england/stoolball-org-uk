@@ -31,7 +31,7 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         /// <param name="route">/tournaments/example-tournament</param>
         /// <returns>A matching <see cref="Tournament"/> or <c>null</c> if not found</returns>
-        public async Task<Tournament> ReadTournamentByRoute(string route)
+        public async Task<Tournament?> ReadTournamentByRoute(string route)
         {
             var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "tournaments");
 

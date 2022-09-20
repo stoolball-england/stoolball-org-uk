@@ -285,7 +285,7 @@ namespace Stoolball.Data.SqlServer
 
                     if (transientTeams.Any())
                     {
-                        var transientTeamIds = transientTeams.Select(x => x.TeamId.Value);
+                        var transientTeamIds = transientTeams.Select(x => x.TeamId).OfType<Guid>();
 
                         await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET
                                 PlayerType = @PlayerType,
@@ -740,7 +740,7 @@ namespace Stoolball.Data.SqlServer
                 using (var transaction = connection.BeginTransaction())
                 {
                     var currentMatchesInTournament = await connection.QueryAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId", new { tournament.TournamentId }, transaction).ConfigureAwait(false);
-                    var deletedMatches = currentMatchesInTournament.Where(x => !tournament.Matches.Where(t => t.MatchId.HasValue).Select(m => m.MatchId.Value).Contains(x));
+                    var deletedMatches = currentMatchesInTournament.Where(x => !tournament.Matches.Where(m => m.MatchId.HasValue).Select(m => m.MatchId!.Value).Contains(x));
                     if (deletedMatches.Any())
                     {
                         foreach (var match in deletedMatches)
@@ -757,7 +757,7 @@ namespace Stoolball.Data.SqlServer
                                 new
                                 {
                                     OrderInTournament = i + 1,
-                                    MatchId = tournament.Matches[i].MatchId.Value
+                                    MatchId = tournament.Matches[i].MatchId!.Value
                                 },
                                 transaction).ConfigureAwait(false);
                         }

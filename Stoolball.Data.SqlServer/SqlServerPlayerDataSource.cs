@@ -172,7 +172,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc />
-        public async Task<Player> ReadPlayerByRoute(string route, StatisticsFilter filter = null)
+        public async Task<Player?> ReadPlayerByRoute(string route, StatisticsFilter? filter = null)
         {
             var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "players");
 

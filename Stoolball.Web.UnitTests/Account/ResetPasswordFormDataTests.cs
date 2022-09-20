@@ -21,7 +21,7 @@ namespace Stoolball.Web.UnitTests.Account
 
             Assert.Contains(ValidateModel(formData),
                 v => v.MemberNames.Contains(nameof(ResetPasswordFormData.NewPassword)) &&
-                     v.ErrorMessage.ToUpperInvariant() == expectedError);
+                     v.ErrorMessage?.ToUpperInvariant() == expectedError);
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace Stoolball.Web.UnitTests.Account
 
             Assert.DoesNotContain(ValidateModel(formData),
                             v => v.MemberNames.Contains(nameof(ResetPasswordFormData.NewPassword)) &&
-                                 v.ErrorMessage.ToUpperInvariant() == "THE NEW PASSWORD IS REQUIRED.");
+                                 v.ErrorMessage?.ToUpperInvariant() == "THE NEW PASSWORD IS REQUIRED.");
         }
     }
 }

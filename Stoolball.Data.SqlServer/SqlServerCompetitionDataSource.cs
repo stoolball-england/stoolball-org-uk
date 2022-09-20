@@ -31,7 +31,7 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         /// <param name="route">/competitions/example-competition</param>
         /// <returns>A matching <see cref="Competition"/> or <c>null</c> if not found</returns>
-        public async Task<Competition> ReadCompetitionByRoute(string route)
+        public async Task<Competition?> ReadCompetitionByRoute(string route)
         {
             var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions");
 
@@ -160,12 +160,12 @@ namespace Stoolball.Data.SqlServer
                         if (season != null)
                         {
                             competition.Seasons.Add(season);
+                            if (team != null)
+                            {
+                                season.Teams.Add(new TeamInSeason { Team = team });
+                            }
                         }
 
-                        if (team != null)
-                        {
-                            season.Teams.Add(new TeamInSeason { Team = team });
-                        }
                         return competition;
                     },
                     new DynamicParameters(parameters),

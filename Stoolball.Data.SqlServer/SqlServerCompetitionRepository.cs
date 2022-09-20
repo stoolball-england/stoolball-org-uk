@@ -279,7 +279,7 @@ namespace Stoolball.Data.SqlServer
                         new
                         {
                             competition.CompetitionId,
-                            seasonIds = competition.Seasons.Select(x => x.SeasonId.Value)
+                            seasonIds = competition.Seasons.Select(x => x.SeasonId).OfType<Guid>()
                         },
                         transaction).ConfigureAwait(false);
                     if (seasonIdsNotSupplied.Any())

@@ -32,12 +32,12 @@ namespace Stoolball.Web.UnitTests.Matches.ModelBinders
 
 
             await binder.BindModelAsync(context);
-            var result = (PlayerInningsViewModel)context.Result.Model;
+            var result = (PlayerInningsViewModel?)context.Result.Model;
 
-
-            Assert.Equal(DismissalType.CaughtAndBowled, result.DismissalType);
-            Assert.True(string.IsNullOrEmpty(result.DismissedBy));
-            Assert.False(string.IsNullOrEmpty(result.Bowler));
+            Assert.NotNull(result);
+            Assert.Equal(DismissalType.CaughtAndBowled, result?.DismissalType);
+            Assert.True(string.IsNullOrEmpty(result?.DismissedBy));
+            Assert.False(string.IsNullOrEmpty(result?.Bowler));
         }
     }
 }

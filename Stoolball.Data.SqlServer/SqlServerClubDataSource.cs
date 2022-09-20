@@ -30,7 +30,7 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         /// <param name="route">/clubs/example-club</param>
         /// <returns>A matching <see cref="Club"/> or <c>null</c> if not found</returns>
-        public async Task<Club> ReadClubByRoute(string route)
+        public async Task<Club?> ReadClubByRoute(string route)
         {
             var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "clubs");
 
@@ -55,7 +55,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private async Task<List<Club>> SelectClubsWhere(string where, object parameters)
+        private async Task<List<Club>> SelectClubsWhere(string where, object? parameters)
         {
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())

@@ -308,7 +308,7 @@ namespace Stoolball.Data.SqlServer
         {
             foreach (var location in team.MatchLocations)
             {
-                if (!currentMatchLocations.Contains(location.MatchLocationId.Value))
+                if (location.MatchLocationId.HasValue && !currentMatchLocations.Contains(location.MatchLocationId.Value))
                 {
                     await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
                                     (TeamMatchLocationId, TeamId, MatchLocationId, FromDate)

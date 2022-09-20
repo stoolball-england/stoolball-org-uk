@@ -23,7 +23,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.DoesNotContain(ValidateModel(innings),
                             v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.RunsScored)) &&
-                                 v.ErrorMessage.ToUpperInvariant().Contains("RUNS"));
+                                 (v.ErrorMessage?.ToUpperInvariant().Contains("RUNS") ?? false));
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.Contains(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.BallsFaced)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("BALLS FACED"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("BALLS FACED") ?? false));
         }
 
         [Theory]
@@ -51,7 +51,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.DoesNotContain(ValidateModel(innings),
                             v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.RunsScored)) &&
-                                 v.ErrorMessage.ToUpperInvariant().Contains("BALLS FACED"));
+                                 (v.ErrorMessage?.ToUpperInvariant().Contains("BALLS FACED") ?? false));
         }
 
         [Theory]
@@ -74,7 +74,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.Contains(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.Batter)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("PLEASE NAME THE BATTER"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("PLEASE NAME THE BATTER") ?? false));
         }
 
         [Theory]
@@ -89,7 +89,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.DoesNotContain(ValidateModel(innings),
                             v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.Batter)) &&
-                                 v.ErrorMessage.ToUpperInvariant().Contains("PLEASE NAME THE BATTER"));
+                                 (v.ErrorMessage?.ToUpperInvariant().Contains("PLEASE NAME THE BATTER") ?? false));
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.Contains(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.Batter)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("PLEASE NAME THE BATTER"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("PLEASE NAME THE BATTER") ?? false));
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.Contains(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.Batter)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("PLEASE NAME THE BATTER"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("PLEASE NAME THE BATTER") ?? false));
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.Contains(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.Batter)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("PLEASE NAME THE BATTER"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("PLEASE NAME THE BATTER") ?? false));
         }
 
         [Fact]
@@ -141,7 +141,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.Contains(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.Batter)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("PLEASE NAME THE BATTER"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("PLEASE NAME THE BATTER") ?? false));
         }
 
         [Theory]
@@ -165,7 +165,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.Contains(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.DismissedBy)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("DISMISSED"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("DISMISSED") ?? false));
         }
 
         [Theory]
@@ -183,7 +183,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.DoesNotContain(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.DismissalType)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("DISMISSED"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("DISMISSED") ?? false));
         }
 
         [Theory]
@@ -204,11 +204,11 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.Contains(ValidateModel(innings),
                 v => (v.MemberNames.Contains(nameof(PlayerInningsViewModel.DismissalType)) &&
-                     (v.ErrorMessage.ToUpperInvariant().Contains("JO BLOGGS DID NOT BAT") ||
-                      v.ErrorMessage.ToUpperInvariant().Contains("JO BLOGGS WAS NOT OUT")))
+                     ((v.ErrorMessage?.ToUpperInvariant().Contains("JO BLOGGS DID NOT BAT") ?? false) ||
+                      (v.ErrorMessage?.ToUpperInvariant().Contains("JO BLOGGS WAS NOT OUT") ?? false)))
                      ||
                      (v.MemberNames.Contains(nameof(PlayerInningsViewModel.Bowler)) &&
-                      v.ErrorMessage.ToUpperInvariant().Contains("JO BLOGGS WAS RUN-OUT"))
+                      (v.ErrorMessage?.ToUpperInvariant().Contains("JO BLOGGS WAS RUN-OUT") ?? false))
                 );
         }
 
@@ -229,7 +229,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.DoesNotContain(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.DismissalType)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("DISMISSED"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("DISMISSED") ?? false));
         }
 
         [Theory]
@@ -245,7 +245,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.Contains(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.DismissalType)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("YOU ADDED BATTING DETAILS"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("YOU ADDED BATTING DETAILS") ?? false));
         }
 
         [Theory]
@@ -261,7 +261,7 @@ namespace Stoolball.Web.UnitTests.Matches.Models
 
             Assert.Contains(ValidateModel(innings),
                 v => v.MemberNames.Contains(nameof(PlayerInningsViewModel.DismissalType)) &&
-                     v.ErrorMessage.ToUpperInvariant().Contains("YOU ADDED BATTING DETAILS"));
+                     (v.ErrorMessage?.ToUpperInvariant().Contains("YOU ADDED BATTING DETAILS") ?? false));
         }
     }
 }

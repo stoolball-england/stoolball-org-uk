@@ -41,16 +41,16 @@ namespace Stoolball.Data.SqlServer
         {
             public Guid PlayerId { get; set; }
             public Guid PlayerIdentityId { get; set; }
-            public string PlayerIdentityName { get; set; }
-            public string PlayerRoute { get; set; }
+            public string PlayerIdentityName { get; set; } = string.Empty;
+            public string PlayerRoute { get; set; } = string.Empty;
         }
 
         private class TeamDto
         {
             public Guid TeamId { get; set; }
-            public string TeamRoute { get; set; }
-            public string TeamName { get; set; }
-            public string MemberGroupName { get; set; }
+            public string TeamRoute { get; set; } = string.Empty;
+            public string TeamName { get; set; } = string.Empty;
+            public string MemberGroupName { get; set; } = string.Empty;
             public Guid? ClubId { get; set; }
         }
 
@@ -59,7 +59,7 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         /// <param name="route">/matches/example-match</param>
         /// <returns>A matching <see cref="Match"/> or <c>null</c> if not found</returns>
-        public async Task<Match> ReadMatchByRoute(string route)
+        public async Task<Match?> ReadMatchByRoute(string route)
         {
             var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "matches");
 

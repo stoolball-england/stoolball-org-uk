@@ -522,7 +522,7 @@ namespace Stoolball.Data.SqlServer
             }
 
             var auditableSeasons = seasons.Select(x => _copier.CreateAuditableCopy(x));
-            var seasonIds = auditableSeasons.Select(x => x.SeasonId.Value);
+            var seasonIds = auditableSeasons.Select(x => x.SeasonId).OfType<Guid>();
 
             await transaction.Connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET SeasonId = NULL WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);

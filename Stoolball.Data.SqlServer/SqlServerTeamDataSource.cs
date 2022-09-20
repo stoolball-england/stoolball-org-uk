@@ -55,12 +55,12 @@ namespace Stoolball.Data.SqlServer
         /// <param name="route">/teams/example-team</param>
         /// <param name="includeRelated"><c>true</c> to include the club, match locations and seasons; <c>false</c> otherwise</param>
         /// <returns>A matching <see cref="Team"/> or <c>null</c> if not found</returns>
-        public async Task<Team> ReadTeamByRoute(string route, bool includeRelated = false)
+        public async Task<Team?> ReadTeamByRoute(string route, bool includeRelated = false)
         {
             return await (includeRelated ? ReadTeamWithRelatedDataByRoute(route) : ReadTeamByRoute(route)).ConfigureAwait(false);
         }
 
-        private async Task<Team> ReadTeamByRoute(string route)
+        private async Task<Team?> ReadTeamByRoute(string route)
         {
             var normalisedRoute = NormaliseRouteToTeam(route);
 
@@ -81,13 +81,13 @@ namespace Stoolball.Data.SqlServer
         private string NormaliseRouteToTeam(string route)
         {
             return _routeNormaliser.NormaliseRouteToEntity(route,
-                                new Dictionary<string, string> {
+                                new Dictionary<string, string?> {
                     { "teams", null },
                     {"tournaments", @"^[a-z0-9-]+\/teams\/[a-z0-9-]+$" }
                             });
         }
 
-        private async Task<Team> ReadTeamWithRelatedDataByRoute(string route)
+        private async Task<Team?> ReadTeamWithRelatedDataByRoute(string route)
         {
             var normalisedRoute = NormaliseRouteToTeam(route);
 

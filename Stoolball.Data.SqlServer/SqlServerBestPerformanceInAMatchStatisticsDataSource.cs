@@ -45,7 +45,7 @@ namespace Stoolball.Data.SqlServer
             return await ReadTotalResultsForPagedQuery(where, parameters).ConfigureAwait(false);
         }
 
-        private async Task<int> ReadTotalResultsForPagedQuery(string where, Dictionary<string, object> parameters, string groupBy = null, string having = null)
+        private async Task<int> ReadTotalResultsForPagedQuery(string where, Dictionary<string, object> parameters, string? groupBy = null, string? having = null)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {

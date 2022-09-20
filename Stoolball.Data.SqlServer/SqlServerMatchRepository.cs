@@ -279,7 +279,7 @@ namespace Stoolball.Data.SqlServer
             }
 
             auditableMatch.EnableBonusOrPenaltyRuns = true;
-            if (auditableMatch.Season != null)
+            if (auditableMatch.Season != null && auditableMatch.Season.SeasonId.HasValue)
             {
                 auditableMatch.Season = _copier.CreateAuditableCopy(await _seasonDataSource.ReadSeasonById(auditableMatch.Season.SeasonId.Value, true).ConfigureAwait(false));
                 auditableMatch.PlayersPerTeam = auditableMatch.Season.PlayersPerTeam;
@@ -507,7 +507,7 @@ namespace Stoolball.Data.SqlServer
                         }
 
                         // Team removed?
-                        foreach (var team in currentTeams.Where(x => !auditableMatch.Teams.Select(t => t.Team.TeamId.Value).Contains(x.TeamId.Value)))
+                        foreach (var team in currentTeams.Where(x => !auditableMatch.Teams.Where(t => t.Team.TeamId.HasValue).Select(t => t.Team.TeamId!.Value).Contains(x.TeamId!.Value)))
                         {
                             await transaction.Connection.ExecuteAsync($"DELETE FROM { Tables.MatchTeam } WHERE MatchTeamId = @MatchTeamId", new { team.MatchTeamId }, transaction).ConfigureAwait(false);
                         }
@@ -619,6 +619,11 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(match));
             }
 
+            if (match.MatchId is null)
+            {
+                throw new ArgumentException($"{nameof(match)} must have a MatchId");
+            }
+
             if (string.IsNullOrWhiteSpace(memberName))
             {
                 throw new ArgumentNullException(nameof(memberName));
@@ -636,14 +641,14 @@ namespace Stoolball.Data.SqlServer
                             new
                             {
                                 match.MatchInnings[0].OverSets[0].Overs,
-                                MatchInningsIds = match.MatchInnings.Select(x => x.MatchInningsId.Value)
+                                MatchInningsIds = match.MatchInnings.Select(x => x.MatchInningsId).OfType<Guid>()
                             },
                             transaction).ConfigureAwait(false);
                     }
 
                     var currentMatchInnings = await connection.QueryAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { match.MatchId }, transaction).ConfigureAwait(false);
 
-                    var deletedMatchInnings = currentMatchInnings.Where(x => !match.MatchInnings.Select(mi => mi.MatchInningsId.Value).Contains(x));
+                    var deletedMatchInnings = currentMatchInnings.Where(x => !match.MatchInnings.Select(mi => mi.MatchInningsId).Contains(x));
                     if (deletedMatchInnings.Any())
                     {
                         await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE MatchInningsId IN @deletedMatchInnings", new { deletedMatchInnings }, transaction).ConfigureAwait(false);
@@ -688,6 +693,11 @@ namespace Stoolball.Data.SqlServer
             if (match is null)
             {
                 throw new ArgumentNullException(nameof(match));
+            }
+
+            if (match.MatchId is null)
+            {
+                throw new ArgumentException($"{nameof(match)} must have a MatchId");
             }
 
             if (string.IsNullOrWhiteSpace(memberName))
@@ -849,7 +859,7 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
-                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId.Value, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
 
                     var redacted = CreateRedactedCopy(auditableMatch);
@@ -882,6 +892,11 @@ namespace Stoolball.Data.SqlServer
             if (match is null)
             {
                 throw new ArgumentNullException(nameof(match));
+            }
+
+            if (match.MatchId is null)
+            {
+                throw new ArgumentException($"{nameof(match)} must have a MatchId");
             }
 
             if (memberName is null)
@@ -1052,8 +1067,8 @@ namespace Stoolball.Data.SqlServer
 
                     var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
 
-                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId.Value, transaction).ConfigureAwait(false);
-                    await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId.Value, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId!.Value, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
 
@@ -1086,6 +1101,11 @@ namespace Stoolball.Data.SqlServer
             if (match is null)
             {
                 throw new ArgumentNullException(nameof(match));
+            }
+
+            if (match.MatchId is null)
+            {
+                throw new ArgumentException($"{nameof(match)} must have a MatchId");
             }
 
             if (memberName is null)
@@ -1213,8 +1233,8 @@ namespace Stoolball.Data.SqlServer
 
                     var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
 
-                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId.Value, transaction).ConfigureAwait(false);
-                    await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId.Value, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId!.Value, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
 
@@ -1248,6 +1268,11 @@ namespace Stoolball.Data.SqlServer
             if (match is null)
             {
                 throw new ArgumentNullException(nameof(match));
+            }
+
+            if (match.MatchId is null)
+            {
+                throw new ArgumentException($"{nameof(match)} must have a MatchId");
             }
 
             if (string.IsNullOrWhiteSpace(memberName))
@@ -1345,9 +1370,9 @@ namespace Stoolball.Data.SqlServer
                                     transaction).ConfigureAwait(false);
 
                             // If this is a new award, add to affected player identities
-                            if (!playerIdentitiesWithAwardsBefore.Contains(award.PlayerIdentity.PlayerIdentityId.Value))
+                            if (!playerIdentitiesWithAwardsBefore.Contains(award.PlayerIdentity.PlayerIdentityId!.Value))
                             {
-                                playerIdentitiesAffectedByAwards.Add((award.PlayerIdentity.PlayerIdentityId.Value, award.PlayerIdentity.PlayerIdentityName, award.PlayerIdentity.Team.TeamId.Value));
+                                playerIdentitiesAffectedByAwards.Add((award.PlayerIdentity.PlayerIdentityId.Value, award.PlayerIdentity.PlayerIdentityName, award.PlayerIdentity.Team.TeamId!.Value));
                             }
                         }
                     }
@@ -1356,7 +1381,7 @@ namespace Stoolball.Data.SqlServer
 
                     var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
 
-                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId.Value, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
 
                     var redacted = CreateRedactedCopy(auditableMatch);

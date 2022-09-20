@@ -14,6 +14,7 @@ namespace Stoolball.Web.UnitTests.Matches
 {
     public class MatchValidatorTests
     {
+#nullable disable
         [Fact]
         public void TeamsMustBeDifferent_throws_NullReferenceException_if_model_is_null()
         {
@@ -29,6 +30,7 @@ namespace Stoolball.Web.UnitTests.Matches
 
             Assert.Throws<ArgumentNullException>(() => new MatchValidator().TeamsMustBeDifferent(model.Object, null));
         }
+#nullable enable
 
         [Fact]
         public void TeamsMustBeDifferent_is_valid_if_both_teams_are_null()
@@ -92,6 +94,7 @@ namespace Stoolball.Web.UnitTests.Matches
             Assert.Contains("AwayTeamId", modelState.Keys);
         }
 
+#nullable disable
         [Fact]
         public void AtLeastOneTeamInMatch_throws_NullReferenceException_if_model_is_null()
         {
@@ -107,6 +110,7 @@ namespace Stoolball.Web.UnitTests.Matches
 
             Assert.Throws<ArgumentNullException>(() => new MatchValidator().AtLeastOneTeamInMatch(model, null));
         }
+#nullable enable
 
         [Fact]
         public void AtLeastOneTeamInMatch_clears_existing_MatchTeams_errors()
@@ -151,6 +155,7 @@ namespace Stoolball.Web.UnitTests.Matches
             Assert.Empty(modelState.Keys);
         }
 
+#nullable disable
         [Fact]
         public void AtLeastOneTeamId_throws_NullReferenceException_if_model_is_null()
         {
@@ -166,6 +171,7 @@ namespace Stoolball.Web.UnitTests.Matches
 
             Assert.Throws<ArgumentNullException>(() => new MatchValidator().AtLeastOneTeamId(model.Object, null));
         }
+#nullable enable
 
         [Fact]
         public void AtLeastOneTeamId_marks_HomeTeamId_invalid_if_both_teams_are_null()
@@ -202,11 +208,13 @@ namespace Stoolball.Web.UnitTests.Matches
             Assert.Empty(modelState.Keys);
         }
 
+#nullable disable
         [Fact]
         public void DateIsValidForSqlServer_throws_NullReferenceException_if_ModelState_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => new MatchValidator().DateIsValidForSqlServer(DateTimeOffset.UtcNow, null, "MatchDate", "match"));
         }
+#nullable enable
 
         [Fact]
         public void DateIsValidForSqlServer_marks_field_invalid_if_too_far_in_the_past()
@@ -251,11 +259,13 @@ namespace Stoolball.Web.UnitTests.Matches
             Assert.Empty(modelState.Keys);
         }
 
+#nullable disable
         [Fact]
         public void DateIsWithinTheSeason_throws_NullReferenceException_if_ModelState_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => new MatchValidator().DateIsWithinTheSeason(DateTimeOffset.UtcNow, new Season(), null, "MatchDate", "match"));
         }
+#nullable enable
 
         [Fact]
         public void DateIsWithinTheSeason_is_valid_if_MatchDate_is_null()

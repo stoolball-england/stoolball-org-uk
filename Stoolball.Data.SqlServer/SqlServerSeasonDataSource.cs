@@ -127,7 +127,7 @@ namespace Stoolball.Data.SqlServer
         /// <param name="route">/competitions/example-competition/2020</param>
         /// <param name="includeRelated"><c>true</c> to include the teams and other seasons in the competition; <c>false</c> otherwise</param>
         /// <returns>A matching <see cref="Season"/> or <c>null</c> if not found</returns>
-        public async Task<Season> ReadSeasonByRoute(string route, bool includeRelated = false)
+        public async Task<Season?> ReadSeasonByRoute(string route, bool includeRelated = false)
         {
             var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
 
@@ -140,13 +140,13 @@ namespace Stoolball.Data.SqlServer
         /// Gets a single stoolball season based on its id
         /// </summary>
         /// <returns>A matching <see cref="Season"/> or <c>null</c> if not found</returns>
-        public async Task<Season> ReadSeasonById(Guid seasonId, bool includeRelated = false)
+        public async Task<Season?> ReadSeasonById(Guid seasonId, bool includeRelated = false)
         {
             return await (includeRelated ? ReadSeasonWithRelatedData("s.SeasonId = @seasonId", new { seasonId }) :
                 ReadSeason("s.SeasonId = @seasonId", new { seasonId })).ConfigureAwait(false);
         }
 
-        private async Task<Season> ReadSeason(string where, object parameters)
+        private async Task<Season?> ReadSeason(string where, object parameters)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -188,11 +188,11 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private async Task<Season> ReadSeasonWithRelatedData(string where, object parameters)
+        private async Task<Season?> ReadSeasonWithRelatedData(string where, object parameters)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, OverSet, string, Season>(
+                var seasons = (await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, OverSet, string, Season?>(
                     $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.PlayersPerTeam, s.EnableTournaments, s.ResultsTableType, 
                             s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
                             cv.CompetitionName, co.PlayerType, co.Introduction, YEAR(cv.UntilDate) AS UntilYear, co.PublicContactDetails, co.Website, 
@@ -224,28 +224,28 @@ namespace Stoolball.Data.SqlServer
                             {
                                 season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
                             }
-                        }
-                        if (anotherSeasonInTheCompetition != null)
-                        {
-                            season.Competition.Seasons.Add(anotherSeasonInTheCompetition);
-                        }
-                        if (team != null)
-                        {
-                            season.Teams.Add(new TeamInSeason
+                            if (anotherSeasonInTheCompetition != null)
                             {
-                                Season = season,
-                                Team = team,
-                                WithdrawnDate = teamInSeason?.WithdrawnDate
-                            });
-                        }
-                        if (overSet != null)
-                        {
-                            season.DefaultOverSets.Add(overSet);
+                                season.Competition.Seasons.Add(anotherSeasonInTheCompetition);
+                            }
+                            if (team != null)
+                            {
+                                season.Teams.Add(new TeamInSeason
+                                {
+                                    Season = season,
+                                    Team = team,
+                                    WithdrawnDate = teamInSeason?.WithdrawnDate
+                                });
+                            }
+                            if (overSet != null)
+                            {
+                                season.DefaultOverSets.Add(overSet);
+                            }
                         }
                         return season;
                     },
                     parameters,
-                    splitOn: "CompetitionName, SeasonId, WithdrawnDate, TeamId, OverSetId, MatchType").ConfigureAwait(false);
+                    splitOn: "CompetitionName, SeasonId, WithdrawnDate, TeamId, OverSetId, MatchType").ConfigureAwait(false)).OfType<Season>();
 
                 var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row
                 if (seasonToReturn != null)

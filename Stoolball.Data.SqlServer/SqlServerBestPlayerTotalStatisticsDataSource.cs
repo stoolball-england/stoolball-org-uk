@@ -95,7 +95,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerTotal(string fieldName, bool fieldValueCanBeNegative, bool isFieldingStatistic, string extraSelectFields, string outerQueryIncludingOrderBy, string totalInningsFilter, StatisticsFilter filter)
+        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerTotal(string fieldName, bool fieldValueCanBeNegative, bool isFieldingStatistic, string? extraSelectFields, string? outerQueryIncludingOrderBy, string totalInningsFilter, StatisticsFilter filter)
         {
             var clonedFilter = filter.Clone();
             clonedFilter.SwapBattingFirstFilter = isFieldingStatistic;
@@ -180,7 +180,7 @@ namespace Stoolball.Data.SqlServer
                     commandTimeout: 60).ConfigureAwait(false);
 
                 var playerFilter = filter.ToPlayerFilter();
-                playerFilter.PlayerIds = results.Select(x => x.Result.Player.PlayerId.Value).ToList();
+                playerFilter.PlayerIds = results.Select(x => x.Result.Player.PlayerId!.Value).ToList();
                 var players = await _playerDataSource.ReadPlayers(playerFilter).ConfigureAwait(false);
                 foreach (var result in results)
                 {
