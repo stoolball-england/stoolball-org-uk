@@ -36,9 +36,9 @@
                     <tbody>
                         @for (var i = 0; i < Model.Player.PlayerIdentities.Count; i++)
                         {
-                            var firstMatch = Model.Player.PlayerIdentities[i].FirstPlayed!;
-                            var lastMatch = Model.Player.PlayerIdentities[i].LastPlayed!;
-                            var matchYears = (firstMatch.Value.Year == lastMatch.Value.Year) ? $"in {firstMatch.Value.Year}" : $"from {firstMatch.Value.Year} to {lastMatch.Value.Year}" ;
+                            var firstMatch = Model.Player.PlayerIdentities[i].FirstPlayed;
+                            var lastMatch = Model.Player.PlayerIdentities[i].LastPlayed;
+                            var matchYears = firstMatch != null && lastMatch != null ? (firstMatch.Value.Year == lastMatch.Value.Year) ? $"in {firstMatch.Value.Year}" : $"from {firstMatch.Value.Year} to {lastMatch.Value.Year}" : string.Empty;
                             var when = $"{Model.Player.PlayerIdentities[i].TotalMatches} {(Model.Player.PlayerIdentities[i].TotalMatches == 1 ? "match" : "matches")} {matchYears}";
 
                             <tr class="related-item__selected">
