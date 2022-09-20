@@ -82,8 +82,8 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertPlayerFields(batter, playerRecord);
-                    AssertMatchFields(playerRecord);
+                    AssertPlayerFields(batter, playerRecord!);
+                    AssertMatchFields(playerRecord!);
                 }
             }
         }
@@ -105,10 +105,10 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertInningsFields(identity, innings, playerRecord);
+                    AssertInningsFields(identity, innings, playerRecord!);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    AssertTeamTotals(innings, pairedInnings, playerRecord);
+                    AssertTeamTotals(innings, pairedInnings, playerRecord!);
                 }
             }
         }
@@ -130,8 +130,8 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertPlayerFields(identity, playerRecord);
-                    AssertMatchFields(playerRecord);
+                    AssertPlayerFields(identity, playerRecord!);
+                    AssertMatchFields(playerRecord!);
                 }
             }
         }
@@ -153,10 +153,10 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertInningsFields(identity, innings, playerRecord);
+                    AssertInningsFields(identity, innings, playerRecord!);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    AssertTeamTotals(pairedInnings, innings, playerRecord);
+                    AssertTeamTotals(pairedInnings, innings, playerRecord!);
                 }
             }
         }
@@ -178,8 +178,8 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertPlayerFields(identity, playerRecord);
-                    AssertMatchFields(playerRecord);
+                    AssertPlayerFields(identity, playerRecord!);
+                    AssertMatchFields(playerRecord!);
                 }
             }
         }
@@ -201,10 +201,10 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertInningsFields(identity, innings, playerRecord);
+                    AssertInningsFields(identity, innings, playerRecord!);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    AssertTeamTotals(pairedInnings, innings, playerRecord);
+                    AssertTeamTotals(pairedInnings, innings, playerRecord!);
                 }
             }
         }
@@ -226,8 +226,8 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertPlayerFields(identity, playerRecord);
-                    AssertMatchFields(playerRecord);
+                    AssertPlayerFields(identity, playerRecord!);
+                    AssertMatchFields(playerRecord!);
                 }
             }
         }
@@ -249,10 +249,10 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertInningsFields(identity, innings, playerRecord);
+                    AssertInningsFields(identity, innings, playerRecord!);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    AssertTeamTotals(pairedInnings, innings, playerRecord);
+                    AssertTeamTotals(pairedInnings, innings, playerRecord!);
                 }
             }
         }
@@ -274,8 +274,8 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertPlayerFields(identity, playerRecord);
-                    AssertMatchFields(playerRecord);
+                    AssertPlayerFields(identity, playerRecord!);
+                    AssertMatchFields(playerRecord!);
                 }
             }
         }
@@ -297,10 +297,10 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertInningsFields(identity, innings, playerRecord);
+                    AssertInningsFields(identity, innings, playerRecord!);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    AssertTeamTotals(pairedInnings, innings, playerRecord);
+                    AssertTeamTotals(pairedInnings, innings, playerRecord!);
                 }
             }
         }
@@ -322,8 +322,8 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertPlayerFields(identity, playerRecord);
-                    AssertMatchFields(playerRecord);
+                    AssertPlayerFields(identity, playerRecord!);
+                    AssertMatchFields(playerRecord!);
                 }
             }
         }
@@ -345,10 +345,10 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    AssertInningsFields(identity, innings, playerRecord);
+                    AssertInningsFields(identity, innings, playerRecord!);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    AssertTeamTotals(innings, pairedInnings, playerRecord);
+                    AssertTeamTotals(innings, pairedInnings, playerRecord!);
                 }
             }
         }
@@ -404,7 +404,7 @@ namespace Stoolball.UnitTests.Statistics
                         var playerRecord = playerRecords.SingleOrDefault(x => x.BattingPosition == expectedBattingPosition);
                         Assert.NotNull(playerRecord);
 
-                        Assert.Equal(expected[i].DismissalType, playerRecord.DismissalType);
+                        Assert.Equal(expected[i].DismissalType, playerRecord!.DismissalType);
                         Assert.Equal(StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(expected[i].DismissalType), playerRecord.PlayerWasDismissed);
                         Assert.Equal(expected[i].RunsScored, playerRecord.RunsScored);
                         Assert.Equal(expected[i].BallsFaced, playerRecord.BallsFaced);
@@ -416,8 +416,8 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Batting_team_members_with_no_player_innings_did_not_bat_and_should_have_null_position_and_score()
         {
-            var batters = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.Batter.PlayerIdentityId.Value)).ToList();
-            var missingBatters = _playerIdentities.Where(x => !batters.Contains(x.PlayerIdentityId.Value));
+            var batters = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.Batter.PlayerIdentityId).OfType<Guid>()).ToList();
+            var missingBatters = _playerIdentities.Where(x => x.PlayerIdentityId.HasValue && !batters.Contains(x.PlayerIdentityId.Value));
 
             var finder = new Mock<IPlayerIdentityFinder>();
             finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
@@ -431,7 +431,7 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair());
                     Assert.NotNull(playerRecord);
 
-                    Assert.Null(playerRecord.BattingPosition);
+                    Assert.Null(playerRecord!.BattingPosition);
                     Assert.Equal(DismissalType.DidNotBat, playerRecord.DismissalType);
                     Assert.False(playerRecord.PlayerWasDismissed);
                     Assert.Null(playerRecord.RunsScored);
@@ -455,7 +455,7 @@ namespace Stoolball.UnitTests.Statistics
                 if (secondBatter == null) { continue; }
 
                 var resultBatter = result.SingleOrDefault(x => x.MatchInningsPair == innings.InningsPair() && x.PlayerIdentityId == secondBatter.Batter.PlayerIdentityId && x.PlayerInningsNumber == 1);
-                Assert.Equal(1, resultBatter.BattingPosition);
+                Assert.Equal(1, resultBatter?.BattingPosition);
             }
         }
 
@@ -473,7 +473,8 @@ namespace Stoolball.UnitTests.Statistics
                 var playerInningsCountForPlayers = new Dictionary<Guid, int>();
                 foreach (var playerInnings in innings.PlayerInnings)
                 {
-                    if (!playerInningsCountForPlayers.ContainsKey(playerInnings.Batter.PlayerIdentityId.Value))
+                    Assert.NotNull(playerInnings.Batter.PlayerIdentityId);
+                    if (!playerInningsCountForPlayers.ContainsKey(playerInnings.Batter.PlayerIdentityId!.Value))
                     {
                         playerInningsCountForPlayers.Add(playerInnings.Batter.PlayerIdentityId.Value, 1);
                     }
@@ -487,11 +488,11 @@ namespace Stoolball.UnitTests.Statistics
 
                     if (StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(playerInnings.DismissalType) && playerInnings.Bowler != null)
                     {
-                        Assert.Equal(playerInnings.Bowler.PlayerIdentityId, playerRecord.BowledByPlayerIdentityId);
+                        Assert.Equal(playerInnings.Bowler.PlayerIdentityId, playerRecord!.BowledByPlayerIdentityId);
                     }
                     else
                     {
-                        Assert.Null(playerRecord.BowledByPlayerIdentityId);
+                        Assert.Null(playerRecord!.BowledByPlayerIdentityId);
                     }
                 }
             }
@@ -511,7 +512,8 @@ namespace Stoolball.UnitTests.Statistics
                 var playerInningsCountForPlayers = new Dictionary<Guid, int>();
                 foreach (var playerInnings in innings.PlayerInnings)
                 {
-                    if (!playerInningsCountForPlayers.ContainsKey(playerInnings.Batter.PlayerIdentityId.Value))
+                    Assert.NotNull(playerInnings.Batter.PlayerIdentityId);
+                    if (!playerInningsCountForPlayers.ContainsKey(playerInnings.Batter.PlayerIdentityId!.Value))
                     {
                         playerInningsCountForPlayers.Add(playerInnings.Batter.PlayerIdentityId.Value, 1);
                     }
@@ -525,15 +527,15 @@ namespace Stoolball.UnitTests.Statistics
 
                     if (playerInnings.DismissalType == DismissalType.Caught && playerInnings.DismissedBy != null)
                     {
-                        Assert.Equal(playerInnings.DismissedBy.PlayerIdentityId, playerRecord.CaughtByPlayerIdentityId);
+                        Assert.Equal(playerInnings.DismissedBy.PlayerIdentityId, playerRecord!.CaughtByPlayerIdentityId);
                     }
                     else if (playerInnings.DismissalType == DismissalType.CaughtAndBowled && playerInnings.Bowler != null)
                     {
-                        Assert.Equal(playerInnings.Bowler.PlayerIdentityId, playerRecord.CaughtByPlayerIdentityId);
+                        Assert.Equal(playerInnings.Bowler.PlayerIdentityId, playerRecord!.CaughtByPlayerIdentityId);
                     }
                     else
                     {
-                        Assert.Null(playerRecord.CaughtByPlayerIdentityId);
+                        Assert.Null(playerRecord!.CaughtByPlayerIdentityId);
                     }
                 }
             }
@@ -553,7 +555,8 @@ namespace Stoolball.UnitTests.Statistics
                 var playerInningsCountForPlayers = new Dictionary<Guid, int>();
                 foreach (var playerInnings in innings.PlayerInnings)
                 {
-                    if (!playerInningsCountForPlayers.ContainsKey(playerInnings.Batter.PlayerIdentityId.Value))
+                    Assert.NotNull(playerInnings.Batter.PlayerIdentityId);
+                    if (!playerInningsCountForPlayers.ContainsKey(playerInnings.Batter.PlayerIdentityId!.Value))
                     {
                         playerInningsCountForPlayers.Add(playerInnings.Batter.PlayerIdentityId.Value, 1);
                     }
@@ -567,11 +570,11 @@ namespace Stoolball.UnitTests.Statistics
 
                     if (playerInnings.DismissalType == DismissalType.RunOut && playerInnings.DismissedBy != null)
                     {
-                        Assert.Equal(playerInnings.DismissedBy.PlayerIdentityId, playerRecord.RunOutByPlayerIdentityId);
+                        Assert.Equal(playerInnings.DismissedBy.PlayerIdentityId, playerRecord!.RunOutByPlayerIdentityId);
                     }
                     else
                     {
-                        Assert.Null(playerRecord.RunOutByPlayerIdentityId);
+                        Assert.Null(playerRecord!.RunOutByPlayerIdentityId);
                     }
                 }
             }
@@ -595,7 +598,7 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == bowler && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    Assert.Equal(innings.OversBowled.First(x => x.Bowler.PlayerIdentityId == bowler).OverNumber, playerRecord.OverNumberOfFirstOverBowled);
+                    Assert.Equal(innings.OversBowled.First(x => x.Bowler.PlayerIdentityId == bowler).OverNumber, playerRecord!.OverNumberOfFirstOverBowled);
                 }
             }
         }
@@ -619,7 +622,7 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == bowler && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    Assert.Equal(innings.OversBowled.Where(x => x.Bowler.PlayerIdentityId == bowler).Sum(x => x.NoBalls), playerRecord.NoBalls);
+                    Assert.Equal(innings.OversBowled.Where(x => x.Bowler.PlayerIdentityId == bowler).Sum(x => x.NoBalls), playerRecord!.NoBalls);
                     Assert.Equal(innings.OversBowled.Where(x => x.Bowler.PlayerIdentityId == bowler).Sum(x => x.Wides), playerRecord.Wides);
                 }
             }
@@ -641,7 +644,7 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == figures.Bowler.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    Assert.Equal(figures.BowlingFiguresId, playerRecord.BowlingFiguresId);
+                    Assert.Equal(figures.BowlingFiguresId, playerRecord!.BowlingFiguresId);
                     Assert.Equal(figures.Overs, playerRecord.Overs);
                     Assert.Equal(figures.Maidens, playerRecord.Maidens);
                     Assert.Equal(figures.RunsConceded, playerRecord.RunsConceded);
@@ -701,11 +704,11 @@ namespace Stoolball.UnitTests.Statistics
 
                     if (bowlerHasOversData)
                     {
-                        Assert.Equal(playerRecord.Wickets, playerRecord.WicketsWithBowling);
+                        Assert.Equal(playerRecord!.Wickets, playerRecord.WicketsWithBowling);
                     }
                     else
                     {
-                        Assert.Null(playerRecord.WicketsWithBowling);
+                        Assert.Null(playerRecord!.WicketsWithBowling);
                     }
                 }
             }
@@ -735,15 +738,15 @@ namespace Stoolball.UnitTests.Statistics
 
                     if (bowlerOversData.Any())
                     {
-                        Assert.Equal(bowlerOversData.Where(x => x.BallsBowled.HasValue).Sum(x => x.BallsBowled) + bowlerOversData.Count(x => !x.BallsBowled.HasValue) * StatisticsConstants.BALLS_PER_OVER, playerRecord.BallsBowled);
+                        Assert.Equal(bowlerOversData.Where(x => x.BallsBowled.HasValue).Sum(x => x.BallsBowled) + bowlerOversData.Count(x => !x.BallsBowled.HasValue) * StatisticsConstants.BALLS_PER_OVER, playerRecord!.BallsBowled);
                     }
                     else if (figures.Overs.HasValue)
                     {
-                        Assert.Equal(MOCK_RESULT_OF_OVERS_TO_BALLS_BOWLED, playerRecord.BallsBowled);
+                        Assert.Equal(MOCK_RESULT_OF_OVERS_TO_BALLS_BOWLED, playerRecord!.BallsBowled);
                     }
                     else
                     {
-                        Assert.Null(playerRecord.BallsBowled);
+                        Assert.Null(playerRecord!.BallsBowled);
                     }
                 }
             }
@@ -768,7 +771,7 @@ namespace Stoolball.UnitTests.Statistics
                     Assert.NotNull(playerRecord);
 
                     Assert.Equal(pairedInnings.PlayerInnings.Count(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy?.PlayerIdentityId == identity.PlayerIdentityId) ||
-                                                                  (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler?.PlayerIdentityId == identity.PlayerIdentityId)), playerRecord.Catches);
+                                                                  (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler?.PlayerIdentityId == identity.PlayerIdentityId)), playerRecord!.Catches);
                     Assert.Equal(pairedInnings.PlayerInnings.Count(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy?.PlayerIdentityId == identity.PlayerIdentityId), playerRecord.RunOuts);
                 }
             }

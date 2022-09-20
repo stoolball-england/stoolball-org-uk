@@ -45,7 +45,7 @@ namespace Stoolball.UnitTests.Routing
             var normaliser = new RouteNormaliser();
 
             var result = normaliser.NormaliseRouteToEntity("/tournaments/example123/teams/example-team/",
-                new Dictionary<string, string> {
+                new Dictionary<string, string?> {
                     { "dont-match-this-or-throw", null },
                     {"tournaments", @"^[a-z0-9-]+\/teams\/[a-z0-9-]+$" }
                 });
@@ -58,7 +58,7 @@ namespace Stoolball.UnitTests.Routing
         {
             var normaliser = new RouteNormaliser();
 
-            string expectedPrefix = null;
+            string? expectedPrefix = null;
             Assert.Throws<ArgumentNullException>(() => normaliser.NormaliseRouteToEntity("prefix/route-value", expectedPrefix));
         }
 

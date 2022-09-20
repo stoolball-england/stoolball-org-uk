@@ -20,7 +20,7 @@ namespace Stoolball.UnitTests.Matches
 
             Assert.Contains(ValidateModel(over),
                 v => v.MemberNames.Contains(nameof(Over.BallsBowled)) &&
-                     v.ErrorMessage.Contains("balls bowled", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("balls bowled", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -36,7 +36,7 @@ namespace Stoolball.UnitTests.Matches
 
             Assert.DoesNotContain(ValidateModel(over),
                             v => v.MemberNames.Contains(nameof(Over.BallsBowled)) &&
-                                 v.ErrorMessage.Contains("balls bowled", StringComparison.OrdinalIgnoreCase));
+                                 (v.ErrorMessage?.Contains("balls bowled", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace Stoolball.UnitTests.Matches
 
             Assert.Contains(ValidateModel(over),
                 v => v.MemberNames.Contains(nameof(Over.Wides)) &&
-                     v.ErrorMessage.Contains("wides", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("wides", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -64,7 +64,7 @@ namespace Stoolball.UnitTests.Matches
 
             Assert.DoesNotContain(ValidateModel(over),
                             v => v.MemberNames.Contains(nameof(Over.Wides)) &&
-                                 v.ErrorMessage.Contains("wides", StringComparison.OrdinalIgnoreCase));
+                                 (v.ErrorMessage?.Contains("wides", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace Stoolball.UnitTests.Matches
 
             Assert.Contains(ValidateModel(over),
                 v => v.MemberNames.Contains(nameof(Over.NoBalls)) &&
-                     v.ErrorMessage.Contains("no balls", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("no balls", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -92,7 +92,7 @@ namespace Stoolball.UnitTests.Matches
 
             Assert.DoesNotContain(ValidateModel(over),
                             v => v.MemberNames.Contains(nameof(Over.NoBalls)) &&
-                                 v.ErrorMessage.Contains("no balls", StringComparison.OrdinalIgnoreCase));
+                                 (v.ErrorMessage?.Contains("no balls", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -108,7 +108,7 @@ namespace Stoolball.UnitTests.Matches
 
             Assert.DoesNotContain(ValidateModel(over),
                             v => v.MemberNames.Contains(nameof(Over.RunsConceded)) &&
-                                 v.ErrorMessage.Contains("over total", StringComparison.OrdinalIgnoreCase));
+                                 (v.ErrorMessage?.Contains("over total", StringComparison.OrdinalIgnoreCase) ?? false));
         }
     }
 }

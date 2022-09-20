@@ -64,7 +64,8 @@ namespace Stoolball.UnitTests.Matches
 
             var filter = parser.ParseQueryString(new MatchFilter(), "?from=2020-07-10");
 
-            Assert.Equal(new DateTime(2020, 7, 10), filter.FromDate.Value.Date);
+            Assert.NotNull(filter.FromDate);
+            Assert.Equal(new DateTime(2020, 7, 10), filter.FromDate!.Value.Date);
         }
 
         [Theory]
@@ -88,7 +89,8 @@ namespace Stoolball.UnitTests.Matches
 
             var filter = parser.ParseQueryString(new MatchFilter(), "to=2022-06-09");
 
-            Assert.Equal(new DateTime(2022, 6, 9), filter.UntilDate.Value.Date);
+            Assert.NotNull(filter.UntilDate);
+            Assert.Equal(new DateTime(2022, 6, 9), filter.UntilDate!.Value.Date);
         }
 
         [Fact]

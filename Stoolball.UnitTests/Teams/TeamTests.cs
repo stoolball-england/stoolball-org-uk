@@ -1,7 +1,7 @@
-﻿using Stoolball.Teams;
-using Stoolball.Testing;
-using System;
+﻿using System;
 using System.Linq;
+using Stoolball.Teams;
+using Stoolball.Testing;
 using Xunit;
 
 namespace Stoolball.UnitTests.Teams
@@ -34,7 +34,7 @@ namespace Stoolball.UnitTests.Teams
 
             Assert.Contains(ValidateModel(team),
                 v => v.MemberNames.Contains(nameof(Team.TeamName)) &&
-                     v.ErrorMessage.Contains("is required", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("is required", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -49,7 +49,7 @@ namespace Stoolball.UnitTests.Teams
 
             Assert.Contains(ValidateModel(team),
                 v => v.MemberNames.Contains(nameof(Team.Facebook)) &&
-                     v.ErrorMessage.Contains("enter a valid", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("enter a valid", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -66,7 +66,7 @@ namespace Stoolball.UnitTests.Teams
 
             Assert.DoesNotContain(ValidateModel(team),
                 v => v.MemberNames.Contains(nameof(Team.Facebook)) &&
-                     v.ErrorMessage.Contains("enter a valid", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("enter a valid", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -81,7 +81,7 @@ namespace Stoolball.UnitTests.Teams
 
             Assert.Contains(ValidateModel(team),
                 v => v.MemberNames.Contains(nameof(Team.YouTube)) &&
-                     v.ErrorMessage.Contains("enter a valid", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("enter a valid", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -98,7 +98,7 @@ namespace Stoolball.UnitTests.Teams
 
             Assert.DoesNotContain(ValidateModel(team),
                 v => v.MemberNames.Contains(nameof(Team.YouTube)) &&
-                     v.ErrorMessage.Contains("enter a valid", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("enter a valid", StringComparison.OrdinalIgnoreCase) ?? false));
         }
     }
 }

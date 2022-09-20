@@ -16,7 +16,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.Contains(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.PrimaryAddressableObjectName)) &&
-                     v.ErrorMessage.Contains("is required", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("is required", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.Contains(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.Town)) &&
-                     v.ErrorMessage.Contains("is required", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("is required", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.DoesNotContain(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.PrimaryAddressableObjectName)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
 
@@ -55,7 +55,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.Contains(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.PrimaryAddressableObjectName)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.DoesNotContain(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.SecondaryAddressableObjectName)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
 
@@ -84,7 +84,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.Contains(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.SecondaryAddressableObjectName)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.DoesNotContain(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.StreetDescription)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
 
@@ -113,7 +113,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.Contains(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.StreetDescription)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]
@@ -127,7 +127,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.DoesNotContain(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.Locality)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
 
@@ -142,7 +142,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.Contains(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.Locality)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]
@@ -156,7 +156,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.DoesNotContain(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.Town)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
 
@@ -171,7 +171,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.Contains(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.Town)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]
@@ -185,7 +185,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.DoesNotContain(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.AdministrativeArea)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
 
@@ -200,7 +200,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.Contains(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.AdministrativeArea)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]
@@ -214,7 +214,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.DoesNotContain(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.Postcode)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
 
@@ -229,7 +229,7 @@ namespace Stoolball.UnitTests.MatchLocations
 
             Assert.Contains(ValidateModel(matchLocation),
                 v => v.MemberNames.Contains(nameof(MatchLocation.Postcode)) &&
-                     v.ErrorMessage.Contains("maximum length", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("maximum length", StringComparison.OrdinalIgnoreCase) ?? false));
         }
     }
 }

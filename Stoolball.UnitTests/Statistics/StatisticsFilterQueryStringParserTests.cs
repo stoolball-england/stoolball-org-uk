@@ -94,7 +94,8 @@ namespace Stoolball.UnitTests.Statistics
 
             var filter = parser.ParseQueryString(new StatisticsFilter(), "?from=2020-07-10");
 
-            Assert.Equal(new DateTime(2020, 7, 10), filter.FromDate.Value.Date);
+            Assert.NotNull(filter.FromDate);
+            Assert.Equal(new DateTime(2020, 7, 10), filter.FromDate!.Value.Date);
         }
 
         [Theory]
@@ -118,7 +119,8 @@ namespace Stoolball.UnitTests.Statistics
 
             var filter = parser.ParseQueryString(new StatisticsFilter(), "to=2022-06-09");
 
-            Assert.Equal(new DateTime(2022, 6, 9), filter.UntilDate.Value.Date);
+            Assert.NotNull(filter.UntilDate);
+            Assert.Equal(new DateTime(2022, 6, 9), filter.UntilDate!.Value.Date);
         }
     }
 }

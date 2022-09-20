@@ -1,9 +1,9 @@
-﻿using Stoolball.Clubs;
-using Stoolball.Teams;
-using Stoolball.Testing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Stoolball.Clubs;
+using Stoolball.Teams;
+using Stoolball.Testing;
 using Xunit;
 
 namespace Stoolball.UnitTests.Clubs
@@ -17,7 +17,7 @@ namespace Stoolball.UnitTests.Clubs
 
             Assert.Contains(ValidateModel(club),
                 v => v.MemberNames.Contains(nameof(Club.ClubName)) &&
-                     v.ErrorMessage.Contains("is required", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("is required", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Fact]

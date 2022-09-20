@@ -1,7 +1,7 @@
-﻿using Stoolball.Competitions;
-using Stoolball.Testing;
-using System;
+﻿using System;
 using System.Linq;
+using Stoolball.Competitions;
+using Stoolball.Testing;
 using Xunit;
 
 namespace Stoolball.UnitTests.Competitions
@@ -15,7 +15,7 @@ namespace Stoolball.UnitTests.Competitions
 
             Assert.Contains(ValidateModel(competition),
                 v => v.MemberNames.Contains(nameof(Competition.CompetitionName)) &&
-                     v.ErrorMessage.Contains("is required", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("is required", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -30,7 +30,7 @@ namespace Stoolball.UnitTests.Competitions
 
             Assert.Contains(ValidateModel(competition),
                 v => v.MemberNames.Contains(nameof(Competition.Facebook)) &&
-                     v.ErrorMessage.Contains("enter a valid", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("enter a valid", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -47,7 +47,7 @@ namespace Stoolball.UnitTests.Competitions
 
             Assert.DoesNotContain(ValidateModel(competition),
                 v => v.MemberNames.Contains(nameof(Competition.Facebook)) &&
-                     v.ErrorMessage.Contains("enter a valid", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("enter a valid", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -62,7 +62,7 @@ namespace Stoolball.UnitTests.Competitions
 
             Assert.Contains(ValidateModel(competition),
                 v => v.MemberNames.Contains(nameof(Competition.YouTube)) &&
-                     v.ErrorMessage.Contains("enter a valid", StringComparison.OrdinalIgnoreCase));
+                     (v.ErrorMessage?.Contains("enter a valid", StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         [Theory]
@@ -79,7 +79,7 @@ namespace Stoolball.UnitTests.Competitions
 
             Assert.DoesNotContain(ValidateModel(competition),
                             v => v.MemberNames.Contains(nameof(Competition.YouTube)) &&
-                                 v.ErrorMessage.Contains("enter a valid", StringComparison.OrdinalIgnoreCase));
+                                 (v.ErrorMessage?.Contains("enter a valid", StringComparison.OrdinalIgnoreCase) ?? false));
         }
     }
 }

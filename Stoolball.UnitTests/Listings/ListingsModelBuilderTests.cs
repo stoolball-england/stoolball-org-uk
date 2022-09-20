@@ -13,16 +13,16 @@ namespace Stoolball.UnitTests.Listings
         private const string PAGE_TITLE = "Page title";
         private readonly Uri PAGE_URL = new Uri("https://example.org/page");
 
-        private class StubModel { public string Name { get; set; } }
+        private class StubModel { public string? Name { get; set; } }
         private class StubFilter : IListingsFilter
         {
-            public string Query { get; set; }
+            public string? Query { get; set; }
             public Paging Paging { get; set; } = new Paging();
         }
         private class StubViewModel : IListingsModel<StubModel, StubFilter>
         {
             public List<StubModel> Listings { get; private set; } = new List<StubModel>();
-            public StubFilter Filter { get; set; }
+            public StubFilter Filter { get; set; } = new();
             public ViewMetadata Metadata { get; set; } = new ViewMetadata();
         }
 
@@ -39,6 +39,7 @@ namespace Stoolball.UnitTests.Listings
                 string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
+#nullable disable
         [Fact]
         public async Task Throws_ArgumentException_if_buildInitialState_returns_null()
         {
@@ -65,6 +66,7 @@ namespace Stoolball.UnitTests.Listings
                 PAGE_URL,
                 string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Throws_ArgumentNullException_if_totalListings_is_null()
