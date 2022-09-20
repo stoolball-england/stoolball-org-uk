@@ -15,7 +15,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
     public abstract class BaseSqlServerFixture : IDisposable
     {
         private const string _localDbInstance = @"(LocalDB)\MSSQLLocalDb";
-        private string _sqlServerContainerInstance;
+        private string? _sqlServerContainerInstance;
         private readonly string _databaseName;
         private readonly string _umbracoDatabasePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../../Stoolball.Web/umbraco/Data/Umbraco.mdf"));
         private readonly string _dacpacPath;
@@ -121,14 +121,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             }
         }
 
-        private static string ReadDacpacModelChecksum(string dacpacPath)
+        private static string? ReadDacpacModelChecksum(string dacpacPath)
         {
             var tempFolder = dacpacPath + "-extract";
             ZipFile.ExtractToDirectory(dacpacPath, tempFolder);
 
             var doc = XDocument.Load(Path.Join(tempFolder, "Origin.xml"));
-            var root = doc.Document.Root;
-            var checksum = root.Element("{" + root.GetDefaultNamespace() + "}Checksums").Element("{" + root.GetDefaultNamespace() + "}Checksum").Value;
+            var root = doc.Document?.Root;
+            var checksum = root?.Element("{" + root.GetDefaultNamespace() + "}Checksums")?.Element("{" + root.GetDefaultNamespace() + "}Checksum")?.Value;
 
             Directory.Delete(tempFolder, true);
 

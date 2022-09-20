@@ -23,7 +23,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
 
             foreach (var tournament in _databaseFixture.Tournaments)
             {
-                var result = await commentsDataSource.ReadTotalComments(tournament.TournamentId.Value).ConfigureAwait(false);
+                var result = await commentsDataSource.ReadTotalComments(tournament.TournamentId!.Value).ConfigureAwait(false);
 
                 Assert.Equal(tournament.Comments.Count, result);
             }
@@ -36,7 +36,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
 
             foreach (var tournament in _databaseFixture.Tournaments)
             {
-                var results = await commentsDataSource.ReadComments(tournament.TournamentId.Value).ConfigureAwait(false);
+                var results = await commentsDataSource.ReadComments(tournament.TournamentId!.Value).ConfigureAwait(false);
 
                 Assert.Equal(tournament.Comments.Count, results.Count);
                 foreach (var comment in tournament.Comments)
@@ -44,7 +44,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
                     var result = results.SingleOrDefault(x => x.CommentId == comment.CommentId);
                     Assert.NotNull(result);
 
-                    Assert.Equal(comment.MemberName, result.MemberName);
+                    Assert.Equal(comment.MemberName, result!.MemberName);
                     Assert.Equal(comment.CommentDate, result.CommentDate);
                     Assert.Equal(comment.Comment, result.Comment);
                 }
@@ -58,7 +58,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
 
             foreach (var match in _databaseFixture.Matches)
             {
-                var results = await commentsDataSource.ReadComments(match.MatchId.Value).ConfigureAwait(false);
+                var results = await commentsDataSource.ReadComments(match.MatchId!.Value).ConfigureAwait(false);
 
                 var previousCommentDate = DateTimeOffset.MaxValue;
                 foreach (var result in results)

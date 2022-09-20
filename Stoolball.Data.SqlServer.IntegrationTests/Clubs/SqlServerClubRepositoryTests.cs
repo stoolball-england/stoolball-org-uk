@@ -29,9 +29,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 
         private class ClubVersion
         {
-            internal string ClubName { get; set; }
-            internal string ComparableName { get; set; }
-            internal DateTimeOffset FromDate { get; set; }
+            internal string? ClubName { get; set; }
+            internal string? ComparableName { get; set; }
+            internal DateTimeOffset? FromDate { get; set; }
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
                 Assert.NotNull(versionResult);
                 Assert.Equal(club.ClubName, versionResult.ClubName);
                 Assert.Equal(club.ComparableName(), versionResult.ComparableName);
-                Assert.Equal(DateTime.UtcNow.Date, versionResult.FromDate.Date);
+                Assert.Equal(DateTime.UtcNow.Date, versionResult.FromDate?.Date);
             }
         }
 

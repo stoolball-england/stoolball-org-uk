@@ -41,7 +41,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of clubs based on a query
         /// </summary>
         /// <returns>A list of <see cref="Club"/> objects. An empty list if no clubs are found.</returns>
-        public async Task<List<Club>> ReadClubs(ClubFilter filter)
+        public async Task<List<Club>> ReadClubs(ClubFilter? filter)
         {
             filter = filter ?? new ClubFilter();
 

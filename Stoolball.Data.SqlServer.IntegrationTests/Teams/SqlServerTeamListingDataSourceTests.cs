@@ -410,8 +410,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
             var expected = _databaseFixture.TeamListings
-                .Where(x => _databaseFixture.Teams.Where(t => t.TeamType == TeamType.Representative).Select(t => t.TeamId.Value).Contains(x.TeamListingId.Value) ||
-                            _databaseFixture.Clubs.Where(c => c.Teams.Any(t => t.TeamType == TeamType.Representative)).Select(c => c.ClubId.Value).Contains(x.TeamListingId.Value));
+                .Where(x => _databaseFixture.Teams.Where(t => t.TeamType == TeamType.Representative && t.TeamId.HasValue).Select(t => t.TeamId!.Value).Contains(x.TeamListingId!.Value) ||
+                            _databaseFixture.Clubs.Where(c => c.Teams.Any(t => t.TeamType == TeamType.Representative && c.ClubId.HasValue)).Select(c => c.ClubId!.Value).Contains(x.TeamListingId.Value));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {

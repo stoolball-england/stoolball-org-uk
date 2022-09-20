@@ -79,6 +79,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             }
             foreach (var season in data.Seasons)
             {
+                if (season.Competition.CompetitionId == null) { throw new InvalidOperationException(nameof(season.Competition.CompetitionId) + " must not be null"); }
                 CreateSeason(season, season.Competition.CompetitionId.Value);
                 foreach (var teamInSeason in season.Teams)
                 {
