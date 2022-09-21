@@ -62,13 +62,11 @@ namespace Stoolball.Web.Matches
             postedTournament.DefaultOverSets.RemoveAll(x => !x.Overs.HasValue);
             var model = new EditTournamentViewModel(CurrentPage, Services.UserService)
             {
-                Tournament = beforeUpdate
+                Tournament = postedTournament
             };
-            model.Tournament.TournamentName = postedTournament.TournamentName;
-            model.Tournament.QualificationType = postedTournament.QualificationType;
-            model.Tournament.PlayerType = postedTournament.PlayerType;
-            model.Tournament.PlayersPerTeam = postedTournament.PlayersPerTeam;
-            model.Tournament.DefaultOverSets = postedTournament.DefaultOverSets;
+            model.Tournament.TournamentId = beforeUpdate.TournamentId;
+            model.Tournament.TournamentRoute = beforeUpdate.TournamentRoute;
+            model.Tournament.Seasons = beforeUpdate.Seasons;
 
             // get this from the form instead of via modelbinding so that HTML can be allowed
             model.Tournament.TournamentNotes = Request.Form["Tournament.TournamentNotes"];
@@ -129,7 +127,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTournament = await _tournamentRepository.UpdateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(updatedTournament).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheForTournament(beforeUpdate, updatedTournament).ConfigureAwait(false);
 
                 // Redirect to the tournament
                 return Redirect(updatedTournament.TournamentRoute);

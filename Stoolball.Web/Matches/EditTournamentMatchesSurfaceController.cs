@@ -95,7 +95,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTournament = await _tournamentRepository.UpdateMatches(model.Tournament, currentMember.Key, currentMember.UserName, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(updatedTournament).ConfigureAwait(false);
+                _cacheClearer.ClearCacheForTournamentMatches(model.Tournament.TournamentId!.Value);
 
                 // Use a regex to prevent part 4 of the journey Edit Matches > Edit Teams > Edit Matches > Edit Teams
                 return _postSaveRedirector.WorkOutRedirect(model.Tournament.TournamentRoute, updatedTournament.TournamentRoute, "/edit", Request.Form["UrlReferrer"], $"^({updatedTournament.TournamentRoute}|{updatedTournament.TournamentRoute}/edit)$");

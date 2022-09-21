@@ -28,12 +28,13 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationRepository _matchLocationRepository;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
-        private readonly IListingCacheClearer<MatchLocation> _cacheClearer;
+        private readonly IListingCacheClearer<MatchLocation> _matchLocationCacheClearer;
+        private readonly IMatchListingCacheClearer _matchListingCacheClearer;
 
         public DeleteMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory,
             ServiceContext serviceContext, AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchLocationDataSource matchLocationDataSource, IMatchLocationRepository matchLocationRepository, IMatchListingDataSource matchDataSource,
-            IAuthorizationPolicy<MatchLocation> authorizationPolicy, IListingCacheClearer<MatchLocation> cacheClearer)
+            IAuthorizationPolicy<MatchLocation> authorizationPolicy, IListingCacheClearer<MatchLocation> matchLocationCacheClearer, IMatchListingCacheClearer matchListingCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -41,7 +42,8 @@ namespace Stoolball.Web.MatchLocations
             _matchLocationRepository = matchLocationRepository ?? throw new ArgumentNullException(nameof(matchLocationRepository));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
-            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
+            _matchLocationCacheClearer = matchLocationCacheClearer ?? throw new ArgumentNullException(nameof(matchLocationCacheClearer));
+            _matchListingCacheClearer = matchListingCacheClearer ?? throw new ArgumentNullException(nameof(matchListingCacheClearer));
         }
 
         [HttpPost]
@@ -57,7 +59,7 @@ namespace Stoolball.Web.MatchLocations
 
             var viewModel = new DeleteMatchLocationViewModel(CurrentPage, Services.UserService)
             {
-                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Path, true)
+                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Path, true).ConfigureAwait(false)
             };
             viewModel.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(viewModel.MatchLocation);
 
@@ -70,8 +72,9 @@ namespace Stoolball.Web.MatchLocations
                 }
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                await _matchLocationRepository.DeleteMatchLocation(viewModel.MatchLocation, currentMember.Key, currentMember.Name);
-                _cacheClearer.ClearCache();
+                await _matchLocationRepository.DeleteMatchLocation(viewModel.MatchLocation, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                _matchLocationCacheClearer.ClearCache();
+                _matchListingCacheClearer.ClearCacheForMatchLocation(viewModel.MatchLocation.MatchLocationId!.Value);
                 viewModel.Deleted = true;
             }
             else
@@ -80,7 +83,7 @@ namespace Stoolball.Web.MatchLocations
                 {
                     MatchLocationIds = new List<Guid> { viewModel.MatchLocation.MatchLocationId!.Value },
                     IncludeTournamentMatches = true
-                });
+                }).ConfigureAwait(false);
             }
 
             viewModel.Metadata.PageTitle = $"Delete " + viewModel.MatchLocation.NameAndLocalityOrTown();

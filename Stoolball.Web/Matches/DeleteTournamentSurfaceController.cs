@@ -68,7 +68,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _tournamentRepository.DeleteTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(model.Tournament).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheForTournament(model.Tournament).ConfigureAwait(false);
                 model.Deleted = true;
             }
             else

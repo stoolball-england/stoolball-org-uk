@@ -133,7 +133,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var createdTournament = await _tournamentRepository.CreateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(createdTournament).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheForTournament(createdTournament).ConfigureAwait(false);
 
                 return Redirect(createdTournament.TournamentRoute);
             }

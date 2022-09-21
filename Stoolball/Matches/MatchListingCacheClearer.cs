@@ -24,12 +24,12 @@ namespace Stoolball.Matches
             _readThroughCache.InvalidateCache(nameof(IMatchListingDataSource) + nameof(IMatchListingDataSource.ReadMatchListings) + granularCacheKey);
         }
 
-        public async Task ClearCacheFor(Tournament tournament)
+        public async Task ClearCacheForTournament(Tournament tournament)
         {
-            await ClearCacheFor(tournament, null);
+            await ClearCacheForTournament(tournament, null);
         }
 
-        public async Task ClearCacheFor(Tournament tournamentBefore, Tournament tournamentAfter)
+        public async Task ClearCacheForTournament(Tournament tournamentBefore, Tournament tournamentAfter)
         {
             ClearMatchListingCache();
 
@@ -38,71 +38,73 @@ namespace Stoolball.Matches
             if (tournamentAfter != null) { affectedTeams.AddRange(tournamentAfter.Teams.Where(t => t.Team != null && t.Team.TeamId.HasValue).Select(t => t.Team.TeamId.Value)); }
             await ClearCacheForAffectedTeams(affectedTeams).ConfigureAwait(false);
 
-            //if (tournament.TournamentLocation != null)
-            //{
-            //    var filter = _matchFilterFactory.MatchesForMatchLocation(tournament.TournamentLocation.MatchLocationId.Value);
-            //    var cacheKey = CachePolicy.MatchListingsCacheKeyPrefix + _matchFilterSerializer.Serialize(filter.filter) + filter.sortOrder;
-            //    _cache.Remove(cacheKey);
-            //}
+            var affectedMatchLocations = new List<Guid>();
+            if (tournamentBefore?.TournamentLocation?.MatchLocationId != null) { affectedMatchLocations.Add(tournamentBefore.TournamentLocation.MatchLocationId.Value); }
+            if (tournamentAfter?.TournamentLocation?.MatchLocationId != null) { affectedMatchLocations.Add(tournamentAfter.TournamentLocation.MatchLocationId.Value); }
+            ClearCacheForAffectedMatchLocations(affectedMatchLocations);
 
-            //if (tournament.Seasons != null)
-            //{
-            //    foreach (var season in tournament.Seasons)
-            //    {
-            //        var filter = _matchFilterFactory.MatchesForSeason(season.SeasonId.Value);
-            //        var cacheKey = CachePolicy.MatchListingsCacheKeyPrefix + _matchFilterSerializer.Serialize(filter.filter) + filter.sortOrder;
-            //        _cache.Remove(cacheKey);
-            //    }
-            //}
+            var affectedSeasons = new List<Guid>();
+            if (tournamentBefore != null) { affectedSeasons.AddRange(tournamentBefore.Seasons.Where(s => s.SeasonId.HasValue).Select(s => s.SeasonId.Value)); }
+            if (tournamentAfter != null) { affectedSeasons.AddRange(tournamentAfter.Seasons.Where(s => s.SeasonId.HasValue).Select(s => s.SeasonId.Value)); }
+            ClearCacheForAffectedSeasons(affectedSeasons);
 
-            //if (tournament != null)
-            //{
-            //    var filter = _matchFilterFactory.MatchesForTournament(tournament.TournamentId.Value);
-            //    var cacheKey = CachePolicy.MatchListingsCacheKeyPrefix + _matchFilterSerializer.Serialize(filter.filter) + filter.sortOrder;
-            //    _cache.Remove(cacheKey);
-            //}
+            var affectedTournaments = new List<Guid>();
+            if (tournamentBefore?.TournamentId != null) { affectedTournaments.Add(tournamentBefore.TournamentId.Value); }
+            if (tournamentAfter?.TournamentId != null) { affectedTournaments.Add(tournamentAfter.TournamentId.Value); }
+            ClearCacheForAffectedTournaments(affectedTournaments);
         }
 
-        public async Task ClearCacheFor(Match match)
+        public async Task ClearCacheForMatch(Match match)
         {
-            await ClearCacheFor(match, null).ConfigureAwait(false);
+            await ClearCacheForMatch(match, null).ConfigureAwait(false);
         }
 
-        public async Task ClearCacheFor(Match matchBeforeUpdate, Match matchAfterUpdate)
+        public async Task ClearCacheForMatch(Match matchBefore, Match matchAfter)
         {
             ClearMatchListingCache();
 
             var affectedTeams = new List<Guid>();
-            if (matchBeforeUpdate != null) { affectedTeams.AddRange(matchBeforeUpdate.Teams.Where(t => t.Team != null && t.Team.TeamId.HasValue).Select(t => t.Team.TeamId.Value)); }
-            if (matchAfterUpdate != null) { affectedTeams.AddRange(matchAfterUpdate.Teams.Where(t => t.Team != null && t.Team.TeamId.HasValue).Select(t => t.Team.TeamId.Value)); }
+            if (matchBefore != null) { affectedTeams.AddRange(matchBefore.Teams.Where(t => t.Team != null && t.Team.TeamId.HasValue).Select(t => t.Team.TeamId.Value)); }
+            if (matchAfter != null) { affectedTeams.AddRange(matchAfter.Teams.Where(t => t.Team != null && t.Team.TeamId.HasValue).Select(t => t.Team.TeamId.Value)); }
             await ClearCacheForAffectedTeams(affectedTeams).ConfigureAwait(false);
 
-            //if (match.MatchLocation != null)
-            //{
-            //    var filter = _matchFilterFactory.MatchesForMatchLocation(match.MatchLocation.MatchLocationId.Value);
-            //    var cacheKey = CachePolicy.MatchListingsCacheKeyPrefix + _matchFilterSerializer.Serialize(filter.filter) + filter.sortOrder;
-            //    _cache.Remove(cacheKey);
-            //}
+            var affectedMatchLocations = new List<Guid>();
+            if (matchBefore?.MatchLocation?.MatchLocationId != null) { affectedMatchLocations.Add(matchBefore.MatchLocation.MatchLocationId.Value); }
+            if (matchAfter?.MatchLocation?.MatchLocationId != null) { affectedMatchLocations.Add(matchAfter.MatchLocation.MatchLocationId.Value); }
+            ClearCacheForAffectedMatchLocations(affectedMatchLocations);
 
-            //if (match.Season != null)
-            //{
-            //    var filter = _matchFilterFactory.MatchesForSeason(match.Season.SeasonId.Value);
-            //    var cacheKey = CachePolicy.MatchListingsCacheKeyPrefix + _matchFilterSerializer.Serialize(filter.filter) + filter.sortOrder;
-            //    _cache.Remove(cacheKey);
-            //}
+            var affectedSeasons = new List<Guid>();
+            if (matchBefore?.Season?.SeasonId != null) { affectedSeasons.Add(matchBefore.Season.SeasonId.Value); }
+            if (matchAfter?.Season?.SeasonId != null) { affectedSeasons.Add(matchAfter.Season.SeasonId.Value); }
+            ClearCacheForAffectedSeasons(affectedSeasons);
 
-            //if (match.Tournament != null)
-            //{
-            //    var filter = _matchFilterFactory.MatchesForTournament(match.Tournament.TournamentId.Value);
-            //    var cacheKey = CachePolicy.MatchListingsCacheKeyPrefix + _matchFilterSerializer.Serialize(filter.filter) + filter.sortOrder;
-            //    _cache.Remove(cacheKey);
-            //}
+            var affectedTournaments = new List<Guid>();
+            if (matchBefore?.Tournament?.TournamentId != null) { affectedTournaments.Add(matchBefore.Tournament.TournamentId.Value); }
+            if (matchAfter?.Tournament?.TournamentId != null) { affectedTournaments.Add(matchAfter.Tournament.TournamentId.Value); }
+            ClearCacheForAffectedTournaments(affectedTournaments);
         }
 
         public async Task ClearCacheForTeam(Guid teamId)
         {
             ClearMatchListingCache();
             await ClearCacheForAffectedTeams(new List<Guid> { teamId });
+        }
+
+        public void ClearCacheForMatchLocation(Guid matchLocationId)
+        {
+            ClearMatchListingCache();
+            ClearCacheForAffectedMatchLocations(new List<Guid> { matchLocationId });
+        }
+
+        public void ClearCacheForSeason(Guid seasonId)
+        {
+            ClearMatchListingCache();
+            ClearCacheForAffectedSeasons(new List<Guid> { seasonId });
+        }
+
+        public void ClearCacheForTournamentMatches(Guid tournamentId)
+        {
+            ClearCacheForAffectedTournaments(new List<Guid> { tournamentId });
         }
 
         private async Task ClearCacheForAffectedTeams(List<Guid> affectedTeams)
@@ -119,6 +121,42 @@ namespace Stoolball.Matches
                 foreach (var club in clubs)
                 {
                     ClearMatchListingCache("ForTeams" + string.Join("--", club.Teams.Select(x => x.TeamId.Value).OrderBy(x => x.ToString())));
+                }
+            }
+        }
+
+        private void ClearCacheForAffectedMatchLocations(List<Guid> affectedMatchLocations)
+        {
+            if (affectedMatchLocations.Any())
+            {
+                affectedMatchLocations = affectedMatchLocations.Distinct().ToList();
+                foreach (var matchLocationId in affectedMatchLocations)
+                {
+                    ClearMatchListingCache("ForMatchLocation" + matchLocationId);
+                }
+            }
+        }
+
+        private void ClearCacheForAffectedSeasons(List<Guid> affectedSeasons)
+        {
+            if (affectedSeasons.Any())
+            {
+                affectedSeasons = affectedSeasons.Distinct().ToList();
+                foreach (var seasonId in affectedSeasons)
+                {
+                    ClearMatchListingCache("ForSeason" + seasonId);
+                }
+            }
+        }
+
+        private void ClearCacheForAffectedTournaments(List<Guid> affectedTournaments)
+        {
+            if (affectedTournaments.Any())
+            {
+                affectedTournaments = affectedTournaments.Distinct().ToList();
+                foreach (var tournamentId in affectedTournaments)
+                {
+                    ClearMatchListingCache("ForTournament" + tournamentId);
                 }
             }
         }

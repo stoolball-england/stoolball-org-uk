@@ -51,32 +51,38 @@ namespace Stoolball.Data.Cache
             {
                 granularKey = "ForTeam" + filter.TeamIds[0];
             }
-            else if (filter.TeamIds.Count > 1)
+            else if (filter.TeamIds.Count > 1) // used for club match listings
             {
                 granularKey = "ForTeams" + string.Join("--", filter.TeamIds.OrderBy(x => x.ToString()));
             }
-            //if (filter.MatchLocationIds.Any())
-            //{
-            //    if (string.IsNullOrEmpty(granularKey))
-            //    {
-            //        granularKey = "matchlocation";
-            //    }
-            //    else
-            //    {
-            //        return null;
-            //    }
-            //}
-            //if (filter.SeasonIds.Any())
-            //{
-            //    if (string.IsNullOrEmpty(granularKey))
-            //    {
-            //        granularKey = "season";
-            //    }
-            //    else
-            //    {
-            //        return null;
-            //    }
-            //}
+
+            // Only use a granular cache if we have just one type of entity that supports that.
+            if (!string.IsNullOrEmpty(granularKey) && filter.MatchLocationIds.Any())
+            {
+                return null;
+            }
+            if (filter.MatchLocationIds.Count == 1)
+            {
+                granularKey = "ForMatchLocation" + filter.MatchLocationIds[0];
+            }
+
+            if (!string.IsNullOrEmpty(granularKey) && filter.SeasonIds.Any())
+            {
+                return null;
+            }
+            if (filter.SeasonIds.Count == 1)
+            {
+                granularKey = "ForSeason" + filter.SeasonIds[0];
+            }
+
+            if (!string.IsNullOrEmpty(granularKey) && filter.TournamentId.HasValue)
+            {
+                return null;
+            }
+            if (filter.TournamentId.HasValue)
+            {
+                granularKey = "ForTournament" + filter.TournamentId;
+            }
 
             return granularKey;
         }

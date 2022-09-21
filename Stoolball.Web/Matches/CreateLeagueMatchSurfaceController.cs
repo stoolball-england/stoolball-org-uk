@@ -88,7 +88,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(createdMatch).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheForMatch(createdMatch).ConfigureAwait(false);
 
                 return Redirect(createdMatch.MatchRoute);
             }

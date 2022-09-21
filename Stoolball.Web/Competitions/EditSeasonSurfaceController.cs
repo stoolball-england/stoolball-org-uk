@@ -62,7 +62,11 @@ namespace Stoolball.Web.Competitions
             try
             {
                 // parse this because there's no way to get it via the standard modelbinder without requiring JavaScript to change the field names on submit
-                season.MatchTypes = Request.Form["Season.MatchTypes"].ToString().Split(',').Select(x => (MatchType)Enum.Parse(typeof(MatchType), x)).ToList() ?? new List<MatchType>();
+                var unparsedMatchTypes = Request.Form["Season.MatchTypes"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+                if (unparsedMatchTypes.Any())
+                {
+                    season.MatchTypes = unparsedMatchTypes.Select(x => (MatchType)Enum.Parse(typeof(MatchType), x)).ToList() ?? new List<MatchType>();
+                }
             }
             catch (InvalidCastException)
             {

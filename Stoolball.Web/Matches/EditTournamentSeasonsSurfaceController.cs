@@ -55,8 +55,11 @@ namespace Stoolball.Web.Matches
 
             var model = new EditTournamentViewModel(CurrentPage, Services.UserService)
             {
-                Tournament = beforeUpdate
+                Tournament = new Tournament()
             };
+            model.Tournament.TournamentId = beforeUpdate.TournamentId;
+            model.Tournament.TournamentRoute = beforeUpdate.TournamentRoute;
+
             if (Request.Form["Tournament.Seasons"] != StringValues.Empty)
             {
                 model.Tournament.Seasons = Request.Form["Tournament.Seasons"].ToString().Split(',').Select(x => new Season { SeasonId = new Guid(x) }).ToList() ?? new List<Season>();
@@ -68,7 +71,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTournament = await _tournamentRepository.UpdateSeasons(model.Tournament, currentMember.Key, currentMember.UserName, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(updatedTournament).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheForTournament(beforeUpdate, updatedTournament).ConfigureAwait(false);
             }
 
             return _postSaveRedirector.WorkOutRedirect(model.Tournament.TournamentRoute, model.Tournament.TournamentRoute, "/edit", Request.Form["UrlReferrer"], null);

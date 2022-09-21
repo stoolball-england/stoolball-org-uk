@@ -28,10 +28,12 @@ namespace Stoolball.Web.Competitions
         private readonly ISeasonRepository _seasonRepository;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
+        private readonly IMatchListingCacheClearer _cacheClearer;
 
         public DeleteSeasonSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
-            ISeasonDataSource seasonDataSource, ISeasonRepository seasonRepository, IMatchListingDataSource matchDataSource, IAuthorizationPolicy<Competition> authorizationPolicy)
+            ISeasonDataSource seasonDataSource, ISeasonRepository seasonRepository, IMatchListingDataSource matchDataSource, IAuthorizationPolicy<Competition> authorizationPolicy,
+            IMatchListingCacheClearer cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -39,6 +41,7 @@ namespace Stoolball.Web.Competitions
             _seasonRepository = seasonRepository ?? throw new ArgumentNullException(nameof(seasonRepository));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -65,6 +68,7 @@ namespace Stoolball.Web.Competitions
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _seasonRepository.DeleteSeason(viewModel.Season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                _cacheClearer.ClearCacheForSeason(viewModel.Season.SeasonId!.Value);
                 viewModel.Deleted = true;
             }
             else

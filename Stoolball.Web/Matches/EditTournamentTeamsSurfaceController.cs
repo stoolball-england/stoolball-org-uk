@@ -82,7 +82,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTournament = await _tournamentRepository.UpdateTeams(model.Tournament, currentMember.Key, currentMember.UserName, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(beforeUpdate, updatedTournament).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheForTournament(beforeUpdate, updatedTournament).ConfigureAwait(false);
 
                 return _postSaveRedirector.WorkOutRedirect(model.Tournament.TournamentRoute, updatedTournament.TournamentRoute, "/edit", Request.Form["UrlReferrer"], null);
             }

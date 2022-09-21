@@ -30,12 +30,13 @@ namespace Stoolball.Web.Competitions
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly ITeamDataSource _teamDataSource;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
-        private readonly IListingCacheClearer<Competition> _cacheClearer;
+        private readonly IListingCacheClearer<Competition> _competitionListingCacheClearer;
+        private readonly IMatchListingCacheClearer _matchListingCacheClearer;
 
         public DeleteCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, ICompetitionDataSource competitionDataSource,
             ICompetitionRepository competitionRepository, IMatchListingDataSource matchDataSource, ITeamDataSource teamDataSource, IAuthorizationPolicy<Competition> authorizationPolicy,
-            IListingCacheClearer<Competition> cacheClearer)
+            IListingCacheClearer<Competition> competitionListingCacheClearer, IMatchListingCacheClearer matchListingCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -44,7 +45,8 @@ namespace Stoolball.Web.Competitions
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
-            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
+            _competitionListingCacheClearer = competitionListingCacheClearer ?? throw new ArgumentNullException(nameof(competitionListingCacheClearer));
+            _matchListingCacheClearer = matchListingCacheClearer ?? throw new ArgumentNullException(nameof(matchListingCacheClearer));
         }
 
         [HttpPost]
@@ -74,7 +76,8 @@ namespace Stoolball.Web.Competitions
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _competitionRepository.DeleteCompetition(viewModel.Competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _cacheClearer.ClearCache();
+                _competitionListingCacheClearer.ClearCache();
+                foreach (var season in viewModel.Competition.Seasons) { _matchListingCacheClearer.ClearCacheForSeason(season.SeasonId!.Value); }
                 viewModel.Deleted = true;
             }
             else

@@ -93,6 +93,7 @@ namespace Stoolball.Data.SqlServer
         /// <returns>A list of <see cref="MatchListing"/> objects. An empty list if no matches or tournaments are found.</returns>
         public async virtual Task<List<MatchListing>> ReadMatchListings(MatchFilter filter, MatchSortOrder sortOrder)
         {
+
             if (filter is null)
             {
                 filter = new MatchFilter();
