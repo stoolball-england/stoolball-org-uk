@@ -217,8 +217,6 @@ namespace Stoolball.Web
                 });
 
                 registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
-                registry.Add(CacheConstants.CommentsPolicy, cachePolicy);
-                registry.Add(CacheConstants.MemberOverridePolicy, slidingPolicy);
                 return registry;
 
             });

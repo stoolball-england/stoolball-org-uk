@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Polly;
-using Polly.Registry;
 using Stoolball.Caching;
 using Stoolball.Comments;
 
@@ -10,24 +8,25 @@ namespace Stoolball.Data.Cache
 {
     public class CachedCommentsDataSource<T> : ICommentsDataSource<T>
     {
-        private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
+        private readonly IReadThroughCache _readThroughCache;
         private readonly ICacheableCommentsDataSource<T> _commentsDataSource;
 
-        public CachedCommentsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableCommentsDataSource<T> commentsDataSource)
+        public CachedCommentsDataSource(IReadThroughCache readThroughCache, ICacheableCommentsDataSource<T> commentsDataSource)
         {
-            _policyRegistry = policyRegistry ?? throw new ArgumentNullException(nameof(policyRegistry));
+            _readThroughCache = readThroughCache ?? throw new ArgumentNullException(nameof(readThroughCache));
             _commentsDataSource = commentsDataSource ?? throw new ArgumentNullException(nameof(commentsDataSource));
         }
 
         public async Task<List<HtmlComment>> ReadComments(Guid entityId)
         {
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.CommentsPolicy);
-            return await cachePolicy.ExecuteAsync(async context => await _commentsDataSource.ReadComments(entityId).ConfigureAwait(false), new Context(nameof(ReadComments) + entityId));
+            var cacheKey = nameof(ICommentsDataSource<T>) + typeof(T).Name + nameof(ReadComments) + entityId;
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _commentsDataSource.ReadComments(entityId).ConfigureAwait(false), CacheConstants.CommentsExpiration(), cacheKey, cacheKey);
         }
 
         public async Task<int> ReadTotalComments(Guid entityId)
         {
-            return await _commentsDataSource.ReadTotalComments(entityId).ConfigureAwait(false);
+            var cacheKey = nameof(ICommentsDataSource<T>) + typeof(T).Name + nameof(ReadTotalComments) + entityId;
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _commentsDataSource.ReadTotalComments(entityId).ConfigureAwait(false), CacheConstants.CommentsExpiration(), cacheKey, cacheKey);
         }
     }
 }

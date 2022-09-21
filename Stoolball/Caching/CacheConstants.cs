@@ -10,7 +10,6 @@ namespace Stoolball.Caching
         public static TimeSpan TeamsExpiration() => TimeSpan.FromDays(1);
         public const string MatchesPolicy = "matches";
         public const string MatchListingsCacheKeyPrefix = "ReadMatchListings";
-        public const string MemberOverridePolicy = "MemberOverride";
-        public const string CommentsPolicy = "comments";
+        public static TimeSpan CommentsExpiration() => TimeSpan.FromDays(1);
     }
 }
