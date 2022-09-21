@@ -22,6 +22,8 @@
 <div class="container-xl">
     <h1>Best batting average@(humanizer.MatchingFixedFilter(Model.AppliedFilter))</h1>
 
+    @await Html.PartialAsync("_StatisticsTip")
+  
     <ul class="nav nav-tabs">
         <li class="nav-item nav-item-admin">
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
