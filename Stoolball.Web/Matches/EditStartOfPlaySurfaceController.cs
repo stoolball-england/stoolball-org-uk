@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -35,12 +34,12 @@ namespace Stoolball.Web.Matches
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IEditMatchHelper _editMatchHelper;
-        private readonly ICacheClearer<Match> _cacheClearer;
+        private readonly IMatchListingCacheClearer _cacheClearer;
 
         public EditStartOfPlaySurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchDataSource matchDataSource, IMatchRepository matchRepository, ISeasonDataSource seasonDataSource,
-            IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IEditMatchHelper editMatchHelper, ICacheClearer<Match> cacheClearer)
+            IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IEditMatchHelper editMatchHelper, IMatchListingCacheClearer cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -64,7 +63,7 @@ namespace Stoolball.Web.Matches
                 postedMatch = new Match();
             }
 
-            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path);
+            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path).ConfigureAwait(false);
 
             if (beforeUpdate.StartTime > DateTime.UtcNow || beforeUpdate.Tournament != null)
             {
@@ -118,8 +117,8 @@ namespace Stoolball.Web.Matches
             if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                var updatedMatch = await _matchRepository.UpdateStartOfPlay(model.Match, currentMember.Key, currentMember.Name);
-                await _cacheClearer.ClearCacheFor(updatedMatch);
+                var updatedMatch = await _matchRepository.UpdateStartOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(updatedMatch).ConfigureAwait(false);
 
                 if (model.Match.MatchResultType.HasValue && new List<MatchResultType> {
                     MatchResultType.HomeWinByForfeit,

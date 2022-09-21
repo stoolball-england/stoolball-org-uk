@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -26,7 +25,7 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMemberManager _memberManager;
         private readonly ITournamentDataSource _tournamentDataSource;
-        private readonly ICacheClearer<Tournament> _cacheClearer;
+        private readonly IMatchListingCacheClearer _cacheClearer;
         private readonly ITournamentRepository _tournamentRepository;
         private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
@@ -34,7 +33,7 @@ namespace Stoolball.Web.Matches
 
         public EditTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
-            ITournamentDataSource tournamentDataSource, ITournamentRepository tournamentRepository, ICacheClearer<Tournament> cacheClearer,
+            ITournamentDataSource tournamentDataSource, ITournamentRepository tournamentRepository, IMatchListingCacheClearer cacheClearer,
             IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchValidator matchValidator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
@@ -58,7 +57,7 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(postedTournament));
             }
 
-            var beforeUpdate = await _tournamentDataSource.ReadTournamentByRoute(Request.Path);
+            var beforeUpdate = await _tournamentDataSource.ReadTournamentByRoute(Request.Path).ConfigureAwait(false);
 
             postedTournament.DefaultOverSets.RemoveAll(x => !x.Overs.HasValue);
             var model = new EditTournamentViewModel(CurrentPage, Services.UserService)

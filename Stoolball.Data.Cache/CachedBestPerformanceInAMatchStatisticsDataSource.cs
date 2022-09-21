@@ -25,7 +25,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadPlayerInnings) + _statisticsFilterSerializer.Serialize(filter) + sortOrder.ToString();
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadPlayerInnings(filter, sortOrder).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadPlayerInnings(filter, sortOrder).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
@@ -33,7 +33,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadBowlingFigures) + _statisticsFilterSerializer.Serialize(filter) + sortOrder.ToString();
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadBowlingFigures(filter, sortOrder).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadBowlingFigures(filter, sortOrder).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
@@ -41,7 +41,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadTotalPlayerInnings) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayerInnings(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayerInnings(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
@@ -49,7 +49,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadTotalBowlingFigures) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
     }
 }

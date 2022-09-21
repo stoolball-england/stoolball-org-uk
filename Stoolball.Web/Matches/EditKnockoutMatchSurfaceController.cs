@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -31,12 +30,12 @@ namespace Stoolball.Web.Matches
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IEditMatchHelper _editMatchHelper;
         private readonly IMatchValidator _matchValidator;
-        private readonly ICacheClearer<Match> _cacheClearer;
+        private readonly IMatchListingCacheClearer _cacheClearer;
 
         public EditKnockoutMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource, IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy,
-            IDateTimeFormatter dateTimeFormatter, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator, ICacheClearer<Match> cacheClearer)
+            IDateTimeFormatter dateTimeFormatter, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator, IMatchListingCacheClearer cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -61,7 +60,7 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(postedMatch));
             }
 
-            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path);
+            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path).ConfigureAwait(false);
 
             // This controller is only for matches in the future
             if (beforeUpdate.StartTime <= DateTime.UtcNow)
@@ -91,13 +90,13 @@ namespace Stoolball.Web.Matches
                 if ((int?)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name);
-                await _cacheClearer.ClearCacheFor(updatedMatch);
+                var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(updatedMatch).ConfigureAwait(false);
 
                 return Redirect(updatedMatch.MatchRoute);
             }
 
-            model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true);
+            model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
             model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
             model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
             model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);

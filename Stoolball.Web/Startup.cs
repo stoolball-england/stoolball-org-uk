@@ -4,11 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Polly;
-using Polly.Caching;
-using Polly.Caching.Memory;
-using Polly.Registry;
 using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Comments;
@@ -195,38 +190,14 @@ namespace Stoolball.Web
             services.AddTransient<IInningsStatisticsDataSource, CachedInningsStatisticsDataSource>();
             services.AddTransient<ICacheableInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
 
-            // Caching with Polly
+            // Caching
             services.AddMemoryCache();
-            services.AddSingleton<IAsyncCacheProvider, MemoryCacheProvider>();
-            services.AddSingleton<ISyncCacheProvider, MemoryCacheProvider>();
-            services.AddSingleton<IReadOnlyPolicyRegistry<string>, PolicyRegistry>((serviceProvider) =>
-            {
-                var registry = new PolicyRegistry();
-
-                var asyncMemoryCacheProvider = serviceProvider.GetRequiredService<IAsyncCacheProvider>();
-                var logger = serviceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<Policy>>();
-                var cachePolicy = Policy.CacheAsync(asyncMemoryCacheProvider, TimeSpan.FromMinutes(120), (context, key, ex) =>
-                {
-                    logger!.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
-                });
-
-                var syncMemoryCacheProvider = serviceProvider.GetRequiredService<ISyncCacheProvider>();
-                var slidingPolicy = Policy.Cache(syncMemoryCacheProvider, new SlidingTtl(TimeSpan.FromMinutes(120)), (context, key, ex) =>
-                {
-                    logger!.LogError(ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
-                });
-
-                registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
-                return registry;
-
-            });
-            services.AddTransient<ICacheClearer<Tournament>, TournamentCacheClearer>();
-            services.AddTransient<ICacheClearer<Match>, MatchCacheClearer>();
+            services.AddTransient<IReadThroughCache, ReadThroughCache>();
             services.AddTransient<ICacheClearer<Player>, PlayerCacheClearer>();
+            services.AddTransient<IMatchListingCacheClearer, MatchListingCacheClearer>();
             services.AddTransient<IListingCacheClearer<Competition>, CompetitionListingCacheClearer>();
             services.AddTransient<IListingCacheClearer<MatchLocation>, MatchLocationListingCacheClearer>();
             services.AddTransient<IListingCacheClearer<Team>, TeamListingCacheClearer>();
-            services.AddTransient<IReadThroughCache, ReadThroughCache>();
 
             // Repositories
             services.AddTransient<IAuditRepository, SqlServerAuditRepository>();

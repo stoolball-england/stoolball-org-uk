@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Awards;
-using Stoolball.Caching;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -31,12 +30,12 @@ namespace Stoolball.Web.Matches
         private readonly IMatchRepository _matchRepository;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
-        private readonly ICacheClearer<Match> _cacheClearer;
+        private readonly IMatchListingCacheClearer _cacheClearer;
 
         public EditCloseOfPlaySurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchDataSource matchDataSource, IMatchRepository matchRepository,
-            IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, ICacheClearer<Match> cacheClearer)
+            IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchListingCacheClearer cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -58,7 +57,7 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(postedData));
             }
 
-            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path);
+            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path).ConfigureAwait(false);
 
             if (beforeUpdate.StartTime > DateTime.UtcNow || beforeUpdate.Tournament != null)
             {
@@ -96,8 +95,8 @@ namespace Stoolball.Web.Matches
                 if (model.Match.MatchResultType.HasValue && (int)model.Match.MatchResultType.Value == -1) { model.Match.MatchResultType = null; }
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                var updatedMatch = await _matchRepository.UpdateCloseOfPlay(model.Match, currentMember.Key, currentMember.Name);
-                await _cacheClearer.ClearCacheFor(updatedMatch);
+                var updatedMatch = await _matchRepository.UpdateCloseOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(updatedMatch).ConfigureAwait(false);
 
                 return Redirect(updatedMatch.MatchRoute);
             }

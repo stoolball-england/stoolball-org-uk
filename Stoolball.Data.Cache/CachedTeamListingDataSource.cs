@@ -26,7 +26,7 @@ namespace Stoolball.Data.Cache
 
             var cacheKey = nameof(ITeamListingDataSource) + nameof(ReadTeamListings);
             var dependentCacheKey = cacheKey + _teamListingFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _teamListingDataSource.ReadTeamListings(filter).ConfigureAwait(false), CacheConstants.TeamsExpiration(), cacheKey, dependentCacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _teamListingDataSource.ReadTeamListings(filter).ConfigureAwait(false), CachePolicy.TeamsExpiration(), cacheKey, dependentCacheKey);
         }
 
         /// <inheritdoc />
@@ -36,7 +36,7 @@ namespace Stoolball.Data.Cache
 
             var cacheKey = nameof(ITeamListingDataSource) + nameof(ReadTotalTeams);
             var dependentCacheKey = cacheKey + _teamListingFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _teamListingDataSource.ReadTotalTeams(filter).ConfigureAwait(false), CacheConstants.TeamsExpiration(), cacheKey, dependentCacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _teamListingDataSource.ReadTotalTeams(filter).ConfigureAwait(false), CachePolicy.TeamsExpiration(), cacheKey, dependentCacheKey);
         }
     }
 }

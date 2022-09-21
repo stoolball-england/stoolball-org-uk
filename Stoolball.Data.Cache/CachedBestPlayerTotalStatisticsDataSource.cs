@@ -24,7 +24,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadMostCatches) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostCatches(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostCatches(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
@@ -32,7 +32,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadMostRunOuts) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostRunOuts(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostRunOuts(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
@@ -40,14 +40,14 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadMostRunsScored) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostRunsScored(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostRunsScored(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostWickets(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadMostWickets) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostWickets(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostWickets(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
@@ -55,7 +55,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadTotalPlayersWithCatches) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithCatches(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithCatches(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
@@ -63,7 +63,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadTotalPlayersWithRunOuts) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithRunOuts(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithRunOuts(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         /// <inheritdoc />
@@ -71,14 +71,14 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadTotalPlayersWithRunsScored) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithRunsScored(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithRunsScored(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         public async Task<int> ReadTotalPlayersWithWickets(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadTotalPlayersWithWickets) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -27,7 +26,7 @@ namespace Stoolball.Web.Matches
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchListingDataSource _matchListingDataSource;
         private readonly ITournamentRepository _tournamentRepository;
-        private readonly ICacheClearer<Tournament> _cacheClearer;
+        private readonly IMatchListingCacheClearer _cacheClearer;
         private readonly ICommentsDataSource<Tournament> _commentsDataSource;
         private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
@@ -35,7 +34,7 @@ namespace Stoolball.Web.Matches
         public DeleteTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             ITournamentDataSource tournamentDataSource, IMatchListingDataSource matchListingDataSource, ITournamentRepository tournamentRepository, ICommentsDataSource<Tournament> matchCommentsDataSource,
-            ICacheClearer<Tournament> cacheClearer, IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter)
+            IMatchListingCacheClearer cacheClearer, IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -61,15 +60,15 @@ namespace Stoolball.Web.Matches
 
             var model = new DeleteTournamentViewModel(CurrentPage, Services.UserService)
             {
-                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Path)
+                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Path).ConfigureAwait(false)
             };
             model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Tournament);
 
             if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTournament] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                await _tournamentRepository.DeleteTournament(model.Tournament, currentMember.Key, currentMember.Name);
-                await _cacheClearer.ClearCacheFor(model.Tournament);
+                await _tournamentRepository.DeleteTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(model.Tournament).ConfigureAwait(false);
                 model.Deleted = true;
             }
             else

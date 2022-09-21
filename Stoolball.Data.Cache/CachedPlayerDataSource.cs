@@ -25,32 +25,32 @@ namespace Stoolball.Data.Cache
         public async Task<Player> ReadPlayerByMemberKey(Guid key)
         {
             var cacheKey = nameof(IPlayerDataSource) + nameof(ReadPlayerByMemberKey) + key;
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayerByMemberKey(key), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayerByMemberKey(key), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         public async Task<Player> ReadPlayerByRoute(string route, StatisticsFilter? filter = null)
         {
             var cacheKey = nameof(IPlayerDataSource) + nameof(ReadPlayerByRoute) + route;
             var dependentCacheKey = cacheKey + _statisticsFilterSerialiser.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayerByRoute(route, filter), CacheConstants.StatisticsExpiration(), cacheKey, dependentCacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayerByRoute(route, filter), CachePolicy.StatisticsExpiration(), cacheKey, dependentCacheKey);
         }
 
         public async Task<List<PlayerIdentity>> ReadPlayerIdentities(PlayerFilter filter)
         {
             var cacheKey = nameof(ReadPlayerIdentities) + _playerFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayerIdentities(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayerIdentities(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         public async Task<List<Player>> ReadPlayers(PlayerFilter filter)
         {
             var cacheKey = nameof(ReadPlayers) + _playerFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayers(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayers(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
         public async Task<List<Player>> ReadPlayers(PlayerFilter filter, IDbConnection connection)
         {
             var cacheKey = nameof(ReadPlayers) + _playerFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayers(filter, connection).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerDataSource.ReadPlayers(filter, connection).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
     }
 }

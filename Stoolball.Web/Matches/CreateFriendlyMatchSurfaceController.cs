@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -31,12 +30,12 @@ namespace Stoolball.Web.Matches
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
         private readonly IEditMatchHelper _editMatchHelper;
         private readonly IMatchValidator _matchValidator;
-        private readonly ICacheClearer<Match> _cacheClearer;
+        private readonly IMatchListingCacheClearer _cacheClearer;
 
         public CreateFriendlyMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchRepository matchRepository, ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource,
-            ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator, ICacheClearer<Match> cacheClearer)
+            ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator, IMatchListingCacheClearer cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -67,7 +66,7 @@ namespace Stoolball.Web.Matches
             var path = Request.Path.HasValue ? Request.Path.Value : string.Empty;
             if (path!.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Season = model.Match.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Path, false);
+                model.Season = model.Match.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Path, false).ConfigureAwait(false);
             }
             else if (model.Match.Season != null && !model.Match.Season.SeasonId.HasValue)
             {
@@ -76,7 +75,7 @@ namespace Stoolball.Web.Matches
             else if (model.Match.Season != null)
             {
                 // Get the season, to support validation against season dates
-                model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId!.Value);
+                model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId!.Value).ConfigureAwait(false);
             }
 
             _matchValidator.DateIsValidForSqlServer(model.MatchDate, ModelState, "MatchDate", "match");
@@ -89,8 +88,8 @@ namespace Stoolball.Web.Matches
                 (model.Season == null || model.Season.MatchTypes.Contains(MatchType.FriendlyMatch)))
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name);
-                await _cacheClearer.ClearCacheFor(createdMatch);
+                var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(createdMatch).ConfigureAwait(false);
 
                 return Redirect(createdMatch.MatchRoute);
             }

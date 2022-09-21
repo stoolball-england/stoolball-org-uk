@@ -24,7 +24,7 @@ namespace Stoolball.Data.Cache
 
             var cacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadBattingStatistics) + filter.Player.PlayerRoute;
             var dependentCacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadBattingStatistics) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerSummaryStatisticsDataSource.ReadBattingStatistics(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, dependentCacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerSummaryStatisticsDataSource.ReadBattingStatistics(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, dependentCacheKey);
         }
 
         public async Task<BowlingStatistics> ReadBowlingStatistics(StatisticsFilter filter)
@@ -33,7 +33,7 @@ namespace Stoolball.Data.Cache
 
             var cacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadBowlingStatistics) + filter.Player.PlayerRoute;
             var dependentCacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadBowlingStatistics) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerSummaryStatisticsDataSource.ReadBowlingStatistics(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, dependentCacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerSummaryStatisticsDataSource.ReadBowlingStatistics(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, dependentCacheKey);
         }
 
         public async Task<FieldingStatistics> ReadFieldingStatistics(StatisticsFilter filter)
@@ -42,7 +42,7 @@ namespace Stoolball.Data.Cache
 
             var cacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadFieldingStatistics) + filter.Player.PlayerRoute;
             var dependentCacheKey = nameof(IPlayerSummaryStatisticsDataSource) + nameof(ReadFieldingStatistics) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerSummaryStatisticsDataSource.ReadFieldingStatistics(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, dependentCacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _playerSummaryStatisticsDataSource.ReadFieldingStatistics(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, dependentCacheKey);
         }
 
         private static void ThrowExceptionIfNoPlayerRoute(StatisticsFilter filter)

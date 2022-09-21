@@ -26,7 +26,7 @@ namespace Stoolball.Data.Cache
 
             var cacheKey = nameof(IMatchLocationDataSource) + nameof(ReadTotalMatchLocations);
             var dependentCacheKey = cacheKey + _matchLocationFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _matchLocationDataSource.ReadTotalMatchLocations(filter).ConfigureAwait(false), CacheConstants.MatchLocationsExpiration(), cacheKey, dependentCacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _matchLocationDataSource.ReadTotalMatchLocations(filter).ConfigureAwait(false), CachePolicy.MatchLocationsExpiration(), cacheKey, dependentCacheKey);
         }
 
         /// <inheritdoc />
@@ -36,7 +36,7 @@ namespace Stoolball.Data.Cache
 
             var cacheKey = nameof(IMatchLocationDataSource) + nameof(ReadMatchLocations);
             var dependentCacheKey = cacheKey + _matchLocationFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _matchLocationDataSource.ReadMatchLocations(filter).ConfigureAwait(false), CacheConstants.MatchLocationsExpiration(), cacheKey, dependentCacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _matchLocationDataSource.ReadMatchLocations(filter).ConfigureAwait(false), CachePolicy.MatchLocationsExpiration(), cacheKey, dependentCacheKey);
         }
 
         public async Task<MatchLocation> ReadMatchLocationByRoute(string route, bool includeRelated = false)

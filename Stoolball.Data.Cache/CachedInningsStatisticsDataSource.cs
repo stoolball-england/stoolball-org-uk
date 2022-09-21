@@ -21,7 +21,7 @@ namespace Stoolball.Data.Cache
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadInningsStatistics) + _statisticsFilterSerializer.Serialize(filter);
-            return await _readThroughCache.ReadThroughCacheAsync(async () => await _inningsStatisticsDataSource.ReadInningsStatistics(filter).ConfigureAwait(false), CacheConstants.StatisticsExpiration(), cacheKey, cacheKey);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _inningsStatisticsDataSource.ReadInningsStatistics(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
     }
 }

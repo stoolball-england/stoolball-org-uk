@@ -31,9 +31,13 @@ Each data source in the `Stoolball.Data.SqlServer` project that supports caching
 
 In `Startup.cs` the application is configured to inject the cached data source into any class that requires an `IExampleDataSource`, and the SQL Server data source for any class that requires an `ICacheableExampleDataSource`. The consuming class does not need to know whether the data is cached, and caching can be completely disabled for testing by switching the registration of `IExampleDataSource` in `Startup.cs` to inject the SQL Server data source.
 
-The cached data sources define the length of time the cache lasts for, and whether it uses absolute or sliding expiration, using the `CacheConstants` class. In some cases these use a Polly cache policy which is defined in `Startup.cs`.
+The cached data sources define the length of time the cache lasts for, and whether it uses absolute or sliding expiration, using the `CachePolicy` class.
 
-When caches need to be updated immediately for all the controller either requires an `ICacheClearer<T>` and calls the `ClearCacheFor` method with the object the cache needs to be cleared for, or for listings it requires an `IListingCacheClearer<T>` and a call to `ClearCache`.
+When caches need to be updated immediately for all, the controller requires:
+
+- for individual entities, an `ICacheClearer<T>` and a call to the `ClearCacheFor` method with the object the cache needs to be cleared for
+- for match listings, an `IMatchListingCacheClearer` and a call to one of the `ClearCache` method overloads
+- for other listings, an `IListingCacheClearer<T>` and a call to the `ClearCache` method.
 
 ## Further caching with Examine
 
