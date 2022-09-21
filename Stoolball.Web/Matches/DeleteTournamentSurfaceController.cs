@@ -73,7 +73,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.TotalComments = await _commentsDataSource.ReadTotalComments(model.Tournament.TournamentId!.Value);
+                model.TotalComments = await _commentsDataSource.ReadTotalComments(model.Tournament.TournamentId!.Value).ConfigureAwait(false);
 
                 model.Matches = new MatchListingViewModel(CurrentPage, Services?.UserService)
                 {

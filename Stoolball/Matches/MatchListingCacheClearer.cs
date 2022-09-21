@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Stoolball.Caching;
 
@@ -8,20 +10,33 @@ namespace Stoolball.Matches
     {
         private readonly IReadThroughCache _readThroughCache;
 
-        public MatchListingCacheClearer(IReadThroughCache readThroughCache) // IClubDataSource clubDataSource,IMatchFilterFactory matchFilterFactory, IMatchFilterQueryStringSerializer matchFilterSerializer
+        public MatchListingCacheClearer(IReadThroughCache readThroughCache) // IClubDataSource clubDataSource, IMatchFilterQueryStringSerializer matchFilterSerializer
         {
             _readThroughCache = readThroughCache ?? throw new ArgumentNullException(nameof(readThroughCache));
         }
 
-        private void ClearUnfilteredMatchListingCache()
+        private void ClearMatchListingCache(string granularCacheKey = null)
         {
-            _readThroughCache.InvalidateCache(nameof(IMatchListingDataSource) + nameof(IMatchListingDataSource.ReadTotalMatches));
-            _readThroughCache.InvalidateCache(nameof(IMatchListingDataSource) + nameof(IMatchListingDataSource.ReadMatchListings));
+            _readThroughCache.InvalidateCache(nameof(IMatchListingDataSource) + nameof(IMatchListingDataSource.ReadTotalMatches) + granularCacheKey);
+            _readThroughCache.InvalidateCache(nameof(IMatchListingDataSource) + nameof(IMatchListingDataSource.ReadMatchListings) + granularCacheKey);
         }
 
-        public Task ClearCacheFor(Tournament tournament)
+        public async Task ClearCacheFor(Tournament tournament)
         {
-            ClearUnfilteredMatchListingCache();
+            await ClearCacheFor(tournament, null);
+        }
+
+        public Task ClearCacheFor(Tournament tournamentBefore, Tournament tournamentAfter)
+        {
+            ClearMatchListingCache();
+
+            var affectedTeams = new List<Guid>();
+            if (tournamentBefore != null) { affectedTeams.AddRange(tournamentBefore.Teams.Where(t => t.Team != null && t.Team.TeamId.HasValue).Select(t => t.Team.TeamId.Value)); }
+            if (tournamentAfter != null) { affectedTeams.AddRange(tournamentAfter.Teams.Where(t => t.Team != null && t.Team.TeamId.HasValue).Select(t => t.Team.TeamId.Value)); }
+            foreach (var teamId in affectedTeams.Distinct())
+            {
+                ClearMatchListingCache("ForTeam" + teamId);
+            }
 
             //var affectedTeams = tournament.Teams.Select(t => t.Team.TeamId.Value).ToList();
             //foreach (var teamId in affectedTeams)
@@ -69,17 +84,22 @@ namespace Stoolball.Matches
             return Task.CompletedTask;
         }
 
-        public Task ClearCacheFor(Match match)
+        public async Task ClearCacheFor(Match match)
         {
-            ClearUnfilteredMatchListingCache();
+            await ClearCacheFor(match, null).ConfigureAwait(false);
+        }
 
-            //var affectedTeams = match.Teams.Select(t => t.Team.TeamId.Value).ToList();
-            //foreach (var teamId in affectedTeams)
-            //{
-            //    var filter = _matchFilterFactory.MatchesForTeams(new List<Guid> { teamId });
-            //    var cacheKey = CachePolicy.MatchListingsCacheKeyPrefix + _matchFilterSerializer.Serialize(filter.filter) + filter.sortOrder;
-            //    _cache.Remove(cacheKey);
-            //}
+        public Task ClearCacheFor(Match matchBeforeUpdate, Match matchAfterUpdate)
+        {
+            ClearMatchListingCache();
+
+            var affectedTeams = new List<Guid>();
+            if (matchBeforeUpdate != null) { affectedTeams.AddRange(matchBeforeUpdate.Teams.Where(t => t.Team != null && t.Team.TeamId.HasValue).Select(t => t.Team.TeamId.Value)); }
+            if (matchAfterUpdate != null) { affectedTeams.AddRange(matchAfterUpdate.Teams.Where(t => t.Team != null && t.Team.TeamId.HasValue).Select(t => t.Team.TeamId.Value)); }
+            foreach (var teamId in affectedTeams.Distinct())
+            {
+                ClearMatchListingCache("ForTeam" + teamId);
+            }
 
             //if (affectedTeams.Any())
             //{
@@ -114,6 +134,12 @@ namespace Stoolball.Matches
             //}
 
             return Task.CompletedTask;
+        }
+
+        public void ClearCacheForTeam(Guid teamId)
+        {
+            ClearMatchListingCache();
+            ClearMatchListingCache("ForTeam" + teamId);
         }
     }
 }

@@ -118,7 +118,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedMatch = await _matchRepository.UpdateStartOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(updatedMatch).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(beforeUpdate, updatedMatch).ConfigureAwait(false);
 
                 if (model.Match.MatchResultType.HasValue && new List<MatchResultType> {
                     MatchResultType.HomeWinByForfeit,

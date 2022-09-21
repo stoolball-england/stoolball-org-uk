@@ -23,7 +23,7 @@ namespace Stoolball.Data.Cache
         public async Task<List<MatchListing>> ReadMatchListings(MatchFilter filter, MatchSortOrder sortOrder)
         {
             filter = filter ?? new MatchFilter();
-            var cacheKey = nameof(IMatchListingDataSource) + nameof(ReadMatchListings);
+            var cacheKey = nameof(IMatchListingDataSource) + nameof(ReadMatchListings) + GranularCacheKey(filter);
             var dependentCacheKey = cacheKey + _matchFilterSerializer.Serialize(filter) + sortOrder.ToString();
             return await _readThroughCache.ReadThroughCacheAsync(async () => await _matchListingDataSource.ReadMatchListings(filter, sortOrder), CachePolicy.MatchesExpiration(), cacheKey, dependentCacheKey);
         }
@@ -31,9 +31,49 @@ namespace Stoolball.Data.Cache
         /// <inheritdoc />
         public async Task<int> ReadTotalMatches(MatchFilter filter)
         {
-            var cacheKey = nameof(IMatchListingDataSource) + nameof(ReadTotalMatches);
+            filter = filter ?? new MatchFilter();
+            var cacheKey = nameof(IMatchListingDataSource) + nameof(ReadTotalMatches) + GranularCacheKey(filter);
             var dependentCacheKey = cacheKey + _matchFilterSerializer.Serialize(filter);
             return await _readThroughCache.ReadThroughCacheAsync(async () => await _matchListingDataSource.ReadTotalMatches(filter).ConfigureAwait(false), CachePolicy.MatchesExpiration(), cacheKey, dependentCacheKey);
+        }
+
+        /// <summary>
+        /// Maintain separate caches for common filtering cases so that, for example, updating a match affecting 2 teams does not clear listings for other teams
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns>If the filter includes exactly one of the common cases, an additional key. Otherwise <c>null</c>.</returns>
+        private string? GranularCacheKey(MatchFilter filter)
+        {
+            string? granularKey = null;
+
+            if (filter.TeamIds.Count == 1)
+            {
+                granularKey = "ForTeam" + filter.TeamIds[0];
+            }
+            //if (filter.MatchLocationIds.Any())
+            //{
+            //    if (string.IsNullOrEmpty(granularKey))
+            //    {
+            //        granularKey = "matchlocation";
+            //    }
+            //    else
+            //    {
+            //        return null;
+            //    }
+            //}
+            //if (filter.SeasonIds.Any())
+            //{
+            //    if (string.IsNullOrEmpty(granularKey))
+            //    {
+            //        granularKey = "season";
+            //    }
+            //    else
+            //    {
+            //        return null;
+            //    }
+            //}
+
+            return granularKey;
         }
     }
 }

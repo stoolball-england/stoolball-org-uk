@@ -61,10 +61,14 @@ namespace Stoolball.Web.Matches
 
             var model = new EditTournamentViewModel(CurrentPage, Services.UserService)
             {
-                Tournament = beforeUpdate
+                Tournament = postedTournament
             };
-            model.Tournament.MaximumTeamsInTournament = postedTournament.MaximumTeamsInTournament;
-            model.Tournament.Teams = postedTournament.Teams;
+            model.Tournament.TournamentId = beforeUpdate.TournamentId;
+            model.Tournament.TournamentName = beforeUpdate.TournamentName;
+            model.Tournament.TournamentRoute = beforeUpdate.TournamentRoute;
+            model.Tournament.StartTime = beforeUpdate.StartTime;
+            model.Tournament.PlayerType = beforeUpdate.PlayerType;
+            model.Tournament.TournamentLocation = beforeUpdate.TournamentLocation;
 
             // We're not interested in validating other details of the tournament or the selected teams
             foreach (var key in ModelState.Keys.Where(x => x != "Tournament.MaximumTeamsInTournament"))
@@ -78,7 +82,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTournament = await _tournamentRepository.UpdateTeams(model.Tournament, currentMember.Key, currentMember.UserName, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(updatedTournament).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(beforeUpdate, updatedTournament).ConfigureAwait(false);
 
                 return _postSaveRedirector.WorkOutRedirect(model.Tournament.TournamentRoute, updatedTournament.TournamentRoute, "/edit", Request.Form["UrlReferrer"], null);
             }

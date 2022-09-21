@@ -91,7 +91,7 @@ namespace Stoolball.Web.Matches
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheFor(updatedMatch).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(beforeUpdate, updatedMatch).ConfigureAwait(false);
 
                 return Redirect(updatedMatch.MatchRoute);
             }

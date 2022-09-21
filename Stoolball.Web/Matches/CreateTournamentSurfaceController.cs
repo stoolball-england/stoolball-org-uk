@@ -102,13 +102,13 @@ namespace Stoolball.Web.Matches
             var path = Request.Path.HasValue ? Request.Path.Value : string.Empty;
             if (path!.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Team = await _teamDataSource.ReadTeamByRoute(Request.Path, true);
+                model.Team = await _teamDataSource.ReadTeamByRoute(Request.Path, true).ConfigureAwait(false);
                 model.Tournament.Teams.Add(new TeamInTournament { Team = model.Team, TeamRole = TournamentTeamRole.Organiser });
                 model.Metadata.PageTitle = $"Add a tournament for {model.Team.TeamName}";
             }
             else if (path.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Path, false);
+                model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Path, false).ConfigureAwait(false);
                 model.Tournament.Seasons.Add(model.Season);
                 model.Metadata.PageTitle = $"Add a tournament in the {model.Season.SeasonFullName()}";
 

@@ -36,7 +36,7 @@ The cached data sources define the length of time the cache lasts for, and wheth
 When caches need to be updated immediately for all, the controller requires:
 
 - for individual entities, an `ICacheClearer<T>` and a call to the `ClearCacheFor` method with the object the cache needs to be cleared for
-- for match listings, an `IMatchListingCacheClearer` and a call to one of the `ClearCache` method overloads
+- for match listings, an `IMatchListingCacheClearer` and a call to one of the `ClearCache*` methods
 - for other listings, an `IListingCacheClearer<T>` and a call to the `ClearCache` method.
 
 ## Further caching with Examine
