@@ -9,6 +9,6 @@ namespace Stoolball.Matches
         Task ClearCacheFor(Tournament tournamentBefore, Tournament tournamentAfter);
         Task ClearCacheFor(Match match);
         Task ClearCacheFor(Match matchBeforeUpdate, Match matchAfterUpdate);
-        void ClearCacheForTeam(Guid teamId);
+        Task ClearCacheForTeam(Guid teamId);
     }
 }

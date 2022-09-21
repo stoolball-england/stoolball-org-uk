@@ -78,7 +78,7 @@ namespace Stoolball.Web.Teams
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _teamRepository.DeleteTeam(model.Team, currentMember.Key, currentMember.Name);
                 _teamListingCacheClearer.ClearCache();
-                _matchListingCacheClearer.ClearCacheForTeam(model.Team.TeamId!.Value);
+                await _matchListingCacheClearer.ClearCacheForTeam(model.Team.TeamId!.Value).ConfigureAwait(false);
                 model.Deleted = true;
             }
             else

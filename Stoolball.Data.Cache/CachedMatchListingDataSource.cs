@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Stoolball.Caching;
 using Stoolball.Matches;
@@ -49,6 +50,10 @@ namespace Stoolball.Data.Cache
             if (filter.TeamIds.Count == 1)
             {
                 granularKey = "ForTeam" + filter.TeamIds[0];
+            }
+            else if (filter.TeamIds.Count > 1)
+            {
+                granularKey = "ForTeams" + string.Join("--", filter.TeamIds.OrderBy(x => x.ToString()));
             }
             //if (filter.MatchLocationIds.Any())
             //{
