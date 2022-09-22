@@ -387,7 +387,7 @@ namespace Stoolball.Data.SqlServer
                     try
                     {
                         retry = false;
-                        affectedRoutes = await _dapperWrapper.QueryAsync<string>(connection, "usp_Link_Player_To_Member_Async_Update", commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+                        affectedRoutes = await _dapperWrapper.QueryAsync<string>("usp_Link_Player_To_Member_Async_Update", commandType: CommandType.StoredProcedure, connection: connection).ConfigureAwait(false);
                         foreach (var route in affectedRoutes)
                         {
                             await _playerCacheClearer.ClearCacheFor(new Player { PlayerRoute = route });

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -7,9 +8,11 @@ using AngleSharp.Css.Dom;
 using Dapper;
 using Ganss.XSS;
 using Moq;
+using Stoolball.Competitions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Matches;
+using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
 using Xunit;
@@ -22,11 +25,167 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
     {
         private readonly SqlServerTestDataFixture _databaseFixture;
         private readonly TransactionScope _scope;
+        private readonly Mock<IAuditRepository> _auditRepository = new();
+        private readonly Mock<ILogger<SqlServerTournamentRepository>> _logger = new();
+        private readonly Mock<IRouteGenerator> _routeGenerator = new();
+        private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
+        private readonly Mock<ITeamRepository> _teamRepository = new();
+        private readonly Mock<IMatchRepository> _matchRepository = new();
+        private readonly Mock<IHtmlSanitizer> _htmlSanitizer = new();
+        private readonly Mock<IStoolballEntityCopier> _copier = new();
 
         public SqlServerTournamentRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
             _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+            _htmlSanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
+            _htmlSanitizer.Setup(x => x.AllowedAttributes).Returns(new HashSet<string>());
+            _htmlSanitizer.Setup(x => x.AllowedCssProperties).Returns(new HashSet<string>());
+            _htmlSanitizer.Setup(x => x.AllowedAtRules).Returns(new HashSet<CssRuleType>());
+        }
+
+        private SqlServerTournamentRepository CreateRepository()
+        {
+            return new SqlServerTournamentRepository(
+                _databaseFixture.ConnectionFactory,
+                new DapperWrapper(),
+                _auditRepository.Object,
+                _logger.Object,
+                _routeGenerator.Object,
+                _redirectsRepository.Object,
+                _teamRepository.Object,
+                _matchRepository.Object,
+                _htmlSanitizer.Object,
+                _copier.Object);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Create_tournament_inserts_basic_fields(bool hasLocation)
+        {
+            var tournament = new Tournament
+            {
+                TournamentName = "Tournament name",
+                TournamentLocation = hasLocation ? new MatchLocation { MatchLocationId = _databaseFixture.TestData.MatchLocations.First().MatchLocationId } : null,
+                PlayerType = PlayerType.JuniorBoys,
+                PlayersPerTeam = 10,
+                QualificationType = TournamentQualificationType.OpenTournament,
+                StartTime = new DateTimeOffset(2022, 8, 1, 12, 30, 0, TimeSpan.FromHours(1)), // deliberately British Summer Time
+                StartTimeIsKnown = true,
+                TournamentNotes = "<h1>h1 not allowed but <strong>is allowed</strong></h1>",
+                MemberKey = Guid.NewGuid()
+            };
+
+            var expectedRoute = "/tournaments/example-tournament";
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/tournaments", tournament.TournamentName + " " + tournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(expectedRoute));
+
+            SetupEntityCopierMock(tournament, tournament, tournament);
+            var sanitizedNotes = tournament.TournamentNotes.Replace("<h1>", string.Empty).Replace("</h1>", string.Empty);
+            _htmlSanitizer.Setup(x => x.Sanitize(tournament.TournamentNotes, string.Empty, null)).Returns(sanitizedNotes);
+
+            var repo = CreateRepository();
+
+            var createdTournament = await repo.CreateTournament(tournament, tournament.MemberKey.Value, "Member name").ConfigureAwait(false);
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var result = await connection.QuerySingleOrDefaultAsync<Tournament>(@$"
+                        SELECT TournamentName, PlayerType, PlayersPerTeam, QualificationType, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute, MemberKey 
+                        FROM {Tables.Tournament} WHERE TournamentId = @TournamentId", new { createdTournament.TournamentId });
+
+                Assert.NotNull(result);
+                Assert.Equal(tournament.TournamentName, result.TournamentName);
+                Assert.Equal(tournament.PlayerType.ToString(), result.PlayerType.ToString());
+                Assert.Equal(tournament.PlayersPerTeam, result.PlayersPerTeam);
+                Assert.Equal(tournament.QualificationType.ToString(), result.QualificationType.ToString());
+                Assert.Equal(tournament.StartTime.UtcDateTime, result.StartTime.UtcDateTime);
+                Assert.Equal(tournament.StartTimeIsKnown, result.StartTimeIsKnown);
+                Assert.Equal(sanitizedNotes, result.TournamentNotes);
+                Assert.Equal(expectedRoute, result.TournamentRoute);
+                Assert.Equal(tournament.MemberKey, result.MemberKey);
+
+                var matchLocationId = await connection.ExecuteScalarAsync<Guid?>(@$"SELECT MatchLocationId FROM {Tables.Tournament} WHERE TournamentId = @TournamentId", new { createdTournament.TournamentId });
+                if (hasLocation)
+                {
+                    Assert.Equal(tournament.TournamentLocation!.MatchLocationId, matchLocationId);
+                }
+                else
+                {
+                    Assert.Null(result.TournamentLocation);
+                }
+            }
+
+        }
+
+        [Fact]
+        public async Task Create_tournament_inserts_teams()
+        {
+            var tournament = new Tournament
+            {
+                TournamentName = "Example tournament",
+                StartTime = DateTime.Now.AddDays(1),
+                TournamentRoute = "/tournaments/example-tournament",
+                Teams = _databaseFixture.TestData.Teams.Take(2).Select(x => new TeamInTournament { Team = new Team { TeamId = x.TeamId }, TeamRole = TournamentTeamRole.Confirmed, PlayingAsTeamName = x.TeamName + "xxx" }).ToList()
+            };
+
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
+
+            SetupEntityCopierMock(tournament, tournament, tournament);
+
+            var repo = CreateRepository();
+
+            var createdTournament = await repo.CreateTournament(tournament, Guid.NewGuid(), "Member name");
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var results = await connection.QueryAsync<(Guid teamId, string teamRole, string playingAs)?>(@$"
+                        SELECT TeamId, TeamRole, PlayingAsTeamName
+                        FROM {Tables.TournamentTeam} WHERE TournamentId = @TournamentId", new { createdTournament.TournamentId });
+
+                Assert.Equal(tournament.Teams.Count, results.Count());
+                foreach (var team in tournament.Teams)
+                {
+                    var result = results.SingleOrDefault(x => x?.teamId == team.Team.TeamId);
+                    Assert.NotNull(result);
+
+                    Assert.Equal(team.TeamRole.ToString(), result?.teamRole);
+                    Assert.Equal(team.PlayingAsTeamName, result?.playingAs);
+                }
+            }
+        }
+
+
+        [Fact]
+        public async Task Create_tournament_inserts_seasons()
+        {
+            var tournament = new Tournament
+            {
+                TournamentName = "Example tournament",
+                StartTime = DateTime.Now.AddDays(1),
+                TournamentRoute = "/tournaments/example-tournament",
+                Seasons = _databaseFixture.TestData.Seasons.Take(2).Select(x => new Season { SeasonId = x.SeasonId }).ToList()
+            };
+
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
+
+            SetupEntityCopierMock(tournament, tournament, tournament);
+
+            var repo = CreateRepository();
+
+            var createdTournament = await repo.CreateTournament(tournament, Guid.NewGuid(), "Member name");
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var results = await connection.QueryAsync<Guid>(@$"SELECT SeasonId FROM {Tables.TournamentSeason} WHERE TournamentId = @TournamentId", new { createdTournament.TournamentId });
+
+                Assert.Equal(tournament.Seasons.Count, results.Count());
+                foreach (var season in tournament.Seasons)
+                {
+                    Assert.Contains(season.SeasonId!.Value, results);
+                }
+            }
         }
 
         [Fact]
@@ -42,19 +201,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 TournamentRoute = "/tournaments/example-tournament"
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
 
-            var repo = new SqlServerTournamentRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerTournamentRepository>>(),
-                routeGenerator.Object,
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<ITeamRepository>(),
-                Mock.Of<IMatchRepository>(),
-                CreateHtmlSanitizerMock().Object,
-                CreateEntityCopierMock(tournament, tournament, tournament).Object);
+            SetupEntityCopierMock(tournament, tournament, tournament);
+
+            var repo = CreateRepository();
 
             var createdTournament = await repo.CreateTournament(tournament, Guid.NewGuid(), "Member name");
 
@@ -71,6 +222,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             }
         }
 
+
         [Fact]
         public async Task Create_tournament_should_not_insert_default_overset_if_overs_not_specified()
         {
@@ -82,19 +234,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 TournamentRoute = "/tournaments/example-tournament"
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
 
-            var repo = new SqlServerTournamentRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerTournamentRepository>>(),
-                routeGenerator.Object,
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<ITeamRepository>(),
-                Mock.Of<IMatchRepository>(),
-                CreateHtmlSanitizerMock().Object,
-                CreateEntityCopierMock(tournament, tournament, tournament).Object);
+            SetupEntityCopierMock(tournament, tournament, tournament);
+
+            var repo = CreateRepository();
 
             var createdTournament = await repo.CreateTournament(tournament, Guid.NewGuid(), "Member name");
 
@@ -111,7 +255,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_should_update_existing_default_overset_if_overs_specified()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails;
+            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
 
             var auditable = new Tournament
             {
@@ -130,19 +274,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 }
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
 
-            var repo = new SqlServerTournamentRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerTournamentRepository>>(),
-                routeGenerator.Object,
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<ITeamRepository>(),
-                Mock.Of<IMatchRepository>(),
-                CreateHtmlSanitizerMock().Object,
-                CreateEntityCopierMock(tournament, auditable, auditable).Object);
+            SetupEntityCopierMock(tournament, auditable, auditable);
+
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTournament(tournament, Guid.NewGuid(), "Member name");
 
@@ -163,7 +299,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_in_the_future_should_update_existing_match_overset_if_overs_specified()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails;
+            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
 
             var auditable = new Tournament
             {
@@ -182,19 +318,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 }
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
 
-            var repo = new SqlServerTournamentRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerTournamentRepository>>(),
-                routeGenerator.Object,
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<ITeamRepository>(),
-                Mock.Of<IMatchRepository>(),
-                CreateHtmlSanitizerMock().Object,
-                CreateEntityCopierMock(tournament, auditable, auditable).Object);
+            SetupEntityCopierMock(tournament, auditable, auditable);
+
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTournament(tournament, Guid.NewGuid(), "Member name");
 
@@ -222,7 +350,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_in_the_past_should_not_update_match_overset_if_overs_specified()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails;
+            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
 
             var auditable = new Tournament
             {
@@ -241,19 +369,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 }
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
 
-            var repo = new SqlServerTournamentRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerTournamentRepository>>(),
-                routeGenerator.Object,
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<ITeamRepository>(),
-                Mock.Of<IMatchRepository>(),
-                CreateHtmlSanitizerMock().Object,
-                CreateEntityCopierMock(tournament, auditable, auditable).Object);
+            SetupEntityCopierMock(tournament, auditable, auditable);
+
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTournament(tournament, Guid.NewGuid(), "Member name");
 
@@ -281,7 +401,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_should_clear_default_overset_if_overs_not_specified()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails;
+            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
 
             var auditable = new Tournament
             {
@@ -292,19 +412,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 DefaultOverSets = new List<OverSet>()
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
 
-            var repo = new SqlServerTournamentRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerTournamentRepository>>(),
-                routeGenerator.Object,
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<ITeamRepository>(),
-                Mock.Of<IMatchRepository>(),
-                CreateHtmlSanitizerMock().Object,
-                CreateEntityCopierMock(tournament, auditable, auditable).Object);
+            SetupEntityCopierMock(tournament, auditable, auditable);
+
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTournament(tournament, Guid.NewGuid(), "Member name");
 
@@ -322,7 +434,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_in_the_future_should_not_clear_match_overset_if_overs_not_specified()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails;
+            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
 
             var auditable = new Tournament
             {
@@ -333,19 +445,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 DefaultOverSets = new List<OverSet>()
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
 
-            var repo = new SqlServerTournamentRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerTournamentRepository>>(),
-                routeGenerator.Object,
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<ITeamRepository>(),
-                Mock.Of<IMatchRepository>(),
-                CreateHtmlSanitizerMock().Object,
-                CreateEntityCopierMock(tournament, auditable, auditable).Object);
+            SetupEntityCopierMock(tournament, auditable, auditable);
+
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTournament(tournament, Guid.NewGuid(), "Member name");
 
@@ -373,25 +477,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Delete_tournament_succeeds()
         {
-            var auditable = new Tournament { TournamentId = _databaseFixture.TestData.TournamentWithFullDetails.TournamentId };
+            var auditable = new Tournament { TournamentId = _databaseFixture.TestData.TournamentWithFullDetails!.TournamentId };
             var redacted = new Tournament { TournamentId = _databaseFixture.TestData.TournamentWithFullDetails.TournamentId };
 
-            var sanitizer = CreateHtmlSanitizerMock();
-            var copier = CreateEntityCopierMock(_databaseFixture.TestData.TournamentWithFullDetails, auditable, redacted);
+            SetupEntityCopierMock(_databaseFixture.TestData.TournamentWithFullDetails, auditable, redacted);
 
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
 
-            var repo = new SqlServerTournamentRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerTournamentRepository>>(),
-                Mock.Of<IRouteGenerator>(),
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<ITeamRepository>(),
-                Mock.Of<IMatchRepository>(),
-                sanitizer.Object,
-                copier.Object);
+            var repo = CreateRepository();
 
             await repo.DeleteTournament(_databaseFixture.TestData.TournamentWithFullDetails, memberKey, memberName);
 
@@ -402,22 +496,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             }
         }
 
-        private Mock<IStoolballEntityCopier> CreateEntityCopierMock(Tournament original, Tournament auditable, Tournament redacted)
+        private void SetupEntityCopierMock(Tournament original, Tournament auditable, Tournament redacted)
         {
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(original)).Returns(auditable);
-            copier.Setup(x => x.CreateAuditableCopy(auditable)).Returns(redacted);
-            return copier;
-        }
-
-        private static Mock<IHtmlSanitizer> CreateHtmlSanitizerMock()
-        {
-            var sanitizer = new Mock<IHtmlSanitizer>();
-            sanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
-            sanitizer.Setup(x => x.AllowedAttributes).Returns(new HashSet<string>());
-            sanitizer.Setup(x => x.AllowedCssProperties).Returns(new HashSet<string>());
-            sanitizer.Setup(x => x.AllowedAtRules).Returns(new HashSet<CssRuleType>());
-            return sanitizer;
+            _copier.Setup(x => x.CreateAuditableCopy(original)).Returns(auditable);
+            _copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
         }
 
         public void Dispose() => _scope.Dispose();

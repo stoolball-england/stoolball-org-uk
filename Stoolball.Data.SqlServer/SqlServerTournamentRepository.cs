@@ -20,6 +20,7 @@ namespace Stoolball.Data.SqlServer
     public class SqlServerTournamentRepository : ITournamentRepository
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
+        private readonly IDapperWrapper _dapperWrapper;
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger<SqlServerTournamentRepository> _logger;
         private readonly IRouteGenerator _routeGenerator;
@@ -29,10 +30,11 @@ namespace Stoolball.Data.SqlServer
         private readonly IHtmlSanitizer _htmlSanitiser;
         private readonly IStoolballEntityCopier _stoolballEntityCopier;
 
-        public SqlServerTournamentRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger<SqlServerTournamentRepository> logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, ITeamRepository teamRepository, IMatchRepository matchRepository, IHtmlSanitizer htmlSanitiser, IStoolballEntityCopier stoolballEntityCopier)
+        public SqlServerTournamentRepository(IDatabaseConnectionFactory databaseConnectionFactory, IDapperWrapper dapperWrapper, IAuditRepository auditRepository, ILogger<SqlServerTournamentRepository> logger,
+            IRouteGenerator routeGenerator, IRedirectsRepository redirectsRepository, ITeamRepository teamRepository, IMatchRepository matchRepository, IHtmlSanitizer htmlSanitiser, IStoolballEntityCopier stoolballEntityCopier)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
+            _dapperWrapper = dapperWrapper ?? throw new ArgumentNullException(nameof(dapperWrapper));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
@@ -89,7 +91,7 @@ namespace Stoolball.Data.SqlServer
                         async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Tournament} WHERE TournamentRoute = @TournamentRoute", new { TournamentRoute = route }, transaction).ConfigureAwait(false)
                     ).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Tournament}
+                    await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.Tournament}
 						(TournamentId, TournamentName, MatchLocationId, PlayerType, PlayersPerTeam, 
 						 QualificationType, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute, MemberKey)
 						VALUES (@TournamentId, @TournamentName, @MatchLocationId, @PlayerType, @PlayersPerTeam, 
@@ -113,22 +115,23 @@ namespace Stoolball.Data.SqlServer
 
                     foreach (var team in auditableTournament.Teams)
                     {
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
-								(TournamentTeamId, TournamentId, TeamId, TeamRole) 
-                                VALUES (@TournamentTeamId, @TournamentId, @TeamId, @TeamRole)",
+                        await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
+								(TournamentTeamId, TournamentId, TeamId, TeamRole, PlayingAsTeamName) 
+                                VALUES (@TournamentTeamId, @TournamentId, @TeamId, @TeamRole, @PlayingAsTeamName)",
                             new
                             {
                                 TournamentTeamId = Guid.NewGuid(),
                                 auditableTournament.TournamentId,
                                 team.Team.TeamId,
-                                TeamRole = team.TeamRole.ToString()
+                                TeamRole = team.TeamRole.ToString(),
+                                team.PlayingAsTeamName
                             },
                             transaction).ConfigureAwait(false);
                     }
 
                     foreach (var season in auditableTournament.Seasons)
                     {
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentSeason} 
+                        await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.TournamentSeason} 
 								(TournamentSeasonId, TournamentId, SeasonId) 
                                 VALUES (@TournamentSeasonId, @TournamentId, @SeasonId)",
                             new
@@ -154,21 +157,21 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.CreateTournament));
+                    _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(CreateTournament));
                 }
             }
 
             return auditableTournament;
         }
 
-        private static async Task InsertOverSets(Tournament auditableTournament, System.Data.IDbTransaction transaction)
+        private async Task InsertOverSets(Tournament auditableTournament, IDbTransaction transaction)
         {
-            var matchInningsIds = await transaction.Connection.QueryAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} mi INNER JOIN {Tables.Match} m ON mi.MatchId = m.MatchId WHERE m.TournamentId = @TournamentId", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
+            var matchInningsIds = await _dapperWrapper.QueryAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} mi INNER JOIN {Tables.Match} m ON mi.MatchId = m.MatchId WHERE m.TournamentId = @TournamentId", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
 
             for (var i = 0; i < auditableTournament.DefaultOverSets.Count; i++)
             {
                 auditableTournament.DefaultOverSets[i].OverSetId = Guid.NewGuid();
-                await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, TournamentId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @TournamentId, @OverSetNumber, @Overs, @BallsPerOver)",
+                await _dapperWrapper.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, TournamentId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @TournamentId, @OverSetNumber, @Overs, @BallsPerOver)",
                     new
                     {
                         auditableTournament.DefaultOverSets[i].OverSetId,
@@ -179,20 +182,22 @@ namespace Stoolball.Data.SqlServer
                     },
                     transaction).ConfigureAwait(false);
 
-                foreach (var matchInningsId in matchInningsIds)
+                if (matchInningsIds != null)
                 {
-                    await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @MatchInningsId, @OverSetNumber, @Overs, @BallsPerOver)",
-                        new
-                        {
-                            OverSetId = Guid.NewGuid(),
-                            MatchInningsId = matchInningsId,
-                            OverSetNumber = i + 1,
-                            auditableTournament.DefaultOverSets[i].Overs,
-                            auditableTournament.DefaultOverSets[i].BallsPerOver
-                        },
-                        transaction).ConfigureAwait(false);
+                    foreach (var matchInningsId in matchInningsIds)
+                    {
+                        await _dapperWrapper.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @MatchInningsId, @OverSetNumber, @Overs, @BallsPerOver)",
+                            new
+                            {
+                                OverSetId = Guid.NewGuid(),
+                                MatchInningsId = matchInningsId,
+                                OverSetNumber = i + 1,
+                                auditableTournament.DefaultOverSets[i].Overs,
+                                auditableTournament.DefaultOverSets[i].BallsPerOver
+                            },
+                            transaction).ConfigureAwait(false);
+                    }
                 }
-
             }
         }
 
@@ -350,7 +355,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.UpdateTournament));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateTournament));
                 }
             }
 
@@ -562,7 +567,7 @@ namespace Stoolball.Data.SqlServer
                                     AuditDate = DateTime.UtcNow
                                 }, transaction).ConfigureAwait(false);
 
-                                _logger.Info(LoggingTemplates.Created, team, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.UpdateTeams));
+                                _logger.Info(LoggingTemplates.Created, team, memberName, memberKey, GetType(), nameof(UpdateTeams));
                             }
 
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
@@ -876,7 +881,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.DeleteTournament));
+                    _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteTournament));
                 }
             }
         }

@@ -47,13 +47,13 @@ namespace Stoolball.Data.SqlServer.UnitTests
         [Fact]
         public async Task ProcessAsyncUpdates_allows_3_retries_for_SQL_timeouts_and_logs_warnings()
         {
-            _dapperWrapper.Setup(x => x.QueryAsync<string>(_databaseConnection.Object, SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure)).Throws(SqlExceptionFactory.Create(SqlExceptionType.Timeout));
+            _dapperWrapper.Setup(x => x.QueryAsync<string>(SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure, _databaseConnection.Object)).Throws(SqlExceptionFactory.Create(SqlExceptionType.Timeout));
 
             var repo = CreateRepository();
 
             await repo.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
 
-            _dapperWrapper.Verify(x => x.QueryAsync<string>(_databaseConnection.Object, SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure), Times.Exactly(4));
+            _dapperWrapper.Verify(x => x.QueryAsync<string>(SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure, _databaseConnection.Object), Times.Exactly(4));
             _logger.Verify(x => x.Warn(SqlServerPlayerRepository.LOG_TEMPLATE_WARN_SQL_TIMEOUT, It.IsAny<int>()), Times.Exactly(4));
         }
 
@@ -63,7 +63,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
             var affectedRoutesFirstIteration = new[] { "/players/one", "/players/two" };
             var affectedRoutesSecondIteration = new[] { "/players/three", "/players/four" };
 
-            _dapperWrapper.SetupSequence(x => x.QueryAsync<string>(_databaseConnection.Object, SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure))
+            _dapperWrapper.SetupSequence(x => x.QueryAsync<string>(SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure, _databaseConnection.Object))
                 .Returns(Task.FromResult(affectedRoutesFirstIteration as IEnumerable<string>))
                 .Returns(Task.FromResult(affectedRoutesSecondIteration as IEnumerable<string>))
                 .Returns(Task.FromResult(Array.Empty<string>() as IEnumerable<string>));
@@ -88,7 +88,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
         {
             var affectedRoutes = new[] { "/players/one", "/players/two" };
 
-            _dapperWrapper.SetupSequence(x => x.QueryAsync<string>(_databaseConnection.Object, SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure))
+            _dapperWrapper.SetupSequence(x => x.QueryAsync<string>(SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure, _databaseConnection.Object))
                 .Returns(Task.FromResult(affectedRoutes as IEnumerable<string>))
                 .Returns(Task.FromResult(Array.Empty<string>() as IEnumerable<string>));
 
@@ -103,13 +103,13 @@ namespace Stoolball.Data.SqlServer.UnitTests
         [Fact]
         public async Task ProcessAsyncUpdates_logs_SQL_connection_error_and_exits()
         {
-            _dapperWrapper.Setup(x => x.QueryAsync<string>(_databaseConnection.Object, SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure)).Throws(SqlExceptionFactory.Create(SqlExceptionType.Connection));
+            _dapperWrapper.Setup(x => x.QueryAsync<string>(SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure, _databaseConnection.Object)).Throws(SqlExceptionFactory.Create(SqlExceptionType.Connection));
 
             var repo = CreateRepository();
 
             await repo.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
 
-            _dapperWrapper.Verify(x => x.QueryAsync<string>(_databaseConnection.Object, SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure), Times.Exactly(1));
+            _dapperWrapper.Verify(x => x.QueryAsync<string>(SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure, _databaseConnection.Object), Times.Exactly(1));
             _logger.Verify(x => x.Error(
                 SqlServerPlayerRepository.LOG_TEMPLATE_ERROR_SQL_EXCEPTION,
                 SqlExceptionFactory.ERROR_ESTABLISHING_CONNECTION
