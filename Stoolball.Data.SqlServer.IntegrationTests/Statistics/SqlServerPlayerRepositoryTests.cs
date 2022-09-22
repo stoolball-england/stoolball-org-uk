@@ -7,7 +7,6 @@ using Dapper;
 using Humanizer;
 using Moq;
 using Newtonsoft.Json;
-using Stoolball.Caching;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Routing;
@@ -30,7 +29,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         private readonly Mock<IRouteGenerator> _routeGenerator = new();
         private readonly Mock<IBestRouteSelector> _routeSelector = new();
         private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
-        private readonly Mock<ICacheClearer<Player>> _playerCacheClearer = new();
+        private readonly Mock<IPlayerCacheClearer> _playerCacheClearer = new();
 
         public SqlServerPlayerRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
@@ -51,7 +50,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 _routeSelector.Object,
                 _playerCacheClearer.Object);
         }
-
+#nullable disable
         [Fact]
         public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_playerIdentity_is_null()
         {
@@ -67,7 +66,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = null, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
         }
-
         [Fact]
         public async Task CreateOrMatchPlayerIdentity_throws_ArgumentException_if_PlayerIdentityName_is_empty_string()
         {
@@ -107,6 +105,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", null));
         }
+#nullable enable
 
         [Fact]
         public async Task CreateOrMatchPlayerIdentity_returns_playerIdentity_if_playerIdentityId_and_playerId_are_present()
@@ -124,7 +123,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var repo = CreateRepository();
             var transaction = new Mock<IDbTransaction>();
 
-            var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), null, transaction.Object);
+            var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", transaction.Object);
 
             Assert.Equal(playerIdentity, result);
             transaction.Verify(x => x.Connection, Times.Never);
@@ -160,10 +159,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
         private class PlayerIdentityResult
         {
-            public Guid PlayerId { get; set; }
-            public string PlayerIdentityName { get; set; }
-            public string ComparableName { get; set; }
-            public Guid TeamId { get; set; }
+            public Guid? PlayerId { get; set; }
+            public string? PlayerIdentityName { get; set; }
+            public string? ComparableName { get; set; }
+            public Guid? TeamId { get; set; }
         }
 
         [Fact]
@@ -177,7 +176,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     var playerIdentity = new PlayerIdentity
                     {
                         PlayerIdentityName = $"New player {Guid.NewGuid()}",
-                        Team = new Team { TeamId = _databaseFixture.TestData.TeamWithFullDetails.TeamId }
+                        Team = new Team { TeamId = _databaseFixture.TestData.TeamWithFullDetails!.TeamId }
                     };
                     var playerRoute = $"/players/{playerIdentity.PlayerIdentityName.Kebaberize()}";
                     _copier.Setup(x => x.CreateAuditableCopy(playerIdentity)).Returns(playerIdentity);
@@ -223,7 +222,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var playerIdentity = new PlayerIdentity
             {
                 PlayerIdentityName = $"New player {Guid.NewGuid()}",
-                Team = new Team { TeamId = _databaseFixture.TestData.TeamWithFullDetails.TeamId }
+                Team = new Team { TeamId = _databaseFixture.TestData.TeamWithFullDetails!.TeamId }
             };
             _copier.Setup(x => x.CreateAuditableCopy(playerIdentity)).Returns(playerIdentity);
             _playerNameFormatter.Setup(x => x.CapitaliseName(playerIdentity.PlayerIdentityName)).Returns(playerIdentity.PlayerIdentityName);
@@ -401,7 +400,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var repo = CreateRepository();
             await repo.LinkPlayerToMemberAccount(player, memberNotLinkedToPlayer.memberKey, memberNotLinkedToPlayer.memberName);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri.ToString().EndsWith(player.PlayerId.ToString())), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri.ToString().EndsWith(player.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, JsonConvert.SerializeObject(playerCopy), memberNotLinkedToPlayer.memberName, memberNotLinkedToPlayer.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
         }
 
@@ -422,11 +421,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var repo = CreateRepository();
             await repo.LinkPlayerToMemberAccount(playerNotLinkedToMember, memberWithExistingPlayer.memberKey, memberWithExistingPlayer.memberName);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Delete && x.EntityUri.ToString().EndsWith(playerNotLinkedToMember.PlayerId.ToString())), It.IsAny<IDbTransaction>()), Times.Once);
-            _logger.Verify(x => x.Info(LoggingTemplates.Deleted, It.Is<string>(x => x.Contains(playerNotLinkedToMember.PlayerId.ToString())), memberWithExistingPlayer.memberName, memberWithExistingPlayer.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Delete && x.EntityUri.ToString().EndsWith(playerNotLinkedToMember.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Deleted, It.Is<string>(x => x.Contains(playerNotLinkedToMember.PlayerId.ToString()!)), memberWithExistingPlayer.memberName, memberWithExistingPlayer.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri.ToString().EndsWith(playerAlreadyLinked.PlayerId.ToString())), It.IsAny<IDbTransaction>()), Times.Once);
-            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.Is<string>(x => x.Contains(playerAlreadyLinked.PlayerId.ToString())), memberWithExistingPlayer.memberName, memberWithExistingPlayer.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri.ToString().EndsWith(playerAlreadyLinked.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.Is<string>(x => x.Contains(playerAlreadyLinked.PlayerId.ToString()!)), memberWithExistingPlayer.memberName, memberWithExistingPlayer.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
         }
 
         [Fact]

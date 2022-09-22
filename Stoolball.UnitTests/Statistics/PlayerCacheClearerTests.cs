@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Moq;
 using Stoolball.Caching;
 using Stoolball.Statistics;
@@ -12,12 +11,12 @@ namespace Stoolball.UnitTests.Statistics
         private readonly Mock<IReadThroughCache> _cache = new();
 
         [Fact]
-        public async Task Clears_cache_for_reading_players_by_PlayerRoute_and_MemberKey_and_for_player_summary_statistics()
+        public void Clears_cache_for_reading_players_by_PlayerRoute_and_MemberKey_and_for_player_summary_statistics()
         {
             var player = new Player { PlayerRoute = "/players/example", MemberKey = Guid.NewGuid() };
             var cacheClearer = new PlayerCacheClearer(_cache.Object);
 
-            await cacheClearer.ClearCacheFor(player);
+            cacheClearer.ClearCacheForPlayer(player);
 
             _cache.Verify(x => x.InvalidateCache(nameof(IPlayerDataSource) + nameof(IPlayerDataSource.ReadPlayerByRoute) + player.PlayerRoute), Times.Once);
             _cache.Verify(x => x.InvalidateCache(nameof(IPlayerDataSource) + nameof(IPlayerDataSource.ReadPlayerByMemberKey) + player.MemberKey), Times.Once);
@@ -27,33 +26,33 @@ namespace Stoolball.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Skips_clearing_ReadPlayerByMemberKey_cache_for_missing_MemberKey()
+        public void Skips_clearing_ReadPlayerByMemberKey_cache_for_missing_MemberKey()
         {
             var player = new Player { PlayerRoute = "/players/example", MemberKey = null };
             var cacheClearer = new PlayerCacheClearer(_cache.Object);
 
-            await cacheClearer.ClearCacheFor(player);
+            cacheClearer.ClearCacheForPlayer(player);
 
             _cache.Verify(x => x.InvalidateCache(nameof(IPlayerDataSource) + nameof(IPlayerDataSource.ReadPlayerByMemberKey)), Times.Never);
         }
 
         [Fact]
-        public async Task Throws_ArgumentNullException_for_missing_Player()
+        public void Throws_ArgumentNullException_for_missing_Player()
         {
             var cacheClearer = new PlayerCacheClearer(_cache.Object);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await cacheClearer.ClearCacheFor(null));
+            Assert.Throws<ArgumentNullException>(() => cacheClearer.ClearCacheForPlayer(null));
         }
 
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        public async Task Throws_ArgumentException_for_missing_PlayerRoute(string route)
+        public void Throws_ArgumentException_for_missing_PlayerRoute(string route)
         {
             var player = new Player { PlayerRoute = route, MemberKey = Guid.NewGuid() };
             var cacheClearer = new PlayerCacheClearer(_cache.Object);
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await cacheClearer.ClearCacheFor(player));
+            Assert.Throws<ArgumentException>(() => cacheClearer.ClearCacheForPlayer(player));
         }
     }
 }

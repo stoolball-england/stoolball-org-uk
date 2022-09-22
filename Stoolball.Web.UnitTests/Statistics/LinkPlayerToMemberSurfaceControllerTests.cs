@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Stoolball.Caching;
 using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
 using Stoolball.Web.Statistics.Models;
@@ -20,7 +19,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IPlayerSummaryViewModelFactory> _viewModelFactory = new();
         private readonly Mock<IMemberManager> _memberManager = new();
         private readonly Mock<IPlayerRepository> _playerRepository = new();
-        private readonly Mock<ICacheClearer<Player>> _cacheClearer = new();
+        private readonly Mock<IPlayerCacheClearer> _cacheClearer = new();
 
         public LinkPlayerToMemberSurfaceControllerTests() : base()
         {
@@ -122,8 +121,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.LinkPlayerToMemberAccount();
 
-                _cacheClearer.Verify(x => x.ClearCacheFor(playerToLink), Times.Once);
-                _cacheClearer.Verify(x => x.ClearCacheFor(linkedPlayer), Times.Once);
+                _cacheClearer.Verify(x => x.ClearCacheForPlayer(playerToLink), Times.Once);
+                _cacheClearer.Verify(x => x.ClearCacheForPlayer(linkedPlayer), Times.Once);
             }
         }
     }

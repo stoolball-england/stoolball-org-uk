@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Statistics;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics.Models;
@@ -23,14 +22,14 @@ namespace Stoolball.Web.Statistics
         private readonly IMemberManager _memberManager;
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IPlayerRepository _playerRepository;
-        private readonly ICacheClearer<Player> _playerCacheClearer;
+        private readonly IPlayerCacheClearer _playerCacheClearer;
 
         public LinkedPlayersForMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory,
             ServiceContext serviceContext, AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider,
             IMemberManager memberManager,
             IPlayerDataSource playerDataSource,
             IPlayerRepository playerRepository,
-            ICacheClearer<Player> playerCacheClearer)
+            IPlayerCacheClearer playerCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -67,7 +66,7 @@ namespace Stoolball.Web.Statistics
 
                 if (identitiesToUnlink.Any())
                 {
-                    await _playerCacheClearer.ClearCacheFor(player);
+                    _playerCacheClearer.ClearCacheForPlayer(player);
                 }
             }
 

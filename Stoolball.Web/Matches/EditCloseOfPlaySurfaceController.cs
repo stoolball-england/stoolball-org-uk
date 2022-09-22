@@ -30,12 +30,13 @@ namespace Stoolball.Web.Matches
         private readonly IMatchRepository _matchRepository;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
-        private readonly IMatchListingCacheClearer _cacheClearer;
+        private readonly IMatchListingCacheClearer _matchListingCacheClearer;
+        private readonly IPlayerCacheClearer _playerCacheClearer;
 
         public EditCloseOfPlaySurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
-            IMatchDataSource matchDataSource, IMatchRepository matchRepository,
-            IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchListingCacheClearer cacheClearer)
+            IMatchDataSource matchDataSource, IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter,
+            IMatchListingCacheClearer matchListingCacheClearer, IPlayerCacheClearer playerCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -43,7 +44,8 @@ namespace Stoolball.Web.Matches
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
-            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
+            _matchListingCacheClearer = matchListingCacheClearer ?? throw new ArgumentNullException(nameof(matchListingCacheClearer));
+            _playerCacheClearer = playerCacheClearer ?? throw new ArgumentNullException(nameof(playerCacheClearer));
         }
 
         [HttpPost]
@@ -96,7 +98,8 @@ namespace Stoolball.Web.Matches
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedMatch = await _matchRepository.UpdateCloseOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheForMatch(beforeUpdate, updatedMatch).ConfigureAwait(false);
+                await _matchListingCacheClearer.ClearCacheForMatch(beforeUpdate, updatedMatch).ConfigureAwait(false);
+                _playerCacheClearer.ClearCacheForTeams(model.Match.Teams.Select(x => x.Team).ToArray());
 
                 return Redirect(updatedMatch.MatchRoute);
             }

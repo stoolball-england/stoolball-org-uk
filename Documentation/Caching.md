@@ -33,11 +33,7 @@ In `Startup.cs` the application is configured to inject the cached data source i
 
 The cached data sources define the length of time the cache lasts for, and whether it uses absolute or sliding expiration, using the `CachePolicy` class.
 
-When caches need to be updated immediately for all, the controller requires:
-
-- for individual entities, an `ICacheClearer<T>` and a call to the `ClearCacheFor` method with the object the cache needs to be cleared for
-- for match listings, an `IMatchListingCacheClearer` and a call to one of the `ClearCache*` methods
-- for other listings, an `IListingCacheClearer<T>` and a call to the `ClearCache` method.
+When caches need to be updated immediately for all, the controller requires an `I***CacheClearer` appropriate to the type of object being cached, and a call to one of the `ClearCache*` methods.
 
 ## Further caching with Examine
 

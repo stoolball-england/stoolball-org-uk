@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Moq;
-using Stoolball.Caching;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Statistics;
@@ -23,7 +22,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
         private readonly Mock<IRouteGenerator> _routeGenerator = new();
         private readonly Mock<IBestRouteSelector> _routeSelector = new();
         private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
-        private readonly Mock<ICacheClearer<Player>> _playerCacheClearer = new();
+        private readonly Mock<IPlayerCacheClearer> _playerCacheClearer = new();
 
         public SqlServerPlayerRepositoryUnitTests()
         {
@@ -74,11 +73,11 @@ namespace Stoolball.Data.SqlServer.UnitTests
 
             foreach (var route in affectedRoutesFirstIteration)
             {
-                _playerCacheClearer.Verify(x => x.ClearCacheFor(It.Is<Player>(x => x.PlayerRoute == route)), Times.Once);
+                _playerCacheClearer.Verify(x => x.ClearCacheForPlayer(It.Is<Player>(x => x.PlayerRoute == route)), Times.Once);
             }
             foreach (var route in affectedRoutesSecondIteration)
             {
-                _playerCacheClearer.Verify(x => x.ClearCacheFor(It.Is<Player>(x => x.PlayerRoute == route)), Times.Once);
+                _playerCacheClearer.Verify(x => x.ClearCacheForPlayer(It.Is<Player>(x => x.PlayerRoute == route)), Times.Once);
             }
         }
 

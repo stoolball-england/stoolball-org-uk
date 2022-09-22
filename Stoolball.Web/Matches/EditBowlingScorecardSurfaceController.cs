@@ -34,11 +34,13 @@ namespace Stoolball.Web.Matches
         private readonly IMatchInningsUrlParser _matchInningsUrlParser;
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly IOverSetScaffolder _overSetScaffolder;
+        private readonly IPlayerCacheClearer _playerCacheClearer;
 
         public EditBowlingScorecardSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchDataSource matchDataSource, IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter,
-            IMatchInningsUrlParser matchInningsUrlParser, IBowlingFiguresCalculator bowlingFiguresCalculator, IOverSetScaffolder overSetScaffolder)
+            IMatchInningsUrlParser matchInningsUrlParser, IBowlingFiguresCalculator bowlingFiguresCalculator, IOverSetScaffolder overSetScaffolder,
+            IPlayerCacheClearer playerCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -49,6 +51,7 @@ namespace Stoolball.Web.Matches
             _matchInningsUrlParser = matchInningsUrlParser ?? throw new ArgumentNullException(nameof(matchInningsUrlParser));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _overSetScaffolder = overSetScaffolder ?? throw new ArgumentNullException(nameof(overSetScaffolder));
+            _playerCacheClearer = playerCacheClearer ?? throw new ArgumentNullException(nameof(playerCacheClearer));
         }
 
         [HttpPost]
@@ -62,7 +65,7 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(postedData));
             }
 
-            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path);
+            var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.Path).ConfigureAwait(false);
 
             if (beforeUpdate.StartTime > DateTime.UtcNow || beforeUpdate.Tournament != null)
             {
@@ -130,7 +133,8 @@ namespace Stoolball.Web.Matches
             if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                await _matchRepository.UpdateBowlingScorecard(model.Match, model.CurrentInnings.MatchInnings.MatchInningsId!.Value, currentMember.Key, currentMember.Name);
+                await _matchRepository.UpdateBowlingScorecard(model.Match, model.CurrentInnings.MatchInnings.MatchInningsId!.Value, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                _playerCacheClearer.ClearCacheForTeams(model.CurrentInnings.MatchInnings.BowlingTeam.Team);
 
                 // redirect to the next innings or close of play
                 if (model.InningsOrderInMatch!.Value < model.Match.MatchInnings.Count)

@@ -193,7 +193,7 @@ namespace Stoolball.Web
             // Caching
             services.AddMemoryCache();
             services.AddTransient<IReadThroughCache, ReadThroughCache>();
-            services.AddTransient<ICacheClearer<Player>, PlayerCacheClearer>();
+            services.AddTransient<IPlayerCacheClearer, PlayerCacheClearer>();
             services.AddTransient<IMatchListingCacheClearer, MatchListingCacheClearer>();
             services.AddTransient<IListingCacheClearer<Competition>, CompetitionListingCacheClearer>();
             services.AddTransient<IListingCacheClearer<MatchLocation>, MatchLocationListingCacheClearer>();

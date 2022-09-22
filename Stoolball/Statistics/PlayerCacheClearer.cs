@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Linq;
 using Stoolball.Caching;
+using Stoolball.Teams;
 
 namespace Stoolball.Statistics
 {
-    public class PlayerCacheClearer : ICacheClearer<Player>
+    public class PlayerCacheClearer : IPlayerCacheClearer
     {
         private readonly IReadThroughCache _readThroughCache;
 
@@ -13,7 +14,7 @@ namespace Stoolball.Statistics
             _readThroughCache = readThroughCache ?? throw new ArgumentNullException(nameof(readThroughCache));
         }
 
-        public Task ClearCacheFor(Player cacheable)
+        public void ClearCacheForPlayer(Player cacheable)
         {
             if (cacheable is null)
             {
@@ -33,8 +34,14 @@ namespace Stoolball.Statistics
             _readThroughCache.InvalidateCache(nameof(IPlayerSummaryStatisticsDataSource) + nameof(IPlayerSummaryStatisticsDataSource.ReadBattingStatistics) + cacheable.PlayerRoute);
             _readThroughCache.InvalidateCache(nameof(IPlayerSummaryStatisticsDataSource) + nameof(IPlayerSummaryStatisticsDataSource.ReadBowlingStatistics) + cacheable.PlayerRoute);
             _readThroughCache.InvalidateCache(nameof(IPlayerSummaryStatisticsDataSource) + nameof(IPlayerSummaryStatisticsDataSource.ReadFieldingStatistics) + cacheable.PlayerRoute);
+        }
 
-            return Task.CompletedTask;
+        public void ClearCacheForTeams(params Team[] teams)
+        {
+            if (teams == null) { throw new ArgumentNullException(nameof(teams)); }
+
+            var teamIds = string.Join("--", teams.Where(x => x?.TeamId != null).Select(x => x.TeamId.Value).OrderBy(x => x.ToString()));
+            _readThroughCache.InvalidateCache(nameof(IPlayerDataSource) + nameof(IPlayerDataSource.ReadPlayerIdentities) + "ForTeams" + teamIds);
         }
     }
 }
