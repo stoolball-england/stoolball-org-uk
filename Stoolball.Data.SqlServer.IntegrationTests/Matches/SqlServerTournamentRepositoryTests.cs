@@ -222,6 +222,70 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             }
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Update_tournament_updates_basic_fields(bool hasLocation)
+        {
+            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
+            var toBeSaved = new Tournament
+            {
+                TournamentId = tournament.TournamentId,
+                TournamentName = tournament.TournamentName + "xxx",
+                TournamentLocation = hasLocation ? _databaseFixture.TestData.MatchLocations.First(x => x.MatchLocationId != tournament.TournamentLocation.MatchLocationId) : null,
+                PlayerType = tournament.PlayerType == PlayerType.Ladies ? PlayerType.Mixed : PlayerType.Ladies,
+                PlayersPerTeam = tournament.PlayersPerTeam + 2,
+                QualificationType = tournament.QualificationType == TournamentQualificationType.OpenTournament ? TournamentQualificationType.ClosedTournament : TournamentQualificationType.OpenTournament,
+                StartTime = tournament.StartTime.AddDays(2),
+                StartTimeIsKnown = !tournament.StartTimeIsKnown,
+                TournamentNotes = tournament.TournamentNotes,
+                TournamentRoute = tournament.TournamentRoute
+            };
+
+            var expectedRoute = "/tournaments/" + Guid.NewGuid();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute,
+                                                             "/tournaments",
+                                                             toBeSaved.TournamentName + " " + toBeSaved.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture),
+                                                             NoiseWords.TournamentRoute,
+                                                             It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(expectedRoute));
+
+            SetupEntityCopierMock(toBeSaved, toBeSaved, toBeSaved);
+
+            var sanitizedNotes = tournament.TournamentNotes + "xxx";
+            _htmlSanitizer.Setup(x => x.Sanitize(toBeSaved.TournamentNotes, string.Empty, null)).Returns(sanitizedNotes);
+
+            var repo = CreateRepository();
+
+            var updatedTournament = await repo.UpdateTournament(toBeSaved, Guid.NewGuid(), "Member name");
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var result = await connection.QuerySingleOrDefaultAsync<Tournament>(@$"
+                        SELECT TournamentName, PlayerType, PlayersPerTeam, QualificationType, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute 
+                        FROM {Tables.Tournament} WHERE TournamentId = @TournamentId", new { updatedTournament.TournamentId });
+
+                Assert.NotNull(result);
+                Assert.Equal(toBeSaved.TournamentName, result.TournamentName);
+                Assert.Equal(toBeSaved.PlayerType.ToString(), result.PlayerType.ToString());
+                Assert.Equal(toBeSaved.PlayersPerTeam, result.PlayersPerTeam);
+                Assert.Equal(toBeSaved.QualificationType.ToString(), result.QualificationType.ToString());
+                Assert.Equal(toBeSaved.StartTime.UtcDateTime, result.StartTime.UtcDateTime);
+                Assert.Equal(toBeSaved.StartTimeIsKnown, result.StartTimeIsKnown);
+                Assert.Equal(sanitizedNotes, result.TournamentNotes);
+                Assert.Equal(expectedRoute, result.TournamentRoute);
+
+                var matchLocationId = await connection.ExecuteScalarAsync<Guid?>(@$"SELECT MatchLocationId FROM {Tables.Tournament} WHERE TournamentId = @TournamentId", new { updatedTournament.TournamentId });
+                if (hasLocation)
+                {
+                    Assert.Equal(toBeSaved.TournamentLocation!.MatchLocationId, matchLocationId);
+                }
+                else
+                {
+                    Assert.Null(result.TournamentLocation);
+                }
+            }
+        }
+
 
         [Fact]
         public async Task Create_tournament_should_not_insert_default_overset_if_overs_not_specified()

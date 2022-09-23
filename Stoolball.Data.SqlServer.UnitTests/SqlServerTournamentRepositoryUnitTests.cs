@@ -55,6 +55,26 @@ namespace Stoolball.Data.SqlServer.UnitTests
                 _copier.Object);
         }
 
+#nullable disable
+        [Fact]
+        public async Task Create_tournament_throws_ArgumentNullException_if_tournament_is_null()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => repo.CreateTournament(null, Guid.NewGuid(), "Member name")).ConfigureAwait(false);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public async Task Create_tournament_throws_ArgumentException_if_member_name_is_missing(string? memberName)
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => repo.CreateTournament(new Tournament(), Guid.NewGuid(), memberName)).ConfigureAwait(false);
+        }
+#nullable enable
+
         [Fact]
         public async Task Create_tournament_audits_and_logs()
         {
