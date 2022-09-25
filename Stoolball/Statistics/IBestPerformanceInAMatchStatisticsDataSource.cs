@@ -10,5 +10,7 @@ namespace Stoolball.Statistics
         Task<int> ReadTotalPlayerInnings(StatisticsFilter filter);
         Task<IEnumerable<StatisticsResult<BowlingFigures>>> ReadBowlingFigures(StatisticsFilter filter, StatisticsSortOrder sortOrder);
         Task<int> ReadTotalBowlingFigures(StatisticsFilter filter);
+        Task<IEnumerable<StatisticsResult<PlayerIdentityPerformance>>> ReadPlayerIdentityPerformances(StatisticsFilter filter);
+        Task<int> ReadTotalPlayerIdentityPerformances(StatisticsFilter filter);
     }
 }

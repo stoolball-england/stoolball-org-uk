@@ -20,14 +20,14 @@ namespace Stoolball.Data.SqlServer
             _statisticsQueryBuilder = statisticsQueryBuilder ?? throw new ArgumentNullException(nameof(statisticsQueryBuilder));
         }
 
-        public async virtual Task<int> ReadTotalPlayerInnings(StatisticsFilter filter)
+        public async Task<int> ReadTotalPlayerInnings(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
             return await ReadTotalBestFiguresInAMatch("RunsScored", null, filter).ConfigureAwait(false);
         }
 
-        public async virtual Task<int> ReadTotalBowlingFigures(StatisticsFilter filter)
+        public async Task<int> ReadTotalBowlingFigures(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -53,7 +53,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        public async virtual Task<IEnumerable<StatisticsResult<PlayerInnings>>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder)
+        public async Task<IEnumerable<StatisticsResult<PlayerInnings>>> ReadPlayerInnings(StatisticsFilter? filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -75,7 +75,7 @@ namespace Stoolball.Data.SqlServer
             return await ReadBestFiguresInAMatch<PlayerInnings>("RunsScored", "PlayerWasDismissed", new[] { "PlayerInningsId", "DismissalType", "BallsFaced" }, orderByFields, null, filter).ConfigureAwait(false);
         }
 
-        public async virtual Task<IEnumerable<StatisticsResult<BowlingFigures>>> ReadBowlingFigures(StatisticsFilter filter, StatisticsSortOrder sortOrder)
+        public async Task<IEnumerable<StatisticsResult<BowlingFigures>>> ReadBowlingFigures(StatisticsFilter? filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -164,6 +164,52 @@ namespace Stoolball.Data.SqlServer
                     parameters,
                     splitOn: $"PlayerIdentityId, TeamId, TeamId, MatchRoute, {primaryFieldName}",
                     commandTimeout: 60).ConfigureAwait(false);
+            }
+        }
+
+        public async Task<IEnumerable<StatisticsResult<PlayerIdentityPerformance>>> ReadPlayerIdentityPerformances(StatisticsFilter? filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
+            var sql = $@"SELECT PlayerId, PlayerRoute, PlayerIdentityId, PlayerIdentityName, 
+                                MatchId, MatchRoute, MatchStartTime AS StartTime, MatchName, 
+                                MatchTeamId, MatchInningsPair, PlayerInningsNumber, BattingPosition, RunsScored, PlayerWasDismissed, Wickets, RunsConceded, Catches, RunOuts 
+                        FROM {Tables.PlayerInMatchStatistics} 
+                        WHERE 1=1 {where} 
+                        ORDER BY MatchStartTime DESC, MatchInningsPair DESC, BattingPosition DESC
+                        OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
+            parameters.Add("@PageOffset", filter.Paging.PageSize * (filter.Paging.PageNumber - 1));
+            parameters.Add("@PageSize", filter.Paging.PageSize);
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                return await connection.QueryAsync<Player, PlayerIdentity, MatchListing, PlayerIdentityPerformance, StatisticsResult<PlayerIdentityPerformance>>(sql,
+                    (player, playerIdentity, match, performance) =>
+                    {
+                        player.PlayerIdentities.Add(playerIdentity);
+                        return new StatisticsResult<PlayerIdentityPerformance>
+                        {
+                            Match = match,
+                            Player = player,
+                            Result = performance
+                        };
+                    },
+                    parameters,
+                    splitOn: "PlayerIdentityId, MatchId, MatchTeamId",
+                    commandTimeout: 60).ConfigureAwait(false);
+            }
+        }
+
+        public async Task<int> ReadTotalPlayerIdentityPerformances(StatisticsFilter? filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                return await connection.ExecuteScalarAsync<int>($"SELECT COUNT(PlayerInMatchStatisticsId) FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where}", parameters).ConfigureAwait(false);
             }
         }
     }

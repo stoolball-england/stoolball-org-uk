@@ -6,9 +6,7 @@ namespace Stoolball.Data.SqlServer
 {
     public class StatisticsQueryBuilder : IStatisticsQueryBuilder
     {
-        /// <summary> 
-        /// Adds standard filters to the WHERE clause
-        /// </summary> 
+        /// <inheritdoc/>
         public (string where, Dictionary<string, object> parameters) BuildWhereClause(StatisticsFilter filter)
         {
             var where = new List<string>();
