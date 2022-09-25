@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
@@ -96,7 +97,14 @@ namespace Stoolball.Web.Matches
                 var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 await _cacheClearer.ClearCacheForMatch(createdMatch).ConfigureAwait(false);
 
-                return Redirect(createdMatch.MatchRoute);
+                if (Request.Form["AddAnother"].Any())
+                {
+                    return Redirect(path + "?confirm=" + Uri.EscapeUriString(createdMatch.MatchRoute));
+                }
+                else
+                {
+                    return Redirect(createdMatch.MatchRoute);
+                }
             }
 
             if (path.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))

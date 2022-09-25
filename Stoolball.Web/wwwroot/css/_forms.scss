@@ -154,6 +154,9 @@ svg {
 button {
     margin-bottom: $spacer;
 }
+button + button {
+    margin-left: $spacer/2;
+}
 
 .btn-primary::after, .btn-secondary::after {
     content: '❯';

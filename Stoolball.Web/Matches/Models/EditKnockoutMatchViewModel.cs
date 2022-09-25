@@ -48,5 +48,6 @@ namespace Stoolball.Web.Matches.Models
         [Display(Name = "Away team")]
         public Guid? AwayTeamId { get; set; }
         public string? AwayTeamName { get; set; }
+        public Match? CreatedMatch { get; set; }
     }
 }

@@ -20,6 +20,8 @@ namespace Stoolball.Web.Matches
 {
     public class CreateLeagueMatchController : RenderController, IRenderControllerAsync
     {
+        private readonly IStoolballEntityRouteParser _routeParser;
+        private readonly IMatchDataSource _matchDataSource;
         private readonly ITeamDataSource _teamDataSource;
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
@@ -29,6 +31,8 @@ namespace Stoolball.Web.Matches
         public CreateLeagueMatchController(ILogger<CreateLeagueMatchController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
+            IStoolballEntityRouteParser routeParser,
+            IMatchDataSource matchDataSource,
             ITeamDataSource teamDataSource,
             ISeasonDataSource seasonDataSource,
             ICreateMatchSeasonSelector createMatchSeasonSelector,
@@ -36,6 +40,8 @@ namespace Stoolball.Web.Matches
             IAuthorizationPolicy<Competition> competitionAuthorizationPolicy)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
+            _routeParser = routeParser ?? throw new ArgumentNullException(nameof(routeParser));
+            _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
@@ -56,8 +62,8 @@ namespace Stoolball.Web.Matches
                 }
             };
 
-            var path = Request.Path.HasValue ? Request.Path.Value : string.Empty;
-            if (path!.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
+            var context = Request.Path.HasValue ? _routeParser.ParseRoute(Request.Path.Value) : null;
+            if (context == StoolballEntityType.Team)
             {
                 model.Team = await _teamDataSource.ReadTeamByRoute(Request.Path, true);
                 if (model.Team == null)
@@ -90,7 +96,7 @@ namespace Stoolball.Web.Matches
                     model.AwayTeamId = new Guid(model.PossibleAwayTeams[1].Value);
                 }
             }
-            else if (path.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            else if (context == StoolballEntityType.Season)
             {
                 model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Path, true);
                 if (model.Season == null || !model.Season.MatchTypes.Contains(MatchType.LeagueMatch))
@@ -122,6 +128,12 @@ namespace Stoolball.Web.Matches
             _editMatchHelper.ConfigureAddMatchModelMetadata(model);
 
             model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Matches, Url = new Uri(Constants.Pages.MatchesUrl, UriKind.Relative) });
+
+            if (Request.Query.TryGetValue("confirm", out var createdMatchRoute) && _routeParser.ParseRoute(createdMatchRoute.First()) == StoolballEntityType.Match)
+            {
+                model.CreatedMatch = await _matchDataSource.ReadMatchByRoute(createdMatchRoute.First());
+            }
+
             return CurrentTemplate(model);
         }
 

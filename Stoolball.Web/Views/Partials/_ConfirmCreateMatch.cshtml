@@ -1,0 +1,5 @@
+﻿@model Stoolball.Matches.Match?
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@if (Model != null) {
+    <p class="alert alert-success">You just added <a href="@Model.MatchRoute">@Html.MatchFullName(Model, x => dateTimeFormatter.FormatDate(x, false))</a></p>
+}

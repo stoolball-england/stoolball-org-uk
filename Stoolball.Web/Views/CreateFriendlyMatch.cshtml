@@ -22,6 +22,7 @@
     }
 }
 <div class="container-xl">
+    @await Html.PartialAsync("_ConfirmCreateMatch", Model.CreatedMatch)
     <h1>@h1</h1>
 
     @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch])
@@ -30,6 +31,7 @@
         {
             @await Html.PartialAsync("_CreateOrEditFriendlyMatch")
             <button class="btn btn-primary" type="submit">Save match</button>
+            <button class="btn btn-secondary" type="submit" name="AddAnother">Save and add another</button>
         }
     }
     else

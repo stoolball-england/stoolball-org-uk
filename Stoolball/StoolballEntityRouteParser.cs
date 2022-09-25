@@ -36,6 +36,10 @@ namespace Stoolball
             {
                 return StoolballEntityType.Competition;
             }
+            else if (route.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase))
+            {
+                return StoolballEntityType.Match;
+            }
             return null;
         }
     }

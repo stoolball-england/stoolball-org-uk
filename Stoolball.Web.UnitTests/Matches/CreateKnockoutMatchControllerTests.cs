@@ -16,6 +16,8 @@ namespace Stoolball.Web.UnitTests.Matches
 {
     public class CreateKnockoutMatchControllerTests : UmbracoBaseTest
     {
+        private readonly Mock<IMatchDataSource> _matchDataSource = new();
+        private readonly Mock<IStoolballEntityRouteParser> _routeParser = new();
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
         private readonly Mock<ICreateMatchSeasonSelector> _createMatchSeasonSelector = new();
@@ -31,6 +33,8 @@ namespace Stoolball.Web.UnitTests.Matches
                 Mock.Of<ILogger<CreateKnockoutMatchController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
+                _routeParser.Object,
+                _matchDataSource.Object,
                 _teamDataSource.Object,
                 _seasonDataSource.Object,
                 _createMatchSeasonSelector.Object,
@@ -44,7 +48,8 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_not_matching_team_returns_404()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/teams/example/"));
-            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team?>(null));
+            _routeParser.Setup(x => x.ParseRoute(Request.Object.Path)).Returns(StoolballEntityType.Team);
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(Request.Object.Path, true)).Returns(Task.FromResult<Team?>(null));
 
             using (var controller = CreateController())
             {
@@ -58,7 +63,8 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_not_matching_season_returns_404()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/competitions/example/2020/"));
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season?>(null));
+            _routeParser.Setup(x => x.ParseRoute(Request.Object.Path)).Returns(StoolballEntityType.Season);
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(Request.Object.Path, true)).Returns(Task.FromResult<Season?>(null));
 
             using (var controller = CreateController())
             {
@@ -72,7 +78,8 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_matching_team_without_a_knockout_competition_returns_404()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/teams/example/"));
-            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Team()));
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(Request.Object.Path, true)).Returns(Task.FromResult(new Team()));
+            _routeParser.Setup(x => x.ParseRoute(Request.Object.Path)).Returns(StoolballEntityType.Team);
             _createMatchSeasonSelector.Setup(x => x.SelectPossibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>(), MatchType.KnockoutMatch)).Returns(new List<Season>());
             _editMatchHelper.Setup(x => x.PossibleSeasonsAsListItems(It.IsAny<IEnumerable<Season>>())).Returns(new List<SelectListItem>());
 
@@ -89,7 +96,8 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_matching_non_knockout_season_returns_404()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/competitions/"));
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Season()));
+            _routeParser.Setup(x => x.ParseRoute(Request.Object.Path)).Returns(StoolballEntityType.Season);
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(Request.Object.Path, true)).Returns(Task.FromResult(new Season()));
 
             using (var controller = CreateController())
             {
@@ -104,7 +112,7 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_matching_team_playing_knockout_matches_returns_CreateKnockoutMatchViewModel()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/teams/example/"));
-            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Team()));
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(Request.Object.Path, true)).Returns(Task.FromResult(new Team()));
             _createMatchSeasonSelector.Setup(x => x.SelectPossibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>(), MatchType.KnockoutMatch)).Returns(new List<Season> { new Season() });
 
             using (var controller = CreateController())
@@ -120,7 +128,7 @@ namespace Stoolball.Web.UnitTests.Matches
         public async Task Route_matching_knockout_season_returns_CreateKnockoutMatchViewModel()
         {
             Request.SetupGet(x => x.Path).Returns(new PathString("/competitions/example/2020/"));
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Season
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(Request.Object.Path, true)).Returns(Task.FromResult(new Season
             {
                 MatchTypes = new List<MatchType> { MatchType.KnockoutMatch }
             }));

@@ -7,6 +7,7 @@
         Team,
         MatchLocation,
         Season,
-        Competition
+        Competition,
+        Match
     }
 }
