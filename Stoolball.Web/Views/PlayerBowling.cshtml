@@ -11,7 +11,8 @@
     var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model) 
     { 
         ShowCaption = true, 
-        ShowPlayerColumn = false, 
+        ShowPlayerColumn = Model.Player!.AlternativeNames().Any(),
+        LinkPlayer = false,
         DefaultFilter = Model.DefaultFilter,
         AppliedFilter = Model.AppliedFilter 
     };
@@ -20,7 +21,7 @@
     var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 }
 <div class="container-xl">
-    @await Html.PartialAsync("_PlayerHeader", Model.Player)
+    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = Model.Player.PlayerName(), AlternativeNames = Model.Player.AlternativeNames() })
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
@@ -122,5 +123,6 @@
         }
 
         @await Html.PartialAsync("_BowlingFigures", bowlingFigures)
+        @await Html.PartialAsync("_PlayerPerformances", new StatisticsViewModel<PlayerIdentityPerformance>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
     }
     </div>

@@ -18,6 +18,7 @@ namespace Stoolball.Web.Statistics.Models
         public bool ShowLinkOnly { get; set; }
         public bool ShowCaption { get; set; } = true;
         public bool ShowPlayerColumn { get; set; } = true;
+        public bool LinkPlayer { get; set; } = true;
         public bool ShowTeamsColumn { get; set; } = true;
     }
 }

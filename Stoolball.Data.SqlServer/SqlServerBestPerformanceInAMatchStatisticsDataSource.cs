@@ -177,7 +177,7 @@ namespace Stoolball.Data.SqlServer
                                 MatchTeamId, MatchInningsPair, PlayerInningsNumber, BattingPosition, RunsScored, PlayerWasDismissed, Wickets, RunsConceded, Catches, RunOuts 
                         FROM {Tables.PlayerInMatchStatistics} 
                         WHERE 1=1 {where} 
-                        ORDER BY MatchStartTime DESC, MatchInningsPair DESC, BattingPosition DESC
+                        ORDER BY MatchStartTime DESC, MatchId, MatchInningsPair DESC, BattingPosition DESC
                         OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
             parameters.Add("@PageOffset", filter.Paging.PageSize * (filter.Paging.PageNumber - 1));
             parameters.Add("@PageSize", filter.Paging.PageSize);

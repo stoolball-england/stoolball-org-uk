@@ -10,7 +10,15 @@
     SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
     if (Model.AppliedFilter.Player != null)
     {
-        Model.ShowPlayerColumn = false;
+        if (Model.DefaultFilter.Player != null)
+        {
+            Model.ShowPlayerColumn = Model.DefaultFilter.Player.AlternativeNames().Any();
+            Model.LinkPlayer = false;
+        }
+        else
+        {
+            Model.ShowPlayerColumn = false;
+        }
     }
 }
 @section canonical {@await Html.PartialAsync("_CanonicalUrl", new[] { "page" })}
@@ -25,7 +33,7 @@
     }
 }
 <div class="container-xl">
-    <h1>Highest individual scores@(humanizer.MatchingFixedFilter(Model.AppliedFilter))</h1>
+    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = $"Highest individual scores{humanizer.MatchingFixedFilter(Model.AppliedFilter)}", AlternativeNames = Model.DefaultFilter.Player?.AlternativeNames() ?? new() })
     
     @await Html.PartialAsync("_StatisticsTip")
 

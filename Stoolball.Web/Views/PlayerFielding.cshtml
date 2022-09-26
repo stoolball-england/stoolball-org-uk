@@ -17,7 +17,7 @@
     var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 }
 <div class="container-xl">
-    @await Html.PartialAsync("_PlayerHeader", Model.Player)
+    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = Model.Player!.PlayerName(), AlternativeNames = Model.Player.AlternativeNames() })
 
     <ul class="nav nav-tabs">
          <li class="nav-item">
@@ -80,5 +80,6 @@
         {
             <p><a href="@Context.Request.Path.ToString().TrimEnd("/fielding")/run-outs@(queryString)">Run-outs – view all and filter</a></p>
         }
+        @await Html.PartialAsync("_PlayerPerformances", new StatisticsViewModel<PlayerIdentityPerformance>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
     }
 </div>

@@ -1,0 +1,87 @@
+﻿@inherits UmbracoViewPage<StatisticsViewModel<PlayerIdentityPerformance>>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@inject IStatisticsFilterQueryStringSerializer serialiser
+@using Stoolball.Matches
+@using Stoolball.Statistics
+@using Stoolball.Web.Statistics.Models
+@{
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
+}
+@if (Model.Results.Any())
+{
+    <table class="statistics table-as-cards table-as-cards-reset-md">
+        @if (Model.ShowCaption)
+        {
+            <caption>Player performances, most recent first</caption>
+        }
+        <thead>
+            <tr>
+                @if (Model.ShowPlayerColumn)
+                {
+                    <th scope="col" class="d-md-none d-lg-table-cell">Player</th>
+
+                }
+                <th scope="col">Match</th>
+                <th scope="col">When</th>
+                <th scope="col" class="numeric statistic">Batting</th>
+                <th scope="col" class="numeric statistic">Bowling</th>
+                <th scope="col" class="numeric statistic">Catches</th>
+                <th scope="col" class="numeric statistic">Run-outs</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                for (var i = 0; i < Model.Results.Count(); i++)
+                {
+                    <tr>
+                        @if (Model.ShowPlayerColumn)
+                        {
+                            @if (Model.LinkPlayer)
+                            {
+                                <td data-stackable="true" class="d-md-none d-lg-table-cell"><span class="table-as-cards__label" aria-hidden="true">Player</span><a href="@Model.Results[i].Player.PlayerRoute">@(Model.Results[i].Player.PlayerName())</a></td>
+                            }
+                            else
+                            {
+                                <td data-stackable="true" class="d-md-none d-lg-table-cell"><span class="table-as-cards__label" aria-hidden="true">Player</span>@(Model.Results[i].Player.PlayerName())</td>
+                            }
+                        }
+                        <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Match</span><div><a href="@Model.Results[i].Match.MatchRoute">@Model.Results[i].Match.MatchName</a></div></td>
+                        <td data-stackable="true" class="text-nowrap"><span class="table-as-cards__label" aria-hidden="true">When</span>@(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime, false, true, false))</td>
+                        @if (Model.Results[i].Result.RunsScored.HasValue)
+                        {
+                            @if (!Model.Results[i].Result.PlayerWasDismissed!.Value)
+                            {
+                                <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="runs-scored">@Model.Results[i].Result.RunsScored*</span></td>
+                            }
+                            else
+                            {
+                                <td data-stackable="true" class="numeric-md player-was-out"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="runs-scored">@Model.Results[i].Result.RunsScored</span></td>
+                            }
+                        }
+                        else
+                        {
+                            <td data-stackable="true" class="numeric-md table-as-cards__missing-data player-was-out">–</td>
+                        }
+                        @if (Model.Results[i].Result.Wickets.HasValue)
+                        {
+                            var runsConceded = Model.Results[i].Result.RunsConceded.HasValue ? Model.Results[i].Result.RunsConceded.ToString() : "–";
+                            <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Wickets</span><span class="wickets">@Model.Results[i].Result.Wickets!.Value/@runsConceded</span></td>
+                        }
+                        else
+                        {
+                            <td data-stackable="true" class="numeric-md table-as-cards__missing-data">–</td>
+                        }
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Catches</span>@Model.Results[i].Result.Catches</td>
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Run-outs</span>@Model.Results[i].Result.RunOuts</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    
+    @await Html.PartialAsync("_Paging", Model.AppliedFilter.Paging)
+}
+else if (Model.ShowLinkOnly)
+{
+    <p><a href="@Context.Request.Path.Value.TrimEnd("/batting").TrimEnd("/bowling").TrimEnd("/fielding")/player-performances@(queryString)">Player performances – view all and filter</a></p>
+}

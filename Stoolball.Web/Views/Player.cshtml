@@ -22,7 +22,7 @@
     var matchYears = firstMatch.HasValue && lastMatch.HasValue ? (firstMatch.Value.Year == lastMatch.Value.Year) ? $"in {firstMatch.Value.Year}" : $"from {firstMatch.Value.Year} to {lastMatch.Value.Year}" : filterHumanizer.MatchingUserFilter(Model.AppliedFilter);
 }
 <div class="container-xl">
-    @await Html.PartialAsync("_PlayerHeader", Model.Player)
+    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = Model.Player.PlayerName(), AlternativeNames = Model.Player.AlternativeNames() })
 
     @if (Model.ShowPlayerLinkedToMemberConfirmation)
     {
@@ -56,8 +56,8 @@
     })
 
     <p class="lead">
-        @(Model.Player?.PlayerName()) played @totalMatches
-        @(totalMatches == 1 ? "match" : "matches") for @Html.Raw(Model.Player!.PlayerIdentities.OrderByDescending(x => x.TotalMatches).Select(x => x.Team).ToList().Distinct(new TeamEqualityComparer()).Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
+        @(Model.Player!.PlayerName()) played <a href="@Model.Player.PlayerRoute/player-performances@(queryString)">@totalMatches
+        @(totalMatches == 1 ? "match" : "matches")</a> for @Html.Raw(Model.Player!.PlayerIdentities.OrderByDescending(x => x.TotalMatches).Select(x => x.Team).ToList().Distinct(new TeamEqualityComparer()).Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
     </p>
 
     <div class="statistics-pair">
