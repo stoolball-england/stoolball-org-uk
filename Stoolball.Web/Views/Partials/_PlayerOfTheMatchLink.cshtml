@@ -1,0 +1,8 @@
+﻿@inherits UmbracoViewPage<StatisticsViewModel<PlayerIdentityPerformance>>
+@inject IStatisticsFilterQueryStringSerializer serialiser
+@using Stoolball.Statistics
+@using Stoolball.Web.Statistics.Models
+@{
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
+}
+<p><a href="@Context.Request.Path.Value/player-of-match@(queryString)">Player of the match nominations – view all and filter</a></p>

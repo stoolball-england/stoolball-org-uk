@@ -1,0 +1,16 @@
+{
+  "Name": "Player of the Match",
+  "Alias": "PlayerOfTheMatch",
+  "File": "umb://template-file/PlayerOfTheMatch.cshtml",
+  "Master": null,
+  "Udi": "umb://template/05104704b022444c924a96adeb985632",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/PlayerOfTheMatch.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.4.2"
+}

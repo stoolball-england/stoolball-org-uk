@@ -50,6 +50,10 @@ namespace Stoolball.Statistics
             var entityType = _stoolballEntityRouteParser.ParseRoute(route);
 
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = Constants.Defaults.PageSize } };
+            if (route.Contains("player-of-match", StringComparison.OrdinalIgnoreCase))
+            {
+                filter.PlayerOfTheMatch = true;
+            }
             if (entityType == StoolballEntityType.Player)
             {
                 filter.Player = await _playerDataSource.ReadPlayerByRoute(_routeNormaliser.NormaliseRouteToEntity(route, "players")).ConfigureAwait(false);

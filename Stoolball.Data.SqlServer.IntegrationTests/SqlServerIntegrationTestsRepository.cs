@@ -292,16 +292,21 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
             foreach (var award in match.Awards)
             {
-                _connection.Execute($@"INSERT INTO {Tables.Award} 
+                var existingAward = _connection.ExecuteScalar<Guid?>($"SELECT AwardId FROM {Tables.Award} WHERE AwardName = @AwardName", new { award.Award.AwardName });
+
+                if (!existingAward.HasValue)
+                {
+                    _connection.Execute($@"INSERT INTO {Tables.Award} 
                     (AwardId, AwardName, AwardScope)
                     VALUES
                     (@AwardId, @AwardName, @AwardScope)",
-                  new
-                  {
-                      award.Award.AwardId,
-                      award.Award.AwardName,
-                      AwardScope = AwardScope.Match
-                  });
+                      new
+                      {
+                          award.Award.AwardId,
+                          award.Award.AwardName,
+                          AwardScope = AwardScope.Match
+                      });
+                }
 
                 _connection.Execute($@"INSERT INTO {Tables.AwardedTo} 
                     (AwardedToId, AwardId, PlayerIdentityId, MatchId, Reason)

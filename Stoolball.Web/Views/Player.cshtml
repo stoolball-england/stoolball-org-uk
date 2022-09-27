@@ -59,6 +59,10 @@
         @(Model.Player!.PlayerName()) played <a href="@Model.Player.PlayerRoute/player-performances@(queryString)">@totalMatches
         @(totalMatches == 1 ? "match" : "matches")</a> for @Html.Raw(Model.Player!.PlayerIdentities.OrderByDescending(x => x.TotalMatches).Select(x => x.Team).ToList().Distinct(new TeamEqualityComparer()).Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
     </p>
+    @if (Model.TotalPlayerOfTheMatchAwards > 0)
+    {
+        <p class="lead">Nominated <a href="@Model.Player.PlayerRoute/player-of-match@(queryString)">player of the match</a> @(Model.TotalPlayerOfTheMatchAwards == 1 ? "once" : Model.TotalPlayerOfTheMatchAwards + " times").</p>
+    }
 
     <div class="statistics-pair">
         <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__runs"><span class="statistics-pair__value">@Model.BattingStatistics.TotalRunsScored</span><span class="statistics-pair__label">@(Model.BattingStatistics.TotalRunsScored == 1 ? "run" : "runs")</span></p>

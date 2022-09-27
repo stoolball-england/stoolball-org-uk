@@ -90,6 +90,7 @@
         IndividualScores,
         BowlingFigures,
         PlayerPerformances,
+        PlayerOfTheMatch,
         Catches,
         RunOuts,
         MostRuns,

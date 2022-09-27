@@ -18,6 +18,7 @@ namespace Stoolball.Web.UnitTests.Statistics
     {
         private readonly Mock<IPlayerSummaryViewModelFactory> _viewModelFactory = new();
         private readonly Mock<IMemberManager> _memberManager = new();
+        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
 
         public PlayerControllerTests() : base()
         {
@@ -30,6 +31,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _viewModelFactory.Object,
+                _bestPerformanceDataSource.Object,
                 _memberManager.Object
                 )
             {
@@ -125,6 +127,21 @@ namespace Stoolball.Web.UnitTests.Statistics
 
                 var expectedResult = queryStringPresent;
                 Assert.Equal(expectedResult, ((PlayerSummaryViewModel)(((ViewResult)result).Model)).ShowPlayerLinkedToMemberConfirmation);
+            }
+        }
+
+        [Fact]
+        public async Task TotalPlayerOfTheMatchAwards_is_set()
+        {
+            var player = new Player();
+            _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = player }));
+            _bestPerformanceDataSource.Setup(x => x.ReadTotalPlayerIdentityPerformances(It.Is<StatisticsFilter>(x => x.Player == player && x.PlayerOfTheMatch == true))).Returns(Task.FromResult(5));
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                Assert.Equal(5, ((PlayerSummaryViewModel)(((ViewResult)result).Model)).TotalPlayerOfTheMatchAwards);
             }
         }
     }

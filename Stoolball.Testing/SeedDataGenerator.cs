@@ -29,6 +29,7 @@ namespace Stoolball.Testing
         private List<(Team team, List<PlayerIdentity> identities)> _teams = new();
         private List<MatchLocation> _matchLocations = new List<MatchLocation>();
         private List<Competition> _competitions = new List<Competition>();
+        private readonly Award _playerOfTheMatch = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
 
         public SeedDataGenerator(IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
             IFakerFactory<Team> teamFakerFactory, IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory)
@@ -389,11 +390,7 @@ namespace Stoolball.Testing
                     },
                     new MatchAward {
                         AwardedToId = Guid.NewGuid(),
-                        Award = new Award
-                        {
-                            AwardId = Guid.NewGuid(),
-                            AwardName = "Player of the match"
-                        },
+                        Award = _playerOfTheMatch,
                         PlayerIdentity = homePlayers[2],
                         Reason = "Taking wickets"
                     }
@@ -1161,6 +1158,7 @@ namespace Stoolball.Testing
                 inningsWithFiveWicketHaul.PlayerInnings[i].Bowler = bowlerWithFiveWicketHaul;
             }
 
+
             matches.Add(CreateMatchWithFieldingByMultipleIdentities());
 
             matches.Add(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams());
@@ -1315,6 +1313,18 @@ namespace Stoolball.Testing
             if (OneInFourChance())
             {
                 match.Season = _competitions[_randomiser.Next(_competitions.Count)].Seasons.First();
+            }
+
+            // Give someone an award
+            if (FiftyFiftyChance() && teamAPlayers.Any())
+            {
+                match.Awards.Add(new MatchAward
+                {
+                    AwardedToId = Guid.NewGuid(),
+                    Award = _playerOfTheMatch,
+                    PlayerIdentity = teamAPlayers.First(),
+                    Reason = "Well played"
+                });
             }
 
             return match;

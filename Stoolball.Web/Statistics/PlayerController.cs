@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
+using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Security;
@@ -14,16 +15,19 @@ namespace Stoolball.Web.Statistics
     public class PlayerController : RenderController, IRenderControllerAsync
     {
         private readonly IPlayerSummaryViewModelFactory _viewModelFactory;
+        private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceDataSource;
         private readonly IMemberManager _memberManager;
 
         public PlayerController(ILogger<PlayerController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
             IPlayerSummaryViewModelFactory viewModelFactory,
+            IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
             IMemberManager memberManager)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+            _bestPerformanceDataSource = bestPerformanceDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceDataSource));
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
         }
 
@@ -39,6 +43,10 @@ namespace Stoolball.Web.Statistics
             }
             else
             {
+                var playerOfTheMatchFilter = model.AppliedFilter.Clone();
+                playerOfTheMatchFilter.PlayerOfTheMatch = true;
+                model.TotalPlayerOfTheMatchAwards = await _bestPerformanceDataSource.ReadTotalPlayerIdentityPerformances(playerOfTheMatchFilter);
+
                 if (model.Player.MemberKey.HasValue)
                 {
                     var currentMember = await _memberManager.GetCurrentMemberAsync();

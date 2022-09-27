@@ -100,6 +100,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.IndividualScores, typeof(IndividualScoresController) },
             { StoolballRouteType.BowlingFigures, typeof(BowlingFiguresController) },
             { StoolballRouteType.PlayerPerformances, typeof(PlayerPerformancesController) },
+            { StoolballRouteType.PlayerOfTheMatch, typeof(PlayerOfTheMatchController) },
             { StoolballRouteType.Catches, typeof(CatchesController) },
             { StoolballRouteType.RunOuts, typeof(RunOutsController) },
             { StoolballRouteType.MostRuns, typeof(MostRunsController) },

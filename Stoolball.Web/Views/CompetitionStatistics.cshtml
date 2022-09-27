@@ -66,5 +66,6 @@
         @await Html.PartialAsync("_MostCatches", mostCatches)
         @await Html.PartialAsync("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
         @await Html.PartialAsync("_PlayerPerformances", new StatisticsViewModel<PlayerIdentityPerformance>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+        @await Html.PartialAsync("_PlayerOfTheMatchLink", new StatisticsViewModel<PlayerIdentityPerformance>(Model) { DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
     }
 </div>
