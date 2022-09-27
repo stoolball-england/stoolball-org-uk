@@ -7,14 +7,17 @@
     SmidgeHelper.RequiresCss(new CssFile("/css/statistics.min.css") { Order = 100 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
     SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
-    if (Model.DefaultFilter.Player != null)
+    if (Model.AppliedFilter.Player != null)
     {
-        Model.ShowPlayerColumn = Model.DefaultFilter.Player.AlternativeNames().Any();
-        Model.LinkPlayer = false;
-    }
-    else
-    {
-        Model.ShowPlayerColumn = false;
+        if (Model.DefaultFilter.Player != null)
+        {
+            Model.ShowPlayerColumn = Model.DefaultFilter.Player.AlternativeNames().Any();
+            Model.LinkPlayer = false;
+        }
+        else
+        {
+            Model.ShowPlayerColumn = false;
+        }
     }
 }
 @section canonical {@await Html.PartialAsync("_CanonicalUrl", new[] { "page" })}
