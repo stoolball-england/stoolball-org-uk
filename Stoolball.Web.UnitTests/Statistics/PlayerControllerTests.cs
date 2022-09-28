@@ -135,7 +135,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             var player = new Player();
             _viewModelFactory.Setup(x => x.CreateViewModel(CurrentPage.Object, Request.Object.Path, Request.Object.QueryString.Value)).Returns(Task.FromResult(new PlayerSummaryViewModel { Player = player }));
-            _bestPerformanceDataSource.Setup(x => x.ReadTotalPlayerIdentityPerformances(It.Is<StatisticsFilter>(x => x.Player == player && x.PlayerOfTheMatch == true))).Returns(Task.FromResult(5));
+            _bestPerformanceDataSource.Setup(x => x.ReadTotalPlayerIdentityPerformances(It.Is<StatisticsFilter>(x => x.PlayerOfTheMatch == true))).Returns(Task.FromResult(5));
 
             using (var controller = CreateController())
             {
