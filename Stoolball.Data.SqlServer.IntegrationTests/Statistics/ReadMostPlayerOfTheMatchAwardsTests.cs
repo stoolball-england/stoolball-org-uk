@@ -13,143 +13,131 @@ using Xunit;
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 {
     [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
-    public class ReadMostWicketsTests
+    public class ReadMostPlayerOfTheMatchAwardsTests
     {
         private readonly SqlServerTestDataFixture _databaseFixture;
 
-        public ReadMostWicketsTests(SqlServerTestDataFixture databaseFixture)
+        public ReadMostPlayerOfTheMatchAwardsTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
 
         [Fact]
-        public async Task Read_total_players_with_wickets_supports_no_filter()
+        public async Task Read_total_players_with_player_of_the_match_awards_supports_no_filter()
         {
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
             queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((string.Empty, new Dictionary<string, object>()));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, Mock.Of<IPlayerDataSource>());
 
-            var result = await dataSource.ReadTotalPlayersWithWickets(null).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayersWithPlayerOfTheMatchAwards(null).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches
-                .SelectMany(x => x.MatchInnings)
-                .SelectMany(x => x.BowlingFigures)
-                .Where(x => x.Wickets > 0)
-                .Select(x => x.Bowler.Player.PlayerId)
+                .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                .Select(x => x.PlayerIdentity.Player.PlayerId)
                 .Distinct()
                 .Count();
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public async Task Read_total_players_with_wickets_supports_filter_by_club_id()
+        public async Task Read_total_players_with_player_of_the_match_awards_supports_filter_by_club_id()
         {
             var filter = new StatisticsFilter { Club = _databaseFixture.TestData.TeamWithFullDetails!.Club };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
             queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithFullDetails.Club.ClubId! } }));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, Mock.Of<IPlayerDataSource>());
 
-            var result = await dataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayersWithPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches
               .Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
-              .SelectMany(x => x.MatchInnings)
-              .Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
-              .SelectMany(x => x.BowlingFigures)
-              .Where(x => x.Wickets > 0)
-              .Select(x => x.Bowler.Player.PlayerId)
+              .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase) && x.PlayerIdentity.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId))
+              .Select(x => x.PlayerIdentity.Player.PlayerId)
               .Distinct()
               .Count();
+
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public async Task Read_total_players_with_wickets_supports_filter_by_team_id()
+        public async Task Read_total_players_with_player_of_the_match_awards_supports_filter_by_team_id()
         {
             var filter = new StatisticsFilter { Team = _databaseFixture.TestData.TeamWithFullDetails };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails.TeamId! } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails!.TeamId! } }));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, Mock.Of<IPlayerDataSource>());
 
-            var result = await dataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayersWithPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches
               .Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
-              .SelectMany(x => x.MatchInnings)
-              .Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
-              .SelectMany(x => x.BowlingFigures)
-              .Where(x => x.Wickets > 0)
-              .Select(x => x.Bowler.Player.PlayerId)
+              .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase) && x.PlayerIdentity.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId))
+              .Select(x => x.PlayerIdentity.Player.PlayerId)
               .Distinct()
               .Count();
+
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public async Task Read_total_players_with_wickets_supports_filter_by_match_location_id()
+        public async Task Read_total_players_with_player_of_the_match_awards_supports_filter_by_match_location_id()
         {
             var filter = new StatisticsFilter { MatchLocation = _databaseFixture.TestData.MatchLocations.First() };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
             queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", _databaseFixture.TestData.MatchLocations.First().MatchLocationId! } }));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, Mock.Of<IPlayerDataSource>());
 
-            var result = await dataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayersWithPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches
                 .Where(x => x.MatchLocation?.MatchLocationId == _databaseFixture.TestData.MatchLocations.First().MatchLocationId)
-                .SelectMany(x => x.MatchInnings)
-                .SelectMany(x => x.BowlingFigures)
-                .Where(x => x.Wickets > 0)
-                .Select(x => x.Bowler.Player.PlayerId)
+                .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                .Select(x => x.PlayerIdentity.Player.PlayerId)
                 .Distinct()
                 .Count();
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public async Task Read_total_players_with_wickets_supports_filter_by_competition_id()
+        public async Task Read_total_players_with_player_of_the_match_awards_supports_filter_by_competition_id()
         {
             var filter = new StatisticsFilter { Competition = _databaseFixture.TestData.Competitions.First() };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
             queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, Mock.Of<IPlayerDataSource>());
 
-            var result = await dataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayersWithPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches
-              .Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId)
-              .SelectMany(x => x.MatchInnings)
-              .SelectMany(x => x.BowlingFigures)
-              .Where(x => x.Wickets > 0)
-              .Select(x => x.Bowler.Player.PlayerId)
-              .Distinct()
-              .Count();
+                .Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId)
+                .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                .Select(x => x.PlayerIdentity.Player.PlayerId)
+                .Distinct()
+                .Count();
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public async Task Read_total_players_with_wickets_supports_filter_by_season_id()
+        public async Task Read_total_players_with_player_of_the_match_awards_supports_filter_by_season_id()
         {
             var filter = new StatisticsFilter { Season = _databaseFixture.TestData.Competitions.First().Seasons.First() };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
             queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, Mock.Of<IPlayerDataSource>());
 
-            var result = await dataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayersWithPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches
-              .Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
-              .SelectMany(x => x.MatchInnings)
-              .SelectMany(x => x.BowlingFigures)
-              .Where(x => x.Wickets > 0)
-              .Select(x => x.Bowler.Player.PlayerId)
-              .Distinct()
-              .Count();
+                .Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
+                .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                .Select(x => x.PlayerIdentity.Player.PlayerId)
+                .Distinct()
+                .Count();
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public async Task Read_total_players_with_wickets_supports_filter_by_date()
+        public async Task Read_total_players_with_player_of_the_match_awards_supports_filter_by_date()
         {
             var dateRangeGenerator = new DateRangeGenerator();
             var (fromDate, untilDate) = dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
@@ -159,21 +147,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate", new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } }));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, Mock.Of<IPlayerDataSource>());
 
-            var result = await dataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayersWithPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches
-              .Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)
-              .SelectMany(x => x.MatchInnings)
-              .SelectMany(x => x.BowlingFigures)
-              .Where(x => x.Wickets > 0)
-              .Select(x => x.Bowler.Player.PlayerId)
-              .Distinct()
-              .Count();
+                .Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)
+                .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                .Select(x => x.PlayerIdentity.Player.PlayerId)
+                .Distinct()
+                .Count();
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public async Task Read_most_wickets_returns_player()
+        public async Task Read_most_player_of_the_match_awards_returns_player()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
@@ -182,13 +168,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            var results = await dataSource.ReadMostWickets(filter).ConfigureAwait(false);
+            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                                            .SelectMany(m => m.MatchInnings)
-                                                                            .SelectMany(mi => mi.BowlingFigures)
-                                                                            .Where(bf => bf.Bowler.Player.PlayerId == x.PlayerId && bf.Wickets > 0)
-                                                                            .Sum(bf => bf.Wickets) > 0);
+            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                                                            .Select(x => x.PlayerIdentity.Player)
+                                                            .Distinct(new PlayerEqualityComparer());
             foreach (var player in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId);
@@ -200,7 +184,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_most_wickets_returns_teams()
+        public async Task Read_most_player_of_the_match_awards_returns_teams()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
@@ -209,13 +193,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            var results = await dataSource.ReadMostWickets(filter).ConfigureAwait(false);
+            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                                            .SelectMany(m => m.MatchInnings)
-                                                                            .SelectMany(mi => mi.BowlingFigures)
-                                                                            .Where(bf => bf.Bowler.Player.PlayerId == x.PlayerId && bf.Wickets > 0)
-                                                                            .Sum(pi => pi.Wickets) > 0);
+            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                                                                   .Select(x => x.PlayerIdentity.Player)
+                                                                   .Distinct(new PlayerEqualityComparer());
             foreach (var player in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId);
@@ -231,7 +213,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_most_wickets_returns_statistics()
+        public async Task Read_most_player_of_the_match_awards_returns_statistics()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
@@ -240,11 +222,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => true, x => true, x => true).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => true, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_statistics_filtered_by_club_id()
+        public async Task Read_most_player_of_the_match_awards_supports_statistics_filtered_by_club_id()
         {
             var filter = new StatisticsFilter
             {
@@ -260,11 +242,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => true, i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId, i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => true,
+                i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId,
+                i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId,
+                pi => pi.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_statistics_filtered_by_team_id()
+        public async Task Read_most_player_of_the_match_awards_supports_statistics_filtered_by_team_id()
         {
             var filter = new StatisticsFilter
             {
@@ -280,11 +265,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => true, i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId, i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => true,
+                i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId,
+                i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId,
+                pi => pi.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_statistics_filtered_by_match_location_id()
+        public async Task Read_most_player_of_the_match_awards_supports_statistics_filtered_by_match_location_id()
         {
             var filter = new StatisticsFilter
             {
@@ -300,12 +288,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId, x => true, x => true).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
 
         [Fact]
-        public async Task Read_most_wickets_supports_statistics_filtered_by_competition_id()
+        public async Task Read_most_player_of_the_match_awards_supports_statistics_filtered_by_competition_id()
         {
             var filter = new StatisticsFilter
             {
@@ -321,11 +309,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => x.Season?.Competition?.CompetitionId == filter.Competition.CompetitionId, x => true, x => true).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => x.Season?.Competition?.CompetitionId == filter.Competition.CompetitionId, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_statistics_filtered_by_season_id()
+        public async Task Read_most_player_of_the_match_awards_supports_statistics_filtered_by_season_id()
         {
             var filter = new StatisticsFilter
             {
@@ -341,11 +329,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => x.Season?.SeasonId == filter.Season.SeasonId, x => true, x => true).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => x.Season?.SeasonId == filter.Season.SeasonId, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_statistics_filtered_by_date()
+        public async Task Read_most_player_of_the_match_awards_supports_statistics_filtered_by_date()
         {
             var dateRangeGenerator = new DateRangeGenerator();
             var (fromDate, untilDate) = dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
@@ -365,12 +353,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate, x => true, x => true).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
-        private async Task ActAndAssertStatistics(StatisticsFilter filter, SqlServerBestPlayerTotalStatisticsDataSource dataSource, Func<Stoolball.Matches.Match, bool> matchFilter, Func<MatchInnings, bool> bowlingInningsFilter, Func<MatchInnings, bool> battingInningsFilter)
+        private async Task ActAndAssertStatistics(StatisticsFilter filter, SqlServerBestPlayerTotalStatisticsDataSource dataSource, Func<Stoolball.Matches.Match, bool> matchFilter, Func<MatchInnings, bool> bowlingInningsFilter, Func<MatchInnings, bool> battingInningsFilter, Func<PlayerIdentity, bool> playerIdentityFilter)
         {
-            var results = await dataSource.ReadMostWickets(filter).ConfigureAwait(false);
+            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Players.Select(p => new BestStatistic
             {
@@ -383,19 +371,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                     ) ||
                                     m.MatchInnings.Where(battingInningsFilter).Any(mi => mi.PlayerInnings.Any(pi => pi.Batter.Player.PlayerId == p.PlayerId || pi.DismissedBy?.Player.PlayerId == p.PlayerId || pi.Bowler?.Player.PlayerId == p.PlayerId)) ||
                                     m.Awards.Any(aw => aw.PlayerIdentity.Player.PlayerId == p.PlayerId)),
-                TotalInnings = (int)_databaseFixture.TestData.Matches
-                            .Where(matchFilter)
-                            .SelectMany(m => m.MatchInnings)
-                            .Where(bowlingInningsFilter)
-                            .SelectMany(mi => mi.BowlingFigures)
-                            .Count(bf => bf.Bowler.Player.PlayerId == p.PlayerId),
                 Total = (int)_databaseFixture.TestData.Matches
                             .Where(matchFilter)
-                            .SelectMany(m => m.MatchInnings)
-                            .Where(bowlingInningsFilter)
-                            .SelectMany(mi => mi.BowlingFigures)
-                            .Where(bf => bf.Bowler.Player.PlayerId == p.PlayerId)
-                            .Sum(bf => bf.Wickets),
+                            .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase) &&
+                                             playerIdentityFilter(x.PlayerIdentity) &&
+                                             x.PlayerIdentity.Player.PlayerId == p.PlayerId))
+                            .Count()
             }).Where(x => x.Total > 0);
 
             foreach (var player in expected)
@@ -404,13 +385,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Assert.NotNull(result);
 
                 Assert.Equal(player.TotalMatches, result!.Result.TotalMatches);
-                Assert.Equal(player.TotalInnings, result.Result.TotalInnings);
                 Assert.Equal(player.Total, result.Result.Total);
             }
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_no_filter()
+        public async Task Read_most_player_of_the_match_awards_supports_no_filter()
         {
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
             queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((string.Empty, new Dictionary<string, object>()));
@@ -418,13 +398,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            var results = await dataSource.ReadMostWickets(null).ConfigureAwait(false);
+            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(null).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                                   .SelectMany(m => m.MatchInnings)
-                                                                   .SelectMany(mi => mi.BowlingFigures)
-                                                                   .Where(bf => bf.Bowler.Player.PlayerId == x.PlayerId)
-                                                                   .Sum(bf => bf.Wickets) > 0);
+            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                                                            .Select(x => x.PlayerIdentity.Player)
+                                                            .Distinct(new PlayerEqualityComparer());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
@@ -434,7 +412,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_filter_by_club_id()
+        public async Task Read_most_player_of_the_match_awards_supports_filter_by_club_id()
         {
             var filter = new StatisticsFilter
             {
@@ -450,14 +428,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            var results = await dataSource.ReadMostWickets(filter).ConfigureAwait(false);
+            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                                 .SelectMany(m => m.MatchInnings)
-                                                                 .Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
-                                                                 .SelectMany(mi => mi.BowlingFigures)
-                                                                 .Where(bf => bf.Bowler.Player.PlayerId == x.PlayerId)
-                                                                 .Sum(bf => bf.Wickets) > 0);
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
+                                .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                                .Where(x => x.PlayerIdentity.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
+                                .Select(x => x.PlayerIdentity.Player)
+                                .Distinct(new PlayerEqualityComparer());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
@@ -467,7 +444,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_filter_by_team_id()
+        public async Task Read_most_player_of_the_match_awards_supports_filter_by_team_id()
         {
             var filter = new StatisticsFilter
             {
@@ -478,20 +455,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Team = _databaseFixture.TestData.TeamWithFullDetails
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails.TeamId! } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails!.TeamId! } }));
             var playerDataSource = new Mock<IPlayerDataSource>();
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            var results = await dataSource.ReadMostWickets(filter).ConfigureAwait(false);
+            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                                 .Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
-                                                                 .SelectMany(m => m.MatchInnings)
-                                                                 .Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
-                                                                 .SelectMany(mi => mi.BowlingFigures)
-                                                                 .Where(bf => bf.Bowler.Player.PlayerId == x.PlayerId)
-                                                                 .Sum(bf => bf.Wickets) > 0);
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
+                                .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                                .Where(x => x.PlayerIdentity.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
+                                .Select(x => x.PlayerIdentity.Player)
+                                .Distinct(new PlayerEqualityComparer());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
@@ -501,7 +476,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_filter_by_match_location_id()
+        public async Task Read_most_player_of_the_match_awards_supports_filter_by_match_location_id()
         {
             var filter = new StatisticsFilter
             {
@@ -517,14 +492,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            var results = await dataSource.ReadMostWickets(It.IsAny<StatisticsFilter>()).ConfigureAwait(false);
+            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(It.IsAny<StatisticsFilter>()).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                     .Where(x => x.MatchLocation?.MatchLocationId == _databaseFixture.TestData.MatchLocations.First().MatchLocationId)
-                                                     .SelectMany(m => m.MatchInnings)
-                                                     .SelectMany(mi => mi.BowlingFigures)
-                                                     .Where(bf => bf.Bowler.Player.PlayerId == x.PlayerId)
-                                                     .Sum(bf => bf.Wickets) > 0);
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId)
+                                .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                                .Select(x => x.PlayerIdentity.Player)
+                                .Distinct(new PlayerEqualityComparer());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
@@ -534,7 +507,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_filter_by_competition_id()
+        public async Task Read_most_player_of_the_match_awards_supports_filter_by_competition_id()
         {
             var filter = new StatisticsFilter
             {
@@ -550,14 +523,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            var results = await dataSource.ReadMostWickets(filter).ConfigureAwait(false);
+            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                     .Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId)
-                                                     .SelectMany(m => m.MatchInnings)
-                                                     .SelectMany(mi => mi.BowlingFigures)
-                                                     .Where(bf => bf.Bowler.Player.PlayerId == x.PlayerId)
-                                                     .Sum(bf => bf.Wickets) > 0);
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId)
+                                                            .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                                                            .Select(x => x.PlayerIdentity.Player)
+                                                            .Distinct(new PlayerEqualityComparer());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
@@ -567,7 +538,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_most_wickets_supports_filter_by_season_id()
+        public async Task Read_most_player_of_the_match_awards_supports_filter_by_season_id()
         {
             var filter = new StatisticsFilter
             {
@@ -583,14 +554,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            var results = await dataSource.ReadMostWickets(filter).ConfigureAwait(false);
+            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                     .Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
-                                                     .SelectMany(m => m.MatchInnings)
-                                                     .SelectMany(mi => mi.BowlingFigures)
-                                                     .Where(bf => bf.Bowler.Player.PlayerId == x.PlayerId)
-                                                     .Sum(bf => bf.Wickets) > 0);
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
+                                                .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                                                .Select(x => x.PlayerIdentity.Player)
+                                                .Distinct(new PlayerEqualityComparer());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
@@ -600,7 +569,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_most_wickets_sorts_by_highest_total_first()
+        public async Task Read_most_player_of_the_match_awards_sorts_by_highest_total_first()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
@@ -609,7 +578,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            var results = await dataSource.ReadMostWickets(filter).ConfigureAwait(false);
+            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
             int? previousTotal = int.MaxValue;
             foreach (var result in results)
@@ -620,16 +589,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_most_wickets_pages_results()
+        public async Task Read_most_player_of_the_match_awards_pages_results()
         {
             const int pageSize = 10;
             var pageNumber = 1;
 
             var remaining = _databaseFixture.TestData.Matches
-                            .SelectMany(x => x.MatchInnings)
-                            .SelectMany(x => x.BowlingFigures)
-                            .Where(x => x.Wickets > 0)
-                            .Select(x => x.Bowler.Player.PlayerId)
+                            .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
+                            .Select(x => x.PlayerIdentity.Player.PlayerId)
                             .Distinct()
                             .Count();
             while (remaining > 0)
@@ -640,35 +607,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var playerDataSource = new Mock<IPlayerDataSource>();
                 playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
                 var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
-                var results = await dataSource.ReadMostWickets(filter).ConfigureAwait(false);
+                var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
 
                 var expected = pageSize > remaining ? remaining : pageSize;
                 Assert.Equal(expected, results.Count());
 
                 pageNumber++;
                 remaining -= pageSize;
-            }
-        }
-
-        [Fact]
-        public async Task Read_most_wickets_returns_results_equal_to_max_with_max_results_filter()
-        {
-            var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue }, MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
-            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((string.Empty, new Dictionary<string, object>()));
-            var playerDataSource = new Mock<IPlayerDataSource>();
-            playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
-            var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
-
-            var results = (await dataSource.ReadMostWickets(filter).ConfigureAwait(false)).ToList();
-
-            // The test data is altered to ensure the 5th and 6th results are the same
-            Assert.True(results.Count > 5);
-
-            var fifthValue = results[4].Result.Total;
-            for (var i = 4; i < results.Count; i++)
-            {
-                Assert.Equal(fifthValue, results[i].Result.Total);
             }
         }
     }

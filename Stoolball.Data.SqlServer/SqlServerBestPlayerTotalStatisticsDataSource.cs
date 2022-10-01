@@ -21,7 +21,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunsScored(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunsScored(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -38,51 +38,83 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostWickets(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostWickets(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
-
             return await ReadBestPlayerTotal("Wickets", false, true, null, null, "AND BowlingFiguresId IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostCatches(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostCatches(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
-
             return await ReadBestPlayerTotal("Catches", false, true, null, null, string.Empty, filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunOuts(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunOuts(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
-
             return await ReadBestPlayerTotal("RunOuts", false, true, null, null, string.Empty, filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<int> ReadTotalPlayersWithRunsScored(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostPlayerOfTheMatchAwards(StatisticsFilter? filter)
         {
+            filter = filter ?? new StatisticsFilter();
+
+            // This needs a different query to other totals because the PlayerOfTheMatch=1 metric can be a duplicate if the player has more than one
+            // row for the match, eg 2 innings match, batted twice in the same innings, or for both teams
+            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
+
+            var sql = @$"SELECT PlayerId, PlayerRoute,
+		                        (SELECT COUNT(DISTINCT MatchId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
+		                        (SELECT COUNT(DISTINCT(MatchId)) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND PlayerOfTheMatch = 1 {where}) AS Total
+                                 FROM {Tables.PlayerInMatchStatistics} AS s
+                                 WHERE CAST(PlayerOfTheMatch AS INT) > 0 {where}
+                                 GROUP BY PlayerId, PlayerRoute
+                                 ORDER BY COUNT(DISTINCT(MatchId)) DESC, TotalMatches ASC 
+                                 OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            parameters.Add("@PageOffset", filter.Paging.PageSize * (filter.Paging.PageNumber - 1));
+            parameters.Add("@PageSize", filter.Paging.PageSize);
+
+            return await ReadResults(sql, parameters, filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
+        public async Task<int> ReadTotalPlayersWithRunsScored(StatisticsFilter? filter)
+        {
+            filter = filter ?? new StatisticsFilter();
             return await ReadTotalPlayersWithData("RunsScored", filter, true).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<int> ReadTotalPlayersWithWickets(StatisticsFilter filter)
+        public async Task<int> ReadTotalPlayersWithWickets(StatisticsFilter? filter)
         {
+            filter = filter ?? new StatisticsFilter();
             return await ReadTotalPlayersWithData("Wickets", filter, false).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<int> ReadTotalPlayersWithCatches(StatisticsFilter filter)
+        public async Task<int> ReadTotalPlayersWithCatches(StatisticsFilter? filter)
         {
+            filter = filter ?? new StatisticsFilter();
             return await ReadTotalPlayersWithData("Catches", filter, false).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<int> ReadTotalPlayersWithRunOuts(StatisticsFilter filter)
+        public async Task<int> ReadTotalPlayersWithRunOuts(StatisticsFilter? filter)
         {
+            filter = filter ?? new StatisticsFilter();
             return await ReadTotalPlayersWithData("RunOuts", filter, false).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
+        public async Task<int> ReadTotalPlayersWithPlayerOfTheMatchAwards(StatisticsFilter? filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            return await ReadTotalPlayersWithData("PlayerOfTheMatch", filter, false).ConfigureAwait(false);
         }
 
         private async Task<int> ReadTotalPlayersWithData(string fieldName, StatisticsFilter filter, bool fieldValueCanBeNegative)
@@ -164,9 +196,14 @@ namespace Stoolball.Data.SqlServer
                 sql = outerQueryIncludingOrderBy.Replace("<<QUERY>>", sql);
             }
 
+            return await ReadResults($"{preQuery} {sql}", parameters, filter).ConfigureAwait(false);
+        }
+
+        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadResults(string sql, Dictionary<string, object>? parameters, StatisticsFilter filter)
+        {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var results = await connection.QueryAsync<Player, BestStatistic, StatisticsResult<BestStatistic>>($"{preQuery} {sql}",
+                var results = await connection.QueryAsync<Player, BestStatistic, StatisticsResult<BestStatistic>>(sql,
                     (player, totals) =>
                     {
                         totals.Player = player;

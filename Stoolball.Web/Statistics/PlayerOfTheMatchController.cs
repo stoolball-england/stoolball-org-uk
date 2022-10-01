@@ -27,8 +27,8 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterHumanizer,
                   filter => statisticsDataSource.ReadPlayerIdentityPerformances(filter),
                   filter => statisticsDataSource.ReadTotalPlayerIdentityPerformances(filter),
-                  "Player of the match nominations",
-                  "Nominations"
+                  "Player of the match awards",
+                  "Awards"
                   )
         { }
     }
