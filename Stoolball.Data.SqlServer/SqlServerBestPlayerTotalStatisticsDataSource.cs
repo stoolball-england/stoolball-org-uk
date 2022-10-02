@@ -61,25 +61,28 @@ namespace Stoolball.Data.SqlServer
         ///  <inheritdoc/>
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostPlayerOfTheMatchAwards(StatisticsFilter? filter)
         {
-            filter = filter ?? new StatisticsFilter();
+            var clonedFilter = filter?.Clone() ?? new StatisticsFilter();
+
+            // Remove this criterion because it's hard-coded in the query and we don't want it added to the general WHERE clause that also applies to the selection of TotalMatches 
+            clonedFilter.PlayerOfTheMatch = null;
 
             // This needs a different query to other totals because the PlayerOfTheMatch=1 metric can be a duplicate if the player has more than one
             // row for the match, eg 2 innings match, batted twice in the same innings, or for both teams
-            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
+            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(clonedFilter);
 
             var sql = @$"SELECT PlayerId, PlayerRoute,
 		                        (SELECT COUNT(DISTINCT MatchId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
-		                        (SELECT COUNT(DISTINCT(MatchId)) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND PlayerOfTheMatch = 1 {where}) AS Total
+		                        (SELECT COUNT(DISTINCT MatchId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND PlayerOfTheMatch = 1 {where}) AS Total
                                  FROM {Tables.PlayerInMatchStatistics} AS s
                                  WHERE CAST(PlayerOfTheMatch AS INT) > 0 {where}
                                  GROUP BY PlayerId, PlayerRoute
                                  ORDER BY COUNT(DISTINCT(MatchId)) DESC, TotalMatches ASC 
                                  OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
-            parameters.Add("@PageOffset", filter.Paging.PageSize * (filter.Paging.PageNumber - 1));
-            parameters.Add("@PageSize", filter.Paging.PageSize);
+            parameters.Add("@PageOffset", clonedFilter.Paging.PageSize * (clonedFilter.Paging.PageNumber - 1));
+            parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
 
-            return await ReadResults(sql, parameters, filter).ConfigureAwait(false);
+            return await ReadResults(sql, parameters, clonedFilter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>

@@ -8,13 +8,13 @@ using Umbraco.Cms.Core.Web;
 namespace Stoolball.Web.Statistics
 {
     [ExcludeFromCodeCoverage]
-    public class PlayerOfTheMatchController : BaseStatisticsTableController<PlayerIdentityPerformance>, IRenderControllerAsync
+    public class MostPlayerOfTheMatchAwardsController : BaseStatisticsTableController<BestStatistic>, IRenderControllerAsync
     {
-        public PlayerOfTheMatchController(ILogger<PlayerOfTheMatchController> logger,
+        public MostPlayerOfTheMatchAwardsController(ILogger<MostPlayerOfTheMatchAwardsController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
             IStatisticsFilterFactory statisticsFilterFactory,
-            IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource,
+            IBestPlayerTotalStatisticsDataSource statisticsDataSource,
             IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
             IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
             IStatisticsFilterHumanizer statisticsFilterHumanizer)
@@ -25,9 +25,9 @@ namespace Stoolball.Web.Statistics
                   statisticsBreadcrumbBuilder,
                   statisticsFilterQueryStringParser,
                   statisticsFilterHumanizer,
-                  filter => statisticsDataSource.ReadPlayerIdentityPerformances(filter),
-                  filter => statisticsDataSource.ReadTotalPlayerIdentityPerformances(filter),
-                  "Player of the match awards",
+                  filter => statisticsDataSource.ReadMostPlayerOfTheMatchAwards(filter),
+                  filter => statisticsDataSource.ReadTotalPlayersWithPlayerOfTheMatchAwards(filter),
+                  "Most player of the match awards",
                   "Awards"
                   )
         { }

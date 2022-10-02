@@ -1,0 +1,58 @@
+﻿@inherits UmbracoViewPage<StatisticsViewModel<BestStatistic>>
+@inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
+@inject IStatisticsFilterQueryStringSerializer serialiser;
+@using Humanizer
+@using Stoolball.Statistics
+@using Stoolball.Web.Statistics.Models
+@using Stoolball.Web.HtmlHelpers
+@{
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
+}
+@if (Model.Results.Any())
+{
+    <table class="statistics table-as-cards table-as-cards-reset-md">
+        @if (Model.ShowCaption)
+        {
+            <caption>Most player of the match awards</caption>
+        }
+        <thead>
+            <tr>
+                <th scope="col" class="table-order">#</th>
+                <th scope="col">Player</th>
+                @if (Model.ShowTeamsColumn)
+                {
+                    <th scope="col">Teams</th>
+                }
+                <th scope="col" class="numeric statistic">Matches</th>
+                <th scope="col" class="numeric statistic">Awards</th>
+                <th scope="col" class="numeric statistic">% of matches</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int? previous = null;
+                for (var i = 0; i < Model.Results.Count(); i++)
+                {
+                    var equalToPrevious = Model.Results[i].Result.Total == previous;
+                    previous = Model.Results[i].Result.Total;
+                    <tr>
+                        <td class="table-as-cards__header-md">@(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString())</td>
+                        <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Player</span><a href="@Model.Results[i].Result.Player.PlayerRoute">@(Model.Results[i].Result.Player.PlayerName())</a></td>
+                        @if (Model.ShowTeamsColumn)
+                        {
+                            <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Teams</span><div>@Model.Results[i].Result.Player.LimitedListOfTeams()</div></td>
+                        }
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Matches</span>@Model.Results[i].Result.TotalMatches</td>
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Awards</span>@Model.Results[i].Result.Total</td>
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">% of matches</span>@((Math.Round((((decimal)Model.Results[i].Result.Total!.Value)/Model.Results[i].Result.TotalMatches)*100).ToString() + "%").Replace(".00%",string.Empty).Replace(".0%",string.Empty))</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    @await Html.PartialAsync("_Paging", Model.AppliedFilter.Paging)
+}
+else if (Model.ShowLinkOnly)
+{
+    <p><a href="@Context.Request.Path/most-player-of-match@(queryString)">Most player of the match awards – view all and filter</a></p>
+}    

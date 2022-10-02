@@ -1,0 +1,16 @@
+{
+  "Name": "Most Player of the Match Awards",
+  "Alias": "MostPlayerOfTheMatchAwards",
+  "File": "umb://template-file/MostPlayerOfTheMatchAwards.cshtml",
+  "Master": null,
+  "Udi": "umb://template/906dd3057fd94e2ba89c6486ebc68bc1",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/MostPlayerOfTheMatchAwards.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.4.2"
+}
