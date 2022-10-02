@@ -60,6 +60,14 @@ namespace Stoolball.Data.Cache
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostInningsWithBowling(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            var cacheKey = nameof(IBestPlayerTotalStatisticsDataSource) + nameof(ReadMostInningsWithBowling) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostInningsWithBowling(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), (string)cacheKey, (string)cacheKey);
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostPlayerOfTheMatchAwards(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();

@@ -37,6 +37,7 @@ namespace Stoolball.Statistics
         public int? MaxResultsAllowingExtraResultsIfValuesAreEqual { get; set; }
         public int? MinimumQualifyingInnings { get; set; }
         public int? MinimumRunsScored { get; set; }
+        public int? MinimumWicketsTaken { get; set; }
 
         public StatisticsFilter Clone()
         {
@@ -67,7 +68,8 @@ namespace Stoolball.Statistics
                 Paging = Paging,
                 MaxResultsAllowingExtraResultsIfValuesAreEqual = MaxResultsAllowingExtraResultsIfValuesAreEqual,
                 MinimumQualifyingInnings = MinimumQualifyingInnings,
-                MinimumRunsScored = MinimumRunsScored
+                MinimumRunsScored = MinimumRunsScored,
+                MinimumWicketsTaken = MinimumWicketsTaken
             };
         }
 

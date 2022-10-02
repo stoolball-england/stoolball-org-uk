@@ -45,6 +45,13 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostInningsWithBowling(StatisticsFilter? filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            return await ReadBestPlayerCount("Wickets", " AND Wickets IS NOT NULL", filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostWickets(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
@@ -216,6 +223,7 @@ namespace Stoolball.Data.SqlServer
             // For context about the number of qualifying matches, exclude any filter which would remove results even though the player featured in a qualifying match
             var filterWithoutMinimumPerformance = filter.Clone();
             filterWithoutMinimumPerformance.MinimumRunsScored = null;
+            filterWithoutMinimumPerformance.MinimumWicketsTaken = null;
             var (whereWithoutMinimumPerformance, _) = _statisticsQueryBuilder.BuildWhereClause(filterWithoutMinimumPerformance);
 
             var sql = @$"SELECT PlayerId, 
@@ -261,6 +269,11 @@ namespace Stoolball.Data.SqlServer
 
                 return results;
             }
+        }
+
+        public Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostBowlingFigures(StatisticsFilter filter)
+        {
+            throw new NotImplementedException();
         }
     }
 }
