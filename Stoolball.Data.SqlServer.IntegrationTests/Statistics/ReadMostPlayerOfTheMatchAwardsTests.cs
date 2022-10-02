@@ -365,12 +365,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Player = p,
                 TotalMatches = (int)_databaseFixture.TestData.Matches
                             .Where(matchFilter)
-                            .Count(m => m.MatchInnings.Where(bowlingInningsFilter).Any(mi =>
-                                    mi.OversBowled.Any(o => o.Bowler.Player.PlayerId == p.PlayerId) ||
-                                    mi.BowlingFigures.Any(bf => bf.Bowler.Player.PlayerId == p.PlayerId)
-                                    ) ||
-                                    m.MatchInnings.Where(battingInningsFilter).Any(mi => mi.PlayerInnings.Any(pi => pi.Batter.Player.PlayerId == p.PlayerId || pi.DismissedBy?.Player.PlayerId == p.PlayerId || pi.Bowler?.Player.PlayerId == p.PlayerId)) ||
-                                    m.Awards.Any(aw => aw.PlayerIdentity.Player.PlayerId == p.PlayerId)),
+                            .Count(m => m.MatchInnings.Where(battingInningsFilter).Any(mi => mi.PlayerInnings.Any(pi => pi.Batter.Player.PlayerId == p.PlayerId))
+                                    || m.MatchInnings.Where(bowlingInningsFilter).Any(mi =>
+                                        mi.PlayerInnings.Any(pi => pi.DismissedBy?.Player.PlayerId == p.PlayerId || pi.Bowler?.Player.PlayerId == p.PlayerId) ||
+                                        mi.OversBowled.Any(o => o.Bowler.Player.PlayerId == p.PlayerId) ||
+                                        mi.BowlingFigures.Any(bf => bf.Bowler.Player.PlayerId == p.PlayerId)
+                                    ) || m.Awards.Any(aw => aw.PlayerIdentity.Player.PlayerId == p.PlayerId)),
                 Total = (int)_databaseFixture.TestData.Matches
                             .Where(matchFilter)
                             .SelectMany(x => x.Awards.Where(x => x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase) &&
