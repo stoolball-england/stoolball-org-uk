@@ -307,6 +307,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                           AwardScope = AwardScope.Match
                       });
                 }
+                else
+                {
+                    award.Award.AwardId = existingAward.Value;
+                }
 
                 _connection.Execute($@"INSERT INTO {Tables.AwardedTo} 
                     (AwardedToId, AwardId, PlayerIdentityId, MatchId, Reason)
