@@ -88,6 +88,7 @@
         CompetitionStatistics,
         SeasonStatistics,
         IndividualScores,
+        MostScoresOfX,
         BowlingFigures,
         PlayerPerformances,
         PlayerOfTheMatchAwards,

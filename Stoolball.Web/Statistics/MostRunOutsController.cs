@@ -27,7 +27,7 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterHumanizer,
                   filter => statisticsDataSource.ReadMostRunOuts(filter),
                   filter => statisticsDataSource.ReadTotalPlayersWithRunOuts(filter),
-                  "Most run-outs",
+                  filter => "Most run-outs",
                   "Run-outs"
                   )
         { }

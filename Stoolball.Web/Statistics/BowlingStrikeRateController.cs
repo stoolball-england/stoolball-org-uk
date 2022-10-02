@@ -27,7 +27,7 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterHumanizer,
                   filter => statisticsDataSource.ReadBestBowlingStrikeRate(filter),
                   filter => statisticsDataSource.ReadTotalPlayersWithBowlingStrikeRate(filter),
-                  "Best bowling strike rate",
+                  filter => "Best bowling strike rate",
                   "Strike rates",
                   10, 5
                   )

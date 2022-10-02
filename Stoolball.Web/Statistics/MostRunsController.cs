@@ -27,7 +27,7 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterHumanizer,
                   filter => statisticsDataSource.ReadMostRunsScored(filter),
                   filter => statisticsDataSource.ReadTotalPlayersWithRunsScored(filter),
-                  "Most runs",
+                  filter => "Most runs",
                   "Runs"
                   )
         { }

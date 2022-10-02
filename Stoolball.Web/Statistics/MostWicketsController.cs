@@ -27,7 +27,7 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterHumanizer,
                   filter => statisticsDataSource.ReadMostWickets(filter),
                   filter => statisticsDataSource.ReadTotalPlayersWithWickets(filter),
-                  "Most wickets",
+                  filter => "Most wickets",
                   "Wickets"
                   )
         { }

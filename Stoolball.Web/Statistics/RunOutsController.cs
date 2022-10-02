@@ -36,7 +36,7 @@ namespace Stoolball.Web.Statistics
                       return (await playerPerformanceDataSource.ReadPlayerInnings(runOutsFilter)).ToList();
                   },
                   async filter => (await playerSummaryStatisticsDataSource.ReadFieldingStatistics(filter)).TotalRunOuts,
-                  "Run-outs",
+                  filter => "Run-outs",
                   "Run-outs",
                   validateFilter: filter => filter.Player != null
                   )

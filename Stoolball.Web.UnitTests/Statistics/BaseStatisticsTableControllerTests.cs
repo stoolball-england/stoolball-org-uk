@@ -59,7 +59,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                       statisticsFilterHumanizer,
                       readResults,
                       readTotalResults,
-                      PAGE_TITLE,
+                      filter => PAGE_TITLE,
                       FILTER_ENTITY_PLURAL,
                       minimumQualifyingInningsUnfiltered,
                       minimumQualifyingInningsFiltered,

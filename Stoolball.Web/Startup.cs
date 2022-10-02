@@ -321,6 +321,7 @@ namespace Stoolball.Web
             services.AddTransient<BattingStrikeRateController>();
             services.AddTransient<IndividualScoresController>();
             services.AddTransient<MostRunsController>();
+            services.AddTransient<MostScoresOfXController>();
             services.AddTransient<BowlingAverageController>();
             services.AddTransient<BowlingFiguresController>();
             services.AddTransient<BowlingStrikeRateController>();

@@ -27,7 +27,7 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterHumanizer,
                   filter => statisticsDataSource.ReadBestBattingAverage(filter),
                   filter => statisticsDataSource.ReadTotalPlayersWithBattingAverage(filter),
-                  "Best batting average",
+                  filter => "Best batting average",
                   "Averages",
                   10, 5
                   )

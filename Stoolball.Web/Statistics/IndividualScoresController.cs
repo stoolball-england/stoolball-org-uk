@@ -28,7 +28,7 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterHumanizer,
                   filter => statisticsDataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst),
                   filter => statisticsDataSource.ReadTotalPlayerInnings(filter),
-                  "Highest individual scores",
+                  filter => "Highest individual scores",
                   "Scores")
         { }
     }

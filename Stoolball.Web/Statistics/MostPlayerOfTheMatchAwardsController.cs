@@ -27,7 +27,7 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterHumanizer,
                   filter => statisticsDataSource.ReadMostPlayerOfTheMatchAwards(filter),
                   filter => statisticsDataSource.ReadTotalPlayersWithPlayerOfTheMatchAwards(filter),
-                  "Most player of the match awards",
+                  filter => "Most player of the match awards",
                   "Awards"
                   )
         { }

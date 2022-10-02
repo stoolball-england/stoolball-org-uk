@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
@@ -53,6 +54,11 @@ namespace Stoolball.Statistics
             if (route.Contains("player-of-match", StringComparison.OrdinalIgnoreCase))
             {
                 filter.PlayerOfTheMatch = true;
+            }
+            if (route.Contains("most-scores-of-", StringComparison.OrdinalIgnoreCase))
+            {
+                var result = Regex.Match(route, "most-scores-of-(?<MinimumRunsScored>[0-9]{1,3})", RegexOptions.IgnoreCase);
+                filter.MinimumRunsScored = result.Success ? int.Parse(result.Groups["MinimumRunsScored"].Value) : null;
             }
             if (entityType == StoolballEntityType.Player)
             {

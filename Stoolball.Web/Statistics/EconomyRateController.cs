@@ -27,7 +27,7 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterHumanizer,
                   filter => statisticsDataSource.ReadBestEconomyRate(filter),
                   filter => statisticsDataSource.ReadTotalPlayersWithEconomyRate(filter),
-                  "Best economy rate",
+                  filter => "Best economy rate",
                   "Economy rates",
                   10, 5
                   )

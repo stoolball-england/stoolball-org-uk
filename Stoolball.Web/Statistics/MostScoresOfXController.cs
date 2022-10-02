@@ -8,13 +8,13 @@ using Umbraco.Cms.Core.Web;
 namespace Stoolball.Web.Statistics
 {
     [ExcludeFromCodeCoverage]
-    public class BowlingFiguresController : BaseStatisticsTableController<BowlingFigures>, IRenderControllerAsync
+    public class MostScoresOfXController : BaseStatisticsTableController<BestStatistic>, IRenderControllerAsync
     {
-        public BowlingFiguresController(ILogger<BowlingFiguresController> logger,
+        public MostScoresOfXController(ILogger<MostScoresOfXController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
             IStatisticsFilterFactory statisticsFilterFactory,
-            IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource,
+            IBestPlayerTotalStatisticsDataSource statisticsDataSource,
             IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
             IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
             IStatisticsFilterHumanizer statisticsFilterHumanizer)
@@ -25,10 +25,10 @@ namespace Stoolball.Web.Statistics
                   statisticsBreadcrumbBuilder,
                   statisticsFilterQueryStringParser,
                   statisticsFilterHumanizer,
-                  filter => statisticsDataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst),
-                  filter => statisticsDataSource.ReadTotalBowlingFigures(filter),
-                  filter => "Best bowling figures",
-                  "Bowling figures"
+                  filter => statisticsDataSource.ReadMostPlayerInnings(filter),
+                  filter => statisticsDataSource.ReadTotalPlayersWithRunsScored(filter),
+                  filter => $"Most scores of {filter.MinimumRunsScored} or more runs",
+                  "Innings"
                   )
         { }
     }

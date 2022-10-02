@@ -39,6 +39,7 @@
             Serialize(filter.Paging.PageSize, "pagesize", defaultFilter.Paging.PageSize);
             Serialize(filter.MaxResultsAllowingExtraResultsIfValuesAreEqual, "max", defaultFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual);
             Serialize(filter.MinimumQualifyingInnings, "min", defaultFilter.MinimumQualifyingInnings);
+            Serialize(filter.MinimumRunsScored, "minruns", defaultFilter.MinimumRunsScored);
 
             var serialised = Serializer.ToQueryString();
             return serialised.Length > 1 ? serialised : string.Empty;

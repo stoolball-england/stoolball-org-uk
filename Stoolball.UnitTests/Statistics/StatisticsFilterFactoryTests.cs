@@ -247,5 +247,24 @@ namespace Stoolball.UnitTests.Statistics
 
             Assert.Equal(expected, result.PlayerOfTheMatch);
         }
+
+        [Theory]
+        [InlineData("/competitions/example/statistics/most-scores-of-50", 50)]
+        [InlineData("/competitions/example/2021/statistics/most-scores-of-20", 20)]
+        [InlineData("/competitions/example/2021-22/statistics/most-scores-of-33/", 33)]
+        [InlineData("/clubs/example/statistics/most-scores-of-100", 100)]
+        [InlineData("/teams/example/statistics/MOST-SCORES-OF-9/", 9)]
+        [InlineData("/locations/example/statistics/most-scores-of-99", 99)]
+        [InlineData("/play/statistics/most-scores-of-150/", 150)]
+        [InlineData("/some-other-route", null)]
+        public async Task Minimum_runs_scored_filter_is_applied(string route, int? expected)
+        {
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+                _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
+
+            var result = await filterFactory.FromRoute(route);
+
+            Assert.Equal(expected, result.MinimumRunsScored);
+        }
     }
 }

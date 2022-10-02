@@ -1,0 +1,16 @@
+{
+  "Name": "Most Scores of X",
+  "Alias": "MostScoresOfX",
+  "File": "umb://template-file/MostScoresOfX.cshtml",
+  "Master": null,
+  "Udi": "umb://template/dee610b7a9774afca729e61f5d05f9c5",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/MostScoresOfX.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.4.2"
+}

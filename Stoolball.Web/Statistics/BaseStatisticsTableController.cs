@@ -22,7 +22,7 @@ namespace Stoolball.Web.Statistics
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
         private readonly Func<StatisticsFilter, Task<IEnumerable<StatisticsResult<T>>>> _readResults;
         private readonly Func<StatisticsFilter, Task<int>> _readTotalResults;
-        private readonly string _pageTitle;
+        private readonly Func<StatisticsFilter, string> _pageTitle;
         private readonly string _filterEntityPlural;
         private readonly int? _minimumQualifyingInningsUnfiltered;
         private readonly int? _minimumQualifyingInningsFiltered;
@@ -37,7 +37,7 @@ namespace Stoolball.Web.Statistics
             IStatisticsFilterHumanizer statisticsFilterHumanizer,
             Func<StatisticsFilter, Task<IEnumerable<StatisticsResult<T>>>> readResults,
             Func<StatisticsFilter, Task<int>> readTotalResults,
-            string pageTitle,
+            Func<StatisticsFilter, string> pageTitle,
             string filterEntityPlural,
             int? minimumQualifyingInningsUnfiltered = null,
             int? minimumQualifyingInningsFiltered = null,
@@ -45,11 +45,6 @@ namespace Stoolball.Web.Statistics
             )
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
-            if (string.IsNullOrEmpty(pageTitle))
-            {
-                throw new ArgumentException($"'{nameof(pageTitle)}' cannot be null or empty.", nameof(pageTitle));
-            }
-
             if (string.IsNullOrEmpty(filterEntityPlural))
             {
                 throw new ArgumentException($"'{nameof(filterEntityPlural)}' cannot be null or empty.", nameof(filterEntityPlural));
@@ -61,7 +56,7 @@ namespace Stoolball.Web.Statistics
             _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
             _readResults = readResults ?? throw new ArgumentNullException(nameof(readResults));
             _readTotalResults = readTotalResults ?? throw new ArgumentNullException(nameof(readTotalResults));
-            _pageTitle = pageTitle;
+            _pageTitle = pageTitle ?? throw new ArgumentNullException(nameof(pageTitle));
             _filterEntityPlural = filterEntityPlural;
             _minimumQualifyingInningsUnfiltered = minimumQualifyingInningsUnfiltered;
             _minimumQualifyingInningsFiltered = minimumQualifyingInningsFiltered;
@@ -99,7 +94,7 @@ namespace Stoolball.Web.Statistics
 
             var userFilter = _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
             model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter(_filterEntityPlural, userFilter);
-            model.Metadata.PageTitle = _pageTitle + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter) + userFilter;
+            model.Metadata.PageTitle = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter) + userFilter;
 
             return CurrentTemplate(model);
         }
