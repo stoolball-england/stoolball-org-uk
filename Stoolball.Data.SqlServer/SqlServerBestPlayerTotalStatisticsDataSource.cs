@@ -21,11 +21,18 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostPlayerInnings(StatisticsFilter? filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            return await ReadBestPlayerCount("RunsScored", " AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunsScored(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
-            var outerQuery = @"SELECT PlayerId, PlayerRoute, TotalMatches, TotalInnings, Total, 
+            var outerQuery = @"SELECT PlayerId, TotalMatches, TotalInnings, Total, 
                                 CASE WHEN TotalDismissals > 0 THEN CAST(Total AS DECIMAL)/ TotalDismissals ELSE NULL END AS Average
                          FROM(
                             <<QUERY>>
@@ -34,28 +41,28 @@ namespace Stoolball.Data.SqlServer
 
             var extraSelectFields = $", (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics } WHERE PlayerId = s.PlayerId AND PlayerWasDismissed = 1 AND RunsScored IS NOT NULL <<WHERE>>) AS TotalDismissals";
 
-            return await ReadBestPlayerTotal("RunsScored", true, false, extraSelectFields, outerQuery, $"AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
+            return await ReadBestPlayerSum("RunsScored", true, false, extraSelectFields, outerQuery, $"AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostWickets(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
-            return await ReadBestPlayerTotal("Wickets", false, true, null, null, "AND BowlingFiguresId IS NOT NULL", filter).ConfigureAwait(false);
+            return await ReadBestPlayerSum("Wickets", false, true, null, null, "AND BowlingFiguresId IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostCatches(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
-            return await ReadBestPlayerTotal("Catches", false, true, null, null, string.Empty, filter).ConfigureAwait(false);
+            return await ReadBestPlayerSum("Catches", false, true, null, null, string.Empty, filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunOuts(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
-            return await ReadBestPlayerTotal("RunOuts", false, true, null, null, string.Empty, filter).ConfigureAwait(false);
+            return await ReadBestPlayerSum("RunOuts", false, true, null, null, string.Empty, filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -70,12 +77,12 @@ namespace Stoolball.Data.SqlServer
             // row for the match, eg 2 innings match, batted twice in the same innings, or for both teams
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(clonedFilter);
 
-            var sql = @$"SELECT PlayerId, PlayerRoute,
+            var sql = @$"SELECT PlayerId, 
 		                        (SELECT COUNT(DISTINCT MatchId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
 		                        (SELECT COUNT(DISTINCT MatchId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND PlayerOfTheMatch = 1 {where}) AS Total
                                  FROM {Tables.PlayerInMatchStatistics} AS s
                                  WHERE CAST(PlayerOfTheMatch AS INT) > 0 {where}
-                                 GROUP BY PlayerId, PlayerRoute
+                                 GROUP BY PlayerId
                                  ORDER BY COUNT(DISTINCT(MatchId)) DESC, TotalMatches ASC 
                                  OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
@@ -130,13 +137,13 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerTotal(string fieldName, bool fieldValueCanBeNegative, bool isFieldingStatistic, string? extraSelectFields, string? outerQueryIncludingOrderBy, string totalInningsFilter, StatisticsFilter filter)
+        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerSum(string fieldName, bool fieldValueCanBeNegative, bool isFieldingStatistic, string? extraSelectFields, string? outerQueryIncludingOrderBy, string totalInningsFilter, StatisticsFilter filter)
         {
             var clonedFilter = filter.Clone();
             clonedFilter.SwapBattingFirstFilter = isFieldingStatistic;
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(clonedFilter);
 
-            var group = "GROUP BY PlayerId, PlayerRoute";
+            var group = "GROUP BY PlayerId";
             var having = fieldValueCanBeNegative ? "HAVING 1=1" : $"HAVING SUM({fieldName}) > 0";
             var minimumValue = fieldValueCanBeNegative ? string.Empty : $"AND {fieldName} >= 0";
 
@@ -172,17 +179,17 @@ namespace Stoolball.Data.SqlServer
 
             var totalInningsQuery = !string.IsNullOrEmpty(totalInningsFilter) ? $"SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {totalInningsFilter} {where}" : "NULL";
 
-            var sql = $@"SELECT PlayerId, PlayerRoute,
-		                                (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
-		                                ({totalInningsQuery}) AS TotalInnings,
-		                                (SELECT SUM({ fieldName}) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS Total
-                                        <<SELECT>>
-                                 FROM {Tables.PlayerInMatchStatistics} AS s 
-                                 WHERE {fieldName} IS NOT NULL {minimumValue} {where} 
-                                 {group} 
-                                 {having} 
-                                 {offsetWithExtraResults} 
-                                 {offsetPaging}";
+            var sql = $@"SELECT PlayerId, 
+		                    (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
+		                    ({totalInningsQuery}) AS TotalInnings,
+		                    (SELECT SUM({ fieldName}) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS Total
+                            <<SELECT>>
+                        FROM {Tables.PlayerInMatchStatistics} AS s 
+                        WHERE {fieldName} IS NOT NULL {minimumValue} {where} 
+                        {group} 
+                        {having} 
+                        {offsetWithExtraResults} 
+                        {offsetPaging}";
 
             if (!string.IsNullOrEmpty(extraSelectFields))
             {
@@ -200,6 +207,31 @@ namespace Stoolball.Data.SqlServer
             }
 
             return await ReadResults($"{preQuery} {sql}", parameters, filter).ConfigureAwait(false);
+        }
+
+        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerCount(string fieldName, string totalInningsFilter, StatisticsFilter filter)
+        {
+            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
+
+            // For context about the number of qualifying matches, exclude any filter which would remove results even though the player featured in a qualifying match
+            var filterWithoutMinimumPerformance = filter.Clone();
+            filterWithoutMinimumPerformance.MinimumRunsScored = null;
+            var (whereWithoutMinimumPerformance, _) = _statisticsQueryBuilder.BuildWhereClause(filterWithoutMinimumPerformance);
+
+            var sql = @$"SELECT PlayerId, 
+                            (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics } WHERE PlayerId = s.PlayerId {whereWithoutMinimumPerformance}) AS TotalMatches,
+                            (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {totalInningsFilter} {whereWithoutMinimumPerformance}) AS TotalInnings,
+                            COUNT({fieldName}) AS Total
+                         FROM {Tables.PlayerInMatchStatistics} s
+                         WHERE {fieldName} IS NOT NULL {where}
+                         GROUP BY PlayerId
+                         ORDER BY COUNT({fieldName}) DESC
+                         OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            parameters.Add("@PageOffset", filter.Paging.PageSize * (filter.Paging.PageNumber - 1));
+            parameters.Add("@PageSize", filter.Paging.PageSize);
+
+            return await ReadResults(sql, parameters, filter).ConfigureAwait(false);
         }
 
         private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadResults(string sql, Dictionary<string, object>? parameters, StatisticsFilter filter)

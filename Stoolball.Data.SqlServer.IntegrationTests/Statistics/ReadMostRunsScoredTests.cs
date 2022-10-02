@@ -174,6 +174,27 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
 
         [Fact]
+        public async Task Read_total_players_with_runs_scored_supports_filter_by_minimum_score()
+        {
+            var filter = new StatisticsFilter { MinimumRunsScored = 20 };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND RunsScored >= @MinimumValue", new Dictionary<string, object> { { "MinimumValue", filter.MinimumRunsScored } }));
+            var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, Mock.Of<IPlayerDataSource>());
+
+            var result = await dataSource.ReadTotalPlayersWithRunsScored(filter).ConfigureAwait(false);
+
+            var expected = _databaseFixture.TestData.Matches
+              .SelectMany(x => x.MatchInnings)
+              .SelectMany(x => x.PlayerInnings)
+              .Where(x => x.RunsScored.HasValue && x.RunsScored >= filter.MinimumRunsScored)
+              .Select(x => x.Batter.Player.PlayerId)
+              .Distinct()
+              .Count();
+            Assert.Equal(expected, result);
+        }
+
+
+        [Fact]
         public async Task Read_most_runs_scored_returns_player()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };

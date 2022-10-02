@@ -36,6 +36,14 @@ namespace Stoolball.Data.Cache
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostPlayerInnings(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            var cacheKey = nameof(IBestPlayerTotalStatisticsDataSource) + nameof(ReadMostPlayerInnings) + _statisticsFilterSerializer.Serialize(filter);
+            return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadMostPlayerInnings(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunsScored(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
@@ -91,6 +99,7 @@ namespace Stoolball.Data.Cache
             return await _readThroughCache.ReadThroughCacheAsync(async () => await _statisticsDataSource.ReadTotalPlayersWithRunsScored(filter).ConfigureAwait(false), CachePolicy.StatisticsExpiration(), cacheKey, cacheKey);
         }
 
+        /// <inheritdoc />
         public async Task<int> ReadTotalPlayersWithWickets(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();

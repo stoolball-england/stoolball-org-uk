@@ -164,6 +164,12 @@ namespace Stoolball.Data.SqlServer
                 }
             }
 
+            if (filter.MinimumRunsScored.HasValue)
+            {
+                where.Add("RunsScored >= @MinimumRunsScored");
+                parameters.Add("@MinimumRunsScored", filter.MinimumRunsScored);
+            }
+
             return (where.Count > 0 ? " AND " + string.Join(" AND ", where) : string.Empty, parameters);
         }
     }
