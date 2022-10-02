@@ -44,7 +44,7 @@
                         }
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Matches</span>@Model.Results[i].Result.TotalMatches</td>
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Awards</span>@Model.Results[i].Result.Total</td>
-                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">% of matches</span>@((Math.Round((((decimal)Model.Results[i].Result.Total!.Value)/Model.Results[i].Result.TotalMatches)*100).ToString() + "%").Replace(".00%",string.Empty).Replace(".0%",string.Empty))</td>
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">% of matches</span>@Math.Round((((decimal)Model.Results[i].Result.Total!.Value)/Model.Results[i].Result.TotalMatches)*100)%</td>
                     </tr>
                 }
             }
