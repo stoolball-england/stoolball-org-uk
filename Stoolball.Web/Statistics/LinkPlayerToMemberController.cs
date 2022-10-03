@@ -35,6 +35,7 @@ namespace Stoolball.Web.Statistics
             }
             else
             {
+                model.Metadata.PageTitle = $"Add {model.Player.PlayerName()} to my statistics";
                 return CurrentTemplate(model);
             }
         }

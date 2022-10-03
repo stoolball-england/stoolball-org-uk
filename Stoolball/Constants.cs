@@ -96,7 +96,7 @@ namespace Stoolball
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
         public static class QueryParameters
         {
-            public const string ConfirmPlayerLinkedToMember = "player-linked";
+            public const string ConfirmPlayerLinkedToMember = "player-added";
         }
 
         public static string UkTimeZone() => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "GMT Standard Time" : "Europe/London";

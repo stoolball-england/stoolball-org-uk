@@ -80,11 +80,11 @@
     @if (!Model.Player.MemberKey.HasValue)
     {
         <hr />
-        <p class="linked"><a href="@Model.Player.PlayerRoute/link-to-my-account">Link this player to my account</a></p>
+        <p class="my"><a href="@Model.Player.PlayerRoute/add-to-my-statistics">Add @(Model.Player?.PlayerName()) to my statistics</a></p>
     }
     else if (Model.IsCurrentMember)
     {
         <hr />
-        <p class="linked">This player is linked to your account. See <a href="/account/linked-players">Players linked to my account</a>.</p>
+        <p class="my">These are your statistics. See <a href="/account/my-statistics">Players added to my statistics</a>.</p>
     }
 </div>

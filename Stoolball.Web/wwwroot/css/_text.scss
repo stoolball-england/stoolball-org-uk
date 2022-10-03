@@ -204,8 +204,8 @@ li {
     @include link-focus;
 }
 
-// Decorate text indicating a linked item with a link icon
-.linked {
-    padding-left: 20px;
-    background: left center/12px url(/images/icons/iconmonstr-link-2.svg) no-repeat;
+// Decorate text indicating an item associated with the current member
+.my {
+    padding-left: 25px;
+    background: left 1px/20px url(/images/icons/iconmonstr-star-filled.svg) no-repeat;
 }

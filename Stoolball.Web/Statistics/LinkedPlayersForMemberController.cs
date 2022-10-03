@@ -47,7 +47,7 @@ namespace Stoolball.Web.Statistics
                 }
             }
 
-            model.Metadata.PageTitle = "Players linked to my account";
+            model.Metadata.PageTitle = "Players added to my statistics";
             model.Breadcrumbs.RemoveAt(model.Breadcrumbs.Count - 1);
             model.Breadcrumbs.Add(new Breadcrumb { Name = "My account", Url = new Uri("/account", UriKind.Relative) });
 

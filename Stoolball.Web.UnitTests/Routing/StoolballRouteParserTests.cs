@@ -250,10 +250,10 @@ namespace Stoolball.Web.UnitTests.Routing
         [InlineData("https://example.org/players/example-name/fielding", StoolballRouteType.PlayerFielding)]
         [InlineData("https://example.org/players/example-name/catches", StoolballRouteType.Catches)]
         [InlineData("https://example.org/players/example-name/run-outs", StoolballRouteType.RunOuts)]
-        [InlineData("https://example.org/players/example-name/link-to-my-account", StoolballRouteType.LinkPlayerToMember)]
+        [InlineData("https://example.org/players/example-name/add-to-my-statistics", StoolballRouteType.LinkPlayerToMember)]
         [InlineData("https://example.org/players/example-name/", StoolballRouteType.Player)]
         [InlineData("https://example.org/schools/find/", StoolballRouteType.Schools)]
-        [InlineData("https://example.org/account/linked-players/", StoolballRouteType.LinkedPlayersForMember)]
+        [InlineData("https://example.org/account/my-statistics/", StoolballRouteType.LinkedPlayersForMember)]
         public void Correct_route_should_match(string route, StoolballRouteType expectedType)
         {
             var requestUrl = new Uri(route);
