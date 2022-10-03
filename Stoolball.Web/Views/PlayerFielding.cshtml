@@ -73,12 +73,12 @@
         @await Html.PartialAsync("_Catches", catches)
         if (Model.FieldingStatistics.TotalCatches > catches.Results.Count)
         {
-            <p><a href="@Context.Request.Path.ToString().TrimEnd("/fielding")/catches@(queryString)">Catches – view all and filter</a></p>
+            <p><a href="@Html.LinkToStatisticsTable("catches", queryString)">Catches – view all and filter</a></p>
         }
         @await Html.PartialAsync("_RunOuts", runOuts)
         if (Model.FieldingStatistics.TotalRunOuts > catches.Results.Count)
         {
-            <p><a href="@Context.Request.Path.ToString().TrimEnd("/fielding")/run-outs@(queryString)">Run-outs – view all and filter</a></p>
+            <p><a href="@Html.LinkToStatisticsTable("run-outs", queryString)">Run-outs – view all and filter</a></p>
         }
         @await Html.PartialAsync("_PlayerPerformances", new StatisticsViewModel<PlayerIdentityPerformance>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
     }

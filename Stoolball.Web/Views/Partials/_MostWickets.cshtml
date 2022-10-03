@@ -52,7 +52,7 @@
     </table>
     if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
-        <p><a href="@Context.Request.Path/most-wickets@(queryString)">Most wickets – view all and filter</a></p>
+        <p><a href="@Html.LinkToStatisticsTable("most-wickets", queryString)">Most wickets – view all and filter</a></p>
     }
     else
     {

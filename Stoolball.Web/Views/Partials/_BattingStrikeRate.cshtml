@@ -54,7 +54,7 @@
     }
     if (Model.ShowLinkOnly)
     {
-        <p><a href="@Context.Request.Path/batting-strike-rate@(queryString)">Best batting strike rate</a></p>
+        <p><a href="@Html.LinkToStatisticsTable("batting-strike-rate", queryString)">Best batting strike rate</a></p>
     }
     else
     {

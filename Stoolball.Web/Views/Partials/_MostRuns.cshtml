@@ -53,7 +53,7 @@
     </table>
     if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
-        <p><a href="@Context.Request.Path/most-runs@(queryString)">Most runs – view all and filter</a></p>
+        <p><a href="@Html.LinkToStatisticsTable("most-runs", queryString)">Most runs – view all and filter</a></p>
     }
     else
     {

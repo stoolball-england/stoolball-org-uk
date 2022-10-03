@@ -76,7 +76,7 @@
     </table>
     if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
-        <p><a href="@Context.Request.Path.Value.TrimEnd("/batting")/individual-scores@(queryString)">Individual scores – view all and filter</a></p>
+        <p><a href="@Html.LinkToStatisticsTable("individual-scores", queryString)">Individual scores – view all and filter</a></p>
     }
     else
     {

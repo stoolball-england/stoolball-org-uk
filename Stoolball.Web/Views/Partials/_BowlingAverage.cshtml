@@ -54,7 +54,7 @@
     }
     if (Model.ShowLinkOnly)
     {
-        <p><a href="@Context.Request.Path/bowling-average@(queryString)">Best bowling average</a></p>
+        <p><a href="@Html.LinkToStatisticsTable("bowling-average", queryString)">Best bowling average</a></p>
     }
     else
     {

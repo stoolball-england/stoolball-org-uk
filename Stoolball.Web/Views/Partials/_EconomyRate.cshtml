@@ -54,7 +54,7 @@
     }
     if (Model.ShowLinkOnly)
     {
-        <p><a href="@Context.Request.Path/economy-rate@(queryString)">Best economy rate</a></p>
+        <p><a href="@Html.LinkToStatisticsTable("economy-rate", queryString)">Best economy rate</a></p>
     }
     else
     {

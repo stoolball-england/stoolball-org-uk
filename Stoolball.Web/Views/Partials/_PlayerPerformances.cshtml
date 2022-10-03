@@ -83,5 +83,5 @@
 }
 else if (Model.ShowLinkOnly)
 {
-    <p><a href="@Context.Request.Path.Value.TrimEnd("/batting").TrimEnd("/bowling").TrimEnd("/fielding")/player-performances@(queryString)">Player performances</a></p>
+    <p><a href="@Html.LinkToStatisticsTable("player-performances", queryString)">Player performances</a></p>
 }
