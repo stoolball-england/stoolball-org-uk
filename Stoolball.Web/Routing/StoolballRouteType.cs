@@ -97,6 +97,7 @@
         RunOuts,
         MostRuns,
         MostWickets,
+        MostXWickets,
         MostCatches,
         MostRunOuts,
         BattingAverage,

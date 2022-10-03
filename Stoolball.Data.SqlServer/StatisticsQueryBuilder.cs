@@ -170,6 +170,12 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@MinimumRunsScored", filter.MinimumRunsScored);
             }
 
+            if (filter.MinimumWicketsTaken.HasValue)
+            {
+                where.Add("Wickets >= @MinimumWicketsTaken");
+                parameters.Add("@MinimumWicketsTaken", filter.MinimumWicketsTaken);
+            }
+
             return (where.Count > 0 ? " AND " + string.Join(" AND ", where) : string.Empty, parameters);
         }
     }

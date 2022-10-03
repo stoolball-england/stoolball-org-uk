@@ -327,6 +327,7 @@ namespace Stoolball.Web
             services.AddTransient<BowlingStrikeRateController>();
             services.AddTransient<EconomyRateController>();
             services.AddTransient<MostWicketsController>();
+            services.AddTransient<MostXWicketsController>();
             services.AddTransient<PlayerPerformancesController>();
             services.AddTransient<PlayerOfTheMatchAwardsController>();
             services.AddTransient<MostPlayerOfTheMatchAwardsController>();

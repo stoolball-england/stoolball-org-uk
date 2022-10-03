@@ -266,5 +266,24 @@ namespace Stoolball.UnitTests.Statistics
 
             Assert.Equal(expected, result.MinimumRunsScored);
         }
+
+        [Theory]
+        [InlineData("/competitions/example/statistics/most-5-wickets", 5)]
+        [InlineData("/competitions/example/2021/statistics/most-10-wickets", 10)]
+        [InlineData("/competitions/example/2021-22/statistics/most-5-wickets/", 5)]
+        [InlineData("/clubs/example/statistics/most-10-wickets", 10)]
+        [InlineData("/teams/example/statistics/MOST-9-wickets/", 9)]
+        [InlineData("/locations/example/statistics/most-9-wickets", 9)]
+        [InlineData("/play/statistics/most-10-wickets/", 10)]
+        [InlineData("/some-other-route", null)]
+        public async Task Minimum_wickets_taken_filter_is_applied(string route, int? expected)
+        {
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+                _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
+
+            var result = await filterFactory.FromRoute(route);
+
+            Assert.Equal(expected, result.MinimumWicketsTaken);
+        }
     }
 }

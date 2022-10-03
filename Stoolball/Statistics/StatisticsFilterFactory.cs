@@ -57,8 +57,13 @@ namespace Stoolball.Statistics
             }
             if (route.Contains("most-scores-of-", StringComparison.OrdinalIgnoreCase))
             {
-                var result = Regex.Match(route, "most-scores-of-(?<MinimumRunsScored>[0-9]{1,3})", RegexOptions.IgnoreCase);
-                filter.MinimumRunsScored = result.Success ? int.Parse(result.Groups["MinimumRunsScored"].Value) : null;
+                var mostScoresOf = Regex.Match(route, "most-scores-of-(?<MinimumRunsScored>[0-9]{1,3})", RegexOptions.IgnoreCase);
+                filter.MinimumRunsScored = mostScoresOf.Success ? int.Parse(mostScoresOf.Groups["MinimumRunsScored"].Value) : null;
+            }
+            var mostXWickets = Regex.Match(route, "most-(?<MinimumWickets>[0-9]{1,2})-wickets", RegexOptions.IgnoreCase);
+            if (mostXWickets.Success)
+            {
+                filter.MinimumWicketsTaken = int.Parse(mostXWickets.Groups["MinimumWickets"].Value);
             }
             if (entityType == StoolballEntityType.Player)
             {
