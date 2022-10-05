@@ -115,16 +115,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
             // Update the OversBowled to match
             var matchInnings = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].MatchInnings;
-            var oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId.Value == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
+            var oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
             while (oversBowledBySixthBowler.Count() < bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Overs)
             {
                 bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].MatchInnings.OversBowled.Add(new Over { OverId = Guid.NewGuid(), Bowler = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler });
-                oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId.Value == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
+                oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
             }
             while (oversBowledBySixthBowler.Count() > bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Overs)
             {
                 matchInnings.OversBowled.Remove(oversBowledBySixthBowler.Last());
-                oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId.Value == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
+                oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
             }
             var runsConcededDifference = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].RunsConceded - oversBowledBySixthBowler.Sum(x => x.RunsConceded);
             if (runsConcededDifference > 0)
@@ -144,7 +144,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 bowlingFiguresForPlayerWithAtLeast6BowlingFigures[i].RunsConceded++;
 
                 // Update the OversBowled to match
-                var oversBowledByThisBowler = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[i].MatchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId.Value == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[i].Bowler.Player.PlayerId);
+                var oversBowledByThisBowler = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[i].MatchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[i].Bowler.Player.PlayerId);
                 if (oversBowledByThisBowler.Any())
                 {
                     var overToUpdate = oversBowledByThisBowler.First();

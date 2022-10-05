@@ -8,10 +8,15 @@ namespace Stoolball.UnitTests.Matches
 {
     public class BowlingScorecardComparerTests
     {
+        private BowlingScorecardComparer CreateComparer()
+        {
+            return new BowlingScorecardComparer();
+        }
+
         [Fact]
         public void Null_before_overs_throws_ArgumentNullException()
         {
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             Assert.Throws<ArgumentNullException>(() => comparer.CompareScorecards(null, new List<Over>()));
         }
@@ -19,7 +24,7 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Null_after_overs_throws_ArgumentNullException()
         {
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             Assert.Throws<ArgumentNullException>(() => comparer.CompareScorecards(new List<Over>(), null));
         }
@@ -27,7 +32,7 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Over_number_zero_in_before_overs_throws_ArgumentException()
         {
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
             var firstOver = new Over { OverNumber = 0, Bowler = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
 
             Assert.Throws<ArgumentException>(() => comparer.CompareScorecards(new List<Over> { firstOver }, new List<Over>()));
@@ -37,7 +42,7 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Over_number_zero_in_after_overs_throws_ArgumentException()
         {
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
             var firstOver = new Over { OverNumber = 0, Bowler = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
 
             Assert.Throws<ArgumentException>(() => comparer.CompareScorecards(new List<Over>(), new List<Over> { firstOver }));
@@ -46,7 +51,7 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Duplicate_over_number_in_after_overs_throws_ArgumentException()
         {
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
             var firstOver = new Over { OverNumber = 1, Bowler = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var firstOverDuplicate = new Over { OverNumber = 1, Bowler = new PlayerIdentity { PlayerIdentityName = "Player two" }, BallsBowled = 10, NoBalls = 2, Wides = 2, RunsConceded = 12 };
 
@@ -58,7 +63,7 @@ namespace Stoolball.UnitTests.Matches
         {
             var firstOver = new Over { OverNumber = 1, Bowler = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOver = new Over { OverNumber = 2, Bowler = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOver }, new List<Over> { firstOver, secondOver });
 
@@ -75,7 +80,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverBefore = new Over { OverNumber = 1, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverAfter = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
 
@@ -91,7 +96,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverBefore = new Over { OverNumber = 2, Bowler = new PlayerIdentity { PlayerIdentityName = "Before" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverAfter = new Over { OverNumber = 2, Bowler = new PlayerIdentity { PlayerIdentityName = "Changed" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
 
@@ -108,7 +113,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverBefore = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverAfter = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 9, NoBalls = 0, Wides = 0, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
 
@@ -125,7 +130,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverBefore = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverAfter = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 3, Wides = 0, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
 
@@ -142,7 +147,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverBefore = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverAfter = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 2, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
 
@@ -159,7 +164,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverBefore = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverAfter = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 12 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
 
@@ -174,7 +179,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverAfter = new Over { OverNumber = 1, Bowler = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverBefore = new Over { OverNumber = 2, Bowler = new PlayerIdentity { PlayerIdentityName = "Player two" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverAfter = new Over { OverNumber = 2, Bowler = new PlayerIdentity { PlayerIdentityName = "Player two" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
 
@@ -189,7 +194,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverBefore = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverBefore = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter });
 
@@ -207,7 +212,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverBefore = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverAfter = new Over { OverNumber = 2, Bowler = playerThree, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
 
@@ -227,7 +232,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 12 };
             var secondOverBefore = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverAfter = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
 
@@ -245,7 +250,7 @@ namespace Stoolball.UnitTests.Matches
             var firstOverAfter = new Over { OverNumber = 1, Bowler = playerOne, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverBefore = new Over { OverNumber = 2, Bowler = playerTwo, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
             var secondOverAfter = new Over { OverNumber = 2, Bowler = playerThree, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
-            var comparer = new BowlingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<Over> { firstOverBefore, secondOverBefore }, new List<Over> { firstOverAfter, secondOverAfter });
 

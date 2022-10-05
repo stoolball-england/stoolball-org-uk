@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using Humanizer;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
@@ -21,17 +20,6 @@ namespace Stoolball.Teams
         [Display(Name = "Team name")]
         [Required]
         public string TeamName { get; set; }
-
-        /// <summary>
-        /// Gets the version of the team's name used to sort
-        /// </summary>
-        /// <returns></returns>
-        public string ComparableName()
-        {
-            var comparable = TeamNameAndPlayerType()?.ToUpperInvariant() ?? string.Empty;
-            if (comparable.StartsWith("THE ", StringComparison.Ordinal)) { comparable = comparable.Substring(4); }
-            return (Regex.Replace(comparable, "[^A-Z0-9]", string.Empty));
-        }
 
         /// <summary>
         /// Gets the name of the team and the type of players (if not stated in the name)

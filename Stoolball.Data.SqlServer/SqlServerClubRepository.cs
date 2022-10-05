@@ -22,7 +22,12 @@ namespace Stoolball.Data.SqlServer
         private readonly IRedirectsRepository _redirectsRepository;
         private readonly IStoolballEntityCopier _copier;
 
-        public SqlServerClubRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger<SqlServerClubRepository> logger, IRouteGenerator routeGenerator, IRedirectsRepository redirectsRepository, IStoolballEntityCopier copier)
+        public SqlServerClubRepository(IDatabaseConnectionFactory databaseConnectionFactory,
+            IAuditRepository auditRepository,
+            ILogger<SqlServerClubRepository> logger,
+            IRouteGenerator routeGenerator,
+            IRedirectsRepository redirectsRepository,
+            IStoolballEntityCopier copier)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));

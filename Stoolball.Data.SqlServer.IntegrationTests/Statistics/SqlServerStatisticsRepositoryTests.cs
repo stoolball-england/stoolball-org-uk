@@ -25,6 +25,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
 
+#nullable disable
         [Fact]
         public async Task DeleteBowlingFigures_throws_ArgumentNullException_if_transaction_is_null()
         {
@@ -32,6 +33,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.DeleteBowlingFigures(Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task DeleteBowlingFigures_succeeds()
@@ -56,6 +58,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             }
         }
 
+#nullable disable
         [Fact]
         public async Task UpdateBowlingFigures_throws_ArgumentNullException_if_innings_is_null()
         {
@@ -71,6 +74,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(new MatchInnings(), Guid.NewGuid(), null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task UpdateBowlingFigures_throws_ArgumentNullException_if_memberName_is_empty_string()
@@ -80,6 +84,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(new MatchInnings(), Guid.NewGuid(), string.Empty, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
+#nullable disable
         [Fact]
         public async Task UpdateBowlingFigures_throws_ArgumentNullException_if_transaction_is_null()
         {
@@ -87,6 +92,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(new MatchInnings(), Guid.NewGuid(), "Member name", null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task UpdateBowlingFigures_throws_ArgumentException_if_any_bowler_is_null()
@@ -216,6 +222,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             }
         }
 
+#nullable disable
         [Fact]
         public async Task DeletePlayerStatistics_throws_ArgumentNullException_if_transaction_is_null()
         {
@@ -223,6 +230,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.DeletePlayerStatistics(Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task DeletePlayerStatistics_succeeds()
@@ -247,6 +255,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             }
         }
 
+#nullable disable
         [Fact]
         public async Task UpdatePlayerStatistics_throws_ArgumentNullException_if_statisticsData_is_null()
         {
@@ -262,6 +271,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdatePlayerStatistics(Array.Empty<PlayerInMatchStatisticsRecord>(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task UpdatePlayerStatistics_inserts_minimal_record()

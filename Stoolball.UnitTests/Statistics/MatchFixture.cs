@@ -208,10 +208,9 @@ namespace Stoolball.UnitTests.Statistics
                 MemberKey = Guid.NewGuid(),
             };
 
-            var bowlingFigures = new BowlingFiguresCalculator(new OversHelper());
             foreach (var innings in Match.MatchInnings)
             {
-                innings.BowlingFigures = bowlingFigures.CalculateBowlingFigures(innings);
+                innings.BowlingFigures = bowlingFiguresCalculator.CalculateBowlingFigures(innings);
             }
 
             // The last innings will be missing its overs bowled, to simulate bowling figures entered by the user instead of calculated from overs

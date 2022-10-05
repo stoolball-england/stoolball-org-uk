@@ -8,18 +8,24 @@ namespace Stoolball.UnitTests.Matches
 {
     public class BattingScorecardComparerTests
     {
+        private BattingScorecardComparer CreateComparer()
+        {
+            return new BattingScorecardComparer();
+        }
+
         [Fact]
         public void Null_before_innings_throws_ArgumentNullException()
         {
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             Assert.Throws<ArgumentNullException>(() => comparer.CompareScorecards(null, new List<PlayerInnings>()));
         }
 
+
         [Fact]
         public void Null_after_innings_throws_ArgumentNullException()
         {
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             Assert.Throws<ArgumentNullException>(() => comparer.CompareScorecards(new List<PlayerInnings>(), null));
         }
@@ -27,7 +33,7 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Batting_position_zero_in_before_innings_throws_ArgumentException()
         {
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
             var firstInnings = new PlayerInnings { BattingPosition = 0, Batter = new PlayerIdentity { PlayerIdentityName = "Player one" }, DismissalType = DismissalType.NotOut, RunsScored = 10, BallsFaced = 10 };
 
             Assert.Throws<ArgumentException>(() => comparer.CompareScorecards(new List<PlayerInnings> { firstInnings }, new List<PlayerInnings>()));
@@ -37,7 +43,7 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Batting_position_zero_in_after_innings_throws_ArgumentException()
         {
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
             var firstInnings = new PlayerInnings { BattingPosition = 0, Batter = new PlayerIdentity { PlayerIdentityName = "Player one" }, DismissalType = DismissalType.NotOut, RunsScored = 10, BallsFaced = 10 };
 
             Assert.Throws<ArgumentException>(() => comparer.CompareScorecards(new List<PlayerInnings>(), new List<PlayerInnings> { firstInnings }));
@@ -46,7 +52,7 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Duplicate_batting_position_in_after_innings_throws_ArgumentException()
         {
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
             var firstInnings = new PlayerInnings { BattingPosition = 1, Batter = new PlayerIdentity { PlayerIdentityName = "Player one" }, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var firstInningsDuplicate = new PlayerInnings { BattingPosition = 1, Batter = new PlayerIdentity { PlayerIdentityName = "Player two" }, DismissalType = DismissalType.NotOut, RunsScored = 2, BallsFaced = 12 };
 
@@ -58,7 +64,7 @@ namespace Stoolball.UnitTests.Matches
         {
             var firstInnings = new PlayerInnings { BattingPosition = 1, Batter = new PlayerIdentity { PlayerIdentityName = "Player one" }, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInnings = new PlayerInnings { BattingPosition = 2, Batter = new PlayerIdentity { PlayerIdentityName = "Player one" }, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInnings }, new List<PlayerInnings> { firstInnings, secondInnings });
 
@@ -75,7 +81,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 1, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -91,7 +97,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = new PlayerIdentity { PlayerIdentityName = "Before" }, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = new PlayerIdentity { PlayerIdentityName = "Changed" }, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -108,7 +114,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.Caught, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -125,7 +131,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissedBy = playerTwo, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerOne, DismissedBy = new PlayerIdentity { PlayerIdentityName = "Before" }, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerOne, DismissedBy = new PlayerIdentity { PlayerIdentityName = "Changed" }, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -143,7 +149,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, Bowler = playerTwo, DismissalType = DismissalType.Bowled, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, Bowler = new PlayerIdentity { PlayerIdentityName = "Before" }, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, Bowler = new PlayerIdentity { PlayerIdentityName = "Changed" }, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -161,7 +167,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 2, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -178,7 +184,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 12 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -193,7 +199,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = new PlayerIdentity { PlayerIdentityName = "Player one" }, DismissedBy = new PlayerIdentity { PlayerIdentityName = "Player three" }, Bowler = new PlayerIdentity { PlayerIdentityName = "Player four" }, DismissalType = DismissalType.Caught, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = new PlayerIdentity { PlayerIdentityName = "Player two" }, DismissedBy = new PlayerIdentity { PlayerIdentityName = "Player three" }, Bowler = new PlayerIdentity { PlayerIdentityName = "Player four" }, DismissalType = DismissalType.Caught, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = new PlayerIdentity { PlayerIdentityName = "Player two" }, DismissedBy = new PlayerIdentity { PlayerIdentityName = "Player three" }, Bowler = new PlayerIdentity { PlayerIdentityName = "Player four" }, DismissalType = DismissalType.Caught, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -208,7 +214,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsBefore = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter });
 
@@ -226,7 +232,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerThree, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -246,7 +252,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 12 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -264,7 +270,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerThree, DismissalType = DismissalType.NotOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -287,7 +293,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissedBy = playerThree, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissedBy = playerThree, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissedBy = playerFour, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -308,7 +314,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissedBy = playerThree, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 12 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissedBy = playerThree, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissedBy = playerThree, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -328,7 +334,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, DismissedBy = playerThree, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissedBy = playerFour, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, DismissedBy = playerFive, DismissalType = DismissalType.RunOut, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -351,7 +357,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, Bowler = playerThree, DismissalType = DismissalType.Bowled, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, Bowler = playerThree, DismissalType = DismissalType.Bowled, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, Bowler = playerFour, DismissalType = DismissalType.Bowled, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -372,7 +378,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, Bowler = playerThree, DismissalType = DismissalType.Bowled, RunsScored = 0, BallsFaced = 12 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, Bowler = playerThree, DismissalType = DismissalType.Bowled, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, Bowler = playerThree, DismissalType = DismissalType.Bowled, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 
@@ -392,7 +398,7 @@ namespace Stoolball.UnitTests.Matches
             var firstInningsAfter = new PlayerInnings { BattingPosition = 1, Batter = playerOne, Bowler = playerThree, DismissalType = DismissalType.Bowled, RunsScored = 0, BallsFaced = 10 };
             var secondInningsBefore = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, Bowler = playerFour, DismissalType = DismissalType.Bowled, RunsScored = 0, BallsFaced = 10 };
             var secondInningsAfter = new PlayerInnings { BattingPosition = 2, Batter = playerTwo, Bowler = playerFive, DismissalType = DismissalType.Bowled, RunsScored = 0, BallsFaced = 10 };
-            var comparer = new BattingScorecardComparer();
+            var comparer = CreateComparer();
 
             var result = comparer.CompareScorecards(new List<PlayerInnings> { firstInningsBefore, secondInningsBefore }, new List<PlayerInnings> { firstInningsAfter, secondInningsAfter });
 

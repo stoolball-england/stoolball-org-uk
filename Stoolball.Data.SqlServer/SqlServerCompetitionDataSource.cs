@@ -103,11 +103,11 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of competitions that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalCompetitions(CompetitionFilter competitionQuery)
+        public async Task<int> ReadTotalCompetitions(CompetitionFilter? filter)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var (where, parameters) = BuildWhereClause(competitionQuery);
+                var (where, parameters) = BuildWhereClause(filter);
                 return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(co.CompetitionId)
                             FROM {Tables.Competition} AS co
                             INNER JOIN {Tables.CompetitionVersion} AS cv ON co.CompetitionId = cv.CompetitionId
@@ -121,7 +121,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of competitions based on a query
         /// </summary>
         /// <returns>A list of <see cref="Competition"/> objects. An empty list if no competitions are found.</returns>
-        public async Task<List<Competition>> ReadCompetitions(CompetitionFilter filter)
+        public async Task<List<Competition>> ReadCompetitions(CompetitionFilter? filter)
         {
             if (filter == null) { filter = new CompetitionFilter(); }
 
@@ -187,15 +187,15 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(CompetitionFilter competitionQuery)
+        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(CompetitionFilter? filter)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
 
-            if (!string.IsNullOrEmpty(competitionQuery?.Query))
+            if (!string.IsNullOrEmpty(filter?.Query))
             {
                 where.Add("(cv.CompetitionName LIKE @Query OR co.PlayerType LIKE @Query)");
-                parameters.Add("@Query", $"%{competitionQuery.Query}%");
+                parameters.Add("@Query", $"%{filter.Query}%");
             }
 
             return (where.Count > 0 ? $@"WHERE " + string.Join(" AND ", where) : "WHERE 1=1", parameters); // Ensure there's always a WHERE clause so that it can be appended to

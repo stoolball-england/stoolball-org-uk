@@ -20,6 +20,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
     {
         private readonly SqlServerTestDataFixture _databaseFixture;
         private readonly TransactionScope _scope;
+        private readonly Mock<IAuditRepository> _auditRepository = new();
+        private readonly Mock<ILogger<SqlServerClubRepository>> _logger = new();
+        private readonly Mock<IRouteGenerator> _routeGenerator = new();
+        private readonly Mock<IStoolballEntityCopier> _copier = new();
+        private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
 
         public SqlServerClubRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
@@ -34,26 +39,40 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             internal DateTimeOffset? FromDate { get; set; }
         }
 
+        private SqlServerClubRepository CreateRepository()
+        {
+            return new SqlServerClubRepository(_databaseFixture.ConnectionFactory,
+                _auditRepository.Object,
+                _logger.Object,
+                _routeGenerator.Object,
+                _redirectsRepository.Object,
+                _copier.Object
+                );
+        }
+
+#nullable disable
         [Fact]
         public async Task Create_club_throws_ArgumentNullException_if_club_is_null()
         {
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IRedirectsRepository>(), Mock.Of<IStoolballEntityCopier>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateClub(null, Guid.NewGuid(), "Member name").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
+
         [Fact]
         public async Task Create_club_throws_ArgumentNullException_if_memberName_is_null()
         {
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IRedirectsRepository>(), Mock.Of<IStoolballEntityCopier>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateClub(new Club(), Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Create_club_throws_ArgumentNullException_if_memberName_is_empty_string()
         {
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IRedirectsRepository>(), Mock.Of<IStoolballEntityCopier>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateClub(new Club(), Guid.NewGuid(), string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -69,12 +88,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             };
 
             var route = "/clubs/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(club);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(club);
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), routeGenerator.Object, Mock.Of<IRedirectsRepository>(), copier.Object);
+            var repo = CreateRepository();
 
             var createdClub = await repo.CreateClub(club, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
@@ -111,12 +128,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
                 MemberGroupName = club.MemberGroupName
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/clubs/" + Guid.NewGuid()));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(copyClub);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/clubs/" + Guid.NewGuid()));
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(copyClub);
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), routeGenerator.Object, Mock.Of<IRedirectsRepository>(), copier.Object);
+            var repo = CreateRepository();
 
             var createdClub = await repo.CreateClub(club, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
@@ -134,17 +149,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             };
 
             var route = "/clubs/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(club);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(club);
 
             var teamsToIgnore = _databaseFixture.TestData.Teams.Where(x => x.Club != null).Select(x => new Team { TeamId = x.TeamId }).Take(3);
             var teamsToAdd = _databaseFixture.TestData.Teams.Where(x => x.Club == null).Select(x => new Team { TeamId = x.TeamId }).Take(3);
             club.Teams.AddRange(teamsToIgnore);
             club.Teams.AddRange(teamsToAdd);
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), routeGenerator.Object, Mock.Of<IRedirectsRepository>(), copier.Object);
+            var repo = CreateRepository();
 
             var createdClub = await repo.CreateClub(club, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
@@ -154,7 +167,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
                 Assert.Equal(teamsToAdd.Count(), results.Count());
                 foreach (var teamId in results)
                 {
-                    Assert.Contains(teamId, teamsToAdd.Select(x => x.TeamId.Value));
+                    Assert.Contains(teamId, teamsToAdd.Select(x => x.TeamId));
                 }
             }
         }
@@ -177,27 +190,24 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             };
 
             var route = "/clubs/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(auditable);
-            var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger<SqlServerClubRepository>>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(auditable);
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, auditRepository.Object, logger.Object, routeGenerator.Object, Mock.Of<IRedirectsRepository>(), copier.Object);
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
             var createdClub = await repo.CreateClub(club, memberKey, memberName).ConfigureAwait(false);
 
-            auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(LoggingTemplates.Created, auditable, memberName, memberKey, typeof(SqlServerClubRepository), nameof(SqlServerClubRepository.CreateClub)));
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Created, auditable, memberName, memberKey, typeof(SqlServerClubRepository), nameof(SqlServerClubRepository.CreateClub)));
         }
 
+#nullable disable
         [Fact]
         public async Task Update_club_throws_ArgumentNullException_if_club_is_null()
         {
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IRedirectsRepository>(), Mock.Of<IStoolballEntityCopier>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateClub(null, Guid.NewGuid(), "Member name").ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -205,15 +215,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
         [Fact]
         public async Task Update_club_throws_ArgumentNullException_if_memberName_is_null()
         {
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IRedirectsRepository>(), Mock.Of<IStoolballEntityCopier>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateClub(new Club(), Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Update_club_throws_ArgumentNullException_if_memberName_is_empty_string()
         {
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IRedirectsRepository>(), Mock.Of<IStoolballEntityCopier>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateClub(new Club(), Guid.NewGuid(), string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -237,12 +248,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
                 currentVersionId = await connection.ExecuteScalarAsync<Guid>($"SELECT ClubVersionId FROM {Tables.ClubVersion} WHERE ClubId = @ClubId AND UntilDate IS NULL", auditable).ConfigureAwait(false);
             }
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(auditable);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(auditable);
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), routeGenerator.Object, Mock.Of<IRedirectsRepository>(), copier.Object);
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateClub(club, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
@@ -257,7 +266,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
                 Assert.NotEqual(currentVersionId, versionResult.clubVersionId);
                 Assert.Equal(auditable.ClubName, versionResult.clubName);
                 Assert.Equal(auditable.ComparableName(), versionResult.comparableName);
-                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate.Value);
+                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate);
             }
         }
 
@@ -273,7 +282,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             };
 
             int? existingVersions = null;
-            (Guid? clubVersionId, string clubName, string comparableName, DateTimeOffset? fromDate) currentVersion = (null, null, null, null);
+            (Guid? clubVersionId, string clubName, string comparableName, DateTimeOffset? fromDate) currentVersion;
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
                 existingVersions = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.ClubVersion} WHERE ClubId = @ClubId", auditable).ConfigureAwait(false);
@@ -281,12 +290,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
                     $"SELECT ClubVersionId, ClubName, ComparableName, FromDate FROM {Tables.ClubVersion} WHERE ClubId = @ClubId AND UntilDate IS NULL", auditable).ConfigureAwait(false);
             }
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(auditable);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(auditable);
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), routeGenerator.Object, Mock.Of<IRedirectsRepository>(), copier.Object);
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateClub(club, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
@@ -301,7 +308,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
                 Assert.Equal(currentVersion.clubVersionId, versionResult.clubVersionId);
                 Assert.Equal(auditable.ClubName, versionResult.clubName);
                 Assert.Equal(auditable.ComparableName(), versionResult.comparableName);
-                Assert.Equal(currentVersion.fromDate.Value, versionResult.fromDate.Value);
+                Assert.Equal(currentVersion.fromDate, versionResult.fromDate);
             }
         }
 
@@ -316,12 +323,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
                 ClubRoute = club.ClubRoute,
                 Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList()
             };
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", auditable.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute + "-123"));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(auditable);
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), routeGenerator.Object, Mock.Of<IRedirectsRepository>(), copier.Object);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", auditable.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute + "-123"));
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(auditable);
+
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
@@ -344,8 +350,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
         public async Task Update_club_updates_teams_respecting_existing_clubs()
         {
             var club = _databaseFixture.TestData.Teams.Last(x => x.Club != null).Club;
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
 
             var teamRemoved = club.Teams.First();
             club.Teams.Remove(teamRemoved);
@@ -355,10 +360,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             club.Teams.Add(teamTakenFromAnotherClub);
 
             // Copy the club /after/ it's been modified
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(new Club { ClubId = club.ClubId, ClubName = club.ClubName, ClubRoute = club.ClubRoute, Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList() });
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(new Club { ClubId = club.ClubId, ClubName = club.ClubName, ClubRoute = club.ClubRoute, Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList() });
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), routeGenerator.Object, Mock.Of<IRedirectsRepository>(), copier.Object);
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
@@ -366,11 +370,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var teamsResult = await connection.QueryAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE ClubId = @ClubId", new { updatedClub.ClubId }).ConfigureAwait(false);
+                var teamsResult = await connection.QueryAsync<Guid?>($"SELECT TeamId FROM {Tables.Team} WHERE ClubId = @ClubId", new { updatedClub.ClubId }).ConfigureAwait(false);
                 Assert.Equal(club.Teams.Count - 1, teamsResult.Count());
-                Assert.DoesNotContain(teamRemoved.TeamId.Value, teamsResult);
-                Assert.Contains(teamAdded.TeamId.Value, teamsResult);
-                Assert.DoesNotContain(teamTakenFromAnotherClub.TeamId.Value, teamsResult);
+                Assert.DoesNotContain(teamRemoved.TeamId, teamsResult);
+                Assert.Contains(teamAdded.TeamId, teamsResult);
+                Assert.DoesNotContain(teamTakenFromAnotherClub.TeamId, teamsResult);
             }
         }
 
@@ -378,19 +382,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
         public async Task Update_club_inserts_redirect()
         {
             var club = _databaseFixture.TestData.Teams.Where(x => x.Club != null).First().Club;
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute + "-123"));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(new Club { ClubId = club.ClubId, ClubName = club.ClubName, ClubRoute = club.ClubRoute });
-            var redirectsRepository = new Mock<IRedirectsRepository>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute + "-123"));
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(new Club { ClubId = club.ClubId, ClubName = club.ClubName, ClubRoute = club.ClubRoute });
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), routeGenerator.Object, redirectsRepository.Object, copier.Object);
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
             _ = await repo.UpdateClub(club, memberKey, memberName).ConfigureAwait(false);
 
-            redirectsRepository.Verify(x => x.InsertRedirect(club.ClubRoute, club.ClubRoute + "-123", null, It.IsAny<IDbTransaction>()), Times.Once);
+            _redirectsRepository.Verify(x => x.InsertRedirect(club.ClubRoute, club.ClubRoute + "-123", null, It.IsAny<IDbTransaction>()), Times.Once);
         }
 
 
@@ -398,40 +399,33 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
         public async Task Update_club_does_not_redirect_unchanged_route()
         {
             var club = _databaseFixture.TestData.Teams.Where(x => x.Club != null).First().Club;
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(new Club { ClubId = club.ClubId, ClubName = club.ClubName, ClubRoute = club.ClubRoute });
-            var redirectsRepository = new Mock<IRedirectsRepository>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(new Club { ClubId = club.ClubId, ClubName = club.ClubName, ClubRoute = club.ClubRoute });
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), routeGenerator.Object, redirectsRepository.Object, copier.Object);
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
             _ = await repo.UpdateClub(club, memberKey, memberName).ConfigureAwait(false);
 
-            redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
+            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
         }
 
         [Fact]
         public async Task Update_club_audits_and_logs()
         {
             var club = _databaseFixture.TestData.Teams.Where(x => x.Club != null).First().Club;
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(new Club { ClubId = club.ClubId, ClubName = club.ClubName, ClubRoute = club.ClubRoute, Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList() });
-            var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger<SqlServerClubRepository>>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(new Club { ClubId = club.ClubId, ClubName = club.ClubName, ClubRoute = club.ClubRoute, Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList() });
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, auditRepository.Object, logger.Object, routeGenerator.Object, Mock.Of<IRedirectsRepository>(), copier.Object);
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
             var updatedClub = await repo.UpdateClub(club, memberKey, memberName).ConfigureAwait(false);
 
-            auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<Club>(), memberName, memberKey, typeof(SqlServerClubRepository), nameof(SqlServerClubRepository.UpdateClub)));
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<Club>(), memberName, memberKey, typeof(SqlServerClubRepository), nameof(SqlServerClubRepository.UpdateClub)));
         }
 
         [Fact]
@@ -439,11 +433,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
         {
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
-            var club = _databaseFixture.TestData.TeamWithFullDetails.Club;
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(new Club { ClubId = club.ClubId, ClubName = club.ClubName, ClubRoute = club.ClubRoute, Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList() });
+            var club = _databaseFixture.TestData.TeamWithFullDetails!.Club;
+            _copier.Setup(x => x.CreateAuditableCopy(club)).Returns(new Club { ClubId = club.ClubId, ClubName = club.ClubName, ClubRoute = club.ClubRoute, Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList() });
 
-            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger<SqlServerClubRepository>>(), Mock.Of<IRouteGenerator>(), Mock.Of<IRedirectsRepository>(), copier.Object);
+            var repo = CreateRepository();
 
             await repo.DeleteClub(club, memberKey, memberName).ConfigureAwait(false);
 

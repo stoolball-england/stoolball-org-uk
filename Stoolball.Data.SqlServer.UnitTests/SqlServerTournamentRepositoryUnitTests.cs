@@ -67,7 +67,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        public async Task Create_tournament_throws_ArgumentException_if_member_name_is_missing(string? memberName)
+        public async Task Create_tournament_throws_ArgumentException_if_member_name_is_missing(string memberName)
         {
             var repo = CreateRepository();
 

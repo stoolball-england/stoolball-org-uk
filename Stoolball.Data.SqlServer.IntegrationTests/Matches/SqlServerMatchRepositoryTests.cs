@@ -61,11 +61,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Mock.Of<ISeasonDataSource>(),
                 Mock.Of<IStoolballEntityCopier>());
 
-            await repo.DeleteMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails, memberKey, memberName).ConfigureAwait(false);
+            await repo.DeleteMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!, memberKey, memberName).ConfigureAwait(false);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchId FROM {Tables.Match} WHERE MatchId = @MatchId", new { _databaseFixture.TestData.MatchInThePastWithFullDetails.MatchId }).ConfigureAwait(false);
+                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchId FROM {Tables.Match} WHERE MatchId = @MatchId", new { _databaseFixture.TestData.MatchInThePastWithFullDetails!.MatchId }).ConfigureAwait(false);
                 Assert.Null(result);
             }
         }

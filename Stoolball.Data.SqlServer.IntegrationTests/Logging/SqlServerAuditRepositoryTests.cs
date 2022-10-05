@@ -20,6 +20,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Logging
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
 
+#nullable disable
         [Fact]
         public async Task Create_audit_throws_ArgumentNullException_if_audit_is_null()
         {
@@ -35,6 +36,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Logging
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateAudit(new AuditRecord(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Create_audit_with_minimal_details_succeeds()

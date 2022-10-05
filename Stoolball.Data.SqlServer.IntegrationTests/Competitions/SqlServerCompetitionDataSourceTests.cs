@@ -41,7 +41,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.CompetitionWithFullDetails.CompetitionRoute).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.CompetitionWithFullDetails.CompetitionId, result.CompetitionId);
+            Assert.NotNull(result);
+            Assert.Equal(_databaseFixture.CompetitionWithFullDetails.CompetitionId, result!.CompetitionId);
             Assert.Equal(_databaseFixture.CompetitionWithFullDetails.CompetitionName, result.CompetitionName);
             Assert.Equal(_databaseFixture.CompetitionWithFullDetails.PlayerType, result.PlayerType);
             Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Introduction, result.Introduction);
@@ -68,9 +69,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.CompetitionWithFullDetails.CompetitionRoute).ConfigureAwait(false);
 
+            Assert.NotNull(result);
             for (var season = 0; season < _databaseFixture.CompetitionWithFullDetails.Seasons.Count; season++)
             {
-                Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Seasons[season].FromYear, result.Seasons[season].FromYear);
+                Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Seasons[season].FromYear, result!.Seasons[season].FromYear);
                 Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Seasons[season].UntilYear, result.Seasons[season].UntilYear);
                 Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Seasons[season].SeasonRoute, result.Seasons[season].SeasonRoute);
                 Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Seasons[season].PlayersPerTeam, result.Seasons[season].PlayersPerTeam);
@@ -89,11 +91,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.CompetitionWithFullDetails.CompetitionRoute).ConfigureAwait(false);
 
+            Assert.NotNull(result);
             for (var season = 0; season < _databaseFixture.CompetitionWithFullDetails.Seasons.Count; season++)
             {
                 for (var set = 0; set < _databaseFixture.CompetitionWithFullDetails.Seasons[season].DefaultOverSets.Count; set++)
                 {
-                    Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Seasons[season].DefaultOverSets[set].OverSetId, result.Seasons[season].DefaultOverSets[set].OverSetId);
+                    Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Seasons[season].DefaultOverSets[set].OverSetId, result!.Seasons[season].DefaultOverSets[set].OverSetId);
                     Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Seasons[season].DefaultOverSets[set].OverSetNumber, result.Seasons[season].DefaultOverSets[set].OverSetNumber);
                     Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Seasons[season].DefaultOverSets[set].Overs, result.Seasons[season].DefaultOverSets[set].Overs);
                     Assert.Equal(_databaseFixture.CompetitionWithFullDetails.Seasons[season].DefaultOverSets[set].BallsPerOver, result.Seasons[season].DefaultOverSets[set].BallsPerOver);
@@ -110,11 +113,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.CompetitionWithFullDetails.CompetitionRoute).ConfigureAwait(false);
 
+            Assert.NotNull(result);
             for (var season = 0; season < _databaseFixture.CompetitionWithFullDetails.Seasons.Count; season++)
             {
                 for (var matchType = 0; matchType < _databaseFixture.CompetitionWithFullDetails.Seasons[season].MatchTypes.Count; matchType++)
                 {
-                    Assert.Contains(_databaseFixture.CompetitionWithFullDetails.Seasons[season].MatchTypes[matchType], result.Seasons[season].MatchTypes);
+                    Assert.Contains(_databaseFixture.CompetitionWithFullDetails.Seasons[season].MatchTypes[matchType], result!.Seasons[season].MatchTypes);
                 }
             }
         }
@@ -169,7 +173,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 var result = results.SingleOrDefault(x => x.CompetitionId == competition.CompetitionId);
 
                 Assert.NotNull(result);
-                Assert.Equal(competition.CompetitionName, result.CompetitionName);
+                Assert.Equal(competition.CompetitionName, result!.CompetitionName);
                 Assert.Equal(competition.CompetitionRoute, result.CompetitionRoute);
                 Assert.Equal(competition.UntilYear, result.UntilYear);
                 Assert.Equal(competition.PlayerType, result.PlayerType);
@@ -193,9 +197,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 var expectedSeason = competition.Seasons.OrderByDescending(x => x.FromYear).FirstOrDefault();
                 if (expectedSeason != null)
                 {
-                    var resultSeason = result.Seasons.SingleOrDefault(x => x.SeasonId == expectedSeason.SeasonId);
+                    var resultSeason = result!.Seasons.SingleOrDefault(x => x.SeasonId == expectedSeason.SeasonId);
                     Assert.NotNull(resultSeason);
-                    Assert.Equal(expectedSeason.SeasonRoute, resultSeason.SeasonRoute);
+                    Assert.Equal(expectedSeason.SeasonRoute, resultSeason!.SeasonRoute);
 
                     foreach (var team in expectedSeason.Teams)
                     {
@@ -206,7 +210,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 }
                 else
                 {
-                    Assert.Empty(result.Seasons);
+                    Assert.Empty(result!.Seasons);
                 }
 
             }

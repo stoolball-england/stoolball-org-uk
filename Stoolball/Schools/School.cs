@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Stoolball.Logging;
 using Stoolball.Teams;
 
@@ -11,17 +10,6 @@ namespace Stoolball.Schools
     {
         public Guid? SchoolId { get; set; }
         public string SchoolName { get; set; }
-
-        /// <summary>
-        /// Gets the version of the school's name used to sort
-        /// </summary>
-        /// <returns></returns>
-        public string ComparableName()
-        {
-            var comparable = SchoolName?.ToUpperInvariant() ?? string.Empty;
-            if (comparable.StartsWith("THE ", StringComparison.Ordinal)) { comparable = comparable.Substring(4); }
-            return (Regex.Replace(comparable, "[^A-Z0-9]", string.Empty));
-        }
         public string Website { get; set; }
         public string Twitter { get; set; }
         public string Facebook { get; set; }

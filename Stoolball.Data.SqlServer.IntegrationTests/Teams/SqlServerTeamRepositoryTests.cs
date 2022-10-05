@@ -24,6 +24,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
     {
         private readonly SqlServerTestDataFixture _databaseFixture;
         private readonly TransactionScope _scope;
+        private readonly Mock<IRouteGenerator> _routeGenerator = new();
+        private readonly Mock<IStoolballEntityCopier> _copier = new();
+        private readonly Mock<IHtmlSanitizer> _sanitizer = new();
+        private readonly Mock<IUrlFormatter> _urlFormatter = new();
+        private readonly Mock<ISocialMediaAccountFormatter> _socialMediaFormatter = new();
+        private readonly Mock<IAuditRepository> _auditRepository = new();
+        private readonly Mock<ILogger<SqlServerTeamRepository>> _logger = new();
+        private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
+        private readonly Mock<IMemberGroupHelper> _memberGroupHelper = new();
 
         public SqlServerTeamRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
@@ -31,20 +40,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
 
+        private SqlServerTeamRepository CreateRepository()
+        {
+            return new SqlServerTeamRepository(
+                                   _databaseFixture.ConnectionFactory,
+                                   _auditRepository.Object,
+                                   _logger.Object,
+                                   _routeGenerator.Object,
+                                   _redirectsRepository.Object,
+                                   _memberGroupHelper.Object,
+                                   _sanitizer.Object,
+                                   _copier.Object,
+                                   _urlFormatter.Object,
+                                   _socialMediaFormatter.Object);
+        }
+
+#nullable disable
         [Fact]
         public async Task Create_team_throws_ArgumentNullException_if_team_is_null()
         {
-            var repo = new SqlServerTeamRepository(
-           _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(null, Guid.NewGuid(), "Username", "Member name").ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -52,53 +67,25 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Create_team_throws_ArgumentNullException_if_username_is_null()
         {
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), Guid.NewGuid(), null, "Member name").ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Create_team_throws_ArgumentNullException_if_username_is_empty_string()
         {
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), Guid.NewGuid(), string.Empty, "Member name").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
+#nullable disable
         [Fact]
         public async Task Create_team_with_transaction_throws_ArgumentNullException_if_team_is_null()
         {
-            var repo = new SqlServerTeamRepository(
-           _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(null, Mock.Of<IDbTransaction>(), "Username").ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -106,17 +93,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Create_team_with_transaction_throws_ArgumentNullException_if_transaction_is_null()
         {
-            var repo = new SqlServerTeamRepository(
-           _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), null, "Username").ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -124,71 +101,34 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Create_team_with_transaction_throws_ArgumentNullException_if_username_is_null()
         {
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), Mock.Of<IDbTransaction>(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Create_team_with_transaction_throws_ArgumentNullException_if_username_is_empty_string()
         {
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), Mock.Of<IDbTransaction>(), string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
+#nullable disable
         [Fact]
         public async Task Create_team_throws_ArgumentNullException_if_memberName_is_null()
         {
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), Guid.NewGuid(), "Username", null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Create_team_throws_ArgumentNullException_if_memberName_is_empty_string()
         {
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), Guid.NewGuid(), "Username", string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -204,27 +144,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             };
 
             var route = "/teams/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            var groupHelper = new Mock<IMemberGroupHelper>();
-            groupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(team);
-            copier.Setup(x => x.CreateRedactedCopy(team)).Returns(team);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(team);
+            _copier.Setup(x => x.CreateRedactedCopy(team)).Returns(team);
 
-            var repo = new SqlServerTeamRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                routeGenerator.Object,
-                Mock.Of<IRedirectsRepository>(),
-                groupHelper.Object,
-                Mock.Of<IHtmlSanitizer>(),
-                copier.Object,
-                Mock.Of<IUrlFormatter>(),
-                Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var memberKey = Guid.NewGuid();
             var memberUserName = "example@example.org";
@@ -232,8 +159,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var created = await repo.CreateTeam(team, memberKey, memberUserName, memberName).ConfigureAwait(false);
 
-            routeGenerator.Verify(x => x.GenerateUniqueRoute("/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>()), Times.Once);
-            groupHelper.Verify(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute), Times.Once);
+            _routeGenerator.Verify(x => x.GenerateUniqueRoute("/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>()), Times.Once);
+            _memberGroupHelper.Verify(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute), Times.Once);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -260,7 +187,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
                 Assert.Equal(team.TeamName, versionResult.TeamName);
                 Assert.Equal(team.ComparableName(), versionResult.comparableName);
-                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate.Value.Date);
+                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate?.Date);
                 Assert.Null(versionResult.untilDate);
             }
         }
@@ -330,45 +257,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             };
 
             var route = "/teams/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
             var group = new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" };
-            var groupHelper = new Mock<IMemberGroupHelper>();
-            groupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).Returns(group);
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).Returns(group);
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
-            var sanitizer = new Mock<IHtmlSanitizer>();
-            sanitizer.Setup(x => x.Sanitize(auditable.PrivateContactDetails)).Returns(sanitisedPrivateContact);
-            sanitizer.Setup(x => x.Sanitize(auditable.PublicContactDetails)).Returns(sanitisedPublicContact);
-            sanitizer.Setup(x => x.Sanitize(auditable.Introduction)).Returns(sanitisedIntro);
-            sanitizer.Setup(x => x.Sanitize(auditable.PlayingTimes)).Returns(sanitisedPlayingTimes);
-            sanitizer.Setup(x => x.Sanitize(auditable.Cost)).Returns(sanitisedCost);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PrivateContactDetails)).Returns(sanitisedPrivateContact);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PublicContactDetails)).Returns(sanitisedPublicContact);
+            _sanitizer.Setup(x => x.Sanitize(auditable.Introduction)).Returns(sanitisedIntro);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PlayingTimes)).Returns(sanitisedPlayingTimes);
+            _sanitizer.Setup(x => x.Sanitize(auditable.Cost)).Returns(sanitisedCost);
 
-            var urlFormatter = new Mock<IUrlFormatter>();
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Facebook)).Returns(new Uri("https://" + auditable.Facebook));
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.YouTube)).Returns(new Uri("https://" + auditable.YouTube));
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Website)).Returns(new Uri("https://" + auditable.Website));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Facebook)).Returns(new Uri("https://" + auditable.Facebook));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.YouTube)).Returns(new Uri("https://" + auditable.YouTube));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Website)).Returns(new Uri("https://" + auditable.Website));
 
-            var socialMediaFormatter = new Mock<ISocialMediaAccountFormatter>();
-            socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Instagram)).Returns("@" + auditable.Instagram);
-            socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Twitter)).Returns("@" + auditable.Twitter);
+            _socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Instagram)).Returns("@" + auditable.Instagram);
+            _socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Twitter)).Returns("@" + auditable.Twitter);
 
             var userName = "Example username";
 
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       routeGenerator.Object,
-                       Mock.Of<IRedirectsRepository>(),
-                       groupHelper.Object,
-                       sanitizer.Object,
-                       copier.Object,
-                       urlFormatter.Object,
-                       socialMediaFormatter.Object);
+            var repo = CreateRepository();
 
             var created = await repo.CreateTeam(team, Guid.NewGuid(), userName, "Member name").ConfigureAwait(false);
 
@@ -383,34 +294,34 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                     new { created.TeamId }).ConfigureAwait(false);
                 Assert.NotNull(teamResult);
 
-                sanitizer.Verify(x => x.Sanitize(originalIntro));
+                _sanitizer.Verify(x => x.Sanitize(originalIntro));
                 Assert.Equal(sanitisedIntro, teamResult.Introduction);
-                sanitizer.Verify(x => x.Sanitize(originalPlayingTimes));
+                _sanitizer.Verify(x => x.Sanitize(originalPlayingTimes));
                 Assert.Equal(sanitisedPlayingTimes, teamResult.PlayingTimes);
-                sanitizer.Verify(x => x.Sanitize(originalCost));
+                _sanitizer.Verify(x => x.Sanitize(originalCost));
                 Assert.Equal(sanitisedCost, teamResult.Cost);
                 Assert.Equal(team.TeamType, teamResult.TeamType);
                 Assert.Equal(team.PlayerType, teamResult.PlayerType);
                 Assert.Equal(team.AgeRangeLower, teamResult.AgeRangeLower);
                 Assert.Equal(team.AgeRangeUpper, teamResult.AgeRangeUpper);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(team.Facebook), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(team.Facebook), Times.Once);
                 Assert.Equal("https://" + team.Facebook, teamResult.Facebook);
-                socialMediaFormatter.Verify(x => x.PrefixAtSign(team.Instagram), Times.Once);
+                _socialMediaFormatter.Verify(x => x.PrefixAtSign(team.Instagram), Times.Once);
                 Assert.Equal("@" + team.Instagram, teamResult.Instagram);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(team.YouTube), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(team.YouTube), Times.Once);
                 Assert.Equal("https://" + team.YouTube, teamResult.YouTube);
-                socialMediaFormatter.Verify(x => x.PrefixAtSign(team.Twitter), Times.Once);
+                _socialMediaFormatter.Verify(x => x.PrefixAtSign(team.Twitter), Times.Once);
                 Assert.Equal("@" + team.Twitter, teamResult.Twitter);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(team.Website), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(team.Website), Times.Once);
                 Assert.Equal("https://" + team.Website, teamResult.Website);
                 Assert.Equal(team.ClubMark, teamResult.ClubMark);
-                sanitizer.Verify(x => x.Sanitize(originalPrivateContact));
+                _sanitizer.Verify(x => x.Sanitize(originalPrivateContact));
                 Assert.Equal(sanitisedPrivateContact, teamResult.PrivateContactDetails);
-                sanitizer.Verify(x => x.Sanitize(originalPublicContact));
+                _sanitizer.Verify(x => x.Sanitize(originalPublicContact));
                 Assert.Equal(sanitisedPublicContact, teamResult.PublicContactDetails);
 
-                groupHelper.Verify(x => x.MemberIsAdministrator(userName), Times.Once);
-                groupHelper.Verify(x => x.AssignRole(userName, group.Name), Times.Once);
+                _memberGroupHelper.Verify(x => x.MemberIsAdministrator(userName), Times.Once);
+                _memberGroupHelper.Verify(x => x.AssignRole(userName, group.Name), Times.Once);
                 Assert.Equal(group.Key, teamResult.MemberGroupKey);
                 Assert.Equal(group.Name, teamResult.MemberGroupName);
 
@@ -423,7 +334,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
                 Assert.Equal(team.TeamName, versionResult.TeamName);
                 Assert.Equal(team.ComparableName(), versionResult.comparableName);
-                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate.Value.Date);
+                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate?.Date);
                 Assert.Equal(new DateTimeOffset(team.UntilYear.Value, 12, 31, 0, 0, 0, TimeSpan.Zero), versionResult.untilDate);
 
                 var savedMatchLocations = (await connection.QueryAsync<(Guid matchLocationId, DateTimeOffset fromDate)>(
@@ -458,29 +369,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 MemberGroupName = team.MemberGroupName
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", copyTeam.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/teams/" + Guid.NewGuid()));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", copyTeam.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/teams/" + Guid.NewGuid()));
 
-            var groupHelper = new Mock<IMemberGroupHelper>();
-            groupHelper.Setup(x => x.CreateOrFindGroup("team", copyTeam.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", copyTeam.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(copyTeam);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(copyTeam);
 
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     Mock.Of<IRedirectsRepository>(),
-                     groupHelper.Object,
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var created = await repo.CreateTeam(team, Guid.NewGuid(), "Username", "Member name").ConfigureAwait(false);
-            copier.Verify(x => x.CreateAuditableCopy(team), Times.Once);
+            _copier.Verify(x => x.CreateAuditableCopy(team), Times.Once);
             Assert.Equal(copyTeam, created);
         }
 
@@ -502,26 +400,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 MemberGroupName = team.MemberGroupName
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", copyTeam.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/teams/" + Guid.NewGuid()));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", copyTeam.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/teams/" + Guid.NewGuid()));
 
-            var groupHelper = new Mock<IMemberGroupHelper>();
-            groupHelper.Setup(x => x.CreateOrFindGroup("team", copyTeam.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", copyTeam.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(copyTeam);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(copyTeam);
 
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     Mock.Of<IRedirectsRepository>(),
-                     groupHelper.Object,
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -530,7 +415,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 {
                     var created = await repo.CreateTeam(team, transaction, "Username").ConfigureAwait(false);
 
-                    copier.Verify(x => x.CreateAuditableCopy(team), Times.Once);
+                    _copier.Verify(x => x.CreateAuditableCopy(team), Times.Once);
                     Assert.Equal(copyTeam, created);
 
                     transaction.Rollback();
@@ -563,38 +448,22 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             };
 
             var route = "/teams/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            var groupHelper = new Mock<IMemberGroupHelper>();
-            groupHelper.Setup(x => x.CreateOrFindGroup("team", auditable.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", auditable.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
-            copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
 
-            var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger<SqlServerTeamRepository>>();
-
-            var repo = new SqlServerTeamRepository(
-                 _databaseFixture.ConnectionFactory,
-                 auditRepository.Object,
-                 logger.Object,
-                 routeGenerator.Object,
-                 Mock.Of<IRedirectsRepository>(),
-                 groupHelper.Object,
-                 Mock.Of<IHtmlSanitizer>(),
-                 copier.Object,
-                 Mock.Of<IUrlFormatter>(),
-                 Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
             var created = await repo.CreateTeam(team, memberKey, "Username", memberName).ConfigureAwait(false);
 
-            copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.CreateTeam)), Times.Once);
+            _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.CreateTeam)), Times.Once);
         }
 
         [Fact]
@@ -608,29 +477,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             };
 
             var route = "/teams/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            var groupHelper = new Mock<IMemberGroupHelper>();
-            groupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(team);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(team);
 
-            var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger<SqlServerTeamRepository>>();
-
-            var repo = new SqlServerTeamRepository(
-                 _databaseFixture.ConnectionFactory,
-                 auditRepository.Object,
-                 logger.Object,
-                 routeGenerator.Object,
-                 Mock.Of<IRedirectsRepository>(),
-                 groupHelper.Object,
-                 Mock.Of<IHtmlSanitizer>(),
-                 copier.Object,
-                 Mock.Of<IUrlFormatter>(),
-                 Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -639,27 +492,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 {
                     var created = await repo.CreateTeam(team, transaction, "Username").ConfigureAwait(false);
 
-                    copier.Verify(x => x.CreateRedactedCopy(It.IsAny<Team>()), Times.Never);
-                    auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Never);
-                    logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<Team>(), It.IsAny<string>(), It.IsAny<Guid>(), typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.CreateTeam)), Times.Never);
+                    _copier.Verify(x => x.CreateRedactedCopy(It.IsAny<Team>()), Times.Never);
+                    _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Never);
+                    _logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<Team>(), It.IsAny<string>(), It.IsAny<Guid>(), typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.CreateTeam)), Times.Never);
                 }
             }
         }
 
+#nullable disable
         [Fact]
         public async Task Update_team_throws_ArgumentNullException_if_team_is_null()
         {
-            var repo = new SqlServerTeamRepository(
-           _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateTeam(null, Guid.NewGuid(), "Member name").ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -668,17 +512,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Update_transient_team_throws_ArgumentNullException_if_team_is_null()
         {
-            var repo = new SqlServerTeamRepository(
-           _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateTransientTeam(null, Guid.NewGuid(), "Member name").ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -687,71 +521,34 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Update_team_throws_ArgumentNullException_if_memberName_is_null()
         {
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateTeam(new Team(), Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Update_team_throws_ArgumentNullException_if_memberName_is_empty_string()
         {
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateTeam(new Team(), Guid.NewGuid(), string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
+#nullable disable
         [Fact]
         public async Task Update_transient_team_throws_ArgumentNullException_if_memberName_is_null()
         {
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateTeam(new Team(), Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Update_transient_team_throws_ArgumentNullException_if_memberName_is_empty_string()
         {
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       Mock.Of<IRouteGenerator>(),
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       Mock.Of<IHtmlSanitizer>(),
-                       Mock.Of<IStoolballEntityCopier>(),
-                       Mock.Of<IUrlFormatter>(),
-                       Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateTransientTeam(new Team(), Guid.NewGuid(), string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -775,7 +572,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var updatedYouTube = $"www.youtube.com/{Guid.NewGuid()}";
             var updatedWebsite = $"www.example.org/{Guid.NewGuid()}";
 
-            var team = _databaseFixture.TestData.TeamWithFullDetails;
+            var team = _databaseFixture.TestData.TeamWithFullDetails!;
 
             var auditable = new Team
             {
@@ -801,39 +598,24 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             };
 
             var route = "/teams/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
-            var sanitizer = new Mock<IHtmlSanitizer>();
-            sanitizer.Setup(x => x.Sanitize(auditable.PrivateContactDetails)).Returns(sanitisedPrivateContact);
-            sanitizer.Setup(x => x.Sanitize(auditable.PublicContactDetails)).Returns(sanitisedPublicContact);
-            sanitizer.Setup(x => x.Sanitize(auditable.Introduction)).Returns(sanitisedIntro);
-            sanitizer.Setup(x => x.Sanitize(auditable.PlayingTimes)).Returns(sanitisedPlayingTimes);
-            sanitizer.Setup(x => x.Sanitize(auditable.Cost)).Returns(sanitisedCost);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PrivateContactDetails)).Returns(sanitisedPrivateContact);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PublicContactDetails)).Returns(sanitisedPublicContact);
+            _sanitizer.Setup(x => x.Sanitize(auditable.Introduction)).Returns(sanitisedIntro);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PlayingTimes)).Returns(sanitisedPlayingTimes);
+            _sanitizer.Setup(x => x.Sanitize(auditable.Cost)).Returns(sanitisedCost);
 
-            var urlFormatter = new Mock<IUrlFormatter>();
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Facebook)).Returns(new Uri("https://" + auditable.Facebook));
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.YouTube)).Returns(new Uri("https://" + auditable.YouTube));
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Website)).Returns(new Uri("https://" + auditable.Website));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Facebook)).Returns(new Uri("https://" + auditable.Facebook));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.YouTube)).Returns(new Uri("https://" + auditable.YouTube));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Website)).Returns(new Uri("https://" + auditable.Website));
 
-            var socialMediaFormatter = new Mock<ISocialMediaAccountFormatter>();
-            socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Instagram)).Returns("@" + auditable.Instagram);
-            socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Twitter)).Returns("@" + auditable.Twitter);
+            _socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Instagram)).Returns("@" + auditable.Instagram);
+            _socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Twitter)).Returns("@" + auditable.Twitter);
 
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       routeGenerator.Object,
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       sanitizer.Object,
-                       copier.Object,
-                       urlFormatter.Object,
-                       socialMediaFormatter.Object);
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateTeam(team, Guid.NewGuid(), "Member name").ConfigureAwait(false);
 
@@ -848,29 +630,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                     new { team.TeamId }).ConfigureAwait(false);
                 Assert.NotNull(teamResult);
 
-                sanitizer.Verify(x => x.Sanitize(unsanitisedIntro));
+                _sanitizer.Verify(x => x.Sanitize(unsanitisedIntro));
                 Assert.Equal(sanitisedIntro, teamResult.Introduction);
-                sanitizer.Verify(x => x.Sanitize(unsanitisedPlayingTimes));
+                _sanitizer.Verify(x => x.Sanitize(unsanitisedPlayingTimes));
                 Assert.Equal(sanitisedPlayingTimes, teamResult.PlayingTimes);
-                sanitizer.Verify(x => x.Sanitize(unsanitisedCost));
+                _sanitizer.Verify(x => x.Sanitize(unsanitisedCost));
                 Assert.Equal(sanitisedCost, teamResult.Cost);
                 Assert.Equal(auditable.TeamType, teamResult.TeamType);
                 Assert.Equal(auditable.PlayerType, teamResult.PlayerType);
                 Assert.Equal(auditable.AgeRangeLower, teamResult.AgeRangeLower);
                 Assert.Equal(auditable.AgeRangeUpper, teamResult.AgeRangeUpper);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedFacebook), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedFacebook), Times.Once);
                 Assert.Equal("https://" + updatedFacebook, teamResult.Facebook);
-                socialMediaFormatter.Verify(x => x.PrefixAtSign(updatedInstagram), Times.Once);
+                _socialMediaFormatter.Verify(x => x.PrefixAtSign(updatedInstagram), Times.Once);
                 Assert.Equal("@" + updatedInstagram, teamResult.Instagram);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedYouTube), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedYouTube), Times.Once);
                 Assert.Equal("https://" + updatedYouTube, teamResult.YouTube);
-                socialMediaFormatter.Verify(x => x.PrefixAtSign(updatedTwitter), Times.Once);
+                _socialMediaFormatter.Verify(x => x.PrefixAtSign(updatedTwitter), Times.Once);
                 Assert.Equal("@" + updatedTwitter, teamResult.Twitter);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedWebsite), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedWebsite), Times.Once);
                 Assert.Equal("https://" + updatedWebsite, teamResult.Website);
-                sanitizer.Verify(x => x.Sanitize(unsanitisedPrivateContact));
+                _sanitizer.Verify(x => x.Sanitize(unsanitisedPrivateContact));
                 Assert.Equal(sanitisedPrivateContact, teamResult.PrivateContactDetails);
-                sanitizer.Verify(x => x.Sanitize(unsanitisedPublicContact));
+                _sanitizer.Verify(x => x.Sanitize(unsanitisedPublicContact));
                 Assert.Equal(sanitisedPublicContact, teamResult.PublicContactDetails);
                 Assert.Equal(route, teamResult.TeamRoute);
 
@@ -898,22 +680,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 TeamRoute = team.TeamRoute
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     Mock.Of<IRedirectsRepository>(),
-                     Mock.Of<IMemberGroupHelper>(),
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await UpdateTeamAddsTeamVersionIfNameChanges(team, auditable, (team, memberKey, memberName) => repo.UpdateTeam(team, memberKey, memberName)).ConfigureAwait(false);
         }
@@ -941,7 +711,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 Assert.NotEqual(currentVersionId, versionResult.teamVersionId);
                 Assert.Equal(auditable.TeamName, versionResult.teamName);
                 Assert.Equal(auditable.ComparableName(), versionResult.comparableName);
-                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate.Value);
+                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate);
             }
         }
 
@@ -956,22 +726,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 TeamRoute = team.TeamRoute
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
-            var repo = new SqlServerTeamRepository(
-               _databaseFixture.ConnectionFactory,
-               Mock.Of<IAuditRepository>(),
-               Mock.Of<ILogger<SqlServerTeamRepository>>(),
-               routeGenerator.Object,
-               Mock.Of<IRedirectsRepository>(),
-               Mock.Of<IMemberGroupHelper>(),
-               Mock.Of<IHtmlSanitizer>(),
-               copier.Object,
-               Mock.Of<IUrlFormatter>(),
-               Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await UpdateTeamDoesNotAddTeamVersionIfNameIsUnchanged(team, auditable, (team, memberKey, memberName) => repo.UpdateTeam(team, memberKey, memberName)).ConfigureAwait(false);
         }
@@ -979,7 +737,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         private async Task UpdateTeamDoesNotAddTeamVersionIfNameIsUnchanged(Team team, Team auditable, Func<Team, Guid, string, Task<Team>> updateMethod)
         {
             int? existingVersions = null;
-            (Guid? teamVersionId, string teamName, string comparableName, DateTimeOffset? fromDate) currentVersion = (null, null, null, null);
+            (Guid? teamVersionId, string teamName, string comparableName, DateTimeOffset? fromDate) currentVersion;
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
                 existingVersions = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.TeamVersion} WHERE TeamId = @TeamId", auditable).ConfigureAwait(false);
@@ -1000,7 +758,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 Assert.Equal(currentVersion.teamVersionId, versionResult.teamVersionId);
                 Assert.Equal(auditable.TeamName, versionResult.teamName);
                 Assert.Equal(auditable.ComparableName(), versionResult.comparableName);
-                Assert.Equal(currentVersion.fromDate.Value, versionResult.fromDate.Value);
+                Assert.Equal(currentVersion.fromDate, versionResult.fromDate);
             }
         }
 
@@ -1009,29 +767,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var team = _databaseFixture.TestData.Teams.First();
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute + "-123"));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute + "-123"));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(new Team { TeamId = team.TeamId, TeamName = team.TeamName, TeamRoute = team.TeamRoute });
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(new Team { TeamId = team.TeamId, TeamName = team.TeamName, TeamRoute = team.TeamRoute });
 
-            var redirectsRepository = new Mock<IRedirectsRepository>();
-
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     redirectsRepository.Object,
-                     Mock.Of<IMemberGroupHelper>(),
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTeam(team, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            redirectsRepository.Verify(x => x.InsertRedirect(team.TeamRoute, team.TeamRoute + "-123", null, It.IsAny<IDbTransaction>()), Times.Once);
+            _redirectsRepository.Verify(x => x.InsertRedirect(team.TeamRoute, team.TeamRoute + "-123", null, It.IsAny<IDbTransaction>()), Times.Once);
         }
 
 
@@ -1039,27 +783,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Update_team_does_not_redirect_unchanged_route()
         {
             var team = _databaseFixture.TestData.Teams.First();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(new Team { TeamId = team.TeamId, TeamName = team.TeamName, TeamRoute = team.TeamRoute });
-            var redirectsRepository = new Mock<IRedirectsRepository>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(new Team { TeamId = team.TeamId, TeamName = team.TeamName, TeamRoute = team.TeamRoute });
 
-            var repo = new SqlServerTeamRepository(
-               _databaseFixture.ConnectionFactory,
-               Mock.Of<IAuditRepository>(),
-               Mock.Of<ILogger<SqlServerTeamRepository>>(),
-               routeGenerator.Object,
-               Mock.Of<IRedirectsRepository>(),
-               Mock.Of<IMemberGroupHelper>(),
-               Mock.Of<IHtmlSanitizer>(),
-               copier.Object,
-               Mock.Of<IUrlFormatter>(),
-               Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTeam(team, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
+            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
         }
 
         [Fact]
@@ -1084,35 +815,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             };
 
             var route = "/teams/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
-            copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
 
-            var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger<SqlServerTeamRepository>>();
-
-            var repo = new SqlServerTeamRepository(
-                 _databaseFixture.ConnectionFactory,
-                 auditRepository.Object,
-                 logger.Object,
-                 routeGenerator.Object,
-                 Mock.Of<IRedirectsRepository>(),
-                 Mock.Of<IMemberGroupHelper>(),
-                 Mock.Of<IHtmlSanitizer>(),
-                 copier.Object,
-                 Mock.Of<IUrlFormatter>(),
-                 Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
             _ = await repo.UpdateTeam(team, memberKey, memberName).ConfigureAwait(false);
 
-            copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.UpdateTeam)), Times.Once);
+            _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.UpdateTeam)), Times.Once);
         }
 
         [Fact]
@@ -1127,26 +843,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 MemberGroupName = team.MemberGroupName
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamName, "/teams", copyTeam.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/teams/" + Guid.NewGuid()));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamName, "/teams", copyTeam.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/teams/" + Guid.NewGuid()));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(copyTeam);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(copyTeam);
 
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     Mock.Of<IRedirectsRepository>(),
-                     Mock.Of<IMemberGroupHelper>(),
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateTeam(team, Guid.NewGuid(), "Member name").ConfigureAwait(false);
-            copier.Verify(x => x.CreateAuditableCopy(team), Times.Once);
+            _copier.Verify(x => x.CreateAuditableCopy(team), Times.Once);
             Assert.Equal(copyTeam, updated);
         }
 
@@ -1165,23 +869,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             };
             auditable.MatchLocations.Add(new MatchLocation { MatchLocationId = locationToAdd.MatchLocationId });
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     Mock.Of<IRedirectsRepository>(),
-                     Mock.Of<IMemberGroupHelper>(),
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTeam(team, Guid.NewGuid(), "Member name").ConfigureAwait(false);
 
@@ -1193,7 +885,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 var locationResult = await connection.QuerySingleOrDefaultAsync<(Guid teamMatchLocationId, DateTimeOffset? fromDate)>(
                     $"SELECT TeamMatchLocationId, FromDate FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId AND MatchLocationId = @MatchLocationId AND UntilDate IS NULL", new { auditable.TeamId, locationToAdd.MatchLocationId }).ConfigureAwait(false);
 
-                Assert.Equal(DateTimeOffset.UtcNow.Date, locationResult.fromDate.Value.UtcDateTime);
+                Assert.Equal(DateTimeOffset.UtcNow.Date, locationResult.fromDate?.UtcDateTime);
             }
         }
 
@@ -1218,23 +910,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                     .ConfigureAwait(false)).ToList();
             }
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     Mock.Of<IRedirectsRepository>(),
-                     Mock.Of<IMemberGroupHelper>(),
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTeam(team, Guid.NewGuid(), "Member name").ConfigureAwait(false);
 
@@ -1270,23 +950,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 MatchLocations = team.MatchLocations.Where(x => x.MatchLocationId != locationToRemove.MatchLocationId).Select(x => new MatchLocation { MatchLocationId = x.MatchLocationId }).ToList()
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, "/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     Mock.Of<IRedirectsRepository>(),
-                     Mock.Of<IMemberGroupHelper>(),
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTeam(team, Guid.NewGuid(), "Member name").ConfigureAwait(false);
 
@@ -1301,7 +969,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                     new { auditable.TeamId, locationToRemove.MatchLocationId }
                 ).ConfigureAwait(false);
 
-                Assert.Equal(DateTimeOffset.UtcNow.Date.AddDays(1).AddSeconds(-1), locationResult.untilDate.Value.UtcDateTime);
+                Assert.Equal(DateTimeOffset.UtcNow.Date.AddDays(1).AddSeconds(-1), locationResult.untilDate?.UtcDateTime);
             }
         }
 
@@ -1323,7 +991,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var updatedYouTube = $"www.youtube.com/{Guid.NewGuid()}";
             var updatedWebsite = $"www.example.org/{Guid.NewGuid()}";
 
-            var team = _databaseFixture.TestData.TeamWithFullDetails;
+            var team = _databaseFixture.TestData.TeamWithFullDetails!;
 
             var auditable = new Team
             {
@@ -1349,38 +1017,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             };
 
             var route = "/teams/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(auditable.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(auditable.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
-            var sanitizer = new Mock<IHtmlSanitizer>();
-            sanitizer.Setup(x => x.Sanitize(auditable.PrivateContactDetails)).Returns(sanitisedPrivateContact);
-            sanitizer.Setup(x => x.Sanitize(auditable.PublicContactDetails)).Returns(sanitisedPublicContact);
-            sanitizer.Setup(x => x.Sanitize(auditable.Introduction)).Returns(sanitisedIntro);
-            sanitizer.Setup(x => x.Sanitize(auditable.Cost)).Returns(sanitisedCost);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PrivateContactDetails)).Returns(sanitisedPrivateContact);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PublicContactDetails)).Returns(sanitisedPublicContact);
+            _sanitizer.Setup(x => x.Sanitize(auditable.Introduction)).Returns(sanitisedIntro);
+            _sanitizer.Setup(x => x.Sanitize(auditable.Cost)).Returns(sanitisedCost);
 
-            var urlFormatter = new Mock<IUrlFormatter>();
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Facebook)).Returns(new Uri("https://" + auditable.Facebook));
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.YouTube)).Returns(new Uri("https://" + auditable.YouTube));
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Website)).Returns(new Uri("https://" + auditable.Website));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Facebook)).Returns(new Uri("https://" + auditable.Facebook));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.YouTube)).Returns(new Uri("https://" + auditable.YouTube));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Website)).Returns(new Uri("https://" + auditable.Website));
 
-            var socialMediaFormatter = new Mock<ISocialMediaAccountFormatter>();
-            socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Instagram)).Returns("@" + auditable.Instagram);
-            socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Twitter)).Returns("@" + auditable.Twitter);
+            _socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Instagram)).Returns("@" + auditable.Instagram);
+            _socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Twitter)).Returns("@" + auditable.Twitter);
 
-            var repo = new SqlServerTeamRepository(
-                       _databaseFixture.ConnectionFactory,
-                       Mock.Of<IAuditRepository>(),
-                       Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                       routeGenerator.Object,
-                       Mock.Of<IRedirectsRepository>(),
-                       Mock.Of<IMemberGroupHelper>(),
-                       sanitizer.Object,
-                       copier.Object,
-                       urlFormatter.Object,
-                       socialMediaFormatter.Object);
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateTransientTeam(team, Guid.NewGuid(), "Member name").ConfigureAwait(false);
 
@@ -1396,26 +1049,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                     new { team.TeamId }).ConfigureAwait(false);
                 Assert.NotNull(teamResult);
 
-                sanitizer.Verify(x => x.Sanitize(unsanitisedIntro));
+                _sanitizer.Verify(x => x.Sanitize(unsanitisedIntro));
                 Assert.Equal(sanitisedIntro, teamResult.Introduction);
-                sanitizer.Verify(x => x.Sanitize(unsanitisedCost));
+                _sanitizer.Verify(x => x.Sanitize(unsanitisedCost));
                 Assert.Equal(sanitisedCost, teamResult.Cost);
                 Assert.Equal(auditable.PlayerType, teamResult.PlayerType);
                 Assert.Equal(auditable.AgeRangeLower, teamResult.AgeRangeLower);
                 Assert.Equal(auditable.AgeRangeUpper, teamResult.AgeRangeUpper);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedFacebook), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedFacebook), Times.Once);
                 Assert.Equal("https://" + updatedFacebook, teamResult.Facebook);
-                socialMediaFormatter.Verify(x => x.PrefixAtSign(updatedInstagram), Times.Once);
+                _socialMediaFormatter.Verify(x => x.PrefixAtSign(updatedInstagram), Times.Once);
                 Assert.Equal("@" + updatedInstagram, teamResult.Instagram);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedYouTube), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedYouTube), Times.Once);
                 Assert.Equal("https://" + updatedYouTube, teamResult.YouTube);
-                socialMediaFormatter.Verify(x => x.PrefixAtSign(updatedTwitter), Times.Once);
+                _socialMediaFormatter.Verify(x => x.PrefixAtSign(updatedTwitter), Times.Once);
                 Assert.Equal("@" + updatedTwitter, teamResult.Twitter);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedWebsite), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(updatedWebsite), Times.Once);
                 Assert.Equal("https://" + updatedWebsite, teamResult.Website);
-                sanitizer.Verify(x => x.Sanitize(unsanitisedPrivateContact));
+                _sanitizer.Verify(x => x.Sanitize(unsanitisedPrivateContact));
                 Assert.Equal(sanitisedPrivateContact, teamResult.PrivateContactDetails);
-                sanitizer.Verify(x => x.Sanitize(unsanitisedPublicContact));
+                _sanitizer.Verify(x => x.Sanitize(unsanitisedPublicContact));
                 Assert.Equal(sanitisedPublicContact, teamResult.PublicContactDetails);
                 Assert.Equal(route, teamResult.TeamRoute);
 
@@ -1446,22 +1099,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 TeamRoute = team.TeamRoute
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(auditable.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(auditable.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     Mock.Of<IRedirectsRepository>(),
-                     Mock.Of<IMemberGroupHelper>(),
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await UpdateTeamAddsTeamVersionIfNameChanges(team, auditable, (team, memberKey, memberName) => repo.UpdateTransientTeam(team, memberKey, memberName)).ConfigureAwait(false);
         }
@@ -1477,23 +1118,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 TeamRoute = team.TeamRoute
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(auditable.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(auditable.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
-            var repo = new SqlServerTeamRepository(
-               _databaseFixture.ConnectionFactory,
-               Mock.Of<IAuditRepository>(),
-               Mock.Of<ILogger<SqlServerTeamRepository>>(),
-               routeGenerator.Object,
-               Mock.Of<IRedirectsRepository>(),
-               Mock.Of<IMemberGroupHelper>(),
-               Mock.Of<IHtmlSanitizer>(),
-               copier.Object,
-               Mock.Of<IUrlFormatter>(),
-               Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await UpdateTeamDoesNotAddTeamVersionIfNameIsUnchanged(team, auditable, (team, memberKey, memberName) => repo.UpdateTransientTeam(team, memberKey, memberName)).ConfigureAwait(false);
         }
@@ -1503,56 +1132,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var team = _databaseFixture.TestData.Teams.First();
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(team.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute + "-123"));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(team.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute + "-123"));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(new Team { TeamId = team.TeamId, TeamName = team.TeamName, TeamRoute = team.TeamRoute });
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(new Team { TeamId = team.TeamId, TeamName = team.TeamName, TeamRoute = team.TeamRoute });
 
-            var redirectsRepository = new Mock<IRedirectsRepository>();
-
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     redirectsRepository.Object,
-                     Mock.Of<IMemberGroupHelper>(),
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTransientTeam(team, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            redirectsRepository.Verify(x => x.InsertRedirect(team.TeamRoute, team.TeamRoute + "-123", null, It.IsAny<IDbTransaction>()), Times.Once);
+            _redirectsRepository.Verify(x => x.InsertRedirect(team.TeamRoute, team.TeamRoute + "-123", null, It.IsAny<IDbTransaction>()), Times.Once);
         }
 
         [Fact]
         public async Task Update__transient_team_does_not_redirect_unchanged_route()
         {
             var team = _databaseFixture.TestData.Teams.First();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(team.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(new Team { TeamId = team.TeamId, TeamName = team.TeamName, TeamRoute = team.TeamRoute });
-            var redirectsRepository = new Mock<IRedirectsRepository>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(team.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(team.TeamRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(new Team { TeamId = team.TeamId, TeamName = team.TeamName, TeamRoute = team.TeamRoute });
 
-            var repo = new SqlServerTeamRepository(
-               _databaseFixture.ConnectionFactory,
-               Mock.Of<IAuditRepository>(),
-               Mock.Of<ILogger<SqlServerTeamRepository>>(),
-               routeGenerator.Object,
-               Mock.Of<IRedirectsRepository>(),
-               Mock.Of<IMemberGroupHelper>(),
-               Mock.Of<IHtmlSanitizer>(),
-               copier.Object,
-               Mock.Of<IUrlFormatter>(),
-               Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             _ = await repo.UpdateTransientTeam(team, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
+            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
         }
 
         [Fact]
@@ -1577,35 +1179,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             };
 
             var route = "/teams/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(auditable.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamRoute, Regex.Match(auditable.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value, auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
-            copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
+            _copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
 
-            var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger<SqlServerTeamRepository>>();
-
-            var repo = new SqlServerTeamRepository(
-                 _databaseFixture.ConnectionFactory,
-                 auditRepository.Object,
-                 logger.Object,
-                 routeGenerator.Object,
-                 Mock.Of<IRedirectsRepository>(),
-                 Mock.Of<IMemberGroupHelper>(),
-                 Mock.Of<IHtmlSanitizer>(),
-                 copier.Object,
-                 Mock.Of<IUrlFormatter>(),
-                 Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
             _ = await repo.UpdateTransientTeam(team, memberKey, memberName).ConfigureAwait(false);
 
-            copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.UpdateTransientTeam)), Times.Once);
+            _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.UpdateTransientTeam)), Times.Once);
         }
 
         [Fact]
@@ -1621,53 +1208,30 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 MemberGroupName = team.MemberGroupName
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamName, "/teams", copyTeam.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/teams/" + Guid.NewGuid()));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(team.TeamName, "/teams", copyTeam.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/teams/" + Guid.NewGuid()));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(team)).Returns(copyTeam);
+            _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(copyTeam);
 
-            var repo = new SqlServerTeamRepository(
-                     _databaseFixture.ConnectionFactory,
-                     Mock.Of<IAuditRepository>(),
-                     Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                     routeGenerator.Object,
-                     Mock.Of<IRedirectsRepository>(),
-                     Mock.Of<IMemberGroupHelper>(),
-                     Mock.Of<IHtmlSanitizer>(),
-                     copier.Object,
-                     Mock.Of<IUrlFormatter>(),
-                     Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateTransientTeam(team, Guid.NewGuid(), "Member name").ConfigureAwait(false);
-            copier.Verify(x => x.CreateAuditableCopy(team), Times.Once);
+            _copier.Verify(x => x.CreateAuditableCopy(team), Times.Once);
             Assert.Equal(copyTeam, updated);
         }
 
         [Fact]
         public async Task Delete_team_succeeds()
         {
-            var auditable = new Team { TeamId = _databaseFixture.TestData.TeamWithFullDetails.TeamId };
+            var auditable = new Team { TeamId = _databaseFixture.TestData.TeamWithFullDetails!.TeamId };
             var redacted = new Team { TeamId = _databaseFixture.TestData.TeamWithFullDetails.TeamId };
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(_databaseFixture.TestData.TeamWithFullDetails)).Returns(auditable);
-            copier.Setup(x => x.CreateAuditableCopy(auditable)).Returns(redacted);
+            _copier.Setup(x => x.CreateAuditableCopy(_databaseFixture.TestData.TeamWithFullDetails)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(auditable)).Returns(redacted);
 
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
 
-            var repo = new SqlServerTeamRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerTeamRepository>>(),
-                Mock.Of<IRouteGenerator>(),
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<IMemberGroupHelper>(),
-                Mock.Of<IHtmlSanitizer>(),
-                copier.Object,
-                Mock.Of<IUrlFormatter>(),
-                Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await repo.DeleteTeam(_databaseFixture.TestData.TeamWithFullDetails, memberKey, memberName).ConfigureAwait(false);
 

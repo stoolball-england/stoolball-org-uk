@@ -32,7 +32,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of teams that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalTeams(TeamFilter teamQuery)
+        public async Task<int> ReadTotalTeams(TeamFilter? filter)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -43,7 +43,7 @@ namespace Stoolball.Data.SqlServer
                         <<WHERE>>
                         AND tv.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)";
 
-                var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql, Array.Empty<string>());
+                var (filteredSql, parameters) = ApplyTeamQuery(filter, sql, Array.Empty<string>());
 
                 return await connection.ExecuteScalarAsync<int>(filteredSql, new DynamicParameters(parameters)).ConfigureAwait(false);
             }
@@ -173,7 +173,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of teams based on a query
         /// </summary>
         /// <returns>A list of <see cref="Team"/> objects. An empty list if no teams are found.</returns>
-        public async Task<List<Team>> ReadTeams(TeamFilter teamQuery)
+        public async Task<List<Team>> ReadTeams(TeamFilter? filter)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -189,7 +189,7 @@ namespace Stoolball.Data.SqlServer
                             ORDER BY CASE WHEN tv.UntilDate IS NULL THEN 0 
                                           WHEN tv.UntilDate IS NOT NULL THEN 1 END, tv.TeamName";
 
-                var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql, new[] { Tables.TeamMatchLocation, Tables.MatchLocation });
+                var (filteredSql, parameters) = ApplyTeamQuery(filter, sql, new[] { Tables.TeamMatchLocation, Tables.MatchLocation });
 
                 var teams = await connection.QueryAsync<Team, MatchLocation, Team>(filteredSql,
                     (team, matchLocation) =>
@@ -218,13 +218,13 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string filteredSql, Dictionary<string, object> parameters) ApplyTeamQuery(TeamFilter teamQuery, string sql, string[] currentJoinsBeyondTeamVersion)
+        private static (string filteredSql, Dictionary<string, object> parameters) ApplyTeamQuery(TeamFilter? filter, string sql, string[] currentJoinsBeyondTeamVersion)
         {
             var join = new List<string>();
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
 
-            if (!string.IsNullOrEmpty(teamQuery?.Query))
+            if (!string.IsNullOrEmpty(filter?.Query))
             {
                 if (!currentJoinsBeyondTeamVersion.Contains(Tables.TeamMatchLocation))
                 {
@@ -235,10 +235,10 @@ namespace Stoolball.Data.SqlServer
                     join.Add($"LEFT JOIN {Tables.MatchLocation} AS ml ON ml.MatchLocationId = tml.MatchLocationId ");
                 }
                 where.Add("(tv.TeamName LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query OR ml.AdministrativeArea LIKE @Query)");
-                parameters.Add("@Query", $"%{teamQuery.Query}%");
+                parameters.Add("@Query", $"%{filter.Query}%");
             }
 
-            if (teamQuery?.CompetitionIds?.Count > 0)
+            if (filter?.CompetitionIds?.Count > 0)
             {
                 if (!currentJoinsBeyondTeamVersion.Contains(Tables.SeasonTeam))
                 {
@@ -250,31 +250,31 @@ namespace Stoolball.Data.SqlServer
                 }
 
                 where.Add("s.CompetitionId IN @CompetitionIds");
-                parameters.Add("@CompetitionIds", teamQuery.CompetitionIds);
+                parameters.Add("@CompetitionIds", filter.CompetitionIds);
             }
 
-            if (teamQuery?.ExcludeTeamIds?.Count > 0)
+            if (filter?.ExcludeTeamIds?.Count > 0)
             {
                 where.Add("t.TeamId NOT IN @ExcludeTeamIds");
-                parameters.Add("@ExcludeTeamIds", teamQuery.ExcludeTeamIds.Select(x => x.ToString()));
+                parameters.Add("@ExcludeTeamIds", filter.ExcludeTeamIds.Select(x => x.ToString()));
             }
 
-            if (teamQuery?.TeamTypes?.Count > 0)
+            if (filter?.TeamTypes?.Count > 0)
             {
                 where.Add("t.TeamType IN @TeamTypes");
-                parameters.Add("@TeamTypes", teamQuery.TeamTypes.Select(x => x.ToString()));
+                parameters.Add("@TeamTypes", filter.TeamTypes.Select(x => x.ToString()));
             }
 
-            if (teamQuery != null && !teamQuery.IncludeClubTeams)
+            if (filter != null && !filter.IncludeClubTeams)
             {
                 where.Add("t.ClubId IS NULL");
             }
 
-            if (teamQuery?.ActiveTeams == true)
+            if (filter?.ActiveTeams == true)
             {
                 where.Add("tv.UntilDate IS NULL");
             }
-            else if (teamQuery?.ActiveTeams == false)
+            else if (filter?.ActiveTeams == false)
             {
                 where.Add("tv.UntilDate IS NOT NULL");
             }

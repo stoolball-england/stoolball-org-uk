@@ -30,7 +30,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of seasons based on a query
         /// </summary>
         /// <returns>A list of <see cref="Season"/> objects. An empty list if no seasons are found.</returns>
-        public async Task<List<Season>> ReadSeasons(CompetitionFilter filter)
+        public async Task<List<Season>> ReadSeasons(CompetitionFilter? filter)
         {
             if (filter is null)
             {

@@ -39,7 +39,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var memberName = "Dee Leeter";
 
             var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(_databaseFixture.TestData.SeasonWithFullDetails)).Returns(new Season { SeasonId = _databaseFixture.TestData.SeasonWithFullDetails.SeasonId });
+            copier.Setup(x => x.CreateAuditableCopy(_databaseFixture.TestData.SeasonWithFullDetails)).Returns(new Season { SeasonId = _databaseFixture.TestData.SeasonWithFullDetails!.SeasonId });
 
             var seasonRepository = new SqlServerSeasonRepository(
                 _databaseFixture.ConnectionFactory,

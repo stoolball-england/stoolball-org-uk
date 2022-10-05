@@ -18,11 +18,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
+        private SqlServerTeamListingDataSource CreateDataSource()
+        {
+            return new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+        }
 
         [Fact]
         public async Task Read_total_teams_supports_no_filter()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
 
             var result = await teamDataSource.ReadTotalTeams(null).ConfigureAwait(false);
 
@@ -32,7 +36,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_name()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.TeamName.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
@@ -44,20 +48,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_name_where_the_club_name_is_different()
         {
             var team = _databaseFixture.Clubs.Where(x => x.Teams.Count > 1).SelectMany(x => x.Teams).First(x => !x.Club.ClubName.Contains(x.TeamName, StringComparison.OrdinalIgnoreCase));
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = team.TeamName.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
             var matchedByClubName = _databaseFixture.Clubs.Where(x => x.ClubName.Contains(query.Query, StringComparison.OrdinalIgnoreCase));
-            var matchedByTeamName = _databaseFixture.Teams.Where(x => x.TeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase) && (x.Club == null || !matchedByClubName.Select(c => x.Club.ClubId.Value).Contains(x.Club.ClubId.Value)));
-            Assert.Equal(matchedByClubName.Count() + matchedByTeamName.Count(x => x.Club == null) + matchedByTeamName.Where(x => x.Club != null).Select(x => x.Club.ClubId.Value).Distinct().Count(), result);
+            var matchedByTeamName = _databaseFixture.Teams.Where(x => x.TeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase) && (x.Club == null || !matchedByClubName.Select(c => x.Club.ClubId).Contains(x.Club.ClubId)));
+            Assert.Equal(matchedByClubName.Count() + matchedByTeamName.Count(x => x.Club == null) + matchedByTeamName.Where(x => x.Club != null).Select(x => x.Club.ClubId).OfType<Guid>().Distinct().Count(), result);
         }
 
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_player_type()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = "LaDiEs" };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
@@ -68,7 +72,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_locality()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().Locality.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
@@ -79,7 +83,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_town()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().Town.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
@@ -90,7 +94,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_administrative_area()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().AdministrativeArea.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
@@ -101,21 +105,21 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_total_teams_supports_filter_by_team_type()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { TeamTypes = new List<TeamType?> { TeamType.Representative } };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
             var expected = _databaseFixture.TeamListings
-               .Count(x => _databaseFixture.Teams.Where(t => t.TeamType == TeamType.Representative).Select(t => t.TeamId.Value).Contains(x.TeamListingId.Value) ||
-                           _databaseFixture.Clubs.Where(c => c.Teams.Any(t => t.TeamType == TeamType.Representative)).Select(c => c.ClubId.Value).Contains(x.TeamListingId.Value));
+               .Count(x => _databaseFixture.Teams.Where(t => t.TeamType == TeamType.Representative).Select(t => t.TeamId).Contains(x.TeamListingId) ||
+                           _databaseFixture.Clubs.Where(c => c.Teams.Any(t => t.TeamType == TeamType.Representative)).Select(c => c.ClubId).Contains(x.TeamListingId));
             Assert.Equal(expected, result);
         }
 
         [Fact]
         public async Task Read_total_teams_supports_filter_by_team_type_for_club_with_no_teams()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { TeamTypes = new List<TeamType?> { null } };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
@@ -128,7 +132,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_club_name()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = "ClUB MiNiMaL" };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
@@ -139,7 +143,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_club_with_locality()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.Locality.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
@@ -150,7 +154,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_club_with_town()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.Town.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
@@ -161,7 +165,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_club_with_administrative_area()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.AdministrativeArea.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
@@ -172,7 +176,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_returns_basic_fields_for_teams()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
@@ -181,7 +185,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 var result = results.SingleOrDefault(x => x.TeamListingId == team.TeamId);
 
                 Assert.NotNull(result);
-                Assert.Equal(team.TeamName, result.ClubOrTeamName);
+                Assert.Equal(team.TeamName, result!.ClubOrTeamName);
                 Assert.Equal(team.TeamRoute, result.ClubOrTeamRoute);
                 Assert.Equal(team.TeamType, result.TeamType);
                 Assert.Equal(!team.UntilYear.HasValue, result.Active);
@@ -192,16 +196,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_returns_basic_fields_for_clubs()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
-            foreach (var club in _databaseFixture.TeamListings.Where(x => _databaseFixture.Clubs.Select(c => c.ClubId.Value).ToList().Contains(x.TeamListingId.Value)))
+            foreach (var club in _databaseFixture.TeamListings.Where(x => _databaseFixture.Clubs.Select(c => c.ClubId).ToList().Contains(x.TeamListingId)))
             {
                 var result = results.SingleOrDefault(x => x.TeamListingId == club.TeamListingId);
 
                 Assert.NotNull(result);
-                Assert.Equal(club.ClubOrTeamName, result.ClubOrTeamName);
+                Assert.Equal(club.ClubOrTeamName, result!.ClubOrTeamName);
                 Assert.Equal(club.ClubOrTeamRoute, result.ClubOrTeamRoute);
                 Assert.Equal(club.Active, result.Active);
 
@@ -216,7 +220,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_returns_match_locations_for_teams()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
@@ -227,9 +231,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
                 foreach (var matchLocation in team.MatchLocations)
                 {
-                    var resultMatchLocation = result.MatchLocations.SingleOrDefault(x => x.MatchLocationId == matchLocation.MatchLocationId);
+                    var resultMatchLocation = result!.MatchLocations.SingleOrDefault(x => x.MatchLocationId == matchLocation.MatchLocationId);
                     Assert.NotNull(resultMatchLocation);
-                    Assert.Equal(matchLocation.SecondaryAddressableObjectName, resultMatchLocation.SecondaryAddressableObjectName);
+                    Assert.Equal(matchLocation.SecondaryAddressableObjectName, resultMatchLocation!.SecondaryAddressableObjectName);
                     Assert.Equal(matchLocation.PrimaryAddressableObjectName, resultMatchLocation.PrimaryAddressableObjectName);
                     Assert.Equal(matchLocation.Locality, resultMatchLocation.Locality);
                     Assert.Equal(matchLocation.Town, resultMatchLocation.Town);
@@ -240,7 +244,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_returns_match_locations_for_clubs()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
@@ -249,9 +253,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             foreach (var matchLocation in _databaseFixture.ClubWithTeamsAndMatchLocation.Teams.SelectMany(x => x.MatchLocations))
             {
-                var resultMatchLocation = result.MatchLocations.SingleOrDefault(x => x.MatchLocationId == matchLocation.MatchLocationId);
+                var resultMatchLocation = result!.MatchLocations.SingleOrDefault(x => x.MatchLocationId == matchLocation.MatchLocationId);
                 Assert.NotNull(resultMatchLocation);
-                Assert.Equal(matchLocation.SecondaryAddressableObjectName, resultMatchLocation.SecondaryAddressableObjectName);
+                Assert.Equal(matchLocation.SecondaryAddressableObjectName, resultMatchLocation!.SecondaryAddressableObjectName);
                 Assert.Equal(matchLocation.PrimaryAddressableObjectName, resultMatchLocation.PrimaryAddressableObjectName);
                 Assert.Equal(matchLocation.Locality, resultMatchLocation.Locality);
                 Assert.Equal(matchLocation.Town, resultMatchLocation.Town);
@@ -261,7 +265,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_sorts_inactive_last()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
@@ -281,7 +285,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_returns_team_for_club_with_one_team()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
@@ -292,7 +296,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_no_filter()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
 
             var result = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
@@ -306,7 +310,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_case_insensitive_filter_by_team_name()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.TeamName.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -322,7 +326,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_team_listings_supports_case_insensitive_filter_by_team_name_where_the_club_name_is_different()
         {
             var team = _databaseFixture.Clubs.Where(x => x.Teams.Count > 1).SelectMany(x => x.Teams).First(x => !x.Club.ClubName.Contains(x.TeamName, StringComparison.OrdinalIgnoreCase));
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = team.TeamName.ToUpperInvariant() };
 
             var results = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -356,7 +360,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_case_insensitive_filter_by_team_locality()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().Locality.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -372,7 +376,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_case_insensitive_filter_by_team_town()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().Town.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -388,7 +392,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_case_insensitive_filter_by_team_administrative_area()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().AdministrativeArea.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -404,7 +408,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_filter_by_team_type()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { TeamTypes = new List<TeamType?> { TeamType.Representative } };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -422,7 +426,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_filter_by_team_type_for_club_with_no_teams()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { TeamTypes = new List<TeamType?> { null } };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -438,7 +442,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_case_insensitive_filter_by_club_name()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = "ClUB MiNiMaL" };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -453,7 +457,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_case_insensitive_filter_by_club_with_locality()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.Locality.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -469,7 +473,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_case_insensitive_filter_by_club_with_town()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.Town.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -485,7 +489,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_case_insensitive_filter_by_club_with_administrative_area()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
             var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.AdministrativeArea.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
@@ -501,7 +505,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_pages_results()
         {
-            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamDataSource = CreateDataSource();
 
             const int pageSize = 10;
             var pageNumber = 1;

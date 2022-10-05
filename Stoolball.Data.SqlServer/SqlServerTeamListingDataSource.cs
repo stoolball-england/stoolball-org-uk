@@ -26,7 +26,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of clubs and teams that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalTeams(TeamListingFilter filter)
+        public async Task<int> ReadTotalTeams(TeamListingFilter? filter)
         {
             if (filter is null) { filter = new TeamListingFilter(); }
 
@@ -71,7 +71,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of clubs and teams based on a query
         /// </summary>
         /// <returns>A list of <see cref="TeamListing"/> objects. An empty list if no clubs or teams are found.</returns>
-        public async Task<List<TeamListing>> ReadTeamListings(TeamListingFilter filter)
+        public async Task<List<TeamListing>> ReadTeamListings(TeamListingFilter? filter)
         {
             if (filter is null) { filter = new TeamListingFilter(); }
 
@@ -174,7 +174,11 @@ namespace Stoolball.Data.SqlServer
                 {
                     var resolvedTeam = copiesOfTeam.First();
                     resolvedTeam.PlayerTypes = copiesOfTeam.SelectMany(listing => listing.PlayerTypes).OfType<PlayerType>().Distinct().ToList();
-                    resolvedTeam.MatchLocations = copiesOfTeam.Select(listing => listing.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().Distinct(new MatchLocationEqualityComparer()).OrderBy(x => x.ComparableName()).ToList();
+                    resolvedTeam.MatchLocations = copiesOfTeam.Select(listing => listing.MatchLocations.SingleOrDefault())
+                                                              .OfType<MatchLocation>()
+                                                              .Distinct(new MatchLocationEqualityComparer())
+                                                              .OrderBy(x => x.ComparableName())
+                                                              .ToList();
                     return resolvedTeam;
                 }).ToList();
 

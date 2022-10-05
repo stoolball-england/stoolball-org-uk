@@ -12,18 +12,25 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
     public class SqlServerTournamentDataSourceTests
     {
         private readonly SqlServerTestDataFixture _databaseFixture;
+        private readonly Mock<IRouteNormaliser> _routeNormaliser = new();
 
         public SqlServerTournamentDataSourceTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
+        private SqlServerTournamentDataSource CreateDataSource()
+        {
+            return new SqlServerTournamentDataSource(
+                _databaseFixture.ConnectionFactory,
+                _routeNormaliser.Object
+                );
+        }
 
         [Fact]
         public async Task Read_tournament_by_route_reads_minimal_tournament_in_the_past()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithMinimalDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithMinimalDetails!.TournamentRoute);
-            var tournamentDataSource = new SqlServerTournamentDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var tournamentDataSource = CreateDataSource();
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithMinimalDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithMinimalDetails!.TournamentRoute);
 
             var result = await tournamentDataSource.ReadTournamentByRoute(_databaseFixture.TestData.TournamentInThePastWithMinimalDetails.TournamentRoute).ConfigureAwait(false);
 
@@ -33,9 +40,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Read_tournament_by_route_reads_minimal_tournament_in_the_future()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInTheFutureWithMinimalDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInTheFutureWithMinimalDetails!.TournamentRoute);
-            var tournamentDataSource = new SqlServerTournamentDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var tournamentDataSource = CreateDataSource();
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInTheFutureWithMinimalDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInTheFutureWithMinimalDetails!.TournamentRoute);
 
             var result = await tournamentDataSource.ReadTournamentByRoute(_databaseFixture.TestData.TournamentInTheFutureWithMinimalDetails.TournamentRoute).ConfigureAwait(false);
 
@@ -45,9 +51,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Read_tournament_by_route_returns_basic_tournament_fields()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute);
-            var tournamentDataSource = new SqlServerTournamentDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var tournamentDataSource = CreateDataSource();
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute);
 
             var result = await tournamentDataSource.ReadTournamentByRoute(_databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentRoute).ConfigureAwait(false);
 
@@ -69,9 +74,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Read_tournament_by_route_returns_teams_sorted_by_comparable_name()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute);
-            var tournamentDataSource = new SqlServerTournamentDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var tournamentDataSource = CreateDataSource();
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute);
 
             var result = await tournamentDataSource.ReadTournamentByRoute(_databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentRoute).ConfigureAwait(false);
             Assert.NotNull(result);
@@ -91,9 +95,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Read_tournament_by_route_returns_over_sets()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute);
-            var tournamentDataSource = new SqlServerTournamentDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var tournamentDataSource = CreateDataSource();
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute);
 
             var result = await tournamentDataSource.ReadTournamentByRoute(_databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentRoute).ConfigureAwait(false);
             Assert.NotNull(result);
@@ -109,9 +112,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Read_tournament_by_route_returns_tournament_location()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute);
-            var tournamentDataSource = new SqlServerTournamentDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var tournamentDataSource = CreateDataSource();
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute);
 
             var result = await tournamentDataSource.ReadTournamentByRoute(_databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentRoute).ConfigureAwait(false);
             Assert.NotNull(result);
@@ -134,9 +136,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Read_tournament_by_route_returns_season_with_competition()
         {
-            var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute);
-            var tournamentDataSource = new SqlServerTournamentDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var tournamentDataSource = CreateDataSource();
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute, "tournaments")).Returns(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentRoute);
 
             var result = await tournamentDataSource.ReadTournamentByRoute(_databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentRoute).ConfigureAwait(false);
             Assert.NotNull(result);

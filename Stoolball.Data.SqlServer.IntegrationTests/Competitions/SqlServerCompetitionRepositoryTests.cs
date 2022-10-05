@@ -23,6 +23,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
     {
         private readonly SqlServerTestDataFixture _databaseFixture;
         private readonly TransactionScope _scope;
+        private readonly Mock<IRouteGenerator> _routeGenerator = new();
+        private readonly Mock<IStoolballEntityCopier> _copier = new();
+        private readonly Mock<IHtmlSanitizer> _sanitizer = new();
+        private readonly Mock<IUrlFormatter> _urlFormatter = new();
+        private readonly Mock<ISocialMediaAccountFormatter> _socialMediaFormatter = new();
+        private readonly Mock<IAuditRepository> _auditRepository = new();
+        private readonly Mock<ILogger<SqlServerCompetitionRepository>> _logger = new();
+        private readonly Mock<ISeasonRepository> _seasonRepository = new();
+        private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
 
         public SqlServerCompetitionRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
@@ -30,20 +39,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
 
+        private SqlServerCompetitionRepository CreateRepository(ISeasonRepository? seasonRepository = null)
+        {
+            return new SqlServerCompetitionRepository(
+                                     _databaseFixture.ConnectionFactory,
+                                     _auditRepository.Object,
+                                     _logger.Object,
+                                     seasonRepository != null ? seasonRepository : _seasonRepository.Object,
+                                     _routeGenerator.Object,
+                                     _redirectsRepository.Object,
+                                     _sanitizer.Object,
+                                     _copier.Object,
+                                     _urlFormatter.Object,
+                                     _socialMediaFormatter.Object);
+        }
+
+#nullable disable
         [Fact]
         public async Task Create_competition_throws_ArgumentNullException_if_competition_is_null()
         {
-            var repo = new SqlServerCompetitionRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                Mock.Of<ISeasonRepository>(),
-                Mock.Of<IRouteGenerator>(),
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<IHtmlSanitizer>(),
-                Mock.Of<IStoolballEntityCopier>(),
-                Mock.Of<IUrlFormatter>(),
-                Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateCompetition(null, Guid.NewGuid(), "Member name").ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -51,35 +66,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         [Fact]
         public async Task Create_competition_throws_ArgumentNullException_if_memberName_is_null()
         {
-            var repo = new SqlServerCompetitionRepository(
-               _databaseFixture.ConnectionFactory,
-               Mock.Of<IAuditRepository>(),
-               Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-               Mock.Of<ISeasonRepository>(),
-               Mock.Of<IRouteGenerator>(),
-               Mock.Of<IRedirectsRepository>(),
-               Mock.Of<IHtmlSanitizer>(),
-               Mock.Of<IStoolballEntityCopier>(),
-               Mock.Of<IUrlFormatter>(),
-               Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateCompetition(new Competition(), Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Create_competition_throws_ArgumentNullException_if_memberName_is_empty_string()
         {
-            var repo = new SqlServerCompetitionRepository(
-                  _databaseFixture.ConnectionFactory,
-                  Mock.Of<IAuditRepository>(),
-                  Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                  Mock.Of<ISeasonRepository>(),
-                  Mock.Of<IRouteGenerator>(),
-                  Mock.Of<IRedirectsRepository>(),
-                  Mock.Of<IHtmlSanitizer>(),
-                  Mock.Of<IStoolballEntityCopier>(),
-                  Mock.Of<IUrlFormatter>(),
-                  Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateCompetition(new Competition(), Guid.NewGuid(), string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -96,26 +92,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             };
 
             var route = "/competitions/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/competitions", competition.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/competitions", competition.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(competition);
+            _copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(competition);
 
-            var repo = new SqlServerCompetitionRepository(
-                            _databaseFixture.ConnectionFactory,
-                            Mock.Of<IAuditRepository>(),
-                            Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                            Mock.Of<ISeasonRepository>(),
-                            routeGenerator.Object,
-                            Mock.Of<IRedirectsRepository>(),
-                            Mock.Of<IHtmlSanitizer>(),
-                            copier.Object,
-                            Mock.Of<IUrlFormatter>(),
-                            Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
             var created = await repo.CreateCompetition(competition, Guid.NewGuid(), "Member name").ConfigureAwait(false);
 
-            routeGenerator.Verify(x => x.GenerateUniqueRoute("/competitions", competition.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>()), Times.Once);
+            _routeGenerator.Verify(x => x.GenerateUniqueRoute("/competitions", competition.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>()), Times.Once);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -141,7 +125,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
                 Assert.Equal(competition.CompetitionName, versionResult.competitionName);
                 Assert.Equal(competition.ComparableName(), versionResult.comparableName);
-                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate.Value.Date);
+                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate?.Date);
             }
         }
 
@@ -192,37 +176,22 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             };
 
             var route = "/competitions/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
 
-            var sanitizer = new Mock<IHtmlSanitizer>();
-            sanitizer.Setup(x => x.Sanitize(auditable.PrivateContactDetails)).Returns(sanitisedPrivateContact);
-            sanitizer.Setup(x => x.Sanitize(auditable.PublicContactDetails)).Returns(sanitisedPublicContact);
-            sanitizer.Setup(x => x.Sanitize(auditable.Introduction)).Returns(sanitisedIntro);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PrivateContactDetails)).Returns(sanitisedPrivateContact);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PublicContactDetails)).Returns(sanitisedPublicContact);
+            _sanitizer.Setup(x => x.Sanitize(auditable.Introduction)).Returns(sanitisedIntro);
 
-            var urlFormatter = new Mock<IUrlFormatter>();
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Facebook)).Returns(new Uri("https://" + auditable.Facebook));
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.YouTube)).Returns(new Uri("https://" + auditable.YouTube));
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Website)).Returns(new Uri("https://" + auditable.Website));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Facebook)).Returns(new Uri("https://" + auditable.Facebook));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.YouTube)).Returns(new Uri("https://" + auditable.YouTube));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Website)).Returns(new Uri("https://" + auditable.Website));
 
-            var socialMediaFormatter = new Mock<ISocialMediaAccountFormatter>();
-            socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Instagram)).Returns("@" + auditable.Instagram);
-            socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Twitter)).Returns("@" + auditable.Twitter);
+            _socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Instagram)).Returns("@" + auditable.Instagram);
+            _socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Twitter)).Returns("@" + auditable.Twitter);
 
-            var repo = new SqlServerCompetitionRepository(
-                         _databaseFixture.ConnectionFactory,
-                         Mock.Of<IAuditRepository>(),
-                         Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                         Mock.Of<ISeasonRepository>(),
-                         routeGenerator.Object,
-                         Mock.Of<IRedirectsRepository>(),
-                         sanitizer.Object,
-                         copier.Object,
-                         urlFormatter.Object,
-                         socialMediaFormatter.Object);
+            var repo = CreateRepository();
 
             var created = await repo.CreateCompetition(competition, Guid.NewGuid(), "Member name").ConfigureAwait(false);
 
@@ -237,24 +206,24 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                     new { created.CompetitionId }).ConfigureAwait(false);
                 Assert.NotNull(competitionResult);
 
-                sanitizer.Verify(x => x.Sanitize(originalIntro));
+                _sanitizer.Verify(x => x.Sanitize(originalIntro));
                 Assert.Equal(sanitisedIntro, competitionResult.Introduction);
                 Assert.Equal(competition.FromYear, competitionResult.FromYear);
                 Assert.Equal(competition.UntilYear, competitionResult.UntilYear);
                 Assert.Equal(competition.PlayerType, competitionResult.PlayerType);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(competition.Facebook), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(competition.Facebook), Times.Once);
                 Assert.Equal("https://" + competition.Facebook, competitionResult.Facebook);
-                socialMediaFormatter.Verify(x => x.PrefixAtSign(competition.Instagram), Times.Once);
+                _socialMediaFormatter.Verify(x => x.PrefixAtSign(competition.Instagram), Times.Once);
                 Assert.Equal("@" + competition.Instagram, competitionResult.Instagram);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(competition.YouTube), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(competition.YouTube), Times.Once);
                 Assert.Equal("https://" + competition.YouTube, competitionResult.YouTube);
-                socialMediaFormatter.Verify(x => x.PrefixAtSign(competition.Twitter), Times.Once);
+                _socialMediaFormatter.Verify(x => x.PrefixAtSign(competition.Twitter), Times.Once);
                 Assert.Equal("@" + competition.Twitter, competitionResult.Twitter);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(competition.Website), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(competition.Website), Times.Once);
                 Assert.Equal("https://" + competition.Website, competitionResult.Website);
-                sanitizer.Verify(x => x.Sanitize(originalPrivateContact));
+                _sanitizer.Verify(x => x.Sanitize(originalPrivateContact));
                 Assert.Equal(sanitisedPrivateContact, competitionResult.PrivateContactDetails);
-                sanitizer.Verify(x => x.Sanitize(originalPublicContact));
+                _sanitizer.Verify(x => x.Sanitize(originalPublicContact));
                 Assert.Equal(sanitisedPublicContact, competitionResult.PublicContactDetails);
                 Assert.Equal(competition.MemberGroupKey, competitionResult.MemberGroupKey);
                 Assert.Equal(competition.MemberGroupName, competitionResult.MemberGroupName);
@@ -279,27 +248,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 MemberGroupName = competition.MemberGroupName
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/competitions", copyCompetition.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/competitions/" + Guid.NewGuid()));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/competitions", copyCompetition.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/competitions/" + Guid.NewGuid()));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(copyCompetition);
+            _copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(copyCompetition);
 
-            var repo = new SqlServerCompetitionRepository(
-                            _databaseFixture.ConnectionFactory,
-                            Mock.Of<IAuditRepository>(),
-                            Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                            Mock.Of<ISeasonRepository>(),
-                            routeGenerator.Object,
-                            Mock.Of<IRedirectsRepository>(),
-                            Mock.Of<IHtmlSanitizer>(),
-                            copier.Object,
-                            Mock.Of<IUrlFormatter>(),
-                            Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var created = await repo.CreateCompetition(competition, Guid.NewGuid(), "Member name").ConfigureAwait(false);
 
-            copier.Verify(x => x.CreateAuditableCopy(competition), Times.Once);
+            _copier.Verify(x => x.CreateAuditableCopy(competition), Times.Once);
             Assert.Equal(copyCompetition, created);
         }
 
@@ -328,50 +285,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             };
 
             var route = "/competitions/" + Guid.NewGuid();
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute("/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(location)).Returns(auditable);
-            copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
-            var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger<SqlServerCompetitionRepository>>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            _copier.Setup(x => x.CreateAuditableCopy(location)).Returns(auditable);
+            _copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
 
-            var repo = new SqlServerCompetitionRepository(
-                        _databaseFixture.ConnectionFactory,
-                        auditRepository.Object,
-                        logger.Object,
-                        Mock.Of<ISeasonRepository>(),
-                        routeGenerator.Object,
-                        Mock.Of<IRedirectsRepository>(),
-                        Mock.Of<IHtmlSanitizer>(),
-                        copier.Object,
-                        Mock.Of<IUrlFormatter>(),
-                        Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
             var created = await repo.CreateCompetition(location, memberKey, memberName).ConfigureAwait(false);
 
-            copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerCompetitionRepository), nameof(SqlServerCompetitionRepository.CreateCompetition)));
+            _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerCompetitionRepository), nameof(SqlServerCompetitionRepository.CreateCompetition)));
         }
 
-
+#nullable disable
         [Fact]
         public async Task Update_competition_throws_ArgumentNullException_if_competition_is_null()
         {
-            var repo = new SqlServerCompetitionRepository(
-                        _databaseFixture.ConnectionFactory,
-                        Mock.Of<IAuditRepository>(),
-                        Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                        Mock.Of<ISeasonRepository>(),
-                        Mock.Of<IRouteGenerator>(),
-                        Mock.Of<IRedirectsRepository>(),
-                        Mock.Of<IHtmlSanitizer>(),
-                        Mock.Of<IStoolballEntityCopier>(),
-                        Mock.Of<IUrlFormatter>(),
-                        Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateCompetition(null, Guid.NewGuid(), "Member name").ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -379,35 +312,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         [Fact]
         public async Task Update_competition_throws_ArgumentNullException_if_memberName_is_null()
         {
-            var repo = new SqlServerCompetitionRepository(
-                        _databaseFixture.ConnectionFactory,
-                        Mock.Of<IAuditRepository>(),
-                        Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                        Mock.Of<ISeasonRepository>(),
-                        Mock.Of<IRouteGenerator>(),
-                        Mock.Of<IRedirectsRepository>(),
-                        Mock.Of<IHtmlSanitizer>(),
-                        Mock.Of<IStoolballEntityCopier>(),
-                        Mock.Of<IUrlFormatter>(),
-                        Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateCompetition(new Competition(), Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Update_competition_throws_ArgumentNullException_if_memberName_is_empty_string()
         {
-            var repo = new SqlServerCompetitionRepository(
-                          _databaseFixture.ConnectionFactory,
-                          Mock.Of<IAuditRepository>(),
-                          Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                          Mock.Of<ISeasonRepository>(),
-                          Mock.Of<IRouteGenerator>(),
-                          Mock.Of<IRedirectsRepository>(),
-                          Mock.Of<IHtmlSanitizer>(),
-                          Mock.Of<IStoolballEntityCopier>(),
-                          Mock.Of<IUrlFormatter>(),
-                          Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateCompetition(new Competition(), Guid.NewGuid(), string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
@@ -431,27 +345,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 MemberGroupName = competition.MemberGroupName
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", copyCompetition.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/competitions/" + Guid.NewGuid()));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", copyCompetition.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/competitions/" + Guid.NewGuid()));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(copyCompetition);
+            _copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(copyCompetition);
 
-            var repo = new SqlServerCompetitionRepository(
-                    _databaseFixture.ConnectionFactory,
-                    Mock.Of<IAuditRepository>(),
-                    Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                    Mock.Of<ISeasonRepository>(),
-                    routeGenerator.Object,
-                    Mock.Of<IRedirectsRepository>(),
-                    Mock.Of<IHtmlSanitizer>(),
-                    copier.Object,
-                    Mock.Of<IUrlFormatter>(),
-                    Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateCompetition(competition, Guid.NewGuid(), "Member name").ConfigureAwait(false);
 
-            copier.Verify(x => x.CreateAuditableCopy(competition), Times.Once);
+            _copier.Verify(x => x.CreateAuditableCopy(competition), Times.Once);
             Assert.Equal(copyCompetition, updated);
         }
 
@@ -492,37 +394,22 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var updatedRoute = competition.CompetitionRoute + Guid.NewGuid();
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(updatedRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(updatedRoute));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
 
-            var sanitizer = new Mock<IHtmlSanitizer>();
-            sanitizer.Setup(x => x.Sanitize(auditable.PrivateContactDetails)).Returns(sanitisedPrivateContact);
-            sanitizer.Setup(x => x.Sanitize(auditable.PublicContactDetails)).Returns(sanitisedPublicContact);
-            sanitizer.Setup(x => x.Sanitize(auditable.Introduction)).Returns(sanitisedIntro);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PrivateContactDetails)).Returns(sanitisedPrivateContact);
+            _sanitizer.Setup(x => x.Sanitize(auditable.PublicContactDetails)).Returns(sanitisedPublicContact);
+            _sanitizer.Setup(x => x.Sanitize(auditable.Introduction)).Returns(sanitisedIntro);
 
-            var urlFormatter = new Mock<IUrlFormatter>();
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Facebook)).Returns(new Uri("https://" + auditable.Facebook));
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.YouTube)).Returns(new Uri("https://" + auditable.YouTube));
-            urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Website)).Returns(new Uri("https://" + auditable.Website));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Facebook)).Returns(new Uri("https://" + auditable.Facebook));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.YouTube)).Returns(new Uri("https://" + auditable.YouTube));
+            _urlFormatter.Setup(x => x.PrefixHttpsProtocol(auditable.Website)).Returns(new Uri("https://" + auditable.Website));
 
-            var socialMediaFormatter = new Mock<ISocialMediaAccountFormatter>();
-            socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Instagram)).Returns("@" + auditable.Instagram);
-            socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Twitter)).Returns("@" + auditable.Twitter);
+            _socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Instagram)).Returns("@" + auditable.Instagram);
+            _socialMediaFormatter.Setup(x => x.PrefixAtSign(auditable.Twitter)).Returns("@" + auditable.Twitter);
 
-            var repo = new SqlServerCompetitionRepository(
-                         _databaseFixture.ConnectionFactory,
-                         Mock.Of<IAuditRepository>(),
-                         Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                         Mock.Of<ISeasonRepository>(),
-                         routeGenerator.Object,
-                         Mock.Of<IRedirectsRepository>(),
-                         sanitizer.Object,
-                         copier.Object,
-                         urlFormatter.Object,
-                         socialMediaFormatter.Object);
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateCompetition(competition, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
@@ -537,26 +424,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 Assert.NotNull(competitionResult);
 
                 Assert.Equal(auditable.PlayerType, competitionResult.PlayerType);
-                sanitizer.Verify(x => x.Sanitize(originalIntro));
+                _sanitizer.Verify(x => x.Sanitize(originalIntro));
                 Assert.Equal(sanitisedIntro, competitionResult.Introduction);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(originalFacebook), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(originalFacebook), Times.Once);
                 Assert.Equal(auditable.Facebook, competitionResult.Facebook);
                 Assert.StartsWith("https://", auditable.Facebook);
-                socialMediaFormatter.Verify(x => x.PrefixAtSign(originalInstagram), Times.Once);
+                _socialMediaFormatter.Verify(x => x.PrefixAtSign(originalInstagram), Times.Once);
                 Assert.Equal(auditable.Instagram, competitionResult.Instagram);
                 Assert.StartsWith("@", auditable.Instagram);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(originalYouTube), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(originalYouTube), Times.Once);
                 Assert.Equal(auditable.YouTube, competitionResult.YouTube);
                 Assert.StartsWith("https://", auditable.YouTube);
-                socialMediaFormatter.Verify(x => x.PrefixAtSign(originalTwitter), Times.Once);
+                _socialMediaFormatter.Verify(x => x.PrefixAtSign(originalTwitter), Times.Once);
                 Assert.Equal(auditable.Twitter, competitionResult.Twitter);
                 Assert.StartsWith("@", auditable.Twitter);
-                urlFormatter.Verify(x => x.PrefixHttpsProtocol(originalWebsite), Times.Once);
+                _urlFormatter.Verify(x => x.PrefixHttpsProtocol(originalWebsite), Times.Once);
                 Assert.Equal(auditable.Website, competitionResult.Website);
                 Assert.StartsWith("https://", auditable.Website);
-                sanitizer.Verify(x => x.Sanitize(originalPrivateContact));
+                _sanitizer.Verify(x => x.Sanitize(originalPrivateContact));
                 Assert.Equal(sanitisedPrivateContact, competitionResult.PrivateContactDetails);
-                sanitizer.Verify(x => x.Sanitize(originalPublicContact));
+                _sanitizer.Verify(x => x.Sanitize(originalPublicContact));
                 Assert.Equal(sanitisedPublicContact, competitionResult.PublicContactDetails);
                 Assert.Equal(updatedRoute, competitionResult.CompetitionRoute);
 
@@ -586,23 +473,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 currentVersionId = await connection.ExecuteScalarAsync<Guid>($"SELECT CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = @CompetitionId AND UntilDate IS NULL", auditable).ConfigureAwait(false);
             }
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(competition.CompetitionRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(competition.CompetitionRoute));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
 
-            var repo = new SqlServerCompetitionRepository(
-                         _databaseFixture.ConnectionFactory,
-                         Mock.Of<IAuditRepository>(),
-                         Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                         Mock.Of<ISeasonRepository>(),
-                         routeGenerator.Object,
-                         Mock.Of<IRedirectsRepository>(),
-                         Mock.Of<IHtmlSanitizer>(),
-                         copier.Object,
-                         Mock.Of<IUrlFormatter>(),
-                         Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateCompetition(competition, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
@@ -616,8 +491,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
                 Assert.NotEqual(currentVersionId, versionResult.competitionVersionId);
                 Assert.Equal(auditable.CompetitionName, versionResult.competitionName);
-                Assert.Equal(competition.ComparableName(), versionResult.comparableName);
-                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate.Value.Date);
+                Assert.Equal(auditable.ComparableName(), versionResult.comparableName);
+                Assert.Equal(DateTime.UtcNow.Date, versionResult.fromDate?.Date);
 
             }
         }
@@ -634,7 +509,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             };
 
             int? existingVersions = null;
-            (Guid? competitionVersionId, string competitionName, string comparableName, DateTimeOffset? fromDate) currentVersion = (null, null, null, null);
+            (Guid? competitionVersionId, string competitionName, string comparableName, DateTimeOffset? fromDate) currentVersion;
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
                 existingVersions = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.CompetitionVersion} WHERE CompetitionId = @CompetitionId", auditable).ConfigureAwait(false);
@@ -642,23 +517,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                     $"SELECT CompetitionVersionId, CompetitionName, ComparableName, FromDate FROM {Tables.CompetitionVersion} WHERE CompetitionId = @CompetitionId AND UntilDate IS NULL", auditable).ConfigureAwait(false);
             }
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(competition.CompetitionRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(competition.CompetitionRoute));
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
+            _copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
 
-            var repo = new SqlServerCompetitionRepository(
-                         _databaseFixture.ConnectionFactory,
-                         Mock.Of<IAuditRepository>(),
-                         Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                         Mock.Of<ISeasonRepository>(),
-                         routeGenerator.Object,
-                         Mock.Of<IRedirectsRepository>(),
-                         Mock.Of<IHtmlSanitizer>(),
-                         copier.Object,
-                         Mock.Of<IUrlFormatter>(),
-                         Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateCompetition(competition, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
@@ -673,7 +536,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 Assert.Equal(currentVersion.competitionVersionId, versionResult.competitionVersionId);
                 Assert.Equal(auditable.CompetitionName, versionResult.competitionName);
                 Assert.Equal(auditable.ComparableName(), versionResult.comparableName);
-                Assert.Equal(currentVersion.fromDate.Value, versionResult.fromDate.Value);
+                Assert.Equal(currentVersion.fromDate, versionResult.fromDate);
             }
         }
 
@@ -690,28 +553,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             };
 
             var updatedRoute = competition.CompetitionRoute + "-updated";
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(updatedRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
-            var redirects = new Mock<IRedirectsRepository>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(updatedRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
 
-            var repo = new SqlServerCompetitionRepository(
-                           _databaseFixture.ConnectionFactory,
-                           Mock.Of<IAuditRepository>(),
-                           Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                           Mock.Of<ISeasonRepository>(),
-                           routeGenerator.Object,
-                           redirects.Object,
-                           Mock.Of<IHtmlSanitizer>(),
-                           copier.Object,
-                           Mock.Of<IUrlFormatter>(),
-                           Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateCompetition(competition, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            routeGenerator.Verify(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>()), Times.Once);
-            redirects.Verify(x => x.InsertRedirect(competition.CompetitionRoute, updatedRoute, null, It.IsAny<IDbTransaction>()), Times.Once);
+            _routeGenerator.Verify(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>()), Times.Once);
+            _redirectsRepository.Verify(x => x.InsertRedirect(competition.CompetitionRoute, updatedRoute, null, It.IsAny<IDbTransaction>()), Times.Once);
         }
 
         [Fact]
@@ -726,23 +576,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             };
 
             var updatedRoute = competition.CompetitionRoute + "-updated";
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(updatedRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
-            var redirects = new Mock<IRedirectsRepository>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(updatedRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
 
-            var repo = new SqlServerCompetitionRepository(
-                           _databaseFixture.ConnectionFactory,
-                           Mock.Of<IAuditRepository>(),
-                           Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                           Mock.Of<ISeasonRepository>(),
-                           routeGenerator.Object,
-                           redirects.Object,
-                           Mock.Of<IHtmlSanitizer>(),
-                           copier.Object,
-                           Mock.Of<IUrlFormatter>(),
-                           Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateCompetition(competition, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
@@ -753,7 +590,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 {
                     Assert.Matches("^" + updatedRoute.Replace("/", @"\/") + @"\/[0-9]{4}(-[0-9]{2,4})?$", route);
 
-                    redirects.Verify(x => x.InsertRedirect(competition.CompetitionRoute + route.Substring(route.LastIndexOf("/", StringComparison.OrdinalIgnoreCase)), route, null, It.IsAny<IDbTransaction>()), Times.Once);
+                    _redirectsRepository.Verify(x => x.InsertRedirect(competition.CompetitionRoute + route.Substring(route.LastIndexOf("/", StringComparison.OrdinalIgnoreCase)), route, null, It.IsAny<IDbTransaction>()), Times.Once);
                 }
             }
         }
@@ -771,27 +608,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 CompetitionRoute = competition.CompetitionRoute
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(auditable.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(competition.CompetitionRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
-            var redirects = new Mock<IRedirectsRepository>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(auditable.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(competition.CompetitionRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(competition)).Returns(auditable);
 
-            var repo = new SqlServerCompetitionRepository(
-                           _databaseFixture.ConnectionFactory,
-                           Mock.Of<IAuditRepository>(),
-                           Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                           Mock.Of<ISeasonRepository>(),
-                           routeGenerator.Object,
-                           redirects.Object,
-                           Mock.Of<IHtmlSanitizer>(),
-                           copier.Object,
-                           Mock.Of<IUrlFormatter>(),
-                           Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
 
             var updated = await repo.UpdateCompetition(competition, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            redirects.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
+            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
         }
 
         [Fact]
@@ -811,33 +635,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 CompetitionName = location.CompetitionName
             };
 
-            var routeGenerator = new Mock<IRouteGenerator>();
-            routeGenerator.Setup(x => x.GenerateUniqueRoute(location.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(location.CompetitionRoute));
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(location)).Returns(auditable);
-            copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
-            var auditRepository = new Mock<IAuditRepository>();
-            var logger = new Mock<ILogger<SqlServerCompetitionRepository>>();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(location.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(location.CompetitionRoute));
+            _copier.Setup(x => x.CreateAuditableCopy(location)).Returns(auditable);
+            _copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
 
-            var repo = new SqlServerCompetitionRepository(
-                    _databaseFixture.ConnectionFactory,
-                    auditRepository.Object,
-                    logger.Object,
-                    Mock.Of<ISeasonRepository>(),
-                    routeGenerator.Object,
-                    Mock.Of<IRedirectsRepository>(),
-                    Mock.Of<IHtmlSanitizer>(),
-                    copier.Object,
-                    Mock.Of<IUrlFormatter>(),
-                    Mock.Of<ISocialMediaAccountFormatter>());
+            var repo = CreateRepository();
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
             var updated = await repo.UpdateCompetition(location, memberKey, memberName).ConfigureAwait(false);
 
-            copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerCompetitionRepository), nameof(SqlServerCompetitionRepository.UpdateCompetition)));
+            _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerCompetitionRepository), nameof(SqlServerCompetitionRepository.UpdateCompetition)));
         }
 
         [Fact]
@@ -852,15 +662,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
 
-            var copier = new Mock<IStoolballEntityCopier>();
-            copier.Setup(x => x.CreateAuditableCopy(_databaseFixture.TestData.CompetitionWithFullDetails)).Returns(new Competition
+            _copier.Setup(x => x.CreateAuditableCopy(_databaseFixture.TestData.CompetitionWithFullDetails)).Returns(new Competition
             {
-                CompetitionId = _databaseFixture.TestData.CompetitionWithFullDetails.CompetitionId,
+                CompetitionId = _databaseFixture.TestData.CompetitionWithFullDetails!.CompetitionId,
                 Seasons = _databaseFixture.TestData.CompetitionWithFullDetails.Seasons.Select(x => new Season { SeasonId = x.SeasonId }).ToList()
             });
             foreach (var season in _databaseFixture.TestData.CompetitionWithFullDetails.Seasons)
             {
-                copier.Setup(x => x.CreateAuditableCopy(season)).Returns(new Season { SeasonId = season.SeasonId });
+                _copier.Setup(x => x.CreateAuditableCopy(season)).Returns(new Season { SeasonId = season.SeasonId });
             }
 
             var seasonRepository = new SqlServerSeasonRepository(
@@ -869,20 +678,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 Mock.Of<ILogger<SqlServerSeasonRepository>>(),
                 sanitizer.Object,
                 Mock.Of<IRedirectsRepository>(),
-                copier.Object
+                _copier.Object
                 );
 
-            var competitionRepository = new SqlServerCompetitionRepository(
-                _databaseFixture.ConnectionFactory,
-                Mock.Of<IAuditRepository>(),
-                Mock.Of<ILogger<SqlServerCompetitionRepository>>(),
-                seasonRepository,
-                Mock.Of<IRouteGenerator>(),
-                Mock.Of<IRedirectsRepository>(),
-                Mock.Of<IHtmlSanitizer>(),
-                copier.Object,
-                Mock.Of<IUrlFormatter>(),
-                Mock.Of<ISocialMediaAccountFormatter>());
+            var competitionRepository = CreateRepository(seasonRepository);
 
             await competitionRepository.DeleteCompetition(_databaseFixture.TestData.CompetitionWithFullDetails, memberKey, memberName).ConfigureAwait(false);
 

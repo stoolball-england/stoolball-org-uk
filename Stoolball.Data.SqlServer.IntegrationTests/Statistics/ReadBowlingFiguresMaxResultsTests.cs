@@ -53,7 +53,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = results.SingleOrDefault(x => x.Result.BowlingFiguresId == expectedFigures.BowlingFiguresId);
                 Assert.NotNull(result);
 
-                Assert.Equal(expectedFigures.Overs, result.Result.Overs);
+                Assert.Equal(expectedFigures.Overs, result!.Result.Overs);
                 Assert.Equal(expectedFigures.Maidens, result.Result.Maidens);
                 Assert.Equal(expectedFigures.RunsConceded, result.Result.RunsConceded);
                 Assert.Equal(expectedFigures.Wickets, result.Result.Wickets);
