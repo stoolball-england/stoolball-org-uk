@@ -1,8 +1,8 @@
 # Stoolball England website
 
-[![tests](https://github.com/stoolball-england/stoolball-org-uk/actions/workflows/run-tests.yml/badge.svg)](https://github.com/stoolball-england/stoolball-org-uk/actions/workflows/run-tests.yml)
-[![coverage](https://app.codacy.com/project/badge/Coverage/853fda8557fb4c0c981ee022eb4c739e)](https://www.codacy.com/gh/stoolball-england/stoolball-org-uk/dashboard)
-[![code quality](https://app.codacy.com/project/badge/Grade/853fda8557fb4c0c981ee022eb4c739e)](https://www.codacy.com/gh/stoolball-england/stoolball-org-uk/dashboard)
+[![Tests](https://github.com/stoolball-england/stoolball-org-uk/actions/workflows/run-tests.yml/badge.svg)](https://github.com/stoolball-england/stoolball-org-uk/actions/workflows/run-tests.yml)
+[![Coverage](https://app.codacy.com/project/badge/Coverage/853fda8557fb4c0c981ee022eb4c739e)](https://www.codacy.com/gh/stoolball-england/stoolball-org-uk/dashboard)
+[![Code quality](https://app.codacy.com/project/badge/Grade/853fda8557fb4c0c981ee022eb4c739e)](https://www.codacy.com/gh/stoolball-england/stoolball-org-uk/dashboard)
 
 This is a rebuild of the Stoolball England website at www.stoolball.org.uk using .NET Framework and Umbraco Cloud.
 
