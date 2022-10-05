@@ -12,10 +12,6 @@ namespace Stoolball.Web.UnitTests.Competitions
 {
     public class CreateCompetitionControllerTests : UmbracoBaseTest
     {
-        public CreateCompetitionControllerTests() : base()
-        {
-        }
-
         private CreateCompetitionController CreateController()
         {
             return new CreateCompetitionController(

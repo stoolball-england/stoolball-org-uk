@@ -23,10 +23,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
         private readonly Mock<IEditMatchHelper> _editMatchHelper = new();
 
-        public EditKnockoutMatchControllerTests() : base()
-        {
-        }
-
         private EditKnockoutMatchController CreateController()
         {
             return new EditKnockoutMatchController(

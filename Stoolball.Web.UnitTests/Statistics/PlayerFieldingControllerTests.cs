@@ -21,10 +21,6 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IPlayerPerformanceStatisticsDataSource> _playerPerformanceDataSource = new();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumaniser = new();
 
-        public PlayerFieldingControllerTests() : base()
-        {
-        }
-
         private PlayerFieldingController CreateController()
         {
             return new PlayerFieldingController(

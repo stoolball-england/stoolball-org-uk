@@ -13,10 +13,6 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class LoginMemberControllerTests : UmbracoBaseTest
     {
-        public LoginMemberControllerTests() : base()
-        {
-        }
-
         [Fact]
         public void Index_sets_name_and_description_from_content()
         {

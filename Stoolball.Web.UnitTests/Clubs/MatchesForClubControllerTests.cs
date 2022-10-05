@@ -18,10 +18,6 @@ namespace Stoolball.Web.UnitTests.Clubs
         private readonly Mock<IMatchListingDataSource> _matchListingDataSource = new();
         private readonly Mock<IMatchFilterQueryStringParser> _matchFilterQueryStringParser = new();
 
-        public MatchesForClubControllerTests() : base()
-        {
-        }
-
         private MatchesForClubController CreateController()
         {
             return new MatchesForClubController(

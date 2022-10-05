@@ -13,10 +13,6 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class PersonalDetailsControllerTests : UmbracoBaseTest
     {
-        public PersonalDetailsControllerTests() : base()
-        {
-        }
-
         private PersonalDetailsController CreateController()
         {
             return new PersonalDetailsController(Mock.Of<ILogger<PersonalDetailsController>>(),

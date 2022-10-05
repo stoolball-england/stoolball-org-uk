@@ -19,10 +19,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IMatchDataSource> _matchDataSource = new();
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
 
-        public EditFriendlyMatchControllerTests() : base()
-        {
-        }
-
         private EditFriendlyMatchController CreateController()
         {
             return new EditFriendlyMatchController(

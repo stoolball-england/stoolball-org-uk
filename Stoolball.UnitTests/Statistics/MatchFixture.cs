@@ -60,7 +60,7 @@ namespace Stoolball.UnitTests.Statistics
                     PlayerIdentityName = "Home player identity " + (i + 1),
                     Team = homeTeam.Team
                 });
-            };
+            }
 
             for (var i = 0; i < 11; i++)
             {
@@ -75,7 +75,7 @@ namespace Stoolball.UnitTests.Statistics
                     PlayerIdentityName = "Away player identity " + (i + 12),
                     Team = awayTeam.Team
                 });
-            };
+            }
 
             var firstInningsOverSets = seedDataGenerator.CreateOverSets();
             var secondInningsOverSets = seedDataGenerator.CreateOverSets();

@@ -16,10 +16,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IMatchFilterQueryStringParser> _matchFilterQueryStringParser = new();
         private readonly Mock<IMatchFilterHumanizer> _matchFilterHumanizer = new();
 
-        public MatchesControllerTests() : base()
-        {
-        }
-
         private MatchesController CreateController()
         {
             return new MatchesController(

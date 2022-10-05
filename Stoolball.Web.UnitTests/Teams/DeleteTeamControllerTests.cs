@@ -19,10 +19,6 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<IMatchListingDataSource> _matchListingDataSource = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
 
-        public DeleteTeamControllerTests() : base()
-        {
-        }
-
         private DeleteTeamController CreateController()
         {
             return new DeleteTeamController(

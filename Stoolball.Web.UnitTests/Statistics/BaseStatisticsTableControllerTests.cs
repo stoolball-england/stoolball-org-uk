@@ -68,10 +68,6 @@ namespace Stoolball.Web.UnitTests.Statistics
             }
         }
 
-        public BaseStatisticsTableControllerTests() : base()
-        {
-        }
-
         private ConcreteControllerForTesting CreateController(int? minimumQualifyingInningsUnfiltered = null, int? minimumQualifyingInningsFiltered = null, Func<StatisticsFilter, bool>? validateFilter = null)
         {
             return new ConcreteControllerForTesting(

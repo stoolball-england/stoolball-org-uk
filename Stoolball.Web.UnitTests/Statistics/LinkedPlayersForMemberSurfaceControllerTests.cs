@@ -23,10 +23,6 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IPlayerRepository> _playerRepository = new();
         private readonly Mock<IPlayerCacheClearer> _cacheClearer = new();
 
-        public LinkedPlayersForMemberSurfaceControllerTests() : base()
-        {
-        }
-
         private LinkedPlayersForMemberSurfaceController CreateController()
         {
             return new LinkedPlayersForMemberSurfaceController(

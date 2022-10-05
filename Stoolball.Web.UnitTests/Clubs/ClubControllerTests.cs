@@ -13,9 +13,6 @@ namespace Stoolball.Web.UnitTests.Clubs
     {
         private readonly Mock<IClubDataSource> _clubDataSource = new();
 
-        public ClubControllerTests() : base()
-        {
-        }
         private ClubController CreateController()
         {
             return new ClubController(

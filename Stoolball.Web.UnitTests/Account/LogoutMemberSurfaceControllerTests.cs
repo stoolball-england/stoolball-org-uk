@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Stoolball.Web.Account;
@@ -18,10 +19,6 @@ namespace Stoolball.Web.UnitTests.Account
     public class LogoutMemberSurfaceControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IMemberSignInManager> _memberSignInManager = new Mock<IMemberSignInManager>();
-
-        public LogoutMemberSurfaceControllerTests() : base()
-        {
-        }
 
         private LogoutMemberSurfaceController CreateController()
         {
@@ -69,7 +66,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Logged_in_member_is_logged_out()
+        public async Task Logged_in_member_is_logged_out()
         {
             SetupCurrentMember(Mock.Of<IMember>());
             using (var controller = CreateController())
@@ -81,7 +78,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Logged_in_member_returns_RedirectToUmbracoPageResult()
+        public async Task Logged_in_member_returns_RedirectToUmbracoPageResult()
         {
             SetupCurrentMember(Mock.Of<IMember>());
             using (var controller = CreateController())
@@ -93,7 +90,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Logged_out_member_does_not_attempt_logout()
+        public async Task Logged_out_member_does_not_attempt_logout()
         {
             using (var controller = CreateController())
             {
@@ -104,7 +101,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Logged_out_member_returns_RedirectToUmbracoPageResult()
+        public async Task Logged_out_member_returns_RedirectToUmbracoPageResult()
         {
             using (var controller = CreateController())
             {

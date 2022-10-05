@@ -27,10 +27,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IMatchListingDataSource> _matchListingDataSource = new();
         private readonly Mock<IMatchDataSource> _matchDataSource = new();
 
-        public MatchesCalendarControllerTests() : base()
-        {
-        }
-
         private MatchesCalendarController CreateController()
         {
             return new MatchesCalendarController(

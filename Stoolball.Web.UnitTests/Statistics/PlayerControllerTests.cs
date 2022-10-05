@@ -20,10 +20,6 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IMemberManager> _memberManager = new();
         private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
 
-        public PlayerControllerTests() : base()
-        {
-        }
-
         private PlayerController CreateController()
         {
             return new PlayerController(

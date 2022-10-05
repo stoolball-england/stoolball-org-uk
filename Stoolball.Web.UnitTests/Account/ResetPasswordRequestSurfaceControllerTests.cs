@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Stoolball.Email;
@@ -112,7 +113,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Sets_name_and_description_from_content()
+        public async Task Sets_name_and_description_from_content()
         {
             using (var controller = CreateController())
             {
@@ -125,7 +126,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_ModelState_sets_email_from_form_data_and_redisplays_form()
+        public async Task Invalid_ModelState_sets_email_from_form_data_and_redisplays_form()
         {
             using (var controller = CreateController())
             {
@@ -139,7 +140,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_ModelState_returns_ResetPassword_ModelsBuilder_model()
+        public async Task Invalid_ModelState_returns_ResetPassword_ModelsBuilder_model()
         {
             using (var controller = CreateController())
             {
@@ -152,7 +153,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_ModelState_returns_ResetPasswordRequest_view()
+        public async Task Invalid_ModelState_returns_ResetPasswordRequest_view()
         {
             using (var controller = CreateController())
             {
@@ -165,7 +166,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_ModelState_adds_email_error()
+        public async Task Invalid_ModelState_adds_email_error()
         {
             using (var controller = CreateController())
             {
@@ -179,7 +180,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_ModelState_does_not_save_or_email()
+        public async Task Invalid_ModelState_does_not_save_or_email()
         {
             using (var controller = CreateController())
             {
@@ -193,7 +194,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_form_data_returns_ResetPasswordRequest_view()
+        public async Task Null_form_data_returns_ResetPasswordRequest_view()
         {
             using (var controller = CreateController())
             {
@@ -205,7 +206,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Null_form_data_redisplays_form()
+        public async Task Null_form_data_redisplays_form()
         {
             using (var controller = CreateController())
             {
@@ -216,7 +217,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_form_data_adds_email_error()
+        public async Task Null_form_data_adds_email_error()
         {
             using (var controller = CreateController())
             {
@@ -228,7 +229,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_form_data_does_not_save_or_email()
+        public async Task Null_form_data_does_not_save_or_email()
         {
             using (var controller = CreateController())
             {
@@ -240,7 +241,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Approved_member_saves_reset_token()
+        public async Task Approved_member_saves_reset_token()
         {
             using (var controller = CreateController())
             {
@@ -258,7 +259,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Approved_member_sends_reset_password_email()
+        public async Task Approved_member_sends_reset_password_email()
         {
             using (var controller = CreateController())
             {
@@ -291,7 +292,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Approved_member_request_is_logged()
+        public async Task Approved_member_request_is_logged()
         {
             using (var controller = CreateController())
             {
@@ -306,7 +307,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Approved_member_returns_ResetPassword_ModelsBuilder_model()
+        public async Task Approved_member_returns_ResetPassword_ModelsBuilder_model()
         {
             using (var controller = CreateController())
             {
@@ -321,7 +322,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Approved_member_sets_email_from_form_data_and_displays_confirmation()
+        public async Task Approved_member_sets_email_from_form_data_and_displays_confirmation()
         {
             using (var controller = CreateController())
             {
@@ -337,7 +338,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Approved_member_returns_ResetPasswordRequest_view()
+        public async Task Approved_member_returns_ResetPasswordRequest_view()
         {
             using (var controller = CreateController())
             {
@@ -353,7 +354,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Unapproved_member_saves_approval_token()
+        public async Task Unapproved_member_saves_approval_token()
         {
             using (var controller = CreateController())
             {
@@ -371,7 +372,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Unapproved_member_sends_approve_member_email()
+        public async Task Unapproved_member_sends_approve_member_email()
         {
             using (var controller = CreateController())
             {
@@ -405,7 +406,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Unapproved_member_request_is_logged()
+        public async Task Unapproved_member_request_is_logged()
         {
             using (var controller = CreateController())
             {
@@ -420,7 +421,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Unapproved_member_returns_ResetPassword_ModelsBuilder_model()
+        public async Task Unapproved_member_returns_ResetPassword_ModelsBuilder_model()
         {
             using (var controller = CreateController())
             {
@@ -436,7 +437,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Unapproved_member_sets_email_from_form_data_and_displays_confirmation()
+        public async Task Unapproved_member_sets_email_from_form_data_and_displays_confirmation()
         {
             using (var controller = CreateController())
             {
@@ -452,7 +453,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Unapproved_member_returns_ResetPasswordRequest_view()
+        public async Task Unapproved_member_returns_ResetPasswordRequest_view()
         {
             using (var controller = CreateController())
             {
@@ -468,7 +469,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Member_not_found_sends_create_member_email()
+        public async Task Member_not_found_sends_create_member_email()
         {
             using (var controller = CreateController())
             {
@@ -501,7 +502,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Member_not_found_returns_ResetPassword_ModelsBuilder_model()
+        public async Task Member_not_found_returns_ResetPassword_ModelsBuilder_model()
         {
             using (var controller = CreateController())
             {
@@ -518,7 +519,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Member_not_found_sets_email_from_form_data_and_displays_confirmation()
+        public async Task Member_not_found_sets_email_from_form_data_and_displays_confirmation()
         {
             using (var controller = CreateController())
             {
@@ -536,7 +537,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Member_not_found_returns_ResetPasswordRequest_view()
+        public async Task Member_not_found_returns_ResetPasswordRequest_view()
         {
             using (var controller = CreateController())
             {
@@ -553,7 +554,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Member_not_found_does_not_save()
+        public async Task Member_not_found_does_not_save()
         {
             using (var controller = CreateController())
             {

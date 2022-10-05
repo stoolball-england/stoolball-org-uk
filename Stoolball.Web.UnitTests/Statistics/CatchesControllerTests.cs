@@ -19,10 +19,6 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IPlayerSummaryStatisticsDataSource> _playerSummaryStatisticsDataSource = new();
         private readonly Mock<IPlayerPerformanceStatisticsDataSource> _playerPerformanceStatisticsDataSource = new();
 
-        public CatchesControllerTests() : base()
-        {
-        }
-
         private CatchesController CreateController()
         {
             return new CatchesController(

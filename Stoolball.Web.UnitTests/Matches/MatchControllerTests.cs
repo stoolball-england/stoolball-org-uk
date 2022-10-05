@@ -22,10 +22,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IMatchDataSource> _matchDataSource = new();
         private readonly Mock<ICommentsDataSource<Stoolball.Matches.Match>> _commentsDataSource = new();
 
-        public MatchControllerTests() : base()
-        {
-        }
-
         private MatchController CreateController()
         {
             return new MatchController(

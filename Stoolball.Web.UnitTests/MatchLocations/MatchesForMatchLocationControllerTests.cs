@@ -20,10 +20,6 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         private readonly Mock<IMatchFilterQueryStringParser> _matchFilterQueryStringParser = new();
         private readonly Mock<IMatchFilterFactory> _matchFilterFactory = new();
 
-        public MatchesForMatchLocationControllerTests() : base()
-        {
-        }
-
         private MatchesForMatchLocationController CreateController()
         {
             return new MatchesForMatchLocationController(

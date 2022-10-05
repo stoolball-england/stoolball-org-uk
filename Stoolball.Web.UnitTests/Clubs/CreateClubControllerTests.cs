@@ -11,10 +11,6 @@ namespace Stoolball.Web.UnitTests.Clubs
 {
     public class CreateClubControllerTests : UmbracoBaseTest
     {
-        public CreateClubControllerTests() : base()
-        {
-        }
-
         private CreateClubController CreateController()
         {
             return new CreateClubController(

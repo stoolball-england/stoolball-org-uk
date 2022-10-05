@@ -18,10 +18,6 @@ namespace Stoolball.Web.UnitTests.Matches
     {
         private readonly Mock<IMatchDataSource> _matchDataSource = new();
 
-        public EditCloseOfPlayControllerTests() : base()
-        {
-        }
-
         private EditCloseOfPlayController CreateController()
         {
             return new EditCloseOfPlayController(

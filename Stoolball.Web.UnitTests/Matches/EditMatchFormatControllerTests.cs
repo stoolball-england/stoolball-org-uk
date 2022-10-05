@@ -17,10 +17,6 @@ namespace Stoolball.Web.UnitTests.Matches
     {
         private readonly Mock<IMatchDataSource> _matchDataSource = new();
 
-        public EditMatchFormatControllerTests() : base()
-        {
-        }
-
         private EditMatchFormatController CreateController()
         {
             return new EditMatchFormatController(

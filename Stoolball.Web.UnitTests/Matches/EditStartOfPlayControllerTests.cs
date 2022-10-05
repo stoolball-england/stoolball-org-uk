@@ -24,10 +24,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
         private readonly Mock<IEditMatchHelper> _editMatchHelper = new();
 
-        public EditStartOfPlayControllerTests() : base()
-        {
-        }
-
         private EditStartOfPlayController CreateController()
         {
             return new EditStartOfPlayController(

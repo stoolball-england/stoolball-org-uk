@@ -13,10 +13,6 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class EmailAddressControllerTests : UmbracoBaseTest
     {
-        public EmailAddressControllerTests() : base()
-        {
-        }
-
         private EmailAddressController CreateController()
         {
             return new EmailAddressController(Mock.Of<ILogger<EmailAddressController>>(),

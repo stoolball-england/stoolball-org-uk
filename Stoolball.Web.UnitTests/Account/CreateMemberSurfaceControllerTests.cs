@@ -45,10 +45,6 @@ namespace Stoolball.Web.UnitTests.Account
         private const string MEMBER_EXISTS_EMAIL_SUBJECT = "Member exists";
         private const string MEMBER_EXISTS_EMAIL_BODY = "Member exists body";
 
-        public CreateMemberSurfaceControllerTests() : base()
-        {
-        }
-
         private CreateMemberSurfaceController CreateController(RegisterModel model, bool createMemberSucceeds = false, string? emailFieldError = null)
         {
             var controller = new CreateMemberSurfaceController(UmbracoContextAccessor.Object,
@@ -124,7 +120,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_ModelState_returns_UmbracoPageResult_and_does_not_attempt_to_create_member()
+        public async Task Invalid_ModelState_returns_UmbracoPageResult_and_does_not_attempt_to_create_member()
         {
             var model = new RegisterModel();
             using (var controller = CreateController(model, createMemberSucceeds: true))
@@ -139,7 +135,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_model_returns_UmbracoPageResult_and_does_not_attempt_to_create_member()
+        public async Task Null_model_returns_UmbracoPageResult_and_does_not_attempt_to_create_member()
         {
 #nullable disable
             RegisterModel model = null;
@@ -154,7 +150,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void New_member_returns_RedirectToUmbracoPageResult()
+        public async Task New_member_returns_RedirectToUmbracoPageResult()
         {
             var model = new RegisterModel();
             model.Email = "test@example.org";
@@ -172,7 +168,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void New_member_saves_email_and_token()
+        public async Task New_member_saves_email_and_token()
         {
             var model = new RegisterModel { Email = "test@example.org" };
             var token = Guid.NewGuid().ToString();
@@ -197,7 +193,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void New_member_is_assigned_to_All_Members()
+        public async Task New_member_is_assigned_to_All_Members()
         {
             var model = new RegisterModel();
             model.Email = "test@example.org";
@@ -218,7 +214,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void New_member_is_not_logged_in_automatically()
+        public async Task New_member_is_not_logged_in_automatically()
         {
             var model = new RegisterModel { Email = "test@example.org" };
             var member = new Mock<IMember>();
@@ -238,7 +234,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void New_member_sends_Approve_Member_email()
+        public async Task New_member_sends_Approve_Member_email()
         {
             var model = new RegisterModel();
             model.Name = "Member name";
@@ -278,7 +274,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Creating_a_new_member_is_logged()
+        public async Task Creating_a_new_member_is_logged()
         {
             var model = new RegisterModel();
             model.Email = "test@example.org";
@@ -301,7 +297,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Fail_to_create_member_does_not_save_additional_properties()
+        public async Task Fail_to_create_member_does_not_save_additional_properties()
         {
             var model = new RegisterModel();
             model.Email = "test@example.org";
@@ -319,7 +315,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Duplicate_email_sends_Member_Exists_email()
+        public async Task Duplicate_email_sends_Member_Exists_email()
         {
             var model = new RegisterModel();
             model.Name = "Member name";
@@ -352,7 +348,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Duplicate_email_returns_RedirectToUmbracoPageResult()
+        public async Task Duplicate_email_returns_RedirectToUmbracoPageResult()
         {
             var model = new RegisterModel { Email = "test@example.org" };
 
@@ -368,7 +364,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Duplicate_email_sets_ViewData_FormSuccess_to_true()
+        public async Task Duplicate_email_sets_ViewData_FormSuccess_to_true()
         {
             var model = new RegisterModel { Email = "test@example.org" };
 
@@ -384,7 +380,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Email_matching_requested_email_within_expiry_period_sends_Member_Exists_email()
+        public async Task Email_matching_requested_email_within_expiry_period_sends_Member_Exists_email()
         {
             var model = new RegisterModel();
             model.Name = "Member name";
@@ -422,7 +418,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Email_matching_requested_email_within_expiry_period_returns_RedirectToUmbracoPageResult()
+        public async Task Email_matching_requested_email_within_expiry_period_returns_RedirectToUmbracoPageResult()
         {
             var model = new RegisterModel { Email = "test@example.org" };
 
@@ -444,7 +440,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Email_matching_requested_email_within_expiry_period_sets_ViewData_FormSuccess_to_true()
+        public async Task Email_matching_requested_email_within_expiry_period_sets_ViewData_FormSuccess_to_true()
         {
             var model = new RegisterModel { Email = "test@example.org" };
 
@@ -466,7 +462,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Email_matching_requested_email_within_expiry_period_does_not_attempt_to_create_member()
+        public async Task Email_matching_requested_email_within_expiry_period_does_not_attempt_to_create_member()
         {
             var model = new RegisterModel { Email = "test@example.org" };
 
@@ -489,7 +485,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Email_matching_requested_email_past_expiry_period_attempts_to_create_member()
+        public async Task Email_matching_requested_email_past_expiry_period_attempts_to_create_member()
         {
             var model = new RegisterModel();
 
@@ -510,7 +506,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Other_error_is_added_to_ModelState_and_returns_baseResult()
+        public async Task Other_error_is_added_to_ModelState_and_returns_baseResult()
         {
             var model = new RegisterModel();
             using (var controller = CreateController(model, createMemberSucceeds: false, emailFieldError: "Some other error."))
@@ -524,7 +520,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Email_in_TempData_for_view()
+        public async Task Email_in_TempData_for_view()
         {
             var model = new RegisterModel();
             model.Email = "test@example.org";

@@ -2,8 +2,8 @@
 {
     public static class IntegrationTestConstants
     {
-        public const string DataSourceIntegrationTestCollection = "SqlServerDataSource";
-        public const string TestDataIntegrationTestCollection = "SqlServerTestData";
-        public const string StatisticsMaxResultsDataSourceIntegrationTestCollection = "SqlServerStatisticsMaxResultsDataSource";
+        public static readonly string DataSourceIntegrationTestCollection = "SqlServerDataSource";
+        public static readonly string TestDataIntegrationTestCollection = "SqlServerTestData";
+        public static readonly string StatisticsMaxResultsDataSourceIntegrationTestCollection = "SqlServerStatisticsMaxResultsDataSource";
     }
 }

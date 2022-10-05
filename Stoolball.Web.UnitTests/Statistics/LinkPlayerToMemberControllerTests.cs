@@ -14,10 +14,6 @@ namespace Stoolball.Web.UnitTests.Statistics
     {
         private readonly Mock<IPlayerSummaryViewModelFactory> _viewModelFactory = new();
 
-        public LinkPlayerToMemberControllerTests() : base()
-        {
-        }
-
         private LinkPlayerToMemberController CreateController()
         {
             return new LinkPlayerToMemberController(

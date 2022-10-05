@@ -17,9 +17,6 @@ namespace Stoolball.Web.UnitTests.Teams
     {
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
-        public PlayersForTeamControllerTests() : base()
-        {
-        }
 
         private PlayersForTeamController CreateController()
         {

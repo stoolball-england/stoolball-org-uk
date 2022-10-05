@@ -15,10 +15,6 @@ namespace Stoolball.Web.UnitTests.Competitions
     {
         private readonly Mock<ICompetitionDataSource> _competitionDataSource = new();
 
-        public CreateSeasonControllerTests() : base()
-        {
-        }
-
         private CreateSeasonController CreateController()
         {
             return new CreateSeasonController(

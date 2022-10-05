@@ -89,7 +89,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_request_updates_name_from_model_and_saves()
+        public async Task Valid_request_updates_name_from_model_and_saves()
         {
             var model = new PersonalDetailsFormData { Name = "Requested name" };
             using (var controller = CreateController())
@@ -102,7 +102,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_request_logs_with_original_member_name()
+        public async Task Valid_request_logs_with_original_member_name()
         {
             var model = new PersonalDetailsFormData { Name = "Requested name" };
             using (var controller = CreateController())
@@ -114,7 +114,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_request_sets_TempData_for_view()
+        public async Task Valid_request_sets_TempData_for_view()
         {
             var model = new PersonalDetailsFormData();
             using (var controller = CreateController())
@@ -126,7 +126,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_request_returns_RedirectToUmbracoPageResult()
+        public async Task Valid_request_returns_RedirectToUmbracoPageResult()
         {
             var model = new PersonalDetailsFormData();
             using (var controller = CreateController())
@@ -138,7 +138,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_model_does_not_save_or_set_TempData()
+        public async Task Invalid_model_does_not_save_or_set_TempData()
         {
             var model = new PersonalDetailsFormData();
             using (var controller = CreateController())
@@ -152,7 +152,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_model_returns_UmbracoPageResult()
+        public async Task Invalid_model_returns_UmbracoPageResult()
         {
             var model = new PersonalDetailsFormData();
             using (var controller = CreateController())
@@ -165,7 +165,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_model_does_not_save_or_set_TempData()
+        public async Task Null_model_does_not_save_or_set_TempData()
         {
             using (var controller = CreateController())
             {
@@ -177,7 +177,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_model_returns_UmbracoPageResult()
+        public async Task Null_model_returns_UmbracoPageResult()
         {
             using (var controller = CreateController())
             {

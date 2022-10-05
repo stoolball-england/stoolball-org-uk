@@ -22,10 +22,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<ICreateMatchSeasonSelector> _createMatchSeasonSelector = new();
         private readonly Mock<IEditMatchHelper> _editMatchHelper = new();
 
-        public CreateFriendlyMatchControllerTests() : base()
-        {
-        }
-
         private CreateFriendlyMatchController CreateController()
         {
             return new CreateFriendlyMatchController(

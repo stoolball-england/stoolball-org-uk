@@ -14,10 +14,6 @@ namespace Stoolball.Web.UnitTests.Teams
     {
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
 
-        public TeamActionsControllerTests() : base()
-        {
-        }
-
         private TeamActionsController CreateController()
         {
             return new TeamActionsController(

@@ -24,10 +24,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<ICreateMatchSeasonSelector> _createMatchSeasonSelector = new();
         private readonly Mock<IEditMatchHelper> _editMatchHelper = new();
 
-        public CreateLeagueMatchControllerTests() : base()
-        {
-        }
-
         private CreateLeagueMatchController CreateController()
         {
             return new CreateLeagueMatchController(

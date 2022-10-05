@@ -14,9 +14,6 @@ namespace Stoolball.Web.UnitTests.Competitions
     public class EditSeasonResultsTableControllerTests : UmbracoBaseTest
     {
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
-        public EditSeasonResultsTableControllerTests() : base()
-        {
-        }
 
         private EditSeasonResultsTableController CreateController()
         {

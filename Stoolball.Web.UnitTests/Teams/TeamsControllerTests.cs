@@ -19,10 +19,6 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<ITeamListingDataSource> _teamDataSource = new();
         private readonly Mock<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>> _listingsModelBuilder = new();
 
-        public TeamsControllerTests() : base()
-        {
-        }
-
         private TeamsController CreateController()
         {
             return new TeamsController(

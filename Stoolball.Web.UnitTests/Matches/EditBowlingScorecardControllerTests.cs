@@ -21,10 +21,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IMatchDataSource> _matchDataSource = new();
         private readonly Mock<IMatchInningsUrlParser> _urlParser = new();
 
-        public EditBowlingScorecardControllerTests() : base()
-        {
-        }
-
         private EditBowlingScorecardController CreateController()
         {
             return new EditBowlingScorecardController(

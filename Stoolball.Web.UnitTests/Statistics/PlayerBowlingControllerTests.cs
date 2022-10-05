@@ -19,10 +19,6 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumaniser = new();
 
-        public PlayerBowlingControllerTests() : base()
-        {
-        }
-
         private PlayerBowlingController CreateController()
         {
             return new PlayerBowlingController(

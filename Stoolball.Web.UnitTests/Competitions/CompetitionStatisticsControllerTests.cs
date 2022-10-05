@@ -20,10 +20,6 @@ namespace Stoolball.Web.UnitTests.Competitions
         private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
         private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new();
 
-        public CompetitionStatisticsControllerTests() : base()
-        {
-        }
-
         private CompetitionStatisticsController CreateController()
         {
             return new CompetitionStatisticsController(

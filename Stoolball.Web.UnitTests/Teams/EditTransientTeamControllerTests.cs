@@ -19,10 +19,6 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
         private readonly Mock<IMatchListingDataSource> _matchDataSource = new();
 
-        public EditTransientTeamControllerTests() : base()
-        {
-        }
-
         private EditTransientTeamController CreateController()
         {
             return new EditTransientTeamController(

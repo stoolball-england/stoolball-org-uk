@@ -15,10 +15,6 @@ namespace Stoolball.Web.UnitTests.Matches
     {
         private readonly Mock<IMatchDataSource> _matchDataSource = new();
 
-        public MatchActionsControllerTests() : base()
-        {
-        }
-
         private MatchActionsController CreateController()
         {
             return new MatchActionsController(

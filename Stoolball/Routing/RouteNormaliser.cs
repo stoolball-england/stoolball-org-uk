@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Stoolball.Routing
@@ -58,14 +59,16 @@ namespace Stoolball.Routing
                 }
 
 
-                var entityRoute = string.Empty;
+                var entityRoute = new StringBuilder();
                 for (var i = 1; i < splitRoute.Length; i++)
                 {
-                    if (entityRoute.Length > 0) { entityRoute += "/"; }
-                    entityRoute += splitRoute[i];
-                    entityRoute = Path.ChangeExtension(entityRoute, string.Empty).TrimEnd('.');
+                    if (entityRoute.Length > 0) { entityRoute.Append("/"); }
+                    entityRoute.Append(splitRoute[i]);
+                    var withNewExtension = Path.ChangeExtension(entityRoute.ToString(), string.Empty).TrimEnd('.');
+                    entityRoute.Clear();
+                    entityRoute.Append(withNewExtension);
 
-                    if (Regex.IsMatch(entityRoute, entityRouteRegex))
+                    if (Regex.IsMatch(entityRoute.ToString(), entityRouteRegex))
                     {
                         return $"/{normalisedPrefix}/{entityRoute}";
                     }

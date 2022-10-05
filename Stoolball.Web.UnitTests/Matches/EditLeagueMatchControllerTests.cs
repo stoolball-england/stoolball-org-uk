@@ -25,10 +25,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IAuthorizationPolicy<Stoolball.Matches.Match>> _matchAuthorizationPolicy = new();
         private readonly Mock<IAuthorizationPolicy<Competition>> _competitionAuthorizationPolicy = new();
 
-        public EditLeagueMatchControllerTests() : base()
-        {
-        }
-
         private EditLeagueMatchController CreateController()
         {
             return new EditLeagueMatchController(

@@ -14,10 +14,6 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class LogoutMemberControllerTests : UmbracoBaseTest
     {
-        public LogoutMemberControllerTests() : base()
-        {
-        }
-
         [Fact]
         public void Index_sets_name_and_description_from_content()
         {

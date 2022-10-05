@@ -13,9 +13,6 @@ namespace Stoolball.Web.UnitTests.Account
 {
     public class MyAccountControllerTests : UmbracoBaseTest
     {
-        public MyAccountControllerTests() : base()
-        {
-        }
         private MyAccountController CreateController()
         {
             return new MyAccountController(

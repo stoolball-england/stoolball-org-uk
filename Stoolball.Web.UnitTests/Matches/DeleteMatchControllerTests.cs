@@ -21,10 +21,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<IPlayerIdentityFinder> _playerIdentityFinder = new();
         private readonly Mock<ICommentsDataSource<Stoolball.Matches.Match>> _commentsDataSource = new();
 
-        public DeleteMatchControllerTests() : base()
-        {
-        }
-
         private DeleteMatchController CreateController()
         {
             return new DeleteMatchController(

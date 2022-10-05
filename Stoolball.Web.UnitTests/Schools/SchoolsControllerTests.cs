@@ -21,10 +21,6 @@ namespace Stoolball.Web.UnitTests.Schools
         private readonly Mock<ISchoolDataSource> _schoolDataSource = new();
         private readonly Mock<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>> _listingsBuilder = new();
 
-        public SchoolsControllerTests() : base()
-        {
-        }
-
         private SchoolsController CreateController()
         {
             return new SchoolsController(

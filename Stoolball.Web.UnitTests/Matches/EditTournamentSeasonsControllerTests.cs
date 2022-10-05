@@ -20,10 +20,6 @@ namespace Stoolball.Web.UnitTests.Matches
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
         private readonly Mock<ISeasonEstimator> _seasonEstimator = new();
 
-        public EditTournamentSeasonsControllerTests() : base()
-        {
-        }
-
         private EditTournamentSeasonsController CreateController()
         {
             return new EditTournamentSeasonsController(

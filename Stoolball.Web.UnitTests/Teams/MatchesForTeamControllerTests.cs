@@ -23,10 +23,6 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<ICreateMatchSeasonSelector> _createMatchSeasonSelector = new();
         private readonly Mock<IMatchFilterQueryStringParser> _matchFilterQueryStringParser = new();
 
-        public MatchesForTeamControllerTests() : base()
-        {
-        }
-
         private MatchesForTeamController CreateController()
         {
             return new MatchesForTeamController(

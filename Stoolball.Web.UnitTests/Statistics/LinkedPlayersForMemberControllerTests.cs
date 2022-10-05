@@ -16,10 +16,6 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IMemberManager> _memberManager = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
 
-        public LinkedPlayersForMemberControllerTests() : base()
-        {
-        }
-
         private LinkedPlayersForMemberController CreateController()
         {
             return new LinkedPlayersForMemberController(

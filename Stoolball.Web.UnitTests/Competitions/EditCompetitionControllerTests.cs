@@ -14,10 +14,6 @@ namespace Stoolball.Web.UnitTests.Competitions
     {
         private readonly Mock<ICompetitionDataSource> _competitionDataSource = new();
 
-        public EditCompetitionControllerTests() : base()
-        {
-        }
-
         private EditCompetitionController CreateController()
         {
             return new EditCompetitionController(

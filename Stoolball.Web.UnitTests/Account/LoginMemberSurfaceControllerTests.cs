@@ -123,7 +123,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_login_returns_RedirectResult()
+        public async Task Valid_login_returns_RedirectResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -146,7 +146,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Invalid_password_returns_UmbracoPageResult()
+        public async Task Invalid_password_returns_UmbracoPageResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "invalid-password", RedirectUrl = "/" };
 
@@ -167,7 +167,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_username_returns_UmbracoPageResult()
+        public async Task Invalid_username_returns_UmbracoPageResult()
         {
             var model = new LoginModel { Username = "invalid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -185,7 +185,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Locked_out_returns_UmbracoPageResult()
+        public async Task Locked_out_returns_UmbracoPageResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -205,7 +205,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Locked_out_adds_ModelError()
+        public async Task Locked_out_adds_ModelError()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -225,7 +225,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Locked_out_calls_BlockedLoginResult()
+        public async Task Locked_out_calls_BlockedLoginResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -245,7 +245,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Not_approved_returns_UmbracoPageResult()
+        public async Task Not_approved_returns_UmbracoPageResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -265,7 +265,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Not_approved_adds_ModelError()
+        public async Task Not_approved_adds_ModelError()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -285,7 +285,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Not_approved_calls_BlockedLoginResult()
+        public async Task Not_approved_calls_BlockedLoginResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -305,7 +305,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Blocked_returns_UmbracoPageResult()
+        public async Task Blocked_returns_UmbracoPageResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -325,7 +325,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Blocked_adds_ModelError()
+        public async Task Blocked_adds_ModelError()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -345,7 +345,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Blocked_calls_BlockedLoginResult()
+        public async Task Blocked_calls_BlockedLoginResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "/" };
 
@@ -365,7 +365,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_login_via_StoolballRouter_returns_RedirectResult()
+        public async Task Valid_login_via_StoolballRouter_returns_RedirectResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
 
@@ -388,7 +388,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_login_via_StoolballRouter_returns_URL_from_model()
+        public async Task Valid_login_via_StoolballRouter_returns_URL_from_model()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
 
@@ -410,7 +410,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Invalid_password_via_StoolballRouter_returns_UmbracoPageResult()
+        public async Task Invalid_password_via_StoolballRouter_returns_UmbracoPageResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "invalid-password", RedirectUrl = "https://localhost/some/page" };
 
@@ -431,7 +431,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_username_via_StoolballRouter_returns_UmbracoPageResult()
+        public async Task Invalid_username_via_StoolballRouter_returns_UmbracoPageResult()
         {
             var model = new LoginModel { Username = "invalid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
 
@@ -450,7 +450,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Locked_out_via_StoolballRouter_returns_UmbracoPageResult()
+        public async Task Locked_out_via_StoolballRouter_returns_UmbracoPageResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
 
@@ -471,7 +471,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Locked_out_via_StoolballRouter_adds_ModelError()
+        public async Task Locked_out_via_StoolballRouter_adds_ModelError()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
 
@@ -492,7 +492,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Not_approved_via_StoolballRouter_returns_UmbracoPageResult()
+        public async Task Not_approved_via_StoolballRouter_returns_UmbracoPageResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
 
@@ -512,7 +512,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Not_approved_via_StoolballRouter_addsModelError()
+        public async Task Not_approved_via_StoolballRouter_addsModelError()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
 
@@ -533,7 +533,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Blocked_via_StoolballRouter_returns_UmbracoPageResult()
+        public async Task Blocked_via_StoolballRouter_returns_UmbracoPageResult()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
 
@@ -553,7 +553,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Blocked_via_StoolballRouter_adds_ModelError()
+        public async Task Blocked_via_StoolballRouter_adds_ModelError()
         {
             var model = new LoginModel { Username = "valid@example.org", Password = "password", RedirectUrl = "https://localhost/some/page" };
 

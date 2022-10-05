@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -130,7 +131,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Sets_name_and_description_from_content()
+        public async Task Sets_name_and_description_from_content()
         {
             using (var controller = CreateController())
             {
@@ -143,7 +144,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_ModelState_returns_ResetPassword_ModelsBuilder_model()
+        public async Task Invalid_ModelState_returns_ResetPassword_ModelsBuilder_model()
         {
             using (var controller = CreateController())
             {
@@ -156,7 +157,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_ModelState_returns_ResetPassword_view_and_redisplays_form()
+        public async Task Invalid_ModelState_returns_ResetPassword_view_and_redisplays_form()
         {
             using (var controller = CreateController())
             {
@@ -170,7 +171,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_ModelState_does_not_save()
+        public async Task Invalid_ModelState_does_not_save()
         {
             using (var controller = CreateController())
             {
@@ -184,7 +185,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_form_data_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
+        public async Task Null_form_data_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
         {
             using (var controller = CreateController())
             {
@@ -196,7 +197,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_form_data_returns_ResetPasswordComplete_view()
+        public async Task Null_form_data_returns_ResetPasswordComplete_view()
         {
             using (var controller = CreateController())
             {
@@ -207,7 +208,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_form_data_does_not_save()
+        public async Task Null_form_data_does_not_save()
         {
             using (var controller = CreateController())
             {
@@ -218,7 +219,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_token_is_logged()
+        public async Task Invalid_token_is_logged()
         {
             using (var controller = CreateController())
             {
@@ -231,7 +232,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_token_returns_ResetPasswordComplete_view()
+        public async Task Invalid_token_returns_ResetPasswordComplete_view()
         {
             using (var controller = CreateController())
             {
@@ -244,7 +245,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_token_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
+        public async Task Invalid_token_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
         {
             using (var controller = CreateController())
             {
@@ -258,7 +259,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_token_does_not_save()
+        public async Task Invalid_token_does_not_save()
         {
             using (var controller = CreateController())
             {
@@ -271,7 +272,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Member_not_found_is_logged()
+        public async Task Member_not_found_is_logged()
         {
             using (var controller = CreateController())
             {
@@ -288,7 +289,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Member_not_found_returns_ResetPasswordComplete_view()
+        public async Task Member_not_found_returns_ResetPasswordComplete_view()
         {
             using (var controller = CreateController())
             {
@@ -306,7 +307,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Member_not_found_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
+        public async Task Member_not_found_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
         {
             using (var controller = CreateController())
             {
@@ -324,7 +325,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Member_not_found_does_not_save()
+        public async Task Member_not_found_does_not_save()
         {
             using (var controller = CreateController())
             {
@@ -341,7 +342,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Mismatched_token_is_logged()
+        public async Task Mismatched_token_is_logged()
         {
             using (var controller = CreateController())
             {
@@ -357,7 +358,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Mismatched_token_returns_ResetPasswordComplete_view()
+        public async Task Mismatched_token_returns_ResetPasswordComplete_view()
         {
             using (var controller = CreateController())
             {
@@ -373,7 +374,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Mismatched_token_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
+        public async Task Mismatched_token_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
         {
             using (var controller = CreateController())
             {
@@ -390,7 +391,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Mismatched_token_does_not_save()
+        public async Task Mismatched_token_does_not_save()
         {
             using (var controller = CreateController())
             {
@@ -406,7 +407,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Expired_token_is_logged()
+        public async Task Expired_token_is_logged()
         {
             using (var controller = CreateController())
             {
@@ -419,7 +420,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Expired_token_returns_ResetPasswordComplete_view()
+        public async Task Expired_token_returns_ResetPasswordComplete_view()
         {
             using (var controller = CreateController())
             {
@@ -432,7 +433,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Expired_token_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
+        public async Task Expired_token_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
         {
             using (var controller = CreateController())
             {
@@ -446,7 +447,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Expired_token_does_not_save()
+        public async Task Expired_token_does_not_save()
         {
             using (var controller = CreateController())
             {
@@ -468,7 +469,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_token_returns_RedirectToUmbracoPageResult()
+        public async Task Valid_token_returns_RedirectToUmbracoPageResult()
         {
             using (var controller = CreateController())
             {
@@ -482,7 +483,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_token_resets_LockedOut_status()
+        public async Task Valid_token_resets_LockedOut_status()
         {
             using (var controller = CreateController())
             {
@@ -496,7 +497,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_token_resets_expiry()
+        public async Task Valid_token_resets_expiry()
         {
             using (var controller = CreateController())
             {
@@ -512,7 +513,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_token_resets_password()
+        public async Task Valid_token_resets_password()
         {
             using (var controller = CreateController())
             {
@@ -527,7 +528,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_token_is_logged()
+        public async Task Valid_token_is_logged()
         {
             using (var controller = CreateController())
             {
@@ -541,7 +542,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_token_attempts_login()
+        public async Task Valid_token_attempts_login()
         {
             using (var controller = CreateController())
             {
@@ -555,7 +556,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_token_does_not_attempt_login_if_member_blocked()
+        public async Task Valid_token_does_not_attempt_login_if_member_blocked()
         {
             using (var controller = CreateController())
             {

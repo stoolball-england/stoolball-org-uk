@@ -123,7 +123,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Request_for_email_already_in_use_sends_email()
+        public async Task Request_for_email_already_in_use_sends_email()
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
@@ -163,7 +163,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Request_for_email_already_in_use_saves_token_anyway()
+        public async Task Request_for_email_already_in_use_saves_token_anyway()
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
@@ -178,7 +178,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Request_for_email_already_in_use_sets_TempData_for_view()
+        public async Task Request_for_email_already_in_use_sets_TempData_for_view()
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
@@ -193,7 +193,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Request_for_email_already_in_use_is_logged()
+        public async Task Request_for_email_already_in_use_is_logged()
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
@@ -208,7 +208,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_request_saves_email_and_token()
+        public async Task Valid_request_saves_email_and_token()
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
             var token = Guid.NewGuid().ToString();
@@ -228,7 +228,7 @@ namespace Stoolball.Web.UnitTests.Account
 
 
         [Fact]
-        public async void Valid_request_sends_email_with_token()
+        public async Task Valid_request_sends_email_with_token()
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
             var token = Guid.NewGuid().ToString();
@@ -262,7 +262,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_request_is_logged()
+        public async Task Valid_request_is_logged()
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
             using (var controller = CreateController())
@@ -274,7 +274,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_request_sets_TempData_for_view()
+        public async Task Valid_request_sets_TempData_for_view()
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
             using (var controller = CreateController())
@@ -286,7 +286,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Valid_request_returns_RedirectToUmbracoPageResult()
+        public async Task Valid_request_returns_RedirectToUmbracoPageResult()
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
             using (var controller = CreateController())
@@ -302,7 +302,7 @@ namespace Stoolball.Web.UnitTests.Account
         [InlineData("")]
         [InlineData(" ")]
         [InlineData("invalid")]
-        public async void Invalid_password_sets_ModelState(string password)
+        public async Task Invalid_password_sets_ModelState(string password)
         {
             var model = new EmailAddressFormData { Password = password };
             using (var controller = CreateController())
@@ -315,7 +315,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_model_does_not_save_or_set_TempData()
+        public async Task Invalid_model_does_not_save_or_set_TempData()
         {
             var model = new EmailAddressFormData();
             using (var controller = CreateController())
@@ -329,7 +329,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_model_returns_EmailAddress_view()
+        public async Task Invalid_model_returns_EmailAddress_view()
         {
             var model = new EmailAddressFormData();
             using (var controller = CreateController())
@@ -342,7 +342,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Invalid_model_returns_form_data_to_view()
+        public async Task Invalid_model_returns_form_data_to_view()
         {
             var model = new EmailAddressFormData { Password = "pa$$word", Requested = "new@example.org" };
             using (var controller = CreateController())
@@ -358,7 +358,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_model_does_not_save_or_set_TempData()
+        public async Task Null_model_does_not_save_or_set_TempData()
         {
             using (var controller = CreateController())
             {
@@ -370,7 +370,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public async void Null_model_returns_400()
+        public async Task Null_model_returns_400()
         {
             using (var controller = CreateController())
             {

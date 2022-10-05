@@ -299,7 +299,7 @@ $button-shadow: 2px 2px 2px $black;
 }
 
 @include media-breakpoint-up(lg) {
-    // Bootstrap's .btn-lg, but applied only when this media query matches
+    /* Bootstrap's .btn-lg, but applied only when this media query matches */
     .roles .btn {
         padding: $spacer/2 $spacer;
         font-size: 1.25rem;
@@ -324,7 +324,7 @@ $button-shadow: 2px 2px 2px $black;
     margin-bottom: $spacer*3;
 }
 
-// Offset the transparent border
+/* Offset the transparent border */
 .shop .tiles {
     margin-bottom: $spacer/4;
     width: calc(100% + 10px);
@@ -441,8 +441,8 @@ $button-shadow: 2px 2px 2px $black;
     .shop .btn { border-color: $black; }
 }
 
-// .shop_spreadshirt is a large responsive advert for the Spreadshirt shop
-// The whole advert is a link around an header, image and text that appears like a button
+/* .shop_spreadshirt is a large responsive advert for the Spreadshirt shop
+   The whole advert is a link around an header, image and text that appears like a button */
 .shop__spreadshirt {
     display: block;
     background: url(/images/shop/halftone-starburst.jpg);
@@ -621,7 +621,7 @@ $button-shadow: 2px 2px 2px $black;
     .history__tile {
         width: 33%;
     }
-    // Adjust the space between items
+    /* Adjust the space between items */
     .history__baseball {
         margin-left: 0;
     }
