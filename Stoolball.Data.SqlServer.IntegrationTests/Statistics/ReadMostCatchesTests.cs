@@ -514,12 +514,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 MatchLocation = _databaseFixture.TestData.MatchLocations.First()
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", _databaseFixture.TestData.MatchLocations.First().MatchLocationId! } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", filter.MatchLocation.MatchLocationId! } }));
             var playerDataSource = new Mock<IPlayerDataSource>();
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
-            var results = await dataSource.ReadMostCatches(It.IsAny<StatisticsFilter>()).ConfigureAwait(false);
+            var results = await dataSource.ReadMostCatches(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
                                                                         .Where(x => x.MatchLocation?.MatchLocationId == _databaseFixture.TestData.MatchLocations.First().MatchLocationId)
@@ -529,6 +529,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                                                     (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player.PlayerId == x.PlayerId))
                                                                         .Any());
 
+            Assert.True(expected.Count() > 0);
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
             {
