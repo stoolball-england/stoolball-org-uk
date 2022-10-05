@@ -790,18 +790,33 @@ namespace Stoolball.Testing
                         x.Seasons.Any() &&
                         teamsInMatches.Select(t => t.TeamId).Contains(x.TeamId)
             );
-            var teamInTournament = new TeamInTournament { Team = testData.TeamWithFullDetails, TeamRole = TournamentTeamRole.Confirmed };
-            testData.TournamentWithFullDetails!.Teams.Add(teamInTournament);
 
-            var matchInTournament = CreateMatchBetween(testData.TeamWithFullDetails, new List<PlayerIdentity>(), testData.TeamWithFullDetails, new List<PlayerIdentity>(), true);
-            matchInTournament.Tournament = testData.TournamentWithFullDetails;
-            testData.Matches.Add(matchInTournament);
-            testData.TournamentWithFullDetails.Matches.Add(new MatchInTournament
+            // Create a list of teams to play in a fully detailed tournament
+            var teamsInTournament = new List<TeamInTournament> { new TeamInTournament { Team = testData.TeamWithFullDetails, TeamRole = TournamentTeamRole.Confirmed } };
+            teamsInTournament.AddRange(testData.Teams.Where(x => x.TeamId != testData.TeamWithFullDetails.TeamId).Take(5).Select(x => new TeamInTournament { Team = x, TeamRole = TournamentTeamRole.Confirmed }));
+
+            var matchOrderInTournament = 1;
+            foreach (var teamInTournament in teamsInTournament)
             {
-                MatchId = matchInTournament.MatchId,
-                MatchName = matchInTournament.MatchName,
-                Teams = new List<TeamInTournament> { teamInTournament }
-            });
+                testData.TournamentWithFullDetails!.Teams.Add(teamInTournament);
+
+                // Create a tournament match where the fully-detailed team plays everyone including themselves
+                var matchInTournament = CreateMatchBetween(testData.TeamWithFullDetails, new List<PlayerIdentity>(), teamInTournament.Team, new List<PlayerIdentity>(), true);
+                matchInTournament.Tournament = testData.TournamentWithFullDetails;
+                matchInTournament.OrderInTournament = matchOrderInTournament;
+                matchInTournament.StartTime = testData.TournamentWithFullDetails.StartTime.AddMinutes((matchOrderInTournament - 1) * 45);
+                matchInTournament.Season = null;
+                matchInTournament.MatchLocation = testData.TournamentWithFullDetails.TournamentLocation;
+                matchInTournament.PlayersPerTeam = testData.TournamentWithFullDetails.PlayersPerTeam;
+                matchOrderInTournament++;
+                testData.Matches.Add(matchInTournament);
+                testData.TournamentWithFullDetails.Matches.Add(new MatchInTournament
+                {
+                    MatchId = matchInTournament.MatchId,
+                    MatchName = matchInTournament.MatchName,
+                    Teams = new List<TeamInTournament> { teamsInTournament[0], teamInTournament }
+                });
+            }
 
             testData.MatchLocations = testData.Matches.Where(m => m.MatchLocation != null).Select(m => m.MatchLocation)
                 .Union(testData.Tournaments.Where(t => t.TournamentLocation != null).Select(t => t.TournamentLocation))
@@ -1387,13 +1402,16 @@ namespace Stoolball.Testing
 
             // Create up to 12 random overs, or a missing bowling card
             var hasBowlingData = _randomiser.Next(5) > 0;
-            innings.OverSets.Add(new OverSet
+            if (!innings.OverSets.Any())
             {
-                OverSetId = Guid.NewGuid(),
-                OverSetNumber = 1,
-                Overs = _randomiser.Next(8, 13),
-                BallsPerOver = 8
-            });
+                innings.OverSets.Add(new OverSet
+                {
+                    OverSetId = Guid.NewGuid(),
+                    OverSetNumber = 1,
+                    Overs = _randomiser.Next(8, 13),
+                    BallsPerOver = 8
+                });
+            }
             if (hasBowlingData && bowlers.Count >= 4)
             {
                 for (var i = 1; i <= innings.OverSets[0].Overs; i++)

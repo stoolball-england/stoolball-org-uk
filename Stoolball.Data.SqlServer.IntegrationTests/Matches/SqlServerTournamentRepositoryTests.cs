@@ -15,6 +15,7 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
+using Stoolball.Testing;
 using Xunit;
 using static Stoolball.Constants;
 
@@ -232,7 +233,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             {
                 TournamentId = tournament.TournamentId,
                 TournamentName = tournament.TournamentName + "xxx",
-                TournamentLocation = hasLocation ? _databaseFixture.TestData.MatchLocations.First(x => x.MatchLocationId != tournament.TournamentLocation.MatchLocationId) : null,
+                TournamentLocation = hasLocation ? new MatchLocation { MatchLocationId = _databaseFixture.TestData.MatchLocations.First(x => x.MatchLocationId != tournament.TournamentLocation.MatchLocationId).MatchLocationId } : null,
                 PlayerType = tournament.PlayerType == PlayerType.Ladies ? PlayerType.Mixed : PlayerType.Ladies,
                 PlayersPerTeam = tournament.PlayersPerTeam + 2,
                 QualificationType = tournament.QualificationType == TournamentQualificationType.OpenTournament ? TournamentQualificationType.ClosedTournament : TournamentQualificationType.OpenTournament,
@@ -534,6 +535,48 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                         Assert.Equal(matchInnings.OverSets[0].Overs, result.Overs);
                         Assert.Equal(matchInnings.OverSets[0].BallsPerOver, result.BallsPerOver);
                     }
+                }
+            }
+        }
+
+        [Fact]
+        public async Task Update_tournament_updates_matches_from_tournament_details()
+        {
+            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
+
+            var tournamentWithChanges = new Tournament
+            {
+                TournamentId = tournament.TournamentId,
+                TournamentName = "Example tournament",
+                TournamentRoute = tournament.TournamentRoute,
+                DefaultOverSets = new List<OverSet>(),
+                // Change these fields and check they are copied to matches
+                StartTime = tournament.StartTime.AddDays(1),
+                PlayersPerTeam = tournament.PlayersPerTeam + 2,
+                PlayerType = tournament.PlayerType == PlayerType.Mixed ? PlayerType.Ladies : PlayerType.Mixed,
+                TournamentLocation = new MatchLocation { MatchLocationId = _databaseFixture.TestData.MatchLocations.First(x => x.MatchLocationId != tournament.TournamentLocation?.MatchLocationId).MatchLocationId },
+            };
+
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(tournament.TournamentRoute, "/tournaments", It.IsAny<string>(), NoiseWords.TournamentRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(tournament.TournamentRoute));
+
+            SetupEntityCopierMock(tournament, tournamentWithChanges, tournamentWithChanges);
+
+            var repo = CreateRepository();
+
+            _ = await repo.UpdateTournament(tournament, Guid.NewGuid(), "Member name");
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                foreach (var tournamentMatch in tournament.Matches)
+                {
+                    var updatedMatch = await connection.QuerySingleOrDefaultAsync<Stoolball.Matches.Match>($"SELECT PlayerType, PlayersPerTeam, OrderInTournament, StartTime FROM {Tables.Match} WHERE MatchId = @MatchId", tournamentMatch);
+                    var updatedMatchLocation = await connection.ExecuteScalarAsync<Guid?>($"SELECT MatchLocationId FROM {Tables.Match} WHERE MatchId = @MatchId", tournamentMatch);
+
+                    Assert.NotNull(updatedMatch);
+                    Assert.Equal(tournamentWithChanges.PlayerType, updatedMatch.PlayerType);
+                    Assert.Equal(tournamentWithChanges.PlayersPerTeam, updatedMatch.PlayersPerTeam);
+                    Assert.Equal(tournamentWithChanges.StartTime.AccurateToTheMinute().AddMinutes(((updatedMatch.OrderInTournament ?? 1) - 1) * 45), updatedMatch.StartTime.AccurateToTheMinute());
+                    Assert.Equal(tournamentWithChanges.TournamentLocation.MatchLocationId, updatedMatchLocation);
                 }
             }
         }
