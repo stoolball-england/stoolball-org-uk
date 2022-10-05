@@ -521,7 +521,7 @@ namespace Stoolball.Testing
             };
         }
 
-        public Tournament CreateTournamentInThePastWithFullDetails(List<(Guid memberKey, string memberName)> members)
+        public Tournament CreateTournamentInThePastWithFullDetailsExceptMatches(List<(Guid memberKey, string memberName)> members)
         {
             var competition1 = CreateCompetitionWithMinimalDetails();
             var competition2 = CreateCompetitionWithMinimalDetails();
@@ -775,9 +775,17 @@ namespace Stoolball.Testing
             testData.Members = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberKey: x.MemberKey, memberName: x.MemberName)).Distinct(new MemberEqualityComparer()).ToList();
             for (var i = 0; i < 10; i++)
             {
-                testData.TournamentWithFullDetails = CreateTournamentInThePastWithFullDetails(testData.Members);
-                testData.Tournaments.Add(testData.TournamentWithFullDetails);
+                var tournament = CreateTournamentInThePastWithFullDetailsExceptMatches(testData.Members);
+                if (testData.TournamentInThePastWithFullDetails == null) { testData.TournamentInThePastWithFullDetails = tournament; }
+                testData.Tournaments.Add(tournament);
             }
+
+            testData.TournamentInThePastWithMinimalDetails = CreateTournamentInThePastWithMinimalDetails();
+            testData.Tournaments.Add(testData.TournamentInThePastWithMinimalDetails);
+
+            testData.TournamentInTheFutureWithMinimalDetails = CreateTournamentInThePastWithMinimalDetails();
+            testData.TournamentInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(1), Constants.UkTimeZone());
+            testData.Tournaments.Add(testData.TournamentInTheFutureWithMinimalDetails);
 
             var teamsInMatches = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team);
             var teamsInTournaments = testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team);
@@ -791,30 +799,31 @@ namespace Stoolball.Testing
                         teamsInMatches.Select(t => t.TeamId).Contains(x.TeamId)
             );
 
-            // Create a list of teams to play in a fully detailed tournament
-            var teamsInTournament = new List<TeamInTournament> { new TeamInTournament { Team = testData.TeamWithFullDetails, TeamRole = TournamentTeamRole.Confirmed } };
-            teamsInTournament.AddRange(testData.Teams.Where(x => x.TeamId != testData.TeamWithFullDetails.TeamId).Take(5).Select(x => new TeamInTournament { Team = x, TeamRole = TournamentTeamRole.Confirmed }));
+            testData.TournamentInThePastWithFullDetails!.Teams.Add(new TeamInTournament
+            {
+                TournamentTeamId = Guid.NewGuid(),
+                Team = testData.TeamWithFullDetails,
+                TeamRole = TournamentTeamRole.Confirmed
+            });
 
             var matchOrderInTournament = 1;
-            foreach (var teamInTournament in teamsInTournament)
+            foreach (var teamInTournament in testData.TournamentInThePastWithFullDetails.Teams)
             {
-                testData.TournamentWithFullDetails!.Teams.Add(teamInTournament);
-
                 // Create a tournament match where the fully-detailed team plays everyone including themselves
                 var matchInTournament = CreateMatchBetween(testData.TeamWithFullDetails, new List<PlayerIdentity>(), teamInTournament.Team, new List<PlayerIdentity>(), true);
-                matchInTournament.Tournament = testData.TournamentWithFullDetails;
+                matchInTournament.Tournament = testData.TournamentInThePastWithFullDetails;
                 matchInTournament.OrderInTournament = matchOrderInTournament;
-                matchInTournament.StartTime = testData.TournamentWithFullDetails.StartTime.AddMinutes((matchOrderInTournament - 1) * 45);
+                matchInTournament.StartTime = testData.TournamentInThePastWithFullDetails.StartTime.AddMinutes((matchOrderInTournament - 1) * 45);
                 matchInTournament.Season = null;
-                matchInTournament.MatchLocation = testData.TournamentWithFullDetails.TournamentLocation;
-                matchInTournament.PlayersPerTeam = testData.TournamentWithFullDetails.PlayersPerTeam;
+                matchInTournament.MatchLocation = testData.TournamentInThePastWithFullDetails.TournamentLocation;
+                matchInTournament.PlayersPerTeam = testData.TournamentInThePastWithFullDetails.PlayersPerTeam;
                 matchOrderInTournament++;
                 testData.Matches.Add(matchInTournament);
-                testData.TournamentWithFullDetails.Matches.Add(new MatchInTournament
+                testData.TournamentInThePastWithFullDetails.Matches.Add(new MatchInTournament
                 {
                     MatchId = matchInTournament.MatchId,
                     MatchName = matchInTournament.MatchName,
-                    Teams = new List<TeamInTournament> { teamsInTournament[0], teamInTournament }
+                    Teams = new List<TeamInTournament> { testData.TournamentInThePastWithFullDetails.Teams.Single(x => x.Team.TeamId == testData.TeamWithFullDetails.TeamId), teamInTournament }
                 });
             }
 
@@ -1173,6 +1182,7 @@ namespace Stoolball.Testing
                 inningsWithFiveWicketHaul.PlayerInnings[i].Bowler = bowlerWithFiveWicketHaul;
             }
 
+            matches.Add(CreateMatchWithTeamScoresButNoPlayerData());
 
             matches.Add(CreateMatchWithFieldingByMultipleIdentities());
 
@@ -1193,9 +1203,43 @@ namespace Stoolball.Testing
             return matches;
         }
 
+
         private static bool IsEven(int i)
         {
             return i % 2 == 0;
+        }
+
+        private Match CreateMatchWithTeamScoresButNoPlayerData()
+        {
+            var anyTeam1 = _teams[_randomiser.Next(_teams.Count)];
+            var anyTeam2 = _teams[_randomiser.Next(_teams.Count)];
+            var match = CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, FiftyFiftyChance());
+
+            // remove any generated player data
+            foreach (var innings in match.MatchInnings)
+            {
+                innings.PlayerInnings.Clear();
+                innings.OversBowled.Clear();
+                innings.BowlingFigures.Clear();
+            }
+            match.Awards.Clear();
+
+            // add team scores for the first and second innings - these must be included in team score averages but will be missing from player data
+            match.MatchInnings[0].Byes = 3;
+            match.MatchInnings[0].Wides = 5;
+            match.MatchInnings[0].NoBalls = 7;
+            match.MatchInnings[0].BonusOrPenaltyRuns = 1;
+            match.MatchInnings[0].Runs = 123;
+            match.MatchInnings[0].Wickets = 6;
+
+            match.MatchInnings[1].Byes = 2;
+            match.MatchInnings[1].Wides = 4;
+            match.MatchInnings[1].NoBalls = 6;
+            match.MatchInnings[1].BonusOrPenaltyRuns = 2;
+            match.MatchInnings[1].Runs = 144;
+            match.MatchInnings[1].Wickets = 3;
+
+            return match;
         }
 
         private Match CreateMatchWithFieldingByMultipleIdentities()

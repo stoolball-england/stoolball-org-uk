@@ -27,8 +27,10 @@ namespace Stoolball.Testing
         public Season? SeasonWithFullDetails { get; internal set; }
         public List<(Guid memberKey, string memberName)> Members { get; internal set; } = new();
         public Match? MatchInThePastWithFullDetails { get; internal set; }
-        public Tournament? TournamentWithFullDetails { get; internal set; }
+        public Tournament? TournamentInThePastWithFullDetails { get; internal set; }
         public List<Tournament> Tournaments { get; internal set; } = new List<Tournament>();
         public List<School> Schools { get; internal set; } = new List<School>();
+        public Tournament? TournamentInThePastWithMinimalDetails { get; internal set; }
+        public Tournament? TournamentInTheFutureWithMinimalDetails { get; internal set; }
     }
 }

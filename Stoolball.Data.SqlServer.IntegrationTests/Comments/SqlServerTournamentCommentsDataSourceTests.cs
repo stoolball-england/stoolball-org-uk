@@ -6,12 +6,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
 {
-    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class SqlServerTournamentCommentsDataSourceTests
     {
-        private readonly SqlServerDataSourceFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
 
-        public SqlServerTournamentCommentsDataSourceTests(SqlServerDataSourceFixture databaseFixture)
+        public SqlServerTournamentCommentsDataSourceTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -20,21 +20,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
         public async Task Read_total_comments_supports_filter_by_tournament()
         {
             var commentsDataSource = new SqlServerTournamentCommentsDataSource(_databaseFixture.ConnectionFactory);
+            var commentsFound = 0;
 
-            foreach (var tournament in _databaseFixture.Tournaments)
+            foreach (var tournament in _databaseFixture.TestData.Tournaments)
             {
                 var result = await commentsDataSource.ReadTotalComments(tournament.TournamentId!.Value).ConfigureAwait(false);
 
                 Assert.Equal(tournament.Comments.Count, result);
+                commentsFound += result;
             }
+
+            Assert.True(commentsFound > 0);
         }
 
         [Fact]
         public async Task Read_comments_returns_basic_fields()
         {
             var commentsDataSource = new SqlServerTournamentCommentsDataSource(_databaseFixture.ConnectionFactory);
+            var commentsFound = false;
 
-            foreach (var tournament in _databaseFixture.Tournaments)
+            foreach (var tournament in _databaseFixture.TestData.Tournaments)
             {
                 var results = await commentsDataSource.ReadComments(tournament.TournamentId!.Value).ConfigureAwait(false);
 
@@ -47,26 +52,33 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
                     Assert.Equal(comment.MemberName, result!.MemberName);
                     Assert.Equal(comment.CommentDate, result.CommentDate);
                     Assert.Equal(comment.Comment, result.Comment);
+                    commentsFound = true;
                 }
             }
+
+            Assert.True(commentsFound);
         }
 
         [Fact]
         public async Task Read_comments_returns_newest_first()
         {
-            var commentsDataSource = new SqlServerMatchCommentsDataSource(_databaseFixture.ConnectionFactory);
+            var commentsDataSource = new SqlServerTournamentCommentsDataSource(_databaseFixture.ConnectionFactory);
+            var commentsFound = false;
 
-            foreach (var match in _databaseFixture.Matches)
+            foreach (var tournament in _databaseFixture.TestData.Tournaments)
             {
-                var results = await commentsDataSource.ReadComments(match.MatchId!.Value).ConfigureAwait(false);
+                var results = await commentsDataSource.ReadComments(tournament.TournamentId!.Value).ConfigureAwait(false);
 
                 var previousCommentDate = DateTimeOffset.MaxValue;
                 foreach (var result in results)
                 {
                     Assert.True(result.CommentDate <= previousCommentDate);
                     previousCommentDate = result.CommentDate;
+                    commentsFound = true;
                 }
             }
+
+            Assert.True(commentsFound);
         }
     }
 }

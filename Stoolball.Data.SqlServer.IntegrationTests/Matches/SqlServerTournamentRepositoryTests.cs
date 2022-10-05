@@ -228,7 +228,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [InlineData(false)]
         public async Task Update_tournament_updates_basic_fields(bool hasLocation)
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
+            var tournament = _databaseFixture.TestData.TournamentInThePastWithFullDetails!;
             var toBeSaved = new Tournament
             {
                 TournamentId = tournament.TournamentId,
@@ -320,7 +320,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_should_update_existing_default_overset_if_overs_specified()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
+            var tournament = _databaseFixture.TestData.TournamentInThePastWithFullDetails!;
 
             var auditable = new Tournament
             {
@@ -364,7 +364,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_in_the_future_should_update_existing_match_overset_if_overs_specified()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
+            var tournament = _databaseFixture.TestData.TournamentInThePastWithFullDetails!;
 
             var auditable = new Tournament
             {
@@ -415,7 +415,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_in_the_past_should_not_update_match_overset_if_overs_specified()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
+            var tournament = _databaseFixture.TestData.TournamentInThePastWithFullDetails!;
 
             var auditable = new Tournament
             {
@@ -466,7 +466,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_should_clear_default_overset_if_overs_not_specified()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
+            var tournament = _databaseFixture.TestData.TournamentInThePastWithFullDetails!;
 
             var auditable = new Tournament
             {
@@ -499,7 +499,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_in_the_future_should_not_clear_match_overset_if_overs_not_specified()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
+            var tournament = _databaseFixture.TestData.TournamentInThePastWithFullDetails!;
 
             var auditable = new Tournament
             {
@@ -542,7 +542,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Update_tournament_updates_matches_from_tournament_details()
         {
-            var tournament = _databaseFixture.TestData.TournamentWithFullDetails!;
+            var tournament = _databaseFixture.TestData.TournamentInThePastWithFullDetails!;
 
             var tournamentWithChanges = new Tournament
             {
@@ -584,21 +584,21 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task Delete_tournament_succeeds()
         {
-            var auditable = new Tournament { TournamentId = _databaseFixture.TestData.TournamentWithFullDetails!.TournamentId };
-            var redacted = new Tournament { TournamentId = _databaseFixture.TestData.TournamentWithFullDetails.TournamentId };
+            var auditable = new Tournament { TournamentId = _databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentId };
+            var redacted = new Tournament { TournamentId = _databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentId };
 
-            SetupEntityCopierMock(_databaseFixture.TestData.TournamentWithFullDetails, auditable, redacted);
+            SetupEntityCopierMock(_databaseFixture.TestData.TournamentInThePastWithFullDetails, auditable, redacted);
 
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
 
             var repo = CreateRepository();
 
-            await repo.DeleteTournament(_databaseFixture.TestData.TournamentWithFullDetails, memberKey, memberName);
+            await repo.DeleteTournament(_databaseFixture.TestData.TournamentInThePastWithFullDetails, memberKey, memberName);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT TournamentId FROM {Tables.Tournament} WHERE TournamentId = @TournamentId", new { _databaseFixture.TestData.TournamentWithFullDetails.TournamentId });
+                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT TournamentId FROM {Tables.Tournament} WHERE TournamentId = @TournamentId", new { _databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentId });
                 Assert.Null(result);
             }
         }

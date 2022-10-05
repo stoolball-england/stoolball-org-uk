@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Statistics;
 
@@ -10,42 +11,86 @@ namespace Stoolball.Data.SqlServer
     public class SqlServerInningsStatisticsDataSource : IInningsStatisticsDataSource, ICacheableInningsStatisticsDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly IStatisticsQueryBuilder _statisticsQueryBuilder;
 
-        public SqlServerInningsStatisticsDataSource(IDatabaseConnectionFactory databaseConnectionFactory, IStatisticsQueryBuilder statisticsQueryBuilder)
+        public SqlServerInningsStatisticsDataSource(IDatabaseConnectionFactory databaseConnectionFactory)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new System.ArgumentNullException(nameof(databaseConnectionFactory));
-            _statisticsQueryBuilder = statisticsQueryBuilder ?? throw new System.ArgumentNullException(nameof(statisticsQueryBuilder));
         }
 
-        public async Task<InningsStatistics> ReadInningsStatistics(StatisticsFilter statisticsFilter)
+        public async Task<InningsStatistics> ReadInningsStatistics(StatisticsFilter? statisticsFilter)
         {
             if (statisticsFilter == null) { statisticsFilter = new StatisticsFilter(); }
-            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(statisticsFilter);
 
-            var sql = $@"SELECT AVG(CAST(TeamRunsScored AS DECIMAL)) AS AverageRunsScored, 
-                                MAX(TeamRunsScored) AS HighestRunsScored, 
-                                MIN(TeamRunsScored) AS LowestRunsScored,  
+            var join = new List<string>();
+            var where = new List<string>();
+            var parameters = new Dictionary<string, object>();
 
-                                AVG(CAST(TeamRunsConceded AS DECIMAL)) AS AverageRunsConceded, 
-                                MAX(TeamRunsConceded) AS HighestRunsConceded, 
-                                MIN(TeamRunsConceded) AS LowestRunsConceded,  
+            if (statisticsFilter.FromDate.HasValue || statisticsFilter.UntilDate.HasValue)
+            {
+                join.Add($"INNER JOIN {Tables.Match} m ON mi.MatchId = m.MatchId");
+            }
 
-                                AVG(CAST(TeamWicketsLost AS DECIMAL)) AS AverageWicketsLost,
-                                AVG(CAST(TeamWicketsTaken AS DECIMAL)) AS AverageWicketsTaken
-                        FROM (
-                            SELECT SUM(DISTINCT TeamRunsScored) AS TeamRunsScored, 
-                                   SUM(DISTINCT TeamWicketsLost) AS TeamWicketsLost, 
-                                   SUM(DISTINCT TeamRunsConceded) AS TeamRunsConceded,
-                                   SUM(DISTINCT TeamWicketsTaken) AS TeamWicketsTaken
-                            FROM {Tables.PlayerInMatchStatistics} 
-                            WHERE 1=1 {where}
-                            GROUP BY MatchId, MatchTeamId, MatchInningsPair
-                        ) AS MatchData";
+            if (statisticsFilter.FromDate.HasValue)
+            {
+                where.Add("m.StartTime >= @FromDate");
+                parameters.Add("@FromDate", statisticsFilter.FromDate);
+            }
+
+            if (statisticsFilter.UntilDate.HasValue)
+            {
+                where.Add("m.StartTime <= @UntilDate");
+                parameters.Add("@UntilDate", statisticsFilter.UntilDate);
+            }
+
+            if (statisticsFilter.Club != null && statisticsFilter.Club.ClubId.HasValue)
+            {
+                join.Add($"INNER JOIN {Tables.Team} t ON mt.TeamId = t.TeamId");
+                where.Add("t.ClubId = @ClubId");
+                parameters.Add("@ClubId", statisticsFilter.Club.ClubId);
+            }
+
+            if (statisticsFilter.Team != null && statisticsFilter.Team.TeamId.HasValue)
+            {
+                where.Add("mt.TeamId = @TeamId");
+                parameters.Add("@TeamId", statisticsFilter.Team.TeamId);
+            }
+
+            var extraJoinsForFilters = string.Join(" ", join);
+            var whereClause = where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty;
+
+            var battingSql = $@"SELECT AVG(CAST(Runs AS DECIMAL)) AS AverageRunsScored, 
+		                        MAX(Runs) AS HighestRunsScored,
+		                        MIN(Runs) AS LowestRunsScored,
+		                        AVG(CAST(Wickets AS DECIMAL)) AS AverageWicketsLost  
+                         FROM {Tables.MatchInnings} mi 
+                         INNER JOIN {Tables.MatchTeam} mt ON mi.BattingMatchTeamId = mt.MatchTeamId 
+                         {extraJoinsForFilters}
+                         {whereClause}";
+
+            var bowlingSql = $@"SELECT AVG(CAST(Runs AS DECIMAL)) AS AverageRunsConceded, 
+		                               MAX(Runs) AS HighestRunsConceded,
+		                               MIN(Runs) AS LowestRunsConceded,
+		                               AVG(CAST(Wickets AS DECIMAL)) AS AverageWicketsTaken  
+                                FROM {Tables.MatchInnings} mi 
+                                INNER JOIN {Tables.MatchTeam} mt ON mi.BowlingMatchTeamId = mt.MatchTeamId 
+                                {extraJoinsForFilters}
+                                {whereClause}";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.QuerySingleAsync<InningsStatistics>(sql, parameters).ConfigureAwait(false);
+                var battingStats = await connection.QuerySingleAsync<InningsStatistics>(battingSql, parameters).ConfigureAwait(false);
+                var bowlingStats = await connection.QuerySingleAsync<InningsStatistics>(bowlingSql, parameters).ConfigureAwait(false);
+                return new InningsStatistics
+                {
+                    AverageRunsScored = battingStats.AverageRunsScored,
+                    AverageRunsConceded = bowlingStats.AverageRunsConceded,
+                    AverageWicketsLost = battingStats.AverageWicketsLost,
+                    AverageWicketsTaken = bowlingStats.AverageWicketsTaken,
+                    HighestRunsScored = battingStats.HighestRunsScored,
+                    LowestRunsScored = battingStats.LowestRunsScored,
+                    HighestRunsConceded = bowlingStats.HighestRunsConceded,
+                    LowestRunsConceded = bowlingStats.LowestRunsConceded
+                };
             }
         }
     }

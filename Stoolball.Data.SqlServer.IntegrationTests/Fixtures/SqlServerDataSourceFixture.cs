@@ -46,7 +46,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         public Season SeasonWithFullDetails { get; private set; }
         public List<MatchListing> TournamentMatchListings { get; private set; } = new List<MatchListing>();
         public Club ClubWithOneTeam { get; private set; }
-        public List<Tournament> Tournaments { get; internal set; } = new List<Tournament>();
 
         public SqlServerDataSourceFixture() : base("StoolballDataSourceIntegrationTests")
         {
@@ -187,21 +186,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 {
                     repo.CreateAudit(audit);
                 }
+                MatchInThePastWithFullDetails.Teams[0].Team.UntilYear = 2020;
 
                 TournamentInThePastWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                 repo.CreateTournament(TournamentInThePastWithMinimalDetails);
-                Tournaments.Add(TournamentInThePastWithMinimalDetails);
                 MatchListings.Add(TournamentInThePastWithMinimalDetails.ToMatchListing());
 
                 TournamentInTheFutureWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                 TournamentInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(1), UkTimeZone());
                 repo.CreateTournament(TournamentInTheFutureWithMinimalDetails);
-                Tournaments.Add(TournamentInTheFutureWithMinimalDetails);
                 MatchListings.Add(TournamentInTheFutureWithMinimalDetails.ToMatchListing());
 
-                TournamentInThePastWithFullDetails = seedDataGenerator.CreateTournamentInThePastWithFullDetails(members);
+                TournamentInThePastWithFullDetails = seedDataGenerator.CreateTournamentInThePastWithFullDetailsExceptMatches(members);
                 Teams.AddRange(TournamentInThePastWithFullDetails.Teams.Select(x => x.Team));
-                MatchInThePastWithFullDetails.Teams[0].Team.UntilYear = 2020;
                 foreach (var team in TournamentInThePastWithFullDetails.Teams)
                 {
                     repo.CreateTeam(team.Team);
@@ -221,7 +218,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     repo.AddTournamentToSeason(TournamentInThePastWithFullDetails, season);
                     Seasons.Add(season);
                 }
-                Tournaments.Add(TournamentInThePastWithFullDetails);
                 MatchListings.Add(TournamentInThePastWithFullDetails.ToMatchListing());
                 for (var i = 0; i < 5; i++)
                 {
@@ -347,7 +343,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     tournament.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(i - 20).AddDays(5), UkTimeZone());
                     tournament.Comments = seedDataGenerator.CreateComments(i, members);
                     repo.CreateTournament(tournament);
-                    Tournaments.Add(tournament);
                     MatchListings.Add(tournament.ToMatchListing());
                 }
             }
