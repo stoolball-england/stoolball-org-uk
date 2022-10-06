@@ -94,13 +94,13 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of match locations that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalMatchLocations(MatchLocationFilter matchLocationQuery)
+        public async Task<int> ReadTotalMatchLocations(MatchLocationFilter? filter)
         {
-            if (matchLocationQuery == null) matchLocationQuery = new MatchLocationFilter();
+            if (filter == null) filter = new MatchLocationFilter();
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var (sql, parameters) = BuildMatchLocationQuery(matchLocationQuery, $@"SELECT COUNT(DISTINCT ml.MatchLocationId)
+                var (sql, parameters) = BuildMatchLocationQuery(filter, $@"SELECT COUNT(DISTINCT ml.MatchLocationId)
                             FROM {Tables.MatchLocation} AS ml <<JOIN>> <<WHERE>>", Array.Empty<string>());
                 return await connection.ExecuteScalarAsync<int>(sql, new DynamicParameters(parameters)).ConfigureAwait(false);
             }
@@ -110,7 +110,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of match locations based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchLocation"/> objects. An empty list if no match locations are found.</returns>
-        public async Task<List<MatchLocation>> ReadMatchLocations(MatchLocationFilter filter)
+        public async Task<List<MatchLocation>> ReadMatchLocations(MatchLocationFilter? filter)
         {
             if (filter == null) filter = new MatchLocationFilter();
 

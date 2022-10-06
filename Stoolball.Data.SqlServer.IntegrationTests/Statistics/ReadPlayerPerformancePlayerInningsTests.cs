@@ -38,7 +38,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
                 Assert.NotNull(result);
 
-                Assert.Equal(expectedInnings.Batter.Player.PlayerRoute, result.Result.Batter.Player.PlayerRoute);
+                Assert.Equal(expectedInnings.Batter.Player.PlayerRoute, result!.Result.Batter.Player.PlayerRoute);
                 Assert.Equal(expectedInnings.Batter.PlayerIdentityName, result.Result.Batter.PlayerIdentityName);
             }
         }
@@ -59,7 +59,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
                 Assert.NotNull(result);
 
-                Assert.Equal(expectedInnings.DismissalType, result.Result.DismissalType);
+                Assert.Equal(expectedInnings.DismissalType, result!.Result.DismissalType);
                 Assert.Equal(expectedInnings.RunsScored, result.Result.RunsScored);
             }
         }
@@ -81,7 +81,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
                 Assert.NotNull(result);
 
-                Assert.Equal(expectedInnings.Bowler?.Player.PlayerRoute, result.Result.Bowler?.Player.PlayerRoute);
+                Assert.Equal(expectedInnings.Bowler?.Player.PlayerRoute, result!.Result.Bowler?.Player.PlayerRoute);
                 Assert.Equal(expectedInnings.Bowler?.PlayerIdentityName, result.Result.Bowler?.PlayerIdentityName);
             }
         }
@@ -105,7 +105,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                         var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == playerInnings.PlayerInningsId);
                         Assert.NotNull(result);
 
-                        Assert.Equal(match.MatchRoute, result.Match.MatchRoute);
+                        Assert.Equal(match.MatchRoute, result!.Match.MatchRoute);
                         Assert.Equal(match.StartTime, result.Match.StartTime);
                         Assert.Equal(match.MatchName, result.Match.MatchName);
                     }
@@ -143,7 +143,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     {
                         PageSize = int.MaxValue
                     },
-                    CaughtByPlayerIdentityIds = player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList()
+                    CaughtByPlayerIdentityIds = player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList()
                 };
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CaughtByPlayerIdentityId IN @PlayerIdentities", new Dictionary<string, object> { { "PlayerIdentities", filter.CaughtByPlayerIdentityIds } }));
@@ -174,7 +174,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     {
                         PageSize = int.MaxValue
                     },
-                    RunOutByPlayerIdentityIds = player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList()
+                    RunOutByPlayerIdentityIds = player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList()
                 };
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND RunOutByPlayerIdentityId IN @PlayerIdentities", new Dictionary<string, object> { { "PlayerIdentities", filter.RunOutByPlayerIdentityIds } }));

@@ -22,6 +22,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
 
+#nullable disable
         [Fact]
         public async Task Read_bowling_statistics_throws_ArgumentNullException_with_no_filter()
         {
@@ -30,6 +31,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await dataSource.ReadBowlingStatistics(null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Read_bowling_statistics_throws_ArgumentException_with_no_player()
@@ -56,7 +58,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -78,7 +80,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -99,7 +101,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -121,7 +123,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -130,7 +132,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
                 var ballsBowled = matches.SelectMany(x => x.MatchInnings)
                         .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.Overs.HasValue))
-                        .Sum(o => oversHelper.OversToBallsBowled(o.Overs.Value));
+                        .Sum(o => oversHelper.OversToBallsBowled(o.Overs!.Value));
 
                 Assert.NotNull(result);
                 Assert.Equal(oversHelper.BallsBowledToOvers(ballsBowled), result.TotalOvers);
@@ -144,7 +146,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -167,7 +169,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -190,7 +192,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -212,7 +214,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -235,7 +237,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -256,11 +258,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 if (best != null)
                 {
                     Assert.NotNull(result.BestInningsWickets);
-                    Assert.Equal(best.Wickets, result.BestInningsWickets.Value);
+                    Assert.Equal(best.Wickets, result.BestInningsWickets);
 
                     if (best.RunsConceded.HasValue)
                     {
-                        Assert.Equal(best.RunsConceded, result.BestInningsRunsConceded.Value);
+                        Assert.Equal(best.RunsConceded, result.BestInningsRunsConceded);
                     }
                     else
                     {
@@ -283,7 +285,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -292,13 +294,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
                 var dataForEconomy = matches.SelectMany(x => x.MatchInnings)
                      .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.RunsConceded.HasValue));
-                var expectedEconomy = dataForEconomy.Sum(x => x.Overs) > 0 ? (decimal)dataForEconomy.Sum(x => x.RunsConceded.Value) / dataForEconomy.Sum(x => (decimal)oversHelper.OversToBallsBowled(x.Overs.Value) / StatisticsConstants.BALLS_PER_OVER) : (decimal?)null;
+                var expectedEconomy = dataForEconomy.Sum(x => x.Overs) > 0 ? (decimal?)dataForEconomy.Sum(x => x.RunsConceded) / dataForEconomy.Sum(x => (decimal)oversHelper.OversToBallsBowled(x.Overs!.Value) / StatisticsConstants.BALLS_PER_OVER) : (decimal?)null;
 
                 Assert.NotNull(result);
                 if (expectedEconomy.HasValue)
                 {
                     Assert.NotNull(result.Economy);
-                    Assert.Equal(expectedEconomy.Value.AccurateToTwoDecimalPlaces(), result.Economy.Value.AccurateToTwoDecimalPlaces());
+                    Assert.Equal(expectedEconomy.Value.AccurateToTwoDecimalPlaces(), result.Economy!.Value.AccurateToTwoDecimalPlaces());
                 }
                 else
                 {
@@ -315,7 +317,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -324,13 +326,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
                 var dataForStrikeRate = matches.SelectMany(x => x.MatchInnings)
                         .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.Overs.HasValue));
-                var expectedStrikeRate = dataForStrikeRate.Sum(x => x.Wickets) > 0 ? (decimal)dataForStrikeRate.Sum(x => oversHelper.OversToBallsBowled(x.Overs.Value)) / dataForStrikeRate.Sum(x => x.Wickets) : (decimal?)null;
+                var expectedStrikeRate = dataForStrikeRate.Sum(x => x.Wickets) > 0 ? (decimal)dataForStrikeRate.Sum(x => oversHelper.OversToBallsBowled(x.Overs!.Value)) / dataForStrikeRate.Sum(x => x.Wickets) : (decimal?)null;
 
                 Assert.NotNull(result);
                 if (expectedStrikeRate.HasValue)
                 {
                     Assert.NotNull(result.StrikeRate);
-                    Assert.Equal(expectedStrikeRate.Value.AccurateToTwoDecimalPlaces(), result.StrikeRate.Value.AccurateToTwoDecimalPlaces());
+                    Assert.Equal(expectedStrikeRate.Value.AccurateToTwoDecimalPlaces(), result.StrikeRate!.Value.AccurateToTwoDecimalPlaces());
                 }
                 else
                 {
@@ -346,7 +348,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -355,13 +357,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
                 var dataForAverage = matches.SelectMany(x => x.MatchInnings)
                         .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.RunsConceded.HasValue));
-                var expectedAverage = dataForAverage.Sum(x => x.Wickets) > 0 ? (decimal)dataForAverage.Sum(x => x.RunsConceded) / dataForAverage.Sum(x => x.Wickets) : (decimal?)null;
+                var expectedAverage = dataForAverage.Sum(x => x.Wickets) > 0 ? (decimal?)dataForAverage.Sum(x => x.RunsConceded) / dataForAverage.Sum(x => x.Wickets) : (decimal?)null;
 
                 Assert.NotNull(result);
                 if (expectedAverage.HasValue)
                 {
                     Assert.NotNull(result.Average);
-                    Assert.Equal(expectedAverage.Value.AccurateToTwoDecimalPlaces(), result.Average.Value.AccurateToTwoDecimalPlaces());
+                    Assert.Equal(expectedAverage.Value.AccurateToTwoDecimalPlaces(), result.Average!.Value.AccurateToTwoDecimalPlaces());
                 }
                 else
                 {

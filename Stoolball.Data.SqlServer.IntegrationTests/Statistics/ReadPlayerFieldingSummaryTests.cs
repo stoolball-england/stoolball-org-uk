@@ -22,6 +22,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
 
+#nullable disable
         [Fact]
         public async Task Read_fielding_statistics_throws_ArgumentNullException_with_no_filter()
         {
@@ -30,6 +31,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await dataSource.ReadFieldingStatistics(null).ConfigureAwait(false)).ConfigureAwait(false);
         }
+#nullable enable
 
         [Fact]
         public async Task Read_fielding_statistics_throws_ArgumentException_with_no_player()
@@ -56,7 +58,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -77,7 +79,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -96,7 +98,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
@@ -122,7 +124,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 filter.Player = player;
                 parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId);
+                parameters.Add("PlayerId", player.PlayerId!);
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);

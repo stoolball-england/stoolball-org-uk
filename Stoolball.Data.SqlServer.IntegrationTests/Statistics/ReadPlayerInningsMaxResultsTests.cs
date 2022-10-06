@@ -29,7 +29,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Player = _databaseFixture.PlayerWithFifthAndSixthInningsTheSame
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND PlayerId = @PlayerId", new Dictionary<string, object> { { "PlayerId", _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND PlayerId = @PlayerId", new Dictionary<string, object> { { "PlayerId", _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var results = (await dataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
@@ -57,7 +57,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
                 Assert.NotNull(result);
 
-                Assert.Equal(expectedInnings.DismissalType, result.Result.DismissalType);
+                Assert.Equal(expectedInnings.DismissalType, result!.Result.DismissalType);
                 Assert.Equal(expectedInnings.RunsScored, result.Result.RunsScored);
                 Assert.Equal(expectedInnings.BallsFaced, result.Result.BallsFaced);
             }

@@ -26,21 +26,21 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of matches and tournaments that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalMatches(MatchFilter matchQuery)
+        public async Task<int> ReadTotalMatches(MatchFilter? filter)
         {
-            if (matchQuery is null)
+            if (filter is null)
             {
-                matchQuery = new MatchFilter();
+                filter = new MatchFilter();
             }
 
-            if (!matchQuery.IncludeMatches && !matchQuery.IncludeTournaments)
+            if (!filter.IncludeMatches && !filter.IncludeTournaments)
             {
                 return 0;
             }
 
-            if (ExcludeTournamentsDueToMatchTypeFilter(matchQuery.MatchResultTypes))
+            if (ExcludeTournamentsDueToMatchTypeFilter(filter.MatchResultTypes))
             {
-                matchQuery.IncludeTournaments = false;
+                filter.IncludeTournaments = false;
             }
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
@@ -48,9 +48,9 @@ namespace Stoolball.Data.SqlServer
                 var sql = new StringBuilder("SELECT SUM(Total) FROM (");
                 var parameters = new Dictionary<string, object>();
 
-                if (matchQuery.IncludeMatches)
+                if (filter.IncludeMatches)
                 {
-                    var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
+                    var (matchSql, matchParameters) = BuildMatchQuery(filter,
                         $@"SELECT 1 AS GroupByThis, COUNT(DISTINCT m.MatchId) AS Total
                                 FROM {Tables.Match} AS m
                                 <<JOIN>>
@@ -59,14 +59,14 @@ namespace Stoolball.Data.SqlServer
                     parameters = matchParameters;
                 }
 
-                if (matchQuery.IncludeMatches && matchQuery.IncludeTournaments)
+                if (filter.IncludeMatches && filter.IncludeTournaments)
                 {
                     sql.Append(" UNION ALL ");
                 }
 
-                if (matchQuery.IncludeTournaments)
+                if (filter.IncludeTournaments)
                 {
-                    var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
+                    var (tournamentSql, tournamentParameters) = BuildTournamentQuery(filter,
                         $@"SELECT 1 AS GroupByThis, COUNT(DISTINCT tourney.TournamentId) AS Total
                                 FROM {Tables.Tournament} AS tourney
                                 <<JOIN>>
@@ -91,7 +91,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of matches and tournaments based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchListing"/> objects. An empty list if no matches or tournaments are found.</returns>
-        public async virtual Task<List<MatchListing>> ReadMatchListings(MatchFilter filter, MatchSortOrder sortOrder)
+        public async virtual Task<List<MatchListing>> ReadMatchListings(MatchFilter? filter, MatchSortOrder sortOrder)
         {
 
             if (filter is null)

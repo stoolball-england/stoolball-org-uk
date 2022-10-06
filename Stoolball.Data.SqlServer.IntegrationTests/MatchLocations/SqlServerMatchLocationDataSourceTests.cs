@@ -31,7 +31,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             var result = await locationDataSource.ReadMatchLocationByRoute(_databaseFixture.MatchLocationWithMinimalDetails.MatchLocationRoute, false).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchLocationWithMinimalDetails.MatchLocationId, result.MatchLocationId);
+            Assert.NotNull(result);
+            Assert.Equal(_databaseFixture.MatchLocationWithMinimalDetails.MatchLocationId, result!.MatchLocationId);
             Assert.Equal(_databaseFixture.MatchLocationWithMinimalDetails.MatchLocationRoute, result.MatchLocationRoute);
             Assert.Equal(_databaseFixture.MatchLocationWithMinimalDetails.SecondaryAddressableObjectName, result.SecondaryAddressableObjectName);
             Assert.Equal(_databaseFixture.MatchLocationWithMinimalDetails.PrimaryAddressableObjectName, result.PrimaryAddressableObjectName);
@@ -56,7 +57,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             var result = await locationDataSource.ReadMatchLocationByRoute(_databaseFixture.MatchLocationWithMinimalDetails.MatchLocationRoute, true).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchLocationWithMinimalDetails.MatchLocationId, result.MatchLocationId);
+            Assert.NotNull(result);
+            Assert.Equal(_databaseFixture.MatchLocationWithMinimalDetails.MatchLocationId, result!.MatchLocationId);
             Assert.Equal(_databaseFixture.MatchLocationWithMinimalDetails.MatchLocationRoute, result.MatchLocationRoute);
             Assert.Equal(_databaseFixture.MatchLocationWithMinimalDetails.SecondaryAddressableObjectName, result.SecondaryAddressableObjectName);
             Assert.Equal(_databaseFixture.MatchLocationWithMinimalDetails.PrimaryAddressableObjectName, result.PrimaryAddressableObjectName);
@@ -82,8 +84,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             var result = await locationDataSource.ReadMatchLocationByRoute(_databaseFixture.MatchLocationWithFullDetails.MatchLocationRoute, true).ConfigureAwait(false);
 
+            Assert.NotNull(result);
             var expectedActiveStatus = true;
-            foreach (var team in result.Teams)
+            foreach (var team in result!.Teams)
             {
                 // The first time an inactive team is seen, set a flag to say they must all be inactive
                 if (expectedActiveStatus && team.UntilYear.HasValue)
@@ -104,9 +107,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             var result = await locationDataSource.ReadMatchLocationByRoute(_databaseFixture.MatchLocationWithFullDetails.MatchLocationRoute, true).ConfigureAwait(false);
 
+            Assert.NotNull(result);
             foreach (var team in _databaseFixture.MatchLocationWithFullDetails.Teams.Where(x => x.TeamType == TeamType.Transient))
             {
-                Assert.Null(result.Teams.SingleOrDefault(x => x.TeamId == team.TeamId));
+                Assert.Null(result!.Teams.SingleOrDefault(x => x.TeamId == team.TeamId));
             }
         }
 
@@ -176,7 +180,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await matchLocationDataSource.ReadTotalMatchLocations(new MatchLocationFilter { ExcludeMatchLocationIds = new List<Guid> { _databaseFixture.MatchLocationWithMinimalDetails.MatchLocationId.Value } }).ConfigureAwait(false);
+            var result = await matchLocationDataSource.ReadTotalMatchLocations(new MatchLocationFilter { ExcludeMatchLocationIds = new List<Guid> { _databaseFixture.MatchLocationWithMinimalDetails.MatchLocationId!.Value } }).ConfigureAwait(false);
 
             Assert.Equal(_databaseFixture.MatchLocations.Count - 1, result);
         }
@@ -216,7 +220,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
                 var result = results.SingleOrDefault(x => x.MatchLocationId == location.MatchLocationId);
 
                 Assert.NotNull(result);
-                Assert.Equal(location.MatchLocationRoute, result.MatchLocationRoute);
+                Assert.Equal(location.MatchLocationRoute, result!.MatchLocationRoute);
                 Assert.Equal(location.Latitude, result.Latitude);
                 Assert.Equal(location.Longitude, result.Longitude);
                 Assert.Equal(location.SecondaryAddressableObjectName, result.SecondaryAddressableObjectName);
@@ -241,10 +245,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
                 foreach (var team in location.Teams)
                 {
-                    var resultTeam = result.Teams.SingleOrDefault(x => x.TeamId == team.TeamId);
+                    var resultTeam = result!.Teams.SingleOrDefault(x => x.TeamId == team.TeamId);
                     Assert.NotNull(resultTeam);
 
-                    Assert.Equal(team.TeamName, resultTeam.TeamName);
+                    Assert.Equal(team.TeamName, resultTeam!.TeamName);
                     Assert.Equal(team.TeamType, resultTeam.TeamType);
                     Assert.Equal(team.PlayerType, resultTeam.PlayerType);
                     Assert.Equal(team.TeamRoute, resultTeam.TeamRoute);
@@ -369,7 +373,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
                 {
                     PageSize = _databaseFixture.MatchLocations.Count
                 },
-                ExcludeMatchLocationIds = new List<Guid> { _databaseFixture.MatchLocationWithMinimalDetails.MatchLocationId.Value }
+                ExcludeMatchLocationIds = new List<Guid> { _databaseFixture.MatchLocationWithMinimalDetails.MatchLocationId!.Value }
             };
 
             var result = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
@@ -437,19 +441,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
                 {
                     PageSize = _databaseFixture.MatchLocations.Count
                 },
-                SeasonIds = new List<Guid> { season.SeasonId.Value }
+                SeasonIds = new List<Guid> { season.SeasonId!.Value }
             };
 
             var results = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
 
-            var teamIdsInSeason = season.Teams.Select(st => st.Team.TeamId.Value);
-            Assert.Equal(_databaseFixture.MatchLocations.Count(x => x.Teams.Any(t => teamIdsInSeason.Contains(t.TeamId.Value))), results.Count);
+            var teamIdsInSeason = season.Teams.Select(st => st.Team.TeamId);
+            Assert.Equal(_databaseFixture.MatchLocations.Count(x => x.Teams.Any(t => teamIdsInSeason.Contains(t.TeamId))), results.Count);
             foreach (var result in results)
             {
                 Assert.NotEmpty(result.Teams);
                 foreach (var team in result.Teams)
                 {
-                    Assert.Contains(team.TeamId.Value, teamIdsInSeason);
+                    Assert.Contains(team.TeamId, teamIdsInSeason);
                 }
             }
         }

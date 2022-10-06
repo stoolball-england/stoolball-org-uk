@@ -39,7 +39,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var filter = new StatisticsFilter { Player = _databaseFixture.TestData.BowlerWithMultipleIdentities };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND PlayerId = @PlayerId", new Dictionary<string, object> { { "PlayerId", _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND PlayerId = @PlayerId", new Dictionary<string, object> { { "PlayerId", _databaseFixture.TestData.BowlerWithMultipleIdentities!.PlayerId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
@@ -53,15 +53,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_bowling_figures_supports_filter_by_club_id()
         {
-            var filter = new StatisticsFilter { Club = _databaseFixture.TestData.TeamWithFullDetails.Club };
+            var filter = new StatisticsFilter { Club = _databaseFixture.TestData.TeamWithFullDetails!.Club };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithFullDetails.Club.ClubId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithFullDetails.Club.ClubId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
-                .SelectMany(x => x.MatchInnings.Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId))
                 .SelectMany(x => x.BowlingFigures)
                 .Count();
             Assert.Equal(expected, result);
@@ -72,13 +72,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var filter = new StatisticsFilter { Team = _databaseFixture.TestData.TeamWithFullDetails };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails.TeamId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails!.TeamId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
-                .SelectMany(x => x.MatchInnings.Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId))
                 .SelectMany(x => x.BowlingFigures)
                 .Count();
             Assert.Equal(expected, result);
@@ -89,7 +89,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var filter = new StatisticsFilter { MatchLocation = _databaseFixture.TestData.MatchLocations.First() };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", _databaseFixture.TestData.MatchLocations.First().MatchLocationId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", _databaseFixture.TestData.MatchLocations.First().MatchLocationId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
@@ -106,7 +106,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var filter = new StatisticsFilter { Competition = _databaseFixture.TestData.Competitions.First() };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
@@ -123,7 +123,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var filter = new StatisticsFilter { Season = _databaseFixture.TestData.Competitions.First().Seasons.First() };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
@@ -171,7 +171,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = results.SingleOrDefault(x => x.Result.BowlingFiguresId == expectedBowler.BowlingFiguresId);
                 Assert.NotNull(result);
 
-                Assert.Equal(expectedBowler.Bowler.Player.PlayerId, result.Player.PlayerId);
+                Assert.Equal(expectedBowler.Bowler.Player.PlayerId, result!.Player.PlayerId);
                 Assert.Equal(expectedBowler.Bowler.Player.PlayerRoute, result.Player.PlayerRoute);
                 Assert.Equal(expectedBowler.Bowler.PlayerIdentityId, result.Player.PlayerIdentities.First().PlayerIdentityId);
                 Assert.Equal(expectedBowler.Bowler.PlayerIdentityName, result.Player.PlayerIdentities.First().PlayerIdentityName);
@@ -194,7 +194,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = results.SingleOrDefault(x => x.Result.BowlingFiguresId == expectedBowler.BowlingFiguresId);
                 Assert.NotNull(result);
 
-                Assert.Equal(expectedBowler.Overs, result.Result.Overs);
+                Assert.Equal(expectedBowler.Overs, result!.Result.Overs);
                 Assert.Equal(expectedBowler.Maidens, result.Result.Maidens);
                 Assert.Equal(expectedBowler.RunsConceded, result.Result.RunsConceded);
                 Assert.Equal(expectedBowler.Wickets, result.Result.Wickets);
@@ -217,7 +217,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = results.SingleOrDefault(x => x.Result.BowlingFiguresId == expectedBowler.BowlingFiguresId);
                 Assert.NotNull(result);
 
-                Assert.Equal(expectedBowler.Bowler.Team.TeamId, result.Team.TeamId);
+                Assert.Equal(expectedBowler.Bowler.Team.TeamId, result!.Team.TeamId);
                 Assert.Equal(expectedBowler.Bowler.Team.TeamName, result.Team.TeamName);
             }
         }
@@ -240,7 +240,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     var result = results.SingleOrDefault(x => x.Result.BowlingFiguresId == expectedBowler.BowlingFiguresId);
                     Assert.NotNull(result);
 
-                    Assert.Equal(innings.BattingTeam.Team.TeamId, result.OppositionTeam.TeamId);
+                    Assert.Equal(innings.BattingTeam.Team.TeamId, result!.OppositionTeam.TeamId);
                     Assert.Equal(innings.BattingTeam.Team.TeamName, result.OppositionTeam.TeamName);
                 }
             }
@@ -265,7 +265,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                         var result = results.SingleOrDefault(x => x.Result.BowlingFiguresId == expectedBowler.BowlingFiguresId);
                         Assert.NotNull(result);
 
-                        Assert.Equal(match.MatchRoute, result.Match.MatchRoute);
+                        Assert.Equal(match.MatchRoute, result!.Match.MatchRoute);
                         Assert.Equal(match.StartTime, result.Match.StartTime);
                         Assert.Equal(match.MatchName, result.Match.MatchName);
                     }
@@ -304,7 +304,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Player = _databaseFixture.TestData.BowlerWithMultipleIdentities
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND PlayerId = @PlayerId", new Dictionary<string, object> { { "PlayerId", _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND PlayerId = @PlayerId", new Dictionary<string, object> { { "PlayerId", _databaseFixture.TestData.BowlerWithMultipleIdentities!.PlayerId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
@@ -328,16 +328,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     PageSize = int.MaxValue
                 },
-                Club = _databaseFixture.TestData.TeamWithFullDetails.Club
+                Club = _databaseFixture.TestData.TeamWithFullDetails!.Club
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithFullDetails.Club.ClubId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithFullDetails.Club.ClubId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
-                .SelectMany(x => x.MatchInnings.Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId))
                 .SelectMany(x => x.BowlingFigures)
                 .ToList();
             Assert.Equal(expected.Count, results.Count());
@@ -359,13 +359,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Team = _databaseFixture.TestData.TeamWithFullDetails
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails.TeamId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails!.TeamId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
-                .SelectMany(x => x.MatchInnings.Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId))
                 .SelectMany(x => x.BowlingFigures)
                 .ToList();
             Assert.Equal(expected.Count, results.Count());
@@ -387,7 +387,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 MatchLocation = _databaseFixture.TestData.MatchLocations.First()
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", _databaseFixture.TestData.MatchLocations.First().MatchLocationId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", _databaseFixture.TestData.MatchLocations.First().MatchLocationId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
@@ -415,7 +415,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Competition = _databaseFixture.TestData.Competitions.First()
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
@@ -443,7 +443,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Season = _databaseFixture.TestData.Competitions.First().Seasons.First()
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);

@@ -121,7 +121,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Schools
                 var result = results.SingleOrDefault(x => x.SchoolId == school.SchoolId);
 
                 Assert.NotNull(result);
-                Assert.Equal(school.SchoolName, result.SchoolName);
+                Assert.Equal(school.SchoolName, result!.SchoolName);
                 Assert.Equal(school.SchoolRoute, result.SchoolRoute);
                 Assert.Equal(school.UntilYear, result.UntilYear);
             }
@@ -138,14 +138,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Schools
             {
                 var schoolResult = results.SingleOrDefault(x => x.SchoolId == school.SchoolId);
                 Assert.NotNull(schoolResult);
-                Assert.Equal(school.Teams.Count, schoolResult.Teams.Count);
+                Assert.Equal(school.Teams.Count, schoolResult!.Teams.Count);
 
                 foreach (var team in school.Teams)
                 {
                     var schoolTeamResult = schoolResult.Teams.SingleOrDefault(x => x.TeamId == team.TeamId);
                     Assert.NotNull(schoolTeamResult);
 
-                    Assert.Equal(team.TeamType, schoolTeamResult.TeamType);
+                    Assert.Equal(team.TeamType, schoolTeamResult!.TeamType);
                     Assert.Equal(team.UntilYear, schoolTeamResult.UntilYear);
                     Assert.Equal(team.PlayerType, schoolTeamResult.PlayerType);
                 }

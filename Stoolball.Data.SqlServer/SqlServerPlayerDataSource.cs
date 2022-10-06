@@ -29,7 +29,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc/>
-        public async Task<List<Player>> ReadPlayers(PlayerFilter filter)
+        public async Task<List<Player>> ReadPlayers(PlayerFilter? filter)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -39,7 +39,7 @@ namespace Stoolball.Data.SqlServer
 
 
         /// <inheritdoc/>
-        public async Task<List<Player>> ReadPlayers(PlayerFilter filter, IDbConnection connection)
+        public async Task<List<Player>> ReadPlayers(PlayerFilter? filter, IDbConnection connection)
         {
             if (filter is null)
             {
@@ -84,7 +84,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of player identities based on a query
         /// </summary>
         /// <returns>A list of <see cref="PlayerIdentity"/> objects. An empty list if no player identities are found.</returns>
-        public async Task<List<PlayerIdentity>> ReadPlayerIdentities(PlayerFilter filter)
+        public async Task<List<PlayerIdentity>> ReadPlayerIdentities(PlayerFilter? filter)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -115,7 +115,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary> 
         /// Adds standard filters to the WHERE clause
         /// </summary> 
-        private (string where, Dictionary<string, object> parameters) BuildWhereClause(PlayerFilter filter)
+        private (string where, Dictionary<string, object> parameters) BuildWhereClause(PlayerFilter? filter)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();

@@ -29,11 +29,11 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of schools that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalSchools(SchoolFilter schoolQuery)
+        public async Task<int> ReadTotalSchools(SchoolFilter? filter)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var (where, parameters) = BuildWhereClause(schoolQuery);
+                var (where, parameters) = BuildWhereClause(filter);
                 return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(DISTINCT sc.SchoolId)
                             FROM {Tables.School} AS sc
                             INNER JOIN {Tables.SchoolVersion} AS sv ON sc.SchoolId = sv.SchoolId
@@ -50,7 +50,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of schools based on a query
         /// </summary>
         /// <returns>A list of <see cref="School"/> objects. An empty list if no schools are found.</returns>
-        public async Task<List<School>> ReadSchools(SchoolFilter filter)
+        public async Task<List<School>> ReadSchools(SchoolFilter? filter)
         {
             if (filter == null) { filter = new SchoolFilter(); }
 
@@ -105,7 +105,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(SchoolFilter filter)
+        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(SchoolFilter? filter)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();

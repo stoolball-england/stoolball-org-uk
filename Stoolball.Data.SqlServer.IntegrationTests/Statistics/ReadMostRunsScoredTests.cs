@@ -68,15 +68,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var filter = new StatisticsFilter { Team = _databaseFixture.TestData.TeamWithFullDetails };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails.TeamId! } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails!.TeamId! } }));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, Mock.Of<IPlayerDataSource>());
 
             var result = await dataSource.ReadTotalPlayersWithRunsScored(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches
-              .Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
+              .Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
               .SelectMany(x => x.MatchInnings)
-              .Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value)
+              .Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
               .SelectMany(x => x.PlayerInnings)
               .Where(x => x.RunsScored.HasValue)
               .Select(x => x.Batter.Player.PlayerId)

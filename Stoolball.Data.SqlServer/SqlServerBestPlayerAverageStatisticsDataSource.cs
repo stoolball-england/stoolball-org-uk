@@ -21,7 +21,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBattingAverage(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBattingAverage(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -29,7 +29,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingAverage(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingAverage(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -37,7 +37,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestEconomyRate(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestEconomyRate(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -45,7 +45,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBattingStrikeRate(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBattingStrikeRate(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -53,7 +53,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingStrikeRate(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingStrikeRate(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -61,7 +61,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<int> ReadTotalPlayersWithBattingAverage(StatisticsFilter filter)
+        public async Task<int> ReadTotalPlayersWithBattingAverage(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -69,7 +69,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<int> ReadTotalPlayersWithBowlingAverage(StatisticsFilter filter)
+        public async Task<int> ReadTotalPlayersWithBowlingAverage(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -77,7 +77,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<int> ReadTotalPlayersWithEconomyRate(StatisticsFilter filter)
+        public async Task<int> ReadTotalPlayersWithEconomyRate(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -85,7 +85,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<int> ReadTotalPlayersWithBattingStrikeRate(StatisticsFilter filter)
+        public async Task<int> ReadTotalPlayersWithBattingStrikeRate(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -93,7 +93,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<int> ReadTotalPlayersWithBowlingStrikeRate(StatisticsFilter filter)
+        public async Task<int> ReadTotalPlayersWithBowlingStrikeRate(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
