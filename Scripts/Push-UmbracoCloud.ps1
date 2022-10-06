@@ -45,7 +45,17 @@ foreach ($folder in $foldersToCopy) {
     $version = (Get-Random).ToString();
     $targetFile = "$cloudRoot\src\$folder\wwwroot\service-worker.js"
     if (Test-Path $targetFile) {
-        (Get-Content $targetFile) -Replace "version = '1.0.0'", "version = '$version'" | Set-Content $targetFile
+        (Get-Content $targetFile).Replace('version = "__ServiceWorkerVersion__"', "version = '$version'") | Set-Content $targetFile
+    }
+
+    $targetFile = "$cloudRoot\src\$folder\wwwroot\js\register-service-worker.js"
+    if (Test-Path $targetFile) {
+        (Get-Content $targetFile).Replace('__ServiceWorkerVersion__', "$version") | Set-Content $targetFile
+    }
+
+    $targetFile = "$cloudRoot\src\$folder\appsettings.Production.json"
+    if (Test-Path $targetFile) {
+        (Get-Content $targetFile).Replace("__SmidgeVersion__", "$version") | Set-Content $targetFile
     }
 }    
     

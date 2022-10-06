@@ -1,4 +1,4 @@
-﻿const version = "1.0.1";
+﻿const version = "__ServiceWorkerVersion__";
 const coreCache = version + "_core";
 const cacheIDs = [coreCache];
 
