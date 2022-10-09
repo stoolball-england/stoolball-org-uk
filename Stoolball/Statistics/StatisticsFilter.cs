@@ -11,17 +11,17 @@ namespace Stoolball.Statistics
 {
     public class StatisticsFilter
     {
-        public Club Club { get; set; }
-        public Team Team { get; set; }
+        public Club? Club { get; set; }
+        public Team? Team { get; set; }
         public List<Guid> OppositionTeamIds { get; internal set; } = new List<Guid>();
         public bool SwapTeamAndOppositionFilters { get; set; }
-        public Player Player { get; set; }
+        public Player? Player { get; set; }
         public List<Guid> BowledByPlayerIdentityIds { get; internal set; } = new List<Guid>();
         public List<Guid> CaughtByPlayerIdentityIds { get; internal set; } = new List<Guid>();
         public List<Guid> RunOutByPlayerIdentityIds { get; internal set; } = new List<Guid>();
-        public Season Season { get; set; }
-        public Competition Competition { get; set; }
-        public MatchLocation MatchLocation { get; set; }
+        public Season? Season { get; set; }
+        public Competition? Competition { get; set; }
+        public MatchLocation? MatchLocation { get; set; }
         public List<Guid> TournamentIds { get; internal set; } = new List<Guid>();
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
         public List<PlayerType> PlayerTypes { get; internal set; } = new List<PlayerType>();

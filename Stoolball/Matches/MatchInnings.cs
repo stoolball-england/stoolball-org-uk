@@ -20,8 +20,8 @@ namespace Stoolball.Matches
 
         public Guid? BattingMatchTeamId { get; set; }
         public Guid? BowlingMatchTeamId { get; set; }
-        public TeamInMatch BattingTeam { get; set; }
-        public TeamInMatch BowlingTeam { get; set; }
+        public TeamInMatch? BattingTeam { get; set; }
+        public TeamInMatch? BowlingTeam { get; set; }
 
         public List<OverSet> OverSets { get; internal set; } = new List<OverSet>();
 

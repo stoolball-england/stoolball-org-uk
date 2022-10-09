@@ -13,7 +13,7 @@ namespace Stoolball.Statistics
                 throw new ArgumentNullException(nameof(player));
             }
 
-            var teamNames = player.PlayerIdentities.OrderByDescending(x => x.TotalMatches).Select(x => x.Team.TeamName).Distinct();
+            var teamNames = player.PlayerIdentities.Where(x => x.Team?.TeamName != null).OrderByDescending(x => x.TotalMatches).Select(x => x.Team!.TeamName).Distinct();
             if (teamNames.Count() > 3)
             {
                 teamNames = teamNames.Take(3).Append("others");

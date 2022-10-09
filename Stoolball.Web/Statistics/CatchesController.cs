@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
@@ -30,6 +31,7 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterHumanizer,
                   async filter =>
                   {
+                      if (filter.Player == null) { throw new ArgumentNullException(nameof(filter)); }
                       var catchesFilter = filter.Clone();
                       catchesFilter.Player = null;
                       catchesFilter.CaughtByPlayerIdentityIds = filter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList();

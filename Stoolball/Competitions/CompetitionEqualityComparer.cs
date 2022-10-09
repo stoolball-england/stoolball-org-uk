@@ -4,7 +4,7 @@ namespace Stoolball.Competitions
 {
     public class CompetitionEqualityComparer : EqualityComparer<Competition>
     {
-        public override bool Equals(Competition x, Competition y)
+        public override bool Equals(Competition? x, Competition? y)
         {
             return x?.CompetitionId == y?.CompetitionId;
         }

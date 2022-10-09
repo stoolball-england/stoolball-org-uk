@@ -19,7 +19,7 @@ namespace Stoolball.Email
         /// <param name="userIsAuthenticated"></param>
         /// <param name="excludedAddress">An address which may be obfuscated but may not be entirely hidden</param>
         /// <returns>Updated HTML</returns>
-        public string ProtectEmailAddresses(string html, bool userIsAuthenticated, string excludedAddress)
+        public string ProtectEmailAddresses(string html, bool userIsAuthenticated, string? excludedAddress)
         {
             if (string.IsNullOrEmpty(html)) return html;
 
@@ -63,14 +63,14 @@ namespace Stoolball.Email
             targetNode.InsertAfter(targetNode.OwnerDocument.CreateTextNode(REPLACEMENT_HTML_AFTER_LINK), signInLink);
         }
 
-        private static bool AllowEmailAddress(string emailAddress, bool userIsAuthenticated, string excludedAddress)
+        private static bool AllowEmailAddress(string emailAddress, bool userIsAuthenticated, string? excludedAddress)
         {
             if (userIsAuthenticated) return true;
             if (emailAddress == excludedAddress) return true;
             return false;
         }
 
-        private static void ProtectTextNode(HtmlTextNode textNode, HtmlNode targetNode, bool userIsAuthenticated, string excludedAddress)
+        private static void ProtectTextNode(HtmlTextNode textNode, HtmlNode targetNode, bool userIsAuthenticated, string? excludedAddress)
         {
             var match = Regex.Match(textNode.OuterHtml, Constants.RegularExpressions.Email);
             if (match.Success)

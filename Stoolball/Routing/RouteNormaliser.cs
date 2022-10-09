@@ -19,7 +19,7 @@ namespace Stoolball.Routing
         /// <param name="expectedPrefixAndRegex">Dictionary where the key is the expected prefix and the value is the valid entity route regex</param>
         /// <returns>prefix/entity-route</returns>
         /// <exception cref="ArgumentException">If the <c>route</c> or the <c>expectedPrefix</c> is not in a valid format</exception>
-        public string NormaliseRouteToEntity(string route, Dictionary<string, string> expectedPrefixAndRegex)
+        public string NormaliseRouteToEntity(string route, Dictionary<string, string?> expectedPrefixAndRegex)
         {
             if (string.IsNullOrWhiteSpace(route) && route != "/")
             {
@@ -31,10 +31,10 @@ namespace Stoolball.Routing
                 throw new ArgumentNullException(nameof(expectedPrefixAndRegex));
             }
 
-            ArgumentException exception = null;
+            ArgumentException? exception = null;
             foreach (var expectedPrefix in expectedPrefixAndRegex.Keys)
             {
-                var entityRouteRegex = string.IsNullOrEmpty(expectedPrefixAndRegex[expectedPrefix]) ? "^[a-z0-9-]+$" : expectedPrefixAndRegex[expectedPrefix];
+                var entityRouteRegex = string.IsNullOrEmpty(expectedPrefixAndRegex[expectedPrefix]) ? "^[a-z0-9-]+$" : expectedPrefixAndRegex[expectedPrefix]!;
 
                 if (string.IsNullOrWhiteSpace(expectedPrefix) && expectedPrefix != "/")
                 {
@@ -91,9 +91,9 @@ namespace Stoolball.Routing
         /// <param name="expectedPrefix">prefix</param>
         /// <param name="entityRouteRegex">(valid|alsoValid)</param>
         /// <returns>prefix/entity-route</returns>
-        public string NormaliseRouteToEntity(string route, string expectedPrefix, string entityRouteRegex)
+        public string NormaliseRouteToEntity(string route, string expectedPrefix, string? entityRouteRegex)
         {
-            return NormaliseRouteToEntity(route, new Dictionary<string, string> { { expectedPrefix, entityRouteRegex } });
+            return NormaliseRouteToEntity(route, new Dictionary<string, string?> { { expectedPrefix, entityRouteRegex } });
         }
 
         /// <summary>

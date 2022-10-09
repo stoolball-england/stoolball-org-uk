@@ -2,6 +2,6 @@
 {
     public interface ISocialMediaAccountFormatter
     {
-        string PrefixAtSign(string account);
+        string? PrefixAtSign(string? account);
     }
 }

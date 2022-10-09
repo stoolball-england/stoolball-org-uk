@@ -4,7 +4,7 @@ namespace Stoolball.Competitions
 {
     public class SeasonEqualityComparer : EqualityComparer<Season>
     {
-        public override bool Equals(Season x, Season y)
+        public override bool Equals(Season? x, Season? y)
         {
             return x?.SeasonRoute == y?.SeasonRoute;
         }

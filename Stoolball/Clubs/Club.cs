@@ -15,13 +15,13 @@ namespace Stoolball.Clubs
 
         [Display(Name = "Club name")]
         [Required]
-        public string ClubName { get; set; }
+        public string? ClubName { get; set; }
 
         public List<Team> Teams { get; internal set; } = new List<Team>();
 
         public Guid? MemberGroupKey { get; set; }
-        public string MemberGroupName { get; set; }
-        public string ClubRoute { get; set; }
+        public string? MemberGroupName { get; set; }
+        public string? ClubRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
         public Uri EntityUri {

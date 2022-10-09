@@ -25,7 +25,7 @@ namespace Stoolball.Matches
 
             if (match.MatchType == MatchType.TrainingSession)
             {
-                var matchName = "Training session" + (match.Teams.Any() ? " for " + match.Teams.Select(x => x.Team.TeamName).ToList().Humanize() : string.Empty);
+                var matchName = "Training session" + (match.Teams.Any() ? " for " + match.Teams.Select(x => x.Team?.TeamName).ToList().Humanize() : string.Empty);
                 if (match.MatchResultType == MatchResultType.Cancelled)
                 {
                     matchName += " (cancelled)";

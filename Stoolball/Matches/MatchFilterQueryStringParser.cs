@@ -6,7 +6,7 @@ namespace Stoolball.Matches
 {
     public class MatchFilterQueryStringParser : BaseFilterQueryStringParser, IMatchFilterQueryStringParser
     {
-        public MatchFilter ParseQueryString(MatchFilter filter, string queryString)
+        public MatchFilter ParseQueryString(MatchFilter filter, string? queryString)
         {
             if (filter == null) { throw new ArgumentNullException(nameof(filter)); }
 

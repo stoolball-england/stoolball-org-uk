@@ -4,12 +4,12 @@ namespace Stoolball.Statistics
 {
     public class MatchFilterQueryStringSerializer : QueryStringSerializerBase, IMatchFilterQueryStringSerializer
     {
-        public string Serialize(MatchFilter filter)
+        public string Serialize(MatchFilter? filter)
         {
             return Serialize(filter, null);
         }
 
-        public string Serialize(MatchFilter filter, MatchFilter defaultFilter)
+        public string Serialize(MatchFilter? filter, MatchFilter? defaultFilter)
         {
             filter = filter ?? new MatchFilter();
             defaultFilter = defaultFilter ?? new MatchFilter();

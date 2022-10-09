@@ -16,7 +16,7 @@ namespace Stoolball.Matches
     {
         public Guid? MatchId { get; set; }
 
-        public string MatchName { get; set; }
+        public string? MatchName { get; set; }
         public bool UpdateMatchNameAutomatically { get; set; }
 
         public string MatchFullName(Func<DateTimeOffset, string> dateTimeFormatter)
@@ -39,7 +39,7 @@ namespace Stoolball.Matches
             return fullName.ToString();
         }
 
-        public MatchLocation MatchLocation { get; set; }
+        public MatchLocation? MatchLocation { get; set; }
 
         [Display(Name = "Match date")]
         public DateTimeOffset StartTime { get; set; }
@@ -50,7 +50,7 @@ namespace Stoolball.Matches
         public int? PlayersPerTeam { get; set; }
         public bool EnableBonusOrPenaltyRuns { get; set; }
         public bool LastPlayerBatsOn { get; set; }
-        public Tournament Tournament { get; set; }
+        public Tournament? Tournament { get; set; }
         public int? OrderInTournament { get; set; }
         public bool InningsOrderIsKnown { get; set; }
         public MatchResultType? MatchResultType { get; set; }
@@ -84,9 +84,9 @@ namespace Stoolball.Matches
         public List<MatchAward> Awards { get; internal set; } = new List<MatchAward>();
 
         [Display(Name = "Notes")]
-        public string MatchNotes { get; set; }
-        public string MatchRoute { get; set; }
-        public Season Season { get; set; }
+        public string? MatchNotes { get; set; }
+        public string? MatchRoute { get; set; }
+        public Season? Season { get; set; }
         public List<HtmlComment> Comments { get; internal set; } = new List<HtmlComment>();
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
         public Uri EntityUri {
@@ -116,8 +116,8 @@ namespace Stoolball.Matches
 
                 if (Season != null)
                 {
-                    var the = Season.Competition.CompetitionName.ToUpperInvariant().Contains("THE ");
-                    description.Append(" in ").Append(the ? string.Empty : "the ").Append(Season.Competition.CompetitionName);
+                    var the = Season.Competition?.CompetitionName?.ToUpperInvariant().Contains("THE ") ?? false;
+                    description.Append(" in ").Append(the ? string.Empty : "the ").Append(Season.Competition?.CompetitionName);
                 }
 
                 description.Append('.');
@@ -175,7 +175,7 @@ namespace Stoolball.Matches
         {
             return new MatchListing
             {
-                MatchId = MatchId.Value,
+                MatchId = MatchId,
                 MatchInnings = MatchInnings,
                 MatchName = MatchName,
                 MatchRoute = MatchRoute,

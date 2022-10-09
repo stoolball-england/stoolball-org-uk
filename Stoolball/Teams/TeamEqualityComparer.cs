@@ -4,7 +4,7 @@ namespace Stoolball.Teams
 {
     public class TeamEqualityComparer : EqualityComparer<Team>
     {
-        public override bool Equals(Team x, Team y)
+        public override bool Equals(Team? x, Team? y)
         {
             if (x?.TeamId != null && y?.TeamId != null)
             {

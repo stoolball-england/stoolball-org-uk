@@ -4,6 +4,6 @@ namespace Stoolball
 {
     public interface IUrlFormatter
     {
-        Uri PrefixHttpsProtocol(string url);
+        Uri? PrefixHttpsProtocol(string? url);
     }
 }

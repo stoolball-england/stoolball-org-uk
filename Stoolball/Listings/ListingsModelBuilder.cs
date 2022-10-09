@@ -13,9 +13,9 @@ namespace Stoolball.Listings
             Func<TViewModel> buildInitialState,
             Func<TFilter, Task<int>> totalListings,
             Func<TFilter, Task<List<TModel>>> listings,
-            string pageTitle,
+            string? pageTitle,
             Uri pageUrl,
-            string queryString)
+            string? queryString)
         {
             if (buildInitialState is null)
             {

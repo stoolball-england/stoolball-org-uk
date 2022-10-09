@@ -49,7 +49,7 @@ namespace Stoolball.Competitions
             return $"{competitionName}, {SeasonName()}".Trim();
         }
 
-        public Competition Competition { get; set; }
+        public Competition? Competition { get; set; }
 
         [Display(Name = "What year does the season start?")]
         [Required]
@@ -59,7 +59,7 @@ namespace Stoolball.Competitions
         [Display(Name = "What year does it end?")]
         public int UntilYear { get; set; }
 
-        public string Introduction { get; set; }
+        public string? Introduction { get; set; }
 
         [Display(Name = "How many players on a team?")]
         public int? PlayersPerTeam { get; set; }
@@ -79,7 +79,7 @@ namespace Stoolball.Competitions
         public List<PointsAdjustment> PointsAdjustments { get; internal set; } = new List<PointsAdjustment>();
 
         [Display(Name = "Results commentary")]
-        public string Results { get; set; }
+        public string? Results { get; set; }
 
         [Display(Name = "results table type")]
         public ResultsTableType ResultsTableType { get; set; }
@@ -88,7 +88,7 @@ namespace Stoolball.Competitions
 
         public bool EnableRunsConceded { get; set; }
 
-        public string SeasonRoute { get; set; }
+        public string? SeasonRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
         public Uri EntityUri {
@@ -114,7 +114,7 @@ namespace Stoolball.Competitions
                 }
                 for (var i = 0; i < totalTeamsToList; i++)
                 {
-                    description.Append(Teams[i].Team.TeamName);
+                    description.Append(Teams[i].Team?.TeamName);
                     if (i < (totalTeamsToList - 2)) description.Append(", ");
                     if (i == (totalTeamsToList - 2)) description.Append(" and ");
                 }

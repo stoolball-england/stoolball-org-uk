@@ -2,7 +2,7 @@
 {
     public interface IDataRedactor
     {
-        string RedactAll(string unredacted);
-        string RedactPersonalData(string unredacted);
+        string? RedactAll(string? unredacted);
+        string? RedactPersonalData(string? unredacted);
     }
 }

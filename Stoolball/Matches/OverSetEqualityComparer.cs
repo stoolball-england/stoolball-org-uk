@@ -4,7 +4,7 @@ namespace Stoolball.Matches
 {
     public class OverSetEqualityComparer : EqualityComparer<OverSet>
     {
-        public override bool Equals(OverSet x, OverSet y)
+        public override bool Equals(OverSet? x, OverSet? y)
         {
             return x?.OverSetId == y?.OverSetId;
         }

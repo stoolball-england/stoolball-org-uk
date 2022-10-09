@@ -19,7 +19,7 @@ namespace Stoolball.Matches
 
         [Display(Name = "Tournament name")]
         [Required]
-        public string TournamentName { get; set; }
+        public string? TournamentName { get; set; }
 
         public string TournamentFullName(Func<DateTimeOffset, string> dateTimeFormatter)
         {
@@ -40,9 +40,9 @@ namespace Stoolball.Matches
 
             var fullName = new StringBuilder(TournamentName);
 
-            var saysTournament = TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
+            var saysTournament = TournamentName?.ToUpperInvariant().Contains("TOURNAMENT") ?? false;
             var playerType = PlayerType.Humanize(LetterCasing.Sentence);
-            var saysPlayerType = Regex.IsMatch(TournamentName.Replace("'", string.Empty), $"\b{playerType}\b", RegexOptions.IgnoreCase); // Check for word boundaries to avoid "tournament" matching the player type "men"
+            var saysPlayerType = !string.IsNullOrEmpty(TournamentName) ? Regex.IsMatch(TournamentName.Replace("'", string.Empty), $"\b{playerType}\b", RegexOptions.IgnoreCase) : false; // Check for word boundaries to avoid "tournament" matching the player type "men"
 
             if (includePlayerType && !saysTournament && !saysPlayerType)
             {
@@ -63,7 +63,7 @@ namespace Stoolball.Matches
             return fullName.ToString();
         }
 
-        public MatchLocation TournamentLocation { get; set; }
+        public MatchLocation? TournamentLocation { get; set; }
         public DateTimeOffset StartTime { get; set; }
         public bool StartTimeIsKnown { get; set; }
 
@@ -87,8 +87,8 @@ namespace Stoolball.Matches
         public int? SpacesInTournament { get; set; }
 
         [Display(Name = "Notes")]
-        public string TournamentNotes { get; set; }
-        public string TournamentRoute { get; set; }
+        public string? TournamentNotes { get; set; }
+        public string? TournamentRoute { get; set; }
         public List<Season> Seasons { get; internal set; } = new List<Season>();
         public List<HtmlComment> Comments { get; internal set; } = new List<HtmlComment>();
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
@@ -112,13 +112,13 @@ namespace Stoolball.Matches
             if (Seasons.Count == 1)
             {
                 var season = Seasons.First();
-                var the = season.Competition.CompetitionName.ToUpperInvariant().Contains("THE ");
-                description.Append(" in ").Append(the ? string.Empty : "the ").Append(season.Competition.CompetitionName);
+                var the = season.Competition?.CompetitionName?.ToUpperInvariant().Contains("THE ") ?? false;
+                description.Append(" in ").Append(the ? string.Empty : "the ").Append(season.Competition?.CompetitionName);
             }
             else if (Seasons.Count > 1)
             {
                 description.Append(" in ");
-                description.Append(Seasons.Humanize(x => x.Competition.CompetitionName));
+                description.Append(Seasons.Humanize(x => x.Competition?.CompetitionName));
             }
 
             description.Append(seasonList);
@@ -138,7 +138,7 @@ namespace Stoolball.Matches
         {
             return new MatchListing
             {
-                MatchId = TournamentId.Value,
+                MatchId = TournamentId,
                 MatchName = TournamentName,
                 MatchRoute = TournamentRoute,
                 StartTime = StartTime,

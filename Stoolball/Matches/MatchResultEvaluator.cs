@@ -15,12 +15,12 @@ namespace Stoolball.Matches
                 throw new System.ArgumentNullException(nameof(match));
             }
 
-            if (match.MatchInnings != null && !match.MatchInnings.Any() || match.MatchInnings.Any(x => !x.Runs.HasValue)) return null;
-            if (match.Teams != null && !match.Teams.Any() || match.Teams.Any(x => !x.MatchTeamId.HasValue)) return null;
+            if (match.MatchInnings == null || !match.MatchInnings.Any() || match.MatchInnings.Any(x => !x.Runs.HasValue)) { return null; }
+            if (match.Teams == null || !match.Teams.Any() || match.Teams.Any(x => !x.MatchTeamId.HasValue)) { return null; }
 
             var totalRunsByTeam = match.MatchInnings.GroupBy(x => x.BattingMatchTeamId).Select(innings =>
             {
-                return (MatchTeamId: innings.First().BattingMatchTeamId.Value, Runs: innings.Sum(x => x.Runs));
+                return (MatchTeamId: innings.First().BattingMatchTeamId, Runs: innings.Sum(x => x.Runs));
             });
 
             var teamsWithWinningScore = totalRunsByTeam.Where(x => x.Runs == totalRunsByTeam.Max(y => y.Runs)).ToList();

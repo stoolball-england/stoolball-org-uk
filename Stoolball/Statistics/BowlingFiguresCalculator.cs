@@ -24,7 +24,7 @@ namespace Stoolball.Statistics
         {
             if (innings is null)
             {
-                throw new System.ArgumentNullException(nameof(innings));
+                throw new ArgumentNullException(nameof(innings));
             }
 
             // Get all bowlers who bowled, in the order they bowled
@@ -37,7 +37,7 @@ namespace Stoolball.Statistics
                                                             && x.Bowler != null
                                                             && !bowlerNames.Contains(x.Bowler.ComparableName())
                                                             && StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(x.DismissalType.Value))
-                                                .Select(x => x.Bowler).Distinct(new PlayerIdentityEqualityComparer()))
+                                                .Select(x => x.Bowler!).Distinct(new PlayerIdentityEqualityComparer()))
             {
                 bowlers.Add(bowlerOnBattingCard);
             }

@@ -5,7 +5,7 @@ namespace Stoolball.SocialMedia
 {
     public class YouTubeUrlNormaliser : IYouTubeUrlNormaliser
     {
-        public bool TryNormaliseUrl(Uri urlToParse, out Uri normalisedUrl)
+        public bool TryNormaliseUrl(Uri urlToParse, out Uri? normalisedUrl)
         {
             if (urlToParse is null)
             {
@@ -16,7 +16,7 @@ namespace Stoolball.SocialMedia
             return TryNormaliseUrl(urlToParse.ToString(), out normalisedUrl);
         }
 
-        public bool TryNormaliseUrl(string urlToParse, out Uri normalisedUrl)
+        public bool TryNormaliseUrl(string urlToParse, out Uri? normalisedUrl)
         {
             if (string.IsNullOrWhiteSpace(urlToParse))
             {

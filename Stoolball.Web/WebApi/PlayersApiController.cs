@@ -65,7 +65,7 @@ namespace Stoolball.Web.WebApi
             var value = new StringBuilder("match".ToQuantity(playerIdentity.TotalMatches.HasValue ? playerIdentity.TotalMatches.Value : 0));
             if (showTeam)
             {
-                value.Append(" for ").Append(playerIdentity.Team.TeamName);
+                value.Append(" for ").Append(playerIdentity.Team?.TeamName);
 
             }
             if (playerIdentity.FirstPlayed.HasValue)

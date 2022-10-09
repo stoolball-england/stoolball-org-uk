@@ -7,7 +7,7 @@ namespace Stoolball.Teams
 {
     public class TeamListingFilter : IListingsFilter
     {
-        public string Query { get; set; }
+        public string? Query { get; set; }
         public List<Guid> ExcludeTeamIds { get; internal set; } = new List<Guid>();
         public List<TeamType?> TeamTypes { get; internal set; } = new List<TeamType?>();
         public List<Guid> CompetitionIds { get; internal set; } = new List<Guid>();

@@ -19,32 +19,33 @@ namespace Stoolball
             _dataRedactor = dataRedactor ?? throw new System.ArgumentNullException(nameof(dataRedactor));
         }
 
-        public Club CreateAuditableCopy(Club club)
+        public Club? CreateAuditableCopy(Club? club)
         {
             if (club == null) { return null; }
             return new Club
             {
                 ClubId = club.ClubId,
                 ClubName = club.ClubName,
-                Teams = club.Teams.Select(x => CreateAuditableCopy(x)).ToList(),
+                Teams = club.Teams.Select(x => CreateAuditableCopy(x)).OfType<Team>().ToList(),
                 ClubRoute = club.ClubRoute,
                 MemberGroupKey = club.MemberGroupKey,
                 MemberGroupName = club.MemberGroupName
             };
         }
 
-        public Player CreateAuditableCopy(Player player)
+        public Player? CreateAuditableCopy(Player? player)
         {
+            if (player == null) { return null; }
             return new Player
             {
                 PlayerId = player.PlayerId,
                 PlayerRoute = player.PlayerRoute,
                 MemberKey = player.MemberKey,
-                PlayerIdentities = player.PlayerIdentities.Select(x => CreateAuditableCopy(x)).ToList()
+                PlayerIdentities = player.PlayerIdentities.Select(x => CreateAuditableCopy(x)).OfType<PlayerIdentity>().ToList()
             };
         }
 
-        public PlayerIdentity CreateAuditableCopy(PlayerIdentity playerIdentity)
+        public PlayerIdentity? CreateAuditableCopy(PlayerIdentity? playerIdentity)
         {
             if (playerIdentity == null) { return null; }
             return new PlayerIdentity
@@ -55,7 +56,7 @@ namespace Stoolball
             };
         }
 
-        public Team CreateAuditableCopy(Team team)
+        public Team? CreateAuditableCopy(Team? team)
         {
             if (team == null) { return null; }
             return new Team
@@ -85,19 +86,22 @@ namespace Stoolball
             };
         }
 
-        public Team CreateRedactedCopy(Team team)
+        public Team? CreateRedactedCopy(Team? team)
         {
             if (team == null) { return null; }
             var redacted = CreateAuditableCopy(team);
-            redacted.Introduction = _dataRedactor.RedactPersonalData(team.Introduction);
-            redacted.PlayingTimes = _dataRedactor.RedactPersonalData(team.PlayingTimes);
-            redacted.Cost = _dataRedactor.RedactPersonalData(team.Cost);
-            redacted.PublicContactDetails = _dataRedactor.RedactAll(team.PublicContactDetails);
-            redacted.PrivateContactDetails = _dataRedactor.RedactAll(team.PrivateContactDetails);
+            if (redacted != null)
+            {
+                redacted.Introduction = _dataRedactor.RedactPersonalData(team.Introduction);
+                redacted.PlayingTimes = _dataRedactor.RedactPersonalData(team.PlayingTimes);
+                redacted.Cost = _dataRedactor.RedactPersonalData(team.Cost);
+                redacted.PublicContactDetails = _dataRedactor.RedactAll(team.PublicContactDetails);
+                redacted.PrivateContactDetails = _dataRedactor.RedactAll(team.PrivateContactDetails);
+            }
             return redacted;
         }
 
-        public MatchLocation CreateAuditableCopy(MatchLocation matchLocation)
+        public MatchLocation? CreateAuditableCopy(MatchLocation? matchLocation)
         {
             if (matchLocation == null) { return null; }
             return new MatchLocation
@@ -119,7 +123,7 @@ namespace Stoolball
                 MemberGroupName = matchLocation.MemberGroupName
             };
         }
-        public MatchLocation CreateRedactedCopy(MatchLocation matchLocation)
+        public MatchLocation? CreateRedactedCopy(MatchLocation? matchLocation)
         {
             var redacted = CreateAuditableCopy(matchLocation);
             if (redacted != null)
@@ -129,9 +133,9 @@ namespace Stoolball
             return redacted;
         }
 
-        public Season CreateAuditableCopy(Season season)
+        public Season? CreateAuditableCopy(Season? season)
         {
-            if (season == null) return null;
+            if (season == null) { return null; }
             return new Season
             {
                 SeasonId = season.SeasonId,
@@ -159,7 +163,7 @@ namespace Stoolball
             };
         }
 
-        public Season CreateRedactedCopy(Season season)
+        public Season? CreateRedactedCopy(Season? season)
         {
             var redacted = CreateAuditableCopy(season);
             if (redacted != null)
@@ -170,9 +174,9 @@ namespace Stoolball
             return redacted;
         }
 
-        public Competition CreateAuditableCopy(Competition competition)
+        public Competition? CreateAuditableCopy(Competition? competition)
         {
-            if (competition == null) return null;
+            if (competition == null) { return null; }
             return new Competition
             {
                 CompetitionId = competition.CompetitionId,
@@ -191,12 +195,13 @@ namespace Stoolball
                 CompetitionRoute = competition.CompetitionRoute,
                 MemberGroupKey = competition.MemberGroupKey,
                 MemberGroupName = competition.MemberGroupName,
-                Seasons = competition.Seasons.Select(x => CreateAuditableCopy(x)).ToList()
+                Seasons = competition.Seasons.Select(x => CreateAuditableCopy(x)).OfType<Season>().ToList()
             };
         }
 
-        public Tournament CreateAuditableCopy(Tournament tournament)
+        public Tournament? CreateAuditableCopy(Tournament? tournament)
         {
+            if (tournament == null) { return null; }
             return new Tournament
             {
                 TournamentId = tournament.TournamentId,
@@ -228,7 +233,7 @@ namespace Stoolball
             }).ToList();
         }
 
-        public Competition CreateRedactedCopy(Competition competition)
+        public Competition? CreateRedactedCopy(Competition? competition)
         {
             var redacted = CreateAuditableCopy(competition);
             if (redacted != null)
@@ -240,10 +245,13 @@ namespace Stoolball
             return redacted;
         }
 
-        public Tournament CreateRedactedCopy(Tournament tournament)
+        public Tournament? CreateRedactedCopy(Tournament? tournament)
         {
             var redacted = CreateAuditableCopy(tournament);
-            redacted.TournamentNotes = _dataRedactor.RedactPersonalData(tournament.TournamentNotes);
+            if (redacted != null)
+            {
+                redacted.TournamentNotes = _dataRedactor.RedactPersonalData(redacted.TournamentNotes);
+            }
             return redacted;
         }
     }

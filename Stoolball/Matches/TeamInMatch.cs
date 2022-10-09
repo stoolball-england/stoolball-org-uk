@@ -7,12 +7,12 @@ namespace Stoolball.Matches
     {
         public Guid? MatchTeamId { get; set; }
 
-        public Team Team { get; set; }
+        public Team? Team { get; set; }
 
         public TeamRole TeamRole { get; set; }
 
         public bool? WonToss { get; set; }
         public bool? BattedFirst { get; set; }
-        public string PlayingAsTeamName { get; set; }
+        public string? PlayingAsTeamName { get; set; }
     }
 }

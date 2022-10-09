@@ -12,6 +12,6 @@ namespace Stoolball.Listings
             Func<TFilter, Task<List<TModel>>> listings,
             string pageTitle,
             Uri pageUrl,
-            string queryString);
+            string? queryString);
     }
 }

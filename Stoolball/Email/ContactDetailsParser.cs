@@ -5,7 +5,7 @@ namespace Stoolball.Email
 {
     public class ContactDetailsParser : IContactDetailsParser
     {
-        public string ParseFirstEmailAddress(string html)
+        public string? ParseFirstEmailAddress(string html)
         {
             if (string.IsNullOrEmpty(html))
             {
@@ -37,7 +37,7 @@ namespace Stoolball.Email
             return null;
         }
 
-        public string ParseFirstPhoneNumber(string html)
+        public string? ParseFirstPhoneNumber(string html)
         {
             if (string.IsNullOrEmpty(html))
             {

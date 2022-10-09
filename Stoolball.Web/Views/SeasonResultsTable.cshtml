@@ -152,9 +152,12 @@
                             // Apply points adjustments
                             if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                             {
-                                foreach (var point in Model.Season.PointsAdjustments)
+                                foreach (var adjustment in Model.Season.PointsAdjustments)
                                 {
-                                    rows[point.Team.TeamId!.Value].Points += point.Points;
+                                    if (adjustment.Team != null && adjustment.Points.HasValue)
+                                    {
+                                        rows[adjustment.Team.TeamId!.Value].Points += adjustment.Points.Value;
+                                    }
                                 }
                             }
 
@@ -168,7 +171,7 @@
                             foreach (var row in sortedRows)
                             {
                                 <tr>
-                                    <th scope="row"><a href="@row.Team.TeamRoute">@row.Team.TeamName</a></th>
+                                    <th scope="row"><a href="@row.Team?.TeamRoute">@row.Team?.TeamName</a></th>
                                     <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Played</span><span class="results-table__numeric-value">@row.Played</span></td>
                                     <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Won</span><span class="results-table__numeric-value">@row.Won</span></td>
                                     <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Lost</span><span class="results-table__numeric-value">@row.Lost</span></td>
@@ -190,7 +193,7 @@
                             }
                             foreach (var team in withdrawnTeams)
                             {
-                                <tr class="text-muted"><th scope="row"><a href="@team.Team.TeamRoute">@team.Team.TeamName</a></th><td colspan="@(columns-1)">Withdrew from season</td></tr>
+                                <tr class="text-muted"><th scope="row"><a href="@team.Team?.TeamRoute">@team.Team?.TeamName</a></th><td colspan="@(columns-1)">Withdrew from season</td></tr>
                             }
                         }
                     </tbody>
@@ -205,11 +208,11 @@
                             var reason = !string.IsNullOrEmpty(adjustment.Reason) ? $"for {adjustment.Reason}" : string.Empty;
                             if (adjustment.Points > 0)
                             {
-                                <li>@("point".ToQuantity(adjustment.Points)) awarded to @adjustment.Team.TeamName @reason</li>
+                                <li>@("point".ToQuantity(adjustment.Points.Value)) awarded to @adjustment.Team?.TeamName @reason</li>
                             }
                             else if (adjustment.Points < 0)
                             {
-                                <li>@("point".ToQuantity(adjustment.Points *-1)) deducted from @adjustment.Team.TeamName @reason</li>
+                                <li>@("point".ToQuantity(adjustment.Points.Value *-1)) deducted from @adjustment.Team?.TeamName @reason</li>
                             }
                         }
                     </ul>

@@ -1,8 +1,8 @@
-﻿using Stoolball.Competitions;
-using Stoolball.Matches;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Stoolball.Competitions;
+using Stoolball.Matches;
 
 namespace Stoolball.Teams
 {
@@ -10,7 +10,7 @@ namespace Stoolball.Teams
     {
         public IList<Season> SelectPossibleSeasons(IEnumerable<TeamInSeason> seasons, MatchType matchType)
         {
-            return seasons.Where(x => x.Season.MatchTypes.Contains(matchType) && !x.WithdrawnDate.HasValue && x.Season.UntilYear >= DateTime.Now.Year).Select(x => x.Season).ToList();
+            return seasons.Where(x => x.Season != null && x.Season.MatchTypes.Contains(matchType) && !x.WithdrawnDate.HasValue && x.Season.UntilYear >= DateTime.Now.Year).Select(x => x.Season!).ToList();
         }
     }
 }

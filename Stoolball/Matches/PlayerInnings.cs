@@ -9,17 +9,17 @@ namespace Stoolball.Matches
     {
         public Guid? PlayerInningsId { get; set; }
 
-        public Match Match { get; set; }
+        public Match? Match { get; set; }
 
-        public PlayerIdentity Batter { get; set; }
+        public PlayerIdentity? Batter { get; set; }
 
         public int BattingPosition { get; set; }
 
         public DismissalType? DismissalType { get; set; }
 
-        public PlayerIdentity DismissedBy { get; set; }
+        public PlayerIdentity? DismissedBy { get; set; }
 
-        public PlayerIdentity Bowler { get; set; }
+        public PlayerIdentity? Bowler { get; set; }
 
         public int? RunsScored { get; set; }
 

@@ -15,7 +15,7 @@ namespace Stoolball
             Serializer = new NameValueCollection();
         }
 
-        protected void Serialize(string value, string key)
+        protected void Serialize(string? value, string key)
         {
             if (!string.IsNullOrWhiteSpace(value))
             {
@@ -23,7 +23,7 @@ namespace Stoolball
             }
         }
 
-        protected void Serialize(string value, string key, string defaultValue)
+        protected void Serialize(string? value, string? key, string? defaultValue)
         {
             if (value != defaultValue)
             {
@@ -132,7 +132,7 @@ namespace Stoolball
 
         protected void Serialize<T>(List<T> value, string key)
         {
-            var sortedList = value.Select(x => x.ToString()).OrderBy(x => x);
+            var sortedList = value.Select(x => x?.ToString()).OrderBy(x => x);
             foreach (var item in sortedList)
             {
                 Serializer.Add(key, item);
@@ -141,7 +141,7 @@ namespace Stoolball
 
         protected void Serialize<T>(List<T> value, string key, List<T> defaultValues)
         {
-            var sortedList = value.Select(x => x.ToString()).Where(x => !defaultValues.Select(d => d.ToString()).Contains(x)).OrderBy(x => x);
+            var sortedList = value.Select(x => x?.ToString()).Where(x => !defaultValues.Select(d => d?.ToString()).Contains(x)).OrderBy(x => x);
             foreach (var item in sortedList)
             {
                 Serializer.Add(key, item);

@@ -19,7 +19,7 @@ namespace Stoolball.Teams
 
         [Display(Name = "Team name")]
         [Required]
-        public string TeamName { get; set; }
+        public string? TeamName { get; set; }
 
         /// <summary>
         /// Gets the name of the team and the type of players (if not stated in the name)
@@ -72,9 +72,9 @@ namespace Stoolball.Teams
             return name;
         }
 
-        public Club Club { get; set; }
+        public Club? Club { get; set; }
         public bool ClubMark { get; set; }
-        public School School { get; set; }
+        public School? School { get; set; }
 
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
         public List<TeamInSeason> Seasons { get; internal set; } = new List<TeamInSeason>();
@@ -89,7 +89,7 @@ namespace Stoolball.Teams
 
         public List<Player> Players { get; internal set; } = new List<Player>();
 
-        public string Introduction { get; set; }
+        public string? Introduction { get; set; }
 
         [Display(Name = "Minimum age for players")]
         [Required]
@@ -102,36 +102,36 @@ namespace Stoolball.Teams
         public int? UntilYear { get; set; }
 
         [Display(Name = "Club or team website")]
-        public string Website { get; set; }
+        public string? Website { get; set; }
 
         [Display(Name = "Twitter account")]
-        public string Twitter { get; set; }
+        public string? Twitter { get; set; }
 
         [Display(Name = "Facebook page or group")]
         [RegularExpression(@"^((https?:\/\/)?(m.|www.|)facebook.com\/.+|)", ErrorMessage = "Please enter a valid Facebook link")]
-        public string Facebook { get; set; }
+        public string? Facebook { get; set; }
 
         [Display(Name = "Instagram account")]
-        public string Instagram { get; set; }
+        public string? Instagram { get; set; }
 
         [Display(Name = "YouTube channel")]
         [RegularExpression(@"^((https?:\/\/)?(www.|)youtube.com\/.+|)", ErrorMessage = "Please enter a valid YouTube link")]
-        public string YouTube { get; set; }
+        public string? YouTube { get; set; }
 
         [Display(Name = "Contact details for the public")]
-        public string PublicContactDetails { get; set; }
+        public string? PublicContactDetails { get; set; }
 
         [Display(Name = "Contact details for Stoolball England")]
-        public string PrivateContactDetails { get; set; }
+        public string? PrivateContactDetails { get; set; }
 
         [Display(Name = "Which days of the week do you play, and at what time?")]
-        public string PlayingTimes { get; set; }
+        public string? PlayingTimes { get; set; }
 
         [Display(Name = "Cost to play")]
-        public string Cost { get; set; }
+        public string? Cost { get; set; }
         public Guid? MemberGroupKey { get; set; }
-        public string MemberGroupName { get; set; }
-        public string TeamRoute { get; set; }
+        public string? MemberGroupName { get; set; }
+        public string? TeamRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
         public Uri EntityUri {

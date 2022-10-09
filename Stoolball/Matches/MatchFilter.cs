@@ -7,7 +7,7 @@ namespace Stoolball.Matches
 {
     public class MatchFilter
     {
-        public string Query { get; set; }
+        public string? Query { get; set; }
         public List<Guid> TeamIds { get; internal set; } = new List<Guid>();
         public List<Guid> CompetitionIds { get; internal set; } = new List<Guid>();
         public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();

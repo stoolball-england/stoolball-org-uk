@@ -4,7 +4,7 @@ namespace Stoolball
 {
     public class SocialMediaAccountFormatter : ISocialMediaAccountFormatter
     {
-        public string PrefixAtSign(string account)
+        public string? PrefixAtSign(string? account)
         {
             account = account?.Trim();
             if (!string.IsNullOrEmpty(account) && !account.StartsWith("@", StringComparison.OrdinalIgnoreCase))

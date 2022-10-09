@@ -8,8 +8,8 @@ namespace Stoolball.Statistics
     {
         public Guid? PlayerIdentityId { get; set; }
 
-        public Team Team { get; set; }
-        public string PlayerIdentityName { get; set; }
+        public Team? Team { get; set; }
+        public string? PlayerIdentityName { get; set; }
 
         /// <summary>
         /// Gets the version of the player's name used to match them against partial names
@@ -17,10 +17,10 @@ namespace Stoolball.Statistics
         /// <returns></returns>
         public string ComparableName()
         {
-            return string.IsNullOrEmpty(PlayerIdentityName) ? PlayerIdentityName : Regex.Replace(PlayerIdentityName, "[^A-Z0-9]", string.Empty, RegexOptions.IgnoreCase).ToUpperInvariant();
+            return string.IsNullOrEmpty(PlayerIdentityName) ? PlayerIdentityName ?? string.Empty : Regex.Replace(PlayerIdentityName, "[^A-Z0-9]", string.Empty, RegexOptions.IgnoreCase).ToUpperInvariant();
         }
 
-        public Player Player { get; set; }
+        public Player? Player { get; set; }
 
         public DateTimeOffset? FirstPlayed { get; set; }
 

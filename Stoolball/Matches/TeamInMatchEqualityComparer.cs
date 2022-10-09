@@ -4,9 +4,9 @@ namespace Stoolball.Matches
 {
     public class TeamInMatchEqualityComparer : EqualityComparer<TeamInMatch>
     {
-        public override bool Equals(TeamInMatch x, TeamInMatch y)
+        public override bool Equals(TeamInMatch? x, TeamInMatch? y)
         {
-            return x?.Team.TeamId == y?.Team.TeamId && x?.TeamRole == y?.TeamRole;
+            return x?.Team?.TeamId == y?.Team?.TeamId && x?.TeamRole == y?.TeamRole;
         }
 
         public override int GetHashCode(TeamInMatch obj)

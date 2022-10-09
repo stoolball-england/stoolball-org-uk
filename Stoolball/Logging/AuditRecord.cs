@@ -16,7 +16,7 @@ namespace Stoolball.Logging
         /// <summary>
         /// The name of the Umbraco Member or automated process taking the action
         /// </summary>
-        public string ActorName { get; set; }
+        public string? ActorName { get; set; }
 
         /// <summary>
         /// The action being taken on the audited entity
@@ -26,17 +26,17 @@ namespace Stoolball.Logging
         /// <summary>
         /// The unique URI for the entity to which the audited change applies
         /// </summary>
-        public Uri EntityUri { get; set; }
+        public Uri? EntityUri { get; set; }
 
         /// <summary>
         /// The new state of the entity after the <see cref="Action"/> has been taken
         /// </summary>
-        public string State { get; set; }
+        public string? State { get; set; }
 
         /// <summary>
         /// The new state of the entity after the <see cref="Action"/> has been taken, with personally-identifiable information redacted
         /// </summary>
-        public string RedactedState { get; set; }
+        public string? RedactedState { get; set; }
 
         /// <summary>
         /// The date the action was taken

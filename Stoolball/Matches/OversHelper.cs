@@ -6,7 +6,7 @@ namespace Stoolball.Matches
 {
     public class OversHelper : IOversHelper
     {
-        public OverSet OverSetForOver(IEnumerable<OverSet> overSets, int overNumber)
+        public OverSet? OverSetForOver(IEnumerable<OverSet> overSets, int overNumber)
         {
             if (overSets is null)
             {

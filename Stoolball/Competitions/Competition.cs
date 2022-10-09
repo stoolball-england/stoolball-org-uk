@@ -14,7 +14,7 @@ namespace Stoolball.Competitions
 
         [Display(Name = "Competition name")]
         [Required]
-        public string CompetitionName { get; set; }
+        public string? CompetitionName { get; set; }
 
         /// <summary>
         /// Gets the name of the competition and the type of players (if not stated in the name)
@@ -22,7 +22,7 @@ namespace Stoolball.Competitions
         /// <returns></returns>
         public string CompetitionNameAndPlayerType()
         {
-            var name = CompetitionName;
+            var name = CompetitionName ?? string.Empty;
 
             var type = PlayerType.ToString().Humanize(LetterCasing.Sentence);
             if (!name.Replace("'", string.Empty).ToUpperInvariant().Contains(type.Replace("'", string.Empty).ToUpperInvariant()))
@@ -34,30 +34,30 @@ namespace Stoolball.Competitions
 
         public List<Season> Seasons { get; internal set; } = new List<Season>();
 
-        public string Introduction { get; set; }
+        public string? Introduction { get; set; }
 
         [Display(Name = "Contact details for the public")]
-        public string PublicContactDetails { get; set; }
+        public string? PublicContactDetails { get; set; }
 
         [Display(Name = "Contact details for Stoolball England")]
-        public string PrivateContactDetails { get; set; }
+        public string? PrivateContactDetails { get; set; }
 
         [Display(Name = "Competition website")]
-        public string Website { get; set; }
+        public string? Website { get; set; }
 
         [Display(Name = "Twitter account")]
-        public string Twitter { get; set; }
+        public string? Twitter { get; set; }
 
         [Display(Name = "Facebook page or group")]
         [RegularExpression(@"^((https?:\/\/)?(m.|www.|)facebook.com\/.+|)", ErrorMessage = "Please enter a valid Facebook link")]
-        public string Facebook { get; set; }
+        public string? Facebook { get; set; }
 
         [Display(Name = "Instagram account")]
-        public string Instagram { get; set; }
+        public string? Instagram { get; set; }
 
         [Display(Name = "YouTube channel")]
         [RegularExpression(@"^((https?:\/\/)?(www.|)youtube.com\/.+|)", ErrorMessage = "Please enter a valid YouTube link")]
-        public string YouTube { get; set; }
+        public string? YouTube { get; set; }
 
         [Display(Name = "What year was this competition first played?")]
         public int? FromYear { get; set; }
@@ -71,9 +71,9 @@ namespace Stoolball.Competitions
 
         public Guid? MemberGroupKey { get; set; }
 
-        public string MemberGroupName { get; set; }
+        public string? MemberGroupName { get; set; }
 
-        public string CompetitionRoute { get; set; }
+        public string? CompetitionRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
         public Uri EntityUri {

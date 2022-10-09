@@ -49,7 +49,7 @@ namespace Stoolball
         /// Gets the version of an entity's name used to sort
         /// </summary>
         /// <returns>A version of the name normalised for sorting</returns>
-        private static string StandardComparableName(string name)
+        private static string StandardComparableName(string? name)
         {
             var comparable = name?.ToUpperInvariant() ?? string.Empty;
             if (comparable.StartsWith("THE ", StringComparison.Ordinal)) { comparable = comparable.Substring(4); }

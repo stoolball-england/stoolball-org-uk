@@ -12,8 +12,10 @@ namespace Stoolball.Email
             var revisedBody = ReplaceTokens(bodyHtml != null ? bodyHtml : string.Empty, tokenValues);
 
             // Replace those texts into the email template
-            using (var stream = typeof(EmailFormatter).Assembly.GetManifestResourceStream("Stoolball.Email.EmailTemplate.html"))
+            var resourceName = "Stoolball.Email.EmailTemplate.html";
+            using (var stream = typeof(EmailFormatter).Assembly.GetManifestResourceStream(resourceName))
             {
+                if (stream == null) { throw new FileNotFoundException($"Embedded resource not found: {resourceName}"); }
                 using (var reader = new StreamReader(stream))
                 {
                     revisedBody = reader.ReadToEnd()

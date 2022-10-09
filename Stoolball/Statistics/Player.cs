@@ -146,7 +146,7 @@ namespace Stoolball.Statistics
             return names.Values;
         }
 
-        public string PlayerRoute { get; set; }
+        public string? PlayerRoute { get; set; }
 
         public Guid? MemberKey { get; set; }
 

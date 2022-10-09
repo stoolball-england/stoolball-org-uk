@@ -8,7 +8,7 @@ namespace Stoolball.Competitions
 {
     public class CompetitionFilter : IListingsFilter
     {
-        public string Query { get; set; }
+        public string? Query { get; set; }
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
         public List<PlayerType> PlayerTypes { get; internal set; } = new List<PlayerType>();
         public bool? EnableTournaments { get; set; }

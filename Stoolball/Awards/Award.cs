@@ -6,6 +6,6 @@ namespace Stoolball.Awards
     {
         public Guid? AwardId { get; set; }
 
-        public string AwardName { get; set; }
+        public string? AwardName { get; set; }
     }
 }

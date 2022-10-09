@@ -1,8 +1,8 @@
-﻿using Humanizer.Localisation.CollectionFormatters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Humanizer.Localisation.CollectionFormatters;
 
 namespace Stoolball
 {
@@ -23,7 +23,7 @@ namespace Stoolball
 
         public virtual string Humanize<T>(IEnumerable<T> collection)
         {
-            return Humanize(collection, o => o?.ToString(), _defaultSeparator);
+            return Humanize(collection, o => o?.ToString() ?? string.Empty, _defaultSeparator);
         }
 
         public virtual string Humanize<T>(IEnumerable<T> collection, Func<T, string> objectFormatter)
@@ -38,7 +38,7 @@ namespace Stoolball
 
         public virtual string Humanize<T>(IEnumerable<T> collection, string separator)
         {
-            return Humanize(collection, o => o?.ToString(), separator);
+            return Humanize(collection, o => o?.ToString() ?? string.Empty, separator);
         }
 
         public virtual string Humanize<T>(IEnumerable<T> collection, Func<T, string> objectFormatter, string separator)
@@ -71,7 +71,7 @@ namespace Stoolball
             }
 
             return HumanizeDisplayStrings(
-                collection.Select(objectFormatter).Select(o => o?.ToString()),
+                collection.Select(objectFormatter).Select(o => o?.ToString() ?? string.Empty),
                 separator);
         }
 

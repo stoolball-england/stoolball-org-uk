@@ -14,32 +14,32 @@ namespace Stoolball.MatchLocations
 
         [Display(Name = "Pitch or sports hall")]
         [MaxLength(100)]
-        public string SecondaryAddressableObjectName { get; set; }
+        public string? SecondaryAddressableObjectName { get; set; }
 
         [Display(Name = "Ground or sports centre name")]
         [MaxLength(100)]
         [Required]
-        public string PrimaryAddressableObjectName { get; set; }
+        public string? PrimaryAddressableObjectName { get; set; }
 
         [Display(Name = "Street address")]
         [MaxLength(100)]
-        public string StreetDescription { get; set; }
+        public string? StreetDescription { get; set; }
 
         [Display(Name = "Village or part of town")]
         [MaxLength(35)]
-        public string Locality { get; set; }
+        public string? Locality { get; set; }
 
         [MaxLength(30)]
         [Required]
-        public string Town { get; set; }
+        public string? Town { get; set; }
 
         [Display(Name = "County")]
         [MaxLength(30)]
-        public string AdministrativeArea { get; set; }
+        public string? AdministrativeArea { get; set; }
 
         [MaxLength(9)]
         [RegularExpression("^[A-Za-z]{1,2}[0-9]{1,2}[A-Za-z]? ?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}$", ErrorMessage = "Please enter a valid UK postcode")]
-        public string Postcode { get; set; }
+        public string? Postcode { get; set; }
 
         /// <summary>
         /// Gets a concatenated version of the address which can be used for sorting addresses
@@ -58,13 +58,13 @@ namespace Stoolball.MatchLocations
         public GeoPrecision? GeoPrecision { get; set; }
 
         [Display(Name = "Notes")]
-        public string MatchLocationNotes { get; set; }
+        public string? MatchLocationNotes { get; set; }
         public List<Team> Teams { get; internal set; } = new List<Team>();
 
-        public string MatchLocationRoute { get; set; }
+        public string? MatchLocationRoute { get; set; }
 
         public Guid? MemberGroupKey { get; set; }
-        public string MemberGroupName { get; set; }
+        public string? MemberGroupName { get; set; }
 
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
@@ -106,7 +106,7 @@ namespace Stoolball.MatchLocations
                     return Town;
                 }
             }
-            else return Locality;
+            else { return Locality ?? string.Empty; }
         }
 
         /// <summary>

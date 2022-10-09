@@ -40,7 +40,7 @@ namespace Stoolball.Statistics
         {
             if (teams == null) { throw new ArgumentNullException(nameof(teams)); }
 
-            var teamIds = string.Join("--", teams.Where(x => x?.TeamId != null).Select(x => x.TeamId.Value).OrderBy(x => x.ToString()));
+            var teamIds = string.Join("--", teams.Where(x => x?.TeamId != null).Select(x => x.TeamId!.Value).OrderBy(x => x.ToString()));
             _readThroughCache.InvalidateCache(nameof(IPlayerDataSource) + nameof(IPlayerDataSource.ReadPlayerIdentities) + "ForTeams" + teamIds);
         }
     }

@@ -8,7 +8,7 @@ namespace Stoolball.MatchLocations
 {
     public class MatchLocationFilter : IListingsFilter
     {
-        public string Query { get; set; }
+        public string? Query { get; set; }
         public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();
         public List<Guid> ExcludeMatchLocationIds { get; internal set; } = new List<Guid>();
         public bool? HasActiveTeams { get; set; }

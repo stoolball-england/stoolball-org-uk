@@ -6,7 +6,7 @@ namespace Stoolball.Statistics
 {
     public class StatisticsFilterQueryStringParser : BaseFilterQueryStringParser, IStatisticsFilterQueryStringParser
     {
-        public StatisticsFilter ParseQueryString(StatisticsFilter filter, string queryString)
+        public StatisticsFilter ParseQueryString(StatisticsFilter filter, string? queryString)
         {
             if (filter == null) { throw new ArgumentNullException(nameof(filter)); }
 

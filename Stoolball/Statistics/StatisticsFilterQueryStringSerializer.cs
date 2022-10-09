@@ -2,12 +2,12 @@
 {
     public class StatisticsFilterQueryStringSerializer : QueryStringSerializerBase, IStatisticsFilterQueryStringSerializer
     {
-        public string Serialize(StatisticsFilter filter)
+        public string Serialize(StatisticsFilter? filter)
         {
             return Serialize(filter, null);
         }
 
-        public string Serialize(StatisticsFilter filter, StatisticsFilter defaultFilter)
+        public string Serialize(StatisticsFilter? filter, StatisticsFilter? defaultFilter)
         {
             filter = filter ?? new StatisticsFilter();
             defaultFilter = defaultFilter ?? new StatisticsFilter();

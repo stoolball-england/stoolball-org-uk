@@ -4,7 +4,7 @@ namespace Stoolball.Matches
 {
     public class MatchEqualityComparer : EqualityComparer<Match>
     {
-        public override bool Equals(Match x, Match y)
+        public override bool Equals(Match? x, Match? y)
         {
             if (x?.MatchId != null && y?.MatchId != null)
             {

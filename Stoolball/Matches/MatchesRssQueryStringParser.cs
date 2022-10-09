@@ -8,7 +8,7 @@ namespace Stoolball.Matches
 {
     public class MatchesRssQueryStringParser : IMatchesRssQueryStringParser
     {
-        public MatchFilter ParseFilterFromQueryString(string queryString)
+        public MatchFilter ParseFilterFromQueryString(string? queryString)
         {
             var filter = new MatchFilter();
 

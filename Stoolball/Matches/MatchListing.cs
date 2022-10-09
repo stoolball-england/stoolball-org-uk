@@ -9,8 +9,8 @@ namespace Stoolball.Matches
 {
     public class MatchListing
     {
-        public Guid MatchId { get; set; }
-        public string MatchName { get; set; }
+        public Guid? MatchId { get; set; }
+        public string? MatchName { get; set; }
         public DateTimeOffset StartTime { get; set; }
         public bool StartTimeIsKnown { get; set; }
 
@@ -80,8 +80,8 @@ namespace Stoolball.Matches
 
         public TournamentQualificationType? TournamentQualificationType { get; set; }
         public int? SpacesInTournament { get; set; }
-        public string MatchRoute { get; set; }
-        public MatchLocation MatchLocation { get; set; }
+        public string? MatchRoute { get; set; }
+        public MatchLocation? MatchLocation { get; set; }
 
         public DateTimeOffset? FirstAuditDate { get; set; }
         public DateTimeOffset? LastAuditDate { get; set; }

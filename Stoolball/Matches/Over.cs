@@ -10,7 +10,7 @@ namespace Stoolball.Matches
     {
         public Guid? OverId { get; set; }
 
-        public PlayerIdentity Bowler { get; set; }
+        public PlayerIdentity? Bowler { get; set; }
 
         public int OverNumber { get; set; }
 
@@ -33,6 +33,6 @@ namespace Stoolball.Matches
             get { return new Uri($"https://www.stoolball.org.uk/id/over/{OverId}"); }
         }
 
-        public OverSet OverSet { get; set; }
+        public OverSet? OverSet { get; set; }
     }
 }

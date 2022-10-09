@@ -5,7 +5,7 @@ namespace Stoolball.Statistics
 {
     public class PlayerFilter
     {
-        public string Query { get; set; }
+        public string? Query { get; set; }
         public List<Guid> ClubIds { get; internal set; } = new();
         public List<Guid> TeamIds { get; internal set; } = new();
         public List<Guid> PlayerIds { get; internal set; } = new();

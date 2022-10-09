@@ -10,7 +10,7 @@ namespace Stoolball.Security
 
         private const string UK_PHONE_REGEX = @"(\+44|0044|0|\(0)[0-9 ()-]{9,}[0-9]";
 
-        public string RedactAll(string unredacted)
+        public string? RedactAll(string? unredacted)
         {
             if (string.IsNullOrWhiteSpace(unredacted)) { return unredacted; }
 
@@ -28,7 +28,7 @@ namespace Stoolball.Security
             return redacted.DocumentNode.OuterHtml;
         }
 
-        public string RedactPersonalData(string unredacted)
+        public string? RedactPersonalData(string? unredacted)
         {
             if (string.IsNullOrWhiteSpace(unredacted)) { return unredacted; }
 
