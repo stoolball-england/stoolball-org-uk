@@ -51,8 +51,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             await Assert.ThrowsAsync<ArgumentException>(async () => await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = new Player() }).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
-        private async Task TestTotalInnings(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
+        private async Task TestBowlingStatistics(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, Func<Stoolball.Matches.Match, bool> matchesFilter, Func<PlayerIdentity?, bool> bowlerFilter)
         {
+            Func<PlayerIdentity?, Player, bool> actualBowlerFilter = (bowler, player) => bowler?.Player?.PlayerId == player.PlayerId && bowlerFilter(bowler);
 
             foreach (var player in _databaseFixture.TestData.Players)
             {
@@ -62,191 +63,62 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var queryBuilder = new Mock<IStatisticsQueryBuilder>();
                 queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
                 var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+                var oversHelper = new OversHelper();
 
                 var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-                Assert.Equal(matches.SelectMany(x => x.MatchInnings).Count(x =>
-                        x.OversBowled.Any(o => o.Bowler.Player.PlayerId == player.PlayerId) ||
-                        x.PlayerInnings.Any(pi => pi.Bowler?.Player.PlayerId == player.PlayerId)
+
+                var expectedMatchInnings = _databaseFixture.TestData
+                    .Matches.Where(matchesFilter)
+                    .SelectMany(x => x.MatchInnings);
+
+                Assert.Equal(expectedMatchInnings.Count(x =>
+                        x.OversBowled.Any(o => actualBowlerFilter(o.Bowler, player)) ||
+                        x.PlayerInnings.Any(pi => actualBowlerFilter(pi.Bowler, player))
                     ), result.TotalInnings);
-            }
-        }
 
-        private async Task TestTotalInningsWithRunsScored(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                Assert.NotNull(result);
-                Assert.Equal(matches.SelectMany(x => x.MatchInnings).Count(x =>
-                        x.OversBowled.Any(o => o.Bowler.Player.PlayerId == player.PlayerId && o.RunsConceded.HasValue)),
+                Assert.Equal(expectedMatchInnings.Count(x =>
+                        x.OversBowled.Any(o => actualBowlerFilter(o.Bowler, player) && o.RunsConceded.HasValue)),
                         result.TotalInningsWithRunsConceded);
-            }
-        }
 
-        private async Task TestTotalInningsWithBallsBowled(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                Assert.NotNull(result);
-                Assert.Equal(matches.SelectMany(x => x.MatchInnings).Count(x =>
-                        x.BowlingFigures.Any(o => o.Bowler.Player.PlayerId == player.PlayerId && o.Overs.HasValue)),
+                Assert.Equal(expectedMatchInnings.Count(x =>
+                        x.BowlingFigures.Any(o => actualBowlerFilter(o.Bowler, player) && o.Overs.HasValue)),
                         result.TotalInningsWithBallsBowled);
-            }
-        }
 
-        private async Task TestTotalOvers(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-            var oversHelper = new OversHelper();
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                var ballsBowled = matches.SelectMany(x => x.MatchInnings)
-                        .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.Overs.HasValue))
+                var ballsBowled = expectedMatchInnings
+                        .SelectMany(x => x.BowlingFigures.Where(o => actualBowlerFilter(o.Bowler, player) && o.Overs.HasValue))
                         .Sum(o => oversHelper.OversToBallsBowled(o.Overs!.Value));
 
-                Assert.NotNull(result);
                 Assert.Equal(oversHelper.BallsBowledToOvers(ballsBowled), result.TotalOvers);
-            }
-        }
 
-        private async Task TestTotalMaidens(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                var maidens = matches.SelectMany(x => x.MatchInnings)
-                        .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.Maidens.HasValue))
+                var maidens = expectedMatchInnings
+                        .SelectMany(x => x.BowlingFigures.Where(o => actualBowlerFilter(o.Bowler, player) && o.Maidens.HasValue))
                         .Sum(x => x.Maidens);
 
-                Assert.NotNull(result);
                 Assert.Equal(maidens, result.TotalMaidens);
-            }
-        }
 
-        private async Task TestTotalRunsConceded(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                var runsConceded = matches.SelectMany(x => x.MatchInnings)
-                       .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.RunsConceded.HasValue))
+                var runsConceded = expectedMatchInnings
+                       .SelectMany(x => x.BowlingFigures.Where(o => actualBowlerFilter(o.Bowler, player) && o.RunsConceded.HasValue))
                        .Sum(x => x.RunsConceded);
 
-                Assert.NotNull(result);
                 Assert.Equal(runsConceded, result.TotalRunsConceded);
-            }
-        }
 
-        private async Task TestTotalWickets(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                var wickets = matches.SelectMany(x => x.MatchInnings)
-                       .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId))
+                var wickets = expectedMatchInnings
+                       .SelectMany(x => x.BowlingFigures.Where(o => actualBowlerFilter(o.Bowler, player)))
                        .Sum(x => x.Wickets);
 
-                Assert.NotNull(result);
                 Assert.Equal(wickets, result.TotalWickets);
-            }
-        }
 
-        private async Task TestFiveWicketInnings(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                var wicketHauls = matches.SelectMany(x => x.MatchInnings)
-                        .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId))
+                var wicketHauls = expectedMatchInnings
+                        .SelectMany(x => x.BowlingFigures.Where(o => actualBowlerFilter(o.Bowler, player)))
                         .Count(x => x.Wickets >= 5);
 
-                Assert.NotNull(result);
                 Assert.Equal(wicketHauls, result.FiveWicketInnings);
-            }
-        }
 
-        private async Task TestBestBowling(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                var best = matches.SelectMany(x => x.MatchInnings) // get all innings...
-                .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId)) // ...where this player bowled, and select their bowling figures
-                .GroupBy(x => x.MatchInnings.MatchInningsId, x => x, (matchInningsId, bowlingFigures) => new BowlingFigures // combine any multiple identities for the player into new bowling figures
+                var best = expectedMatchInnings // get all innings...
+                .SelectMany(x => x.BowlingFigures.Where(o => actualBowlerFilter(o.Bowler, player))) // ...where this player bowled, and select their bowling figures
+                .GroupBy(x => x.MatchInnings?.MatchInningsId, x => x, (matchInningsId, bowlingFigures) => new BowlingFigures // combine any multiple identities for the player into new bowling figures
                 {
                     Wickets = bowlingFigures.Sum(bf => bf.Wickets),
                     RunsConceded = bowlingFigures.Any(bf => bf.RunsConceded.HasValue) ? bowlingFigures.Sum(bf => bf.RunsConceded) : null
@@ -274,29 +146,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     Assert.Null(result.BestInningsWickets);
                     Assert.Null(result.BestInningsRunsConceded);
                 }
-            }
-        }
 
-        private async Task TestEconomy(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-            var oversHelper = new OversHelper();
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                var dataForEconomy = matches.SelectMany(x => x.MatchInnings)
-                     .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.RunsConceded.HasValue));
+                var dataForEconomy = expectedMatchInnings
+                     .SelectMany(x => x.BowlingFigures.Where(o => actualBowlerFilter(o.Bowler, player) && o.RunsConceded.HasValue));
                 var expectedEconomy = dataForEconomy.Sum(x => x.Overs) > 0 ? (decimal?)dataForEconomy.Sum(x => x.RunsConceded) / dataForEconomy.Sum(x => (decimal)oversHelper.OversToBallsBowled(x.Overs!.Value) / StatisticsConstants.BALLS_PER_OVER) : (decimal?)null;
 
-                Assert.NotNull(result);
                 if (expectedEconomy.HasValue)
                 {
                     Assert.NotNull(result.Economy);
@@ -306,29 +160,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     Assert.Null(result.Economy);
                 }
-            }
-        }
 
-        private async Task TestStrikeRate(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-            var oversHelper = new OversHelper();
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                var dataForStrikeRate = matches.SelectMany(x => x.MatchInnings)
-                        .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.Overs.HasValue));
+                var dataForStrikeRate = expectedMatchInnings
+                        .SelectMany(x => x.BowlingFigures.Where(o => actualBowlerFilter(o.Bowler, player) && o.Overs.HasValue));
                 var expectedStrikeRate = dataForStrikeRate.Sum(x => x.Wickets) > 0 ? (decimal)dataForStrikeRate.Sum(x => oversHelper.OversToBallsBowled(x.Overs!.Value)) / dataForStrikeRate.Sum(x => x.Wickets) : (decimal?)null;
 
-                Assert.NotNull(result);
                 if (expectedStrikeRate.HasValue)
                 {
                     Assert.NotNull(result.StrikeRate);
@@ -338,28 +174,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     Assert.Null(result.StrikeRate);
                 }
-            }
-        }
 
-        private async Task TestAverage(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadBowlingStatistics(filter).ConfigureAwait(false);
-
-                var dataForAverage = matches.SelectMany(x => x.MatchInnings)
-                        .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.RunsConceded.HasValue));
+                var dataForAverage = expectedMatchInnings
+                        .SelectMany(x => x.BowlingFigures.Where(o => actualBowlerFilter(o.Bowler, player) && o.RunsConceded.HasValue));
                 var expectedAverage = dataForAverage.Sum(x => x.Wickets) > 0 ? (decimal?)dataForAverage.Sum(x => x.RunsConceded) / dataForAverage.Sum(x => x.Wickets) : (decimal?)null;
 
-                Assert.NotNull(result);
                 if (expectedAverage.HasValue)
                 {
                     Assert.NotNull(result.Average);
@@ -373,231 +192,33 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_bowling_statistics_returns_TotalInnings_supporting_unfiltered_matches()
+        public async Task Read_bowling_statistics_supports_no_filter()
         {
-            await TestTotalInnings(new StatisticsFilter(),
+            await TestBowlingStatistics(new StatisticsFilter(),
                 string.Empty,
                 new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
+                x => true, x => true).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Read_bowling_statistics_returns_TotalInningsWithRunsConceded_supporting_unfiltered_matches()
-        {
-            await TestTotalInningsWithRunsScored(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalInningsWithBallsBowled_supporting_unfiltered_matches()
-        {
-            await TestTotalInningsWithBallsBowled(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalOvers_supporting_unfiltered_matches()
-        {
-            await TestTotalOvers(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalMaidens_supporting_unfiltered_matches()
-        {
-            await TestTotalMaidens(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalRunsConceded_supporting_unfiltered_matches()
-        {
-            await TestTotalRunsConceded(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalWickets_supporting_unfiltered_matches()
-        {
-            await TestTotalWickets(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_FiveWicketInnings_supporting_unfiltered_matches()
-        {
-            await TestFiveWicketInnings(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_BestBowling_supporting_unfiltered_matches()
-        {
-            await TestBestBowling(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_Economy_supporting_unfiltered_matches()
-        {
-            await TestEconomy(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_StrikeRate_supporting_unfiltered_matches()
-        {
-            await TestStrikeRate(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_Average_supporting_unfiltered_matches()
-        {
-            await TestAverage(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalInnings_supporting_filter_by_date()
+        public async Task Read_bowling_statistics_supports_filter_by_date()
         {
             var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalInnings(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
+            await TestBowlingStatistics(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
                new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
+               x => x.StartTime >= fromDate && x.StartTime <= untilDate,
+               x => true).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Read_bowling_statistics_returns_TotalInningsWithRunsConceded_supporting_filter_by_date()
+        public async Task Read_bowling_statistics_supports_filter_by_team_id()
         {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalInningsWithRunsScored(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalInningsWithBallsBowled_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalInningsWithBallsBowled(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalOvers_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalOvers(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalMaidens_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalMaidens(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalRunsConceded_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalRunsConceded(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_TotalWickets_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalWickets(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_FiveWicketInnings_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestFiveWicketInnings(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_BestBowling_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestBestBowling(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_Economy_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestEconomy(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_StrikeRate_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestStrikeRate(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_bowling_statistics_returns_Average_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestAverage(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
+            await TestBowlingStatistics(new StatisticsFilter { Team = _databaseFixture.TestData.TeamWithFullDetails },
+               " AND TeamId = @TeamId",
+               new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails!.TeamId!.Value } },
+               x => x.Teams.Select(t => t.Team?.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId),
+               x => x?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
         }
     }
 }

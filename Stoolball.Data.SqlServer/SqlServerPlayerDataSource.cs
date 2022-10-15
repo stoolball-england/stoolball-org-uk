@@ -192,7 +192,7 @@ namespace Stoolball.Data.SqlServer
                         (SELECT COUNT(DISTINCT MatchId) AS TotalMatches FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS TotalMatches,
                         (SELECT MIN(MatchStartTime) AS FirstPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS FirstPlayed,
                         (SELECT MAX(MatchStartTime) AS LastPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS LastPlayed,
-                        tv.TeamName, t.TeamRoute
+                        t.TeamId, tv.TeamName, t.TeamRoute
                         FROM {Tables.Player} p INNER JOIN {Tables.PlayerIdentity} pi ON p.PlayerId = pi.PlayerId
                         INNER JOIN {Tables.Team} t ON pi.TeamId = t.TeamId
                         INNER JOIN {Tables.TeamVersion} tv ON t.TeamId = tv.TeamId
@@ -205,7 +205,7 @@ namespace Stoolball.Data.SqlServer
                             return player;
                         },
                         parameters,
-                        splitOn: "PlayerIdentityId, TeamName"
+                        splitOn: "PlayerIdentityId, TeamId"
                         ).ConfigureAwait(false);
 
                 var playerToReturn = playerData.GroupBy(x => x.PlayerId).Select(group =>

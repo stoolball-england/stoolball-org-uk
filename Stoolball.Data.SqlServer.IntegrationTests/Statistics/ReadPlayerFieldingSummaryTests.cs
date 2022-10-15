@@ -51,8 +51,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             await Assert.ThrowsAsync<ArgumentException>(async () => await dataSource.ReadFieldingStatistics(new StatisticsFilter { Player = new Player() }).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
-        private async Task TestTotalCatches(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
+        private async Task AssertFieldingStatistics(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, Func<Stoolball.Matches.Match, bool> matchesFilter, Func<PlayerIdentity?, bool> fielderFilter)
         {
+            Func<PlayerIdentity?, Player, bool> actualFielderFilter = (fielder, player) => fielder?.Player?.PlayerId == player.PlayerId && fielderFilter(fielder);
 
             foreach (var player in _databaseFixture.TestData.Players)
             {
@@ -66,155 +67,68 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = await dataSource.ReadFieldingStatistics(filter).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-                Assert.Equal(matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings)
-                    .Count(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy != null && x.DismissedBy.Player.PlayerId == player.PlayerId) ||
-                                (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler != null && x.Bowler.Player.PlayerId == player.PlayerId)), result.TotalCatches);
-            }
-        }
 
-        private async Task TestTotalRunOuts(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
+                var expectedMatchInnings = _databaseFixture.TestData
+                    .Matches.Where(matchesFilter)
+                    .SelectMany(x => x.MatchInnings);
 
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+                Assert.Equal(expectedMatchInnings.SelectMany(x => x.PlayerInnings)
+                    .Count(x => (x.DismissalType == DismissalType.Caught && actualFielderFilter(x.DismissedBy, player)) ||
+                                (x.DismissalType == DismissalType.CaughtAndBowled && actualFielderFilter(x.Bowler, player))), result.TotalCatches);
 
-                var result = await dataSource.ReadFieldingStatistics(filter).ConfigureAwait(false);
+                Assert.Equal(expectedMatchInnings.SelectMany(x => x.PlayerInnings)
+                    .Count(x => x.DismissalType == DismissalType.RunOut && actualFielderFilter(x.DismissedBy, player)), result.TotalRunOuts);
 
-                Assert.Equal(matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings)
-                    .Count(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy != null && x.DismissedBy.Player.PlayerId == player.PlayerId), result.TotalRunOuts);
-            }
-        }
-
-        private async Task TestMostCatches(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
-
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadFieldingStatistics(filter).ConfigureAwait(false);
-
-                var best = matches.SelectMany(x => x.MatchInnings)
-                                    .Where(i => i.PlayerInnings.Any(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy != null && x.DismissedBy.Player.PlayerId == player.PlayerId) ||
-                                                                            (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler != null && x.Bowler.Player.PlayerId == player.PlayerId)))
-                                    .Select(i => i.PlayerInnings.Count(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy != null && x.DismissedBy.Player.PlayerId == player.PlayerId) ||
-                                                                            (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler != null && x.Bowler.Player.PlayerId == player.PlayerId)))
+                var mostCatches = expectedMatchInnings
+                                    .Where(i => i.PlayerInnings.Any(x => (x.DismissalType == DismissalType.Caught && actualFielderFilter(x.DismissedBy, player)) ||
+                                                                            (x.DismissalType == DismissalType.CaughtAndBowled && actualFielderFilter(x.Bowler, player))))
+                                    .Select(i => i.PlayerInnings.Count(x => (x.DismissalType == DismissalType.Caught && actualFielderFilter(x.DismissedBy, player)) ||
+                                                                            (x.DismissalType == DismissalType.CaughtAndBowled && actualFielderFilter(x.Bowler, player))))
                                     .OrderByDescending(x => x)
                                     .FirstOrDefault();
 
-                Assert.Equal(best, result.MostCatches);
-            }
-        }
+                Assert.Equal(mostCatches, result.MostCatches);
 
-        private async Task TestMostRunOuts(StatisticsFilter filter, string whereClause, Dictionary<string, object> parameters, IEnumerable<Stoolball.Matches.Match> matches)
-        {
 
-            foreach (var player in _databaseFixture.TestData.Players)
-            {
-                filter.Player = player;
-                parameters.Remove("PlayerId");
-                parameters.Add("PlayerId", player.PlayerId!);
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND PlayerId = @PlayerId" + whereClause, parameters));
-                var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
-
-                var result = await dataSource.ReadFieldingStatistics(filter).ConfigureAwait(false);
-
-                var best = matches.SelectMany(x => x.MatchInnings)
-                                    .Where(i => i.PlayerInnings.Any(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy != null && x.DismissedBy.Player.PlayerId == player.PlayerId))
-                                    .Select(i => i.PlayerInnings.Count(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy != null && x.DismissedBy.Player.PlayerId == player.PlayerId))
+                var mostRunOuts = expectedMatchInnings
+                                    .Where(i => i.PlayerInnings.Any(x => x.DismissalType == DismissalType.RunOut && actualFielderFilter(x.DismissedBy, player)))
+                                    .Select(i => i.PlayerInnings.Count(x => x.DismissalType == DismissalType.RunOut && actualFielderFilter(x.DismissedBy, player)))
                                     .OrderByDescending(x => x)
                                     .FirstOrDefault();
 
-                Assert.Equal(best, result.MostRunOuts);
+                Assert.Equal(mostRunOuts, result.MostRunOuts);
             }
         }
 
         [Fact]
-        public async Task Read_fielding_statistics_returns_TotalCatches_supporting_unfiltered_matches()
+        public async Task Read_fielding_statistics_supports_no_filter()
         {
-            await TestTotalCatches(new StatisticsFilter(),
+            await AssertFieldingStatistics(new StatisticsFilter(),
                 string.Empty,
                 new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
+                x => true,
+                x => true).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Read_fielding_statistics_returns_TotalRunOuts_supporting_unfiltered_matches()
-        {
-            await TestTotalRunOuts(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_fielding_statistics_returns_MostCatches_supporting_unfiltered_matches()
-        {
-            await TestMostCatches(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_fielding_statistics_returns_MostRunOuts_supporting_unfiltered_matches()
-        {
-            await TestMostRunOuts(new StatisticsFilter(),
-                string.Empty,
-                new Dictionary<string, object>(),
-                _databaseFixture.TestData.Matches).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_fielding_statistics_returns_TotalCatches_supporting_filter_by_date()
+        public async Task Read_fielding_statistics_supports_filter_by_date()
         {
             var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalCatches(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
+            await AssertFieldingStatistics(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
                new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
+               x => x.StartTime >= fromDate && x.StartTime <= untilDate,
+               x => true).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Read_fielding_statistics_returns_TotalRunOuts_supporting_filter_by_date()
+        public async Task Read_fielding_statistics_supports_filter_by_team_id()
         {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalRunOuts(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_fielding_statistics_returns_MostCatches_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestMostCatches(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task Read_fielding_statistics_returns_MostRunOuts_supporting_filter_by_date()
-        {
-            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestMostRunOuts(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
-               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
+            await AssertFieldingStatistics(new StatisticsFilter { Team = _databaseFixture.TestData.TeamWithFullDetails },
+               " AND TeamId = @TeamId",
+               new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails!.TeamId!.Value } },
+               x => x.Teams.Select(t => t.Team?.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId),
+               x => x?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
         }
     }
 }

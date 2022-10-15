@@ -463,8 +463,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 var resultIdentity = result.PlayerIdentities.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId);
                 Assert.NotNull(resultIdentity);
+                Assert.NotNull(resultIdentity!.Team);
 
                 Assert.Equal(identity.PlayerIdentityName, resultIdentity!.PlayerIdentityName);
+                Assert.Equal(identity.Team!.TeamId, resultIdentity.Team!.TeamId);
                 Assert.Equal(identity.Team.TeamName, resultIdentity.Team.TeamName);
                 Assert.Equal(identity.Team.TeamRoute, resultIdentity.Team.TeamRoute);
                 Assert.Equal(identity.TotalMatches, resultIdentity.TotalMatches);
