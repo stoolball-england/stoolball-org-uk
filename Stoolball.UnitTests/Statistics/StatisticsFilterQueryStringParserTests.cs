@@ -122,5 +122,29 @@ namespace Stoolball.UnitTests.Statistics
             Assert.NotNull(filter.UntilDate);
             Assert.Equal(new DateTime(2022, 6, 9), filter.UntilDate!.Value.Date);
         }
+
+        [Theory]
+        [InlineData("?")]
+        [InlineData("?team=")]
+        [InlineData("?team=invalid")]
+        public void Missing_empty_or_invalid_team_is_null(string queryString)
+        {
+            var parser = new StatisticsFilterQueryStringParser();
+
+            var filter = parser.ParseQueryString(new StatisticsFilter(), queryString);
+
+            Assert.Null(filter.Team);
+        }
+
+        [Fact]
+        public void Team_is_parsed()
+        {
+            var parser = new StatisticsFilterQueryStringParser();
+            var teamId = Guid.NewGuid().ToString();
+
+            var filter = parser.ParseQueryString(new StatisticsFilter(), $"?team={teamId}");
+
+            Assert.Equal(teamId, filter.Team?.TeamId?.ToString());
+        }
     }
 }

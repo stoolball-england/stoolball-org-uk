@@ -19,6 +19,11 @@ namespace Stoolball.Statistics
 
             var description = new StringBuilder();
 
+            if (!string.IsNullOrEmpty(filter.Team?.TeamName))
+            {
+                description.Append(" for ").Append(filter.Team.TeamName);
+            }
+
             AppendDateFilter(filter.FromDate, filter.UntilDate, description, _dateTimeFormatter);
 
             return description.ToString().TrimEnd();
@@ -37,7 +42,7 @@ namespace Stoolball.Statistics
             {
                 description.Append(" for ").Append(filter.Club.ClubName);
             }
-            if (filter.Team != null)
+            if (!string.IsNullOrEmpty(filter.Team?.TeamName))
             {
                 description.Append(" for ").Append(filter.Team.TeamName);
             }

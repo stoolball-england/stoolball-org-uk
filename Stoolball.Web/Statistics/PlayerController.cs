@@ -58,6 +58,8 @@ namespace Stoolball.Web.Statistics
                     model.ShowPlayerLinkedToMemberConfirmation = true;
                 }
 
+                model.Metadata.PageTitle = $"Statistics for {model.Metadata.PageTitle}";
+
                 return CurrentTemplate(model);
             }
         }

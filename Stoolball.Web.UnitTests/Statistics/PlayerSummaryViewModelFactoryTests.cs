@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
 using Stoolball.Navigation;
@@ -55,16 +56,18 @@ namespace Stoolball.Web.UnitTests.Statistics
 
 
         [Fact]
-        public async Task Breadcrumbs_are_set_without_player_filter()
+        public async Task Breadcrumbs_are_set_from_default_filter_without_player_filter()
         {
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), REQUEST_QUERYSTRING)).Returns(new StatisticsFilter());
             _playerDataSource.Setup(x => x.ReadPlayerByRoute(REQUEST_PATH, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(new Player()));
 
             var callbackWasCalled = false;
+            StatisticsFilter? filterForBuildBreadcrumbs = null;
             _breadcrumbBuilder.Setup(x => x.BuildBreadcrumbs(It.IsAny<List<Breadcrumb>>(), It.IsAny<StatisticsFilter>()))
                 .Callback<List<Breadcrumb>, StatisticsFilter>((breadcrumbs, filter) =>
                 {
                     callbackWasCalled = true;
+                    filterForBuildBreadcrumbs = filter;
                     Assert.Null(filter.Player);
                 });
 
@@ -72,6 +75,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             var result = await factory.CreateViewModel(_currentPage.Object, REQUEST_PATH, REQUEST_QUERYSTRING);
 
             Assert.True(callbackWasCalled);
+            Assert.Equal(filterForBuildBreadcrumbs, result.DefaultFilter);
+            Assert.NotEqual(filterForBuildBreadcrumbs, result.AppliedFilter);
         }
 
         [Fact]
@@ -148,6 +153,31 @@ namespace Stoolball.Web.UnitTests.Statistics
             var result = await factory.CreateViewModel(_currentPage.Object, REQUEST_PATH, REQUEST_QUERYSTRING);
 
             Assert.Contains("Example team", result.Metadata.Description);
+        }
+
+        [Fact]
+        public async Task Filter_team_is_passed_to_humaniser_with_name_added()
+        {
+            var player = new Player
+            {
+                PlayerIdentities = new List<PlayerIdentity> {
+                    new PlayerIdentity
+                    {
+                        PlayerIdentityName = "Player one",
+                        Team = new Team { TeamId = Guid.NewGuid(), TeamName = "Example team" }
+                    }
+                }
+            };
+            var appliedFilterWithoutNameFromQueryString = new StatisticsFilter { Team = new Team { TeamId = player.PlayerIdentities[0].Team!.TeamId } };
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), REQUEST_QUERYSTRING)).Returns(appliedFilterWithoutNameFromQueryString);
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(REQUEST_PATH, It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(player));
+            _statisticsFilterHumaniser.Setup(x => x.MatchingUserFilter(appliedFilterWithoutNameFromQueryString)).Callback<StatisticsFilter>(x =>
+            {
+                Assert.Equal(player.PlayerIdentities[0].Team!.TeamName, x.Team?.TeamName);
+            });
+
+            var factory = CreateFactory();
+            _ = await factory.CreateViewModel(_currentPage.Object, REQUEST_PATH, REQUEST_QUERYSTRING);
         }
 
         [Fact]

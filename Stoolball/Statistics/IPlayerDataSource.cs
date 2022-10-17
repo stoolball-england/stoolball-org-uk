@@ -34,7 +34,7 @@ namespace Stoolball.Statistics
         /// <param name="route"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        Task<Player> ReadPlayerByRoute(string route, StatisticsFilter? filter = null);
+        Task<Player?> ReadPlayerByRoute(string route, StatisticsFilter? filter = null);
 
         /// <summary>
         /// Read a single player by the GUID of the member it is linked to

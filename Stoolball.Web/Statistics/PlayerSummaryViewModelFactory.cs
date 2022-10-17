@@ -42,7 +42,7 @@ namespace Stoolball.Web.Statistics
 
             if (model.Player != null)
             {
-                _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
+                _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.DefaultFilter);
                 model.DefaultFilter.Player = model.Player;
                 model.AppliedFilter.Player = model.Player;
 
@@ -55,10 +55,19 @@ namespace Stoolball.Web.Statistics
                 model.BowlingStatistics = bowlingTask.Result;
                 model.FieldingStatistics = fieldingTask.Result;
 
+                if (model.AppliedFilter.Team != null)
+                {
+                    var teamWithName = model.Player.PlayerIdentities.First(x => x.Team != null && x.Team.TeamId == model.AppliedFilter.Team.TeamId).Team;
+                    if (teamWithName != null)
+                    {
+                        model.AppliedFilter.Team = teamWithName;
+                    }
+                }
+
                 var filter = _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
                 model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", filter);
 
-                var teams = model.Player.PlayerIdentities.Select(x => x.Team.TeamName).Distinct().ToList();
+                var teams = model.Player.PlayerIdentities.Where(x => !string.IsNullOrEmpty(x.Team?.TeamName)).Select(x => x.Team!.TeamName).Distinct().ToList();
                 model.Metadata.PageTitle = $"{model.Player.PlayerName()}{filter}";
                 model.Metadata.Description = $"{model.Player.PlayerName()}, a player for {teams.Humanize()} stoolball {(teams.Count > 1 ? "teams" : "team")}";
             }
