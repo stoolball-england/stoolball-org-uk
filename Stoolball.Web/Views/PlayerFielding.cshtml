@@ -1,6 +1,7 @@
 ﻿@inherits UmbracoViewPage<PlayerFieldingViewModel>
 @inject IStatisticsFilterQueryStringSerializer serialiser
 @using Stoolball.Statistics
+@using Stoolball.Teams
 @using Stoolball.Web.Statistics.Models
 @using Stoolball.Matches
 @using Stoolball.Web.Filtering
@@ -15,6 +16,8 @@
     runOuts.Results.AddRange(Model.RunOuts);
 
     var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
+
+    var teams = Model.Player!.PlayerIdentities.OrderByDescending(x => x.TotalMatches).Select(x => x.Team).OfType<Team>().ToList().Distinct(new TeamEqualityComparer());
 }
 <div class="container-xl">
     @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = Model.Player!.PlayerName(), AlternativeNames = Model.Player.AlternativeNames() })
@@ -42,7 +45,10 @@
         FilteredItemTypePlural = "Statistics",
         FilterDescription = Model.FilterDescription,
         from = Model.AppliedFilter.FromDate,
-        to = Model.AppliedFilter.UntilDate
+        to = Model.AppliedFilter.UntilDate,
+        SupportsTeamFilter = true,
+        team = Model.AppliedFilter.Team?.TeamId,
+        Teams = teams
     })
 
     @if (Model.FieldingStatistics.TotalCatches == 0 && Model.FieldingStatistics.TotalRunOuts == 0)

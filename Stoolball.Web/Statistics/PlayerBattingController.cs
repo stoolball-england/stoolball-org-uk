@@ -62,9 +62,17 @@ namespace Stoolball.Web.Statistics
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
 
+                if (model.AppliedFilter.Team != null)
+                {
+                    var teamWithName = model.Player.PlayerIdentities.First(x => x.Team != null && x.Team.TeamId == model.AppliedFilter.Team.TeamId).Team;
+                    if (teamWithName != null)
+                    {
+                        model.AppliedFilter.Team = teamWithName;
+                    }
+                }
                 model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
 
-                var teams = model.Player.PlayerIdentities.Select(x => x.Team.TeamName).Distinct().ToList();
+                var teams = model.Player.PlayerIdentities.Select(x => x.Team?.TeamName).OfType<string>().Distinct().ToList();
                 model.Metadata.PageTitle = $"Batting statistics for {model.Player.PlayerName()}" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
                 model.Metadata.Description = $"Batting statistics for {model.Player.PlayerName()}, a player for {teams.Humanize()} stoolball {(teams.Count > 1 ? "teams" : "team")}";
 
