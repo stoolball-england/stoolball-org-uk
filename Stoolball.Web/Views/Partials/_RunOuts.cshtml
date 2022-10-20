@@ -24,13 +24,15 @@
                 var previousMatchRoute = string.Empty;
                 for (var i = 0; i < Model.Results.Count(); i++)
                 {
+                    if (Model.Results[i].Match == null || Model.Results[i].Result == null) { continue; }
+                  
                     <tr>
                         @{ 
                             var rowspan = 1;
                             var row = i+1;
                             while (row < Model.Results.Count())
                             {
-                                if (Model.Results[row].Match.MatchRoute == Model.Results[i].Match.MatchRoute)
+                                if (Model.Results[row].Match!.MatchRoute == Model.Results[i].Match!.MatchRoute)
                                 {
                                     rowspan++;
                                     row++;
@@ -42,22 +44,22 @@
                             }
                         }
 
-                        @if (Model.Results[i].Match.MatchRoute != previousMatchRoute)
+                        @if (Model.Results[i].Match!.MatchRoute != previousMatchRoute)
                         {
-                            <td rowspan="@rowspan" class="table-as-cards__header-sm match__stacked"><a href="@Model.Results[i].Match.MatchRoute">@Model.Results[i].Match.MatchName<span class="d-sm-none">, <span class="text-nowrap">@(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime, false, true, true))</span></span></a></td>
-                            <td class="text-nowrap d-none d-sm-table-cell" rowspan="@rowspan"><span class="table-as-cards__label" aria-hidden="true">When</span><span class="text-nowrap">@(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime, false, true, false))</span></td>
-                            <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Batter</span><div><a href="@Model.Results[i].Result.Batter.Player.PlayerRoute">@(Model.Results[i].Result.Batter.PlayerIdentityName)</a></div></td>
+                            <td rowspan="@rowspan" class="table-as-cards__header-sm match__stacked"><a href="@Model.Results[i].Match!.MatchRoute">@Model.Results[i].Match!.MatchName<span class="d-sm-none">, <span class="text-nowrap">@(dateTimeFormatter.FormatDate(Model.Results[i].Match!.StartTime, false, true, true))</span></span></a></td>
+                            <td class="text-nowrap d-none d-sm-table-cell" rowspan="@rowspan"><span class="table-as-cards__label" aria-hidden="true">When</span><span class="text-nowrap">@(dateTimeFormatter.FormatDate(Model.Results[i].Match!.StartTime, false, true, false))</span></td>
+                            <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Batter</span><div><a href="@Model.Results[i].Result!.Batter.Player.PlayerRoute">@(Model.Results[i].Result.Batter.PlayerIdentityName)</a></div></td>
                         }
                         else
                         {
-                            <td data-stackable="true" class="table-as-cards__rowspan-header-sm"><span class="table-as-cards__label" aria-hidden="true">Batter</span><div><a href="@Model.Results[i].Result.Batter.Player.PlayerRoute">@(Model.Results[i].Result.Batter.PlayerIdentityName)</a></div></td>
+                            <td data-stackable="true" class="table-as-cards__rowspan-header-sm"><span class="table-as-cards__label" aria-hidden="true">Batter</span><div><a href="@Model.Results[i].Result!.Batter.Player.PlayerRoute">@(Model.Results[i].Result!.Batter.PlayerIdentityName)</a></div></td>
                         }
                         @{
-                            previousMatchRoute = Model.Results[i].Match.MatchRoute;
+                            previousMatchRoute = Model.Results[i].Match!.MatchRoute;
                         }
-                        @if (Model.Results[i].Result.RunsScored.HasValue)
+                        @if (Model.Results[i].Result!.RunsScored.HasValue)
                         {
-                            <td data-stackable="true" class="numeric-sm"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.Results[i].Result.RunsScored!.Value</td>
+                            <td data-stackable="true" class="numeric-sm"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.Results[i].Result!.RunsScored!.Value</td>
                         }
                         else
                         {

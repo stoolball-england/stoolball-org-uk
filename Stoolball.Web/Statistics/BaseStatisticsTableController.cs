@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Stoolball.Statistics;
+using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics.Models;
 using Umbraco.Cms.Core.Web;
@@ -71,7 +72,19 @@ namespace Stoolball.Web.Statistics
             var model = new StatisticsViewModel<T>(CurrentPage) { ShowCaption = false };
             model.DefaultFilter = await _statisticsFilterFactory.FromRoute(Request.Path);
             model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
-            if (model.AppliedFilter.Team != null) { model.ShowTeamsColumn = false; }
+            if (model.AppliedFilter.Team != null)
+            {
+                model.ShowTeamsColumn = false;
+
+                if (model.DefaultFilter.Player != null)
+                {
+                    var teamWithName = model.DefaultFilter.Player.PlayerIdentities.First(x => x.Team != null && x.Team.TeamId == model.AppliedFilter.Team.TeamId).Team;
+                    if (teamWithName != null)
+                    {
+                        model.AppliedFilter.Team = teamWithName;
+                    }
+                }
+            }
             model.AppliedFilter.MinimumQualifyingInnings = _minimumQualifyingInningsUnfiltered;
             if (_minimumQualifyingInningsFiltered.HasValue &&
                 (model.AppliedFilter.Team != null ||
@@ -93,8 +106,18 @@ namespace Stoolball.Web.Statistics
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
 
             var userFilter = _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
-            model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter(_filterEntityPlural, userFilter);
-            model.Metadata.PageTitle = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter) + userFilter;
+            model.FilterViewModel.FilteredItemTypePlural = _filterEntityPlural;
+            model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter(_filterEntityPlural, userFilter);
+            model.FilterViewModel.from = model.AppliedFilter.FromDate;
+            model.FilterViewModel.to = model.AppliedFilter.UntilDate;
+            model.FilterViewModel.team = model.AppliedFilter.Team?.TeamId;
+            if (model.DefaultFilter.Player != null)
+            {
+                model.FilterViewModel.Teams = model.DefaultFilter.Player.PlayerIdentities.OrderByDescending(x => x.TotalMatches).Select(x => x.Team).OfType<Team>().ToList().Distinct(new TeamEqualityComparer());
+            }
+
+            model.Metadata.PageTitle = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingFixedFilter(model.DefaultFilter) + userFilter;
+            model.Heading = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingFixedFilter(model.DefaultFilter);
 
             return CurrentTemplate(model);
         }

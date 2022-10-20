@@ -16,6 +16,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
     public class ReadPlayerPerformancePlayerInningsTests
     {
         private readonly SqlServerTestDataFixture _databaseFixture;
+        private readonly Mock<IStatisticsQueryBuilder> _queryBuilder = new();
 
         public ReadPlayerPerformancePlayerInningsTests(SqlServerTestDataFixture databaseFixture)
         {
@@ -26,19 +27,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_player_innings_returns_batter()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };
-            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
-            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
+            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
             foreach (var expectedInnings in expected)
             {
-                var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
-                Assert.NotNull(result);
+                var result = results.SingleOrDefault(x => x.Result?.PlayerInningsId == expectedInnings.PlayerInningsId);
+                Assert.NotNull(result?.Result?.Batter?.Player);
 
-                Assert.Equal(expectedInnings.Batter.Player.PlayerRoute, result!.Result.Batter.Player.PlayerRoute);
+                Assert.Equal(expectedInnings.Batter!.Player!.PlayerRoute, result!.Result!.Batter!.Player!.PlayerRoute);
                 Assert.Equal(expectedInnings.Batter.PlayerIdentityName, result.Result.Batter.PlayerIdentityName);
             }
         }
@@ -47,19 +47,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_player_innings_returns_innings()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };
-            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
-            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
+            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
             foreach (var expectedInnings in expected)
             {
-                var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
-                Assert.NotNull(result);
+                var result = results.SingleOrDefault(x => x.Result?.PlayerInningsId == expectedInnings.PlayerInningsId);
+                Assert.NotNull(result?.Result);
 
-                Assert.Equal(expectedInnings.DismissalType, result!.Result.DismissalType);
+                Assert.Equal(expectedInnings.DismissalType, result!.Result!.DismissalType);
                 Assert.Equal(expectedInnings.RunsScored, result.Result.RunsScored);
             }
         }
@@ -69,19 +68,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_player_innings_returns_bowler()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };
-            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
-            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
+            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
             foreach (var expectedInnings in expected)
             {
-                var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
-                Assert.NotNull(result);
+                var result = results.SingleOrDefault(x => x.Result?.PlayerInningsId == expectedInnings.PlayerInningsId);
+                Assert.NotNull(result?.Result);
 
-                Assert.Equal(expectedInnings.Bowler?.Player.PlayerRoute, result!.Result.Bowler?.Player.PlayerRoute);
+                Assert.Equal(expectedInnings.Bowler?.Player?.PlayerRoute, result!.Result!.Bowler?.Player?.PlayerRoute);
                 Assert.Equal(expectedInnings.Bowler?.PlayerIdentityName, result.Result.Bowler?.PlayerIdentityName);
             }
         }
@@ -90,9 +88,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_player_innings_returns_match()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };
-            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
-            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
+            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
 
@@ -102,10 +99,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     foreach (var playerInnings in innings.PlayerInnings)
                     {
-                        var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == playerInnings.PlayerInningsId);
-                        Assert.NotNull(result);
+                        var result = results.SingleOrDefault(x => x.Result?.PlayerInningsId == playerInnings.PlayerInningsId);
+                        Assert.NotNull(result?.Match);
 
-                        Assert.Equal(match.MatchRoute, result!.Match.MatchRoute);
+                        Assert.Equal(match.MatchRoute, result!.Match!.MatchRoute);
                         Assert.Equal(match.StartTime, result.Match.StartTime);
                         Assert.Equal(match.MatchName, result.Match.MatchName);
                     }
@@ -113,23 +110,34 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             }
         }
 
-        [Fact]
-        public async Task Read_player_innings_supports_no_filter()
+        private async Task AssertFilteredResults(StatisticsFilter filter, Func<Stoolball.Matches.Match, bool> matchesFilter, Func<MatchInnings, bool> matchInningsFilter, Func<PlayerInnings, bool> playerInningsFilter)
         {
-            var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };
-            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
-            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+            filter.Paging = new Paging
+            {
+                PageSize = int.MaxValue
+            };
+
+            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
-
+            var expected = _databaseFixture.TestData.Matches.Where(matchesFilter)
+                .SelectMany(x => x.MatchInnings).Where(matchInningsFilter)
+                .SelectMany(x => x.PlayerInnings).Where(playerInningsFilter)
+                .ToList();
             Assert.Equal(expected.Count, results.Count());
             foreach (var expectedInnings in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result?.PlayerInningsId == expectedInnings.PlayerInningsId));
             }
+        }
+
+        [Fact]
+        public async Task Read_player_innings_supports_no_filter()
+        {
+            var filter = new StatisticsFilter();
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
+            await AssertFilteredResults(filter, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
         [Fact]
@@ -139,27 +147,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 var filter = new StatisticsFilter
                 {
-                    Paging = new Paging
-                    {
-                        PageSize = int.MaxValue
-                    },
                     CaughtByPlayerIdentityIds = player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList()
                 };
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CaughtByPlayerIdentityId IN @PlayerIdentities", new Dictionary<string, object> { { "PlayerIdentities", filter.CaughtByPlayerIdentityIds } }));
-                var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+                _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CaughtByPlayerIdentityId IN @PlayerIdentities", new Dictionary<string, object> { { "PlayerIdentities", filter.CaughtByPlayerIdentityIds } }));
 
-                var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
-
-                var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
-                    .SelectMany(x => x.PlayerInnings)
-                    .Where(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy?.Player.PlayerId == player.PlayerId) ||
-                                (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler?.Player.PlayerId == player.PlayerId)).ToList();
-                Assert.Equal(expected.Count, results.Count());
-                foreach (var expectedInnings in expected)
-                {
-                    Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
-                }
+                await AssertFilteredResults(filter, x => true, x => true,
+                    x => (x.DismissalType == DismissalType.Caught && x.DismissedBy?.Player?.PlayerId == player.PlayerId) ||
+                         (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler?.Player?.PlayerId == player.PlayerId)).ConfigureAwait(false);
             }
         }
 
@@ -170,26 +164,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 var filter = new StatisticsFilter
                 {
-                    Paging = new Paging
-                    {
-                        PageSize = int.MaxValue
-                    },
                     RunOutByPlayerIdentityIds = player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList()
                 };
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND RunOutByPlayerIdentityId IN @PlayerIdentities", new Dictionary<string, object> { { "PlayerIdentities", filter.RunOutByPlayerIdentityIds } }));
-                var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+                _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND RunOutByPlayerIdentityId IN @PlayerIdentities", new Dictionary<string, object> { { "PlayerIdentities", filter.RunOutByPlayerIdentityIds } }));
 
-                var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
-
-                var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
-                    .SelectMany(x => x.PlayerInnings)
-                    .Where(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy?.Player.PlayerId == player.PlayerId).ToList();
-                Assert.Equal(expected.Count, results.Count());
-                foreach (var expectedInnings in expected)
-                {
-                    Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
-                }
+                await AssertFilteredResults(filter, x => true, x => true,
+                    x => x.DismissalType == DismissalType.RunOut && x.DismissedBy?.Player?.PlayerId == player.PlayerId
+                ).ConfigureAwait(false);
             }
         }
 
@@ -205,26 +186,52 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     FromDate = fromDate,
                     UntilDate = untilDate,
-                    Paging = new Paging
-                    {
-                        PageSize = int.MaxValue
-                    },
                 };
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate", new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } }));
-                var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+                _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate", new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } }));
 
-                var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
+                await AssertFilteredResults(filter,
+                    x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate,
+                    x => true,
+                    x => true).ConfigureAwait(false);
+            }
+        }
 
-                var expected = _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)
-                    .SelectMany(x => x.MatchInnings)
-                    .SelectMany(x => x.PlayerInnings)
-                    .ToList();
-                Assert.Equal(expected.Count, results.Count());
-                foreach (var expectedInnings in expected)
+        [Fact]
+        public async Task Read_player_innings_supports_filter_by_batting_team_id()
+        {
+            foreach (var player in _databaseFixture.TestData.PlayersWithMultipleIdentities)
+            {
+                var filter = new StatisticsFilter
                 {
-                    Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
-                }
+                    Team = _databaseFixture.TestData.TeamWithFullDetails
+                };
+                _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", filter.Team!.TeamId! } }));
+
+                await AssertFilteredResults(filter,
+                    x => x.Teams.Select(t => t.Team?.TeamId).Contains(filter.Team.TeamId),
+                    x => x.BattingTeam?.Team?.TeamId == filter.Team.TeamId,
+                    x => true
+                ).ConfigureAwait(false);
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_innings_supports_filter_by_fielding_team_id()
+        {
+            foreach (var player in _databaseFixture.TestData.PlayersWithMultipleIdentities)
+            {
+                var filter = new StatisticsFilter
+                {
+                    Team = _databaseFixture.TestData.TeamWithFullDetails,
+                    SwapTeamAndOppositionFilters = true,
+                };
+                _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND OppositionTeamId = @OppositionTeamId", new Dictionary<string, object> { { "OppositionTeamId", filter.Team!.TeamId! } }));
+
+                await AssertFilteredResults(filter,
+                    x => x.Teams.Select(t => t.Team?.TeamId).Contains(filter.Team.TeamId),
+                    x => x.BowlingTeam?.Team?.TeamId == filter.Team.TeamId,
+                    x => true
+                    ).ConfigureAwait(false);
             }
         }
 
@@ -232,17 +239,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_player_innings_sorts_by_most_recent_first()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };
-            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
-            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
+            var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
 
-            var previousInningsStartTime = DateTimeOffset.MaxValue;
+            DateTimeOffset? previousInningsStartTime = DateTimeOffset.MaxValue;
             foreach (var result in results)
             {
-                Assert.True(result.Match.StartTime <= previousInningsStartTime);
-                previousInningsStartTime = result.Match.StartTime;
+                Assert.True(result.Match?.StartTime <= previousInningsStartTime);
+                previousInningsStartTime = result.Match?.StartTime;
             }
         }
 
@@ -255,9 +261,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             while (remaining > 0)
             {
                 var filter = new StatisticsFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = pageSize } };
-                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
-                var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+                _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((string.Empty, new Dictionary<string, object>()));
+                var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
                 var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
 
                 var expected = pageSize > remaining ? remaining : pageSize;

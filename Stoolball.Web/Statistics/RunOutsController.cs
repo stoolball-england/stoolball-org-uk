@@ -34,6 +34,7 @@ namespace Stoolball.Web.Statistics
                       if (filter.Player == null) { throw new ArgumentNullException(nameof(filter)); }
                       var runOutsFilter = filter.Clone();
                       runOutsFilter.Player = null;
+                      runOutsFilter.SwapTeamAndOppositionFilters = true;
                       runOutsFilter.RunOutByPlayerIdentityIds = filter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList();
                       return (await playerPerformanceDataSource.ReadPlayerInnings(runOutsFilter)).ToList();
                   },

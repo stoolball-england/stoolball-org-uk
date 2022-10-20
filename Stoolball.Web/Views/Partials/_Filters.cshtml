@@ -8,10 +8,10 @@
     }
     <form method="get" action="@Context.Request.Path.Value" class="filter__edit d-none">
         <div class="form-group">
-            @Html.LabelFor(m => Model.from, Model.FilteredItemTypePlural + " from", new { aria_label = Model.FilteredItemTypeSingular + " date is on or after" })
+            @Html.LabelFor(m => Model.from, Model.FilteredItemTypePlural + " from", new { aria_label = Model.FilteredItemTypePlural + " on or after date" })
             @Html.TextBox(nameof(Model.from), Model.from.HasValue ? Model.from.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", aria_describedby = "from-date", data_val_date = "Enter a date in YYYY-MM-DD format." })
             @Html.ValidationMessageFor(m => Model.from, null, new { id = "from-date" })
-            @Html.LabelFor(m => Model.to, "until", new { aria_label = Model.FilteredItemTypeSingular + " date is on or before" })
+            @Html.LabelFor(m => Model.to, "until", new { aria_label = Model.FilteredItemTypePlural + " on or before date" })
             @Html.TextBox(nameof(Model.to), Model.to.HasValue ? Model.to.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", aria_describedby = "to-date", data_val_date = "Enter a date in YYYY-MM-DD format." })
             @Html.ValidationMessageFor(m => Model.to, null, new { id = "to-date" })
         </div>

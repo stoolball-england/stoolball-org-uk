@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
@@ -87,6 +88,29 @@ namespace Stoolball.Web.UnitTests.Statistics
                 ControllerContext = ControllerContext
             };
         }
+
+        private static Player CreatePlayerWithIdentities()
+        {
+            return new Player
+            {
+                PlayerIdentities = new List<PlayerIdentity>
+                    {
+                        new PlayerIdentity
+                        {
+                            PlayerIdentityName = "Example player 1",
+                            Team = new Team { TeamId = Guid.NewGuid(), TeamName = "Team name 1" },
+                            TotalMatches = 5,
+                        },
+                        new PlayerIdentity
+                        {
+                            PlayerIdentityName = "Example player 2",
+                            Team = new Team { TeamId = Guid.NewGuid(), TeamName = "Team name 2" },
+                            TotalMatches = 10, // deliberately higher than the first identity to test that they're sorted later
+                        }
+                    }
+            };
+        }
+
         private void SetupMocks(StatisticsFilter defaultFilter, StatisticsFilter appliedFilter, List<StatisticsResult<AnyClass>> results)
         {
             Request.Setup(x => x.Path).Returns("/play/statistics");
@@ -100,14 +124,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             return new StatisticsResult<AnyClass>
             {
-                Player = new Player
-                {
-                    PlayerIdentities = new List<PlayerIdentity>{
-                                        new PlayerIdentity{
-                                            PlayerIdentityName = "Example player"
-                                        }
-                                    }
-                }
+                Player = CreatePlayerWithIdentities()
             };
         }
 
@@ -229,7 +246,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Sets_description_and_page_title_using_filters()
+        public async Task Sets_filter_description_heading_and_page_title_using_filters()
         {
             var defaultFilter = new StatisticsFilter();
             var appliedFilter = defaultFilter.Clone();
@@ -239,9 +256,10 @@ namespace Stoolball.Web.UnitTests.Statistics
 
             var expectedFixedFilter = "the fixed filter and ";
             var expectedAppliedFilter = "the applied filter";
+            var expectedHeading = PAGE_TITLE + expectedFixedFilter;
             var expectedFilterDescription = "Things matching " + expectedAppliedFilter;
             _filterHumanizer.Setup(x => x.MatchingUserFilter(appliedFilter)).Returns(expectedAppliedFilter);
-            _filterHumanizer.Setup(x => x.MatchingFixedFilter(appliedFilter)).Returns(expectedFixedFilter);
+            _filterHumanizer.Setup(x => x.MatchingFixedFilter(defaultFilter)).Returns(expectedFixedFilter);
             _filterHumanizer.Setup(x => x.EntitiesMatchingFilter(FILTER_ENTITY_PLURAL, expectedAppliedFilter)).Returns(expectedFilterDescription);
 
             using (var controller = CreateController())
@@ -250,8 +268,70 @@ namespace Stoolball.Web.UnitTests.Statistics
 
                 var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
 
-                Assert.Equal(expectedFilterDescription, model.FilterDescription);
+                Assert.Equal(expectedFilterDescription, model.FilterViewModel.FilterDescription);
+                Assert.Equal(expectedHeading, model.Heading);
                 Assert.Equal(PAGE_TITLE + expectedFixedFilter + expectedAppliedFilter, model.Metadata.PageTitle);
+            }
+        }
+
+        [Fact]
+        public async Task Sets_FilterViewModel_properties_from_filters()
+        {
+            var defaultFilter = new StatisticsFilter();
+            var appliedFilter = defaultFilter.Clone();
+            appliedFilter.FromDate = DateTime.UtcNow.AddYears(-1);
+            appliedFilter.UntilDate = DateTime.UtcNow.AddMonths(-6);
+            appliedFilter.Team = new Team { TeamId = Guid.NewGuid() };
+
+            var results = new List<StatisticsResult<AnyClass>>();
+            SetupMocks(defaultFilter, appliedFilter, results);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
+
+                Assert.Equal(FILTER_ENTITY_PLURAL, model.FilterViewModel.FilteredItemTypePlural);
+                Assert.Equal(appliedFilter.FromDate, model.FilterViewModel.from);
+                Assert.Equal(appliedFilter.UntilDate, model.FilterViewModel.to);
+                Assert.Equal(appliedFilter.Team.TeamId, model.FilterViewModel.team);
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Sets_FilterViewModel_Teams_sorted_by_total_matches_if_DefaultFilter_has_player(bool hasPlayer)
+        {
+            var defaultFilter = new StatisticsFilter { Player = hasPlayer ? CreatePlayerWithIdentities() : null };
+            var appliedFilter = defaultFilter.Clone();
+
+            var results = new List<StatisticsResult<AnyClass>>();
+            SetupMocks(defaultFilter, appliedFilter, results);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
+
+                if (hasPlayer)
+                {
+                    Assert.Equal(defaultFilter.Player!.PlayerIdentities.Count, model.FilterViewModel.Teams.Count());
+                    int? previous = int.MaxValue;
+                    foreach (var team in model.FilterViewModel.Teams)
+                    {
+                        var identityForTeam = defaultFilter.Player.PlayerIdentities.SingleOrDefault(x => x.Team?.TeamId == team.TeamId);
+                        Assert.NotNull(identityForTeam);
+                        Assert.True(identityForTeam!.TotalMatches <= previous);
+                        previous = identityForTeam.TotalMatches;
+                    }
+                }
+                else
+                {
+                    Assert.Empty(model.FilterViewModel.Teams);
+                }
             }
         }
 
@@ -273,6 +353,28 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
 
                 Assert.Equal(!hasTeamFilter, model.ShowTeamsColumn);
+            }
+        }
+
+        public async Task If_team_filter_is_applied_to_default_player_filter_player_team_is_copied_to_applied_filter()
+        {
+            var defaultFilter = new StatisticsFilter
+            {
+                Player = CreatePlayerWithIdentities()
+            };
+            var appliedFilter = defaultFilter.Clone();
+            appliedFilter.Team = new Team { TeamId = defaultFilter.Player.PlayerIdentities[0].Team!.TeamId };
+
+            var results = new List<StatisticsResult<AnyClass>>();
+            SetupMocks(defaultFilter, appliedFilter, results);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
+
+                Assert.Equal(defaultFilter.Player.PlayerIdentities[0].Team!.TeamName, model.AppliedFilter.Team?.TeamName);
             }
         }
 

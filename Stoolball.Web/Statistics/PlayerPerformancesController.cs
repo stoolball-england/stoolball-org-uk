@@ -28,7 +28,7 @@ namespace Stoolball.Web.Statistics
                   filter => statisticsDataSource.ReadPlayerIdentityPerformances(filter),
                   filter => statisticsDataSource.ReadTotalPlayerIdentityPerformances(filter),
                   filter => "Player performances",
-                  "Player performances"
+                  "Performances"
                   )
         { }
     }

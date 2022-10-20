@@ -1,12 +1,16 @@
-﻿@inherits UmbracoViewPage<StatisticsViewModel<BestStatistic>>
+﻿@inherits UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
 @inject IStatisticsFilterHumanizer humanizer
 @using Stoolball.Statistics
-@using Stoolball.Web.Filtering 
+@using Stoolball.Teams
+@using Stoolball.Web.Filtering
 @using Stoolball.Web.Statistics.Models
+@using Stoolball.Matches
 @{
     SmidgeHelper.RequiresCss(new CssFile("/css/statistics.min.css") { Order = 100 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
     SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
+
+    Model.FilterViewModel.SupportsTeamFilter = true;
 }
 @section canonical {@await Html.PartialAsync("_CanonicalUrl", new[] { "page" })}
 @section head {
@@ -20,7 +24,7 @@
     }
 }
 <div class="container-xl">
-    <h1>Most times taking @Model.AppliedFilter.MinimumWicketsTaken or more wickets in an innings@(humanizer.MatchingFixedFilter(Model.AppliedFilter))</h1>
+    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = Model.Heading, AlternativeNames = Model.DefaultFilter.Player.AlternativeNames() })
 
     @await Html.PartialAsync("_StatisticsTip")
   
@@ -33,11 +37,10 @@
 
     @if (Model.Results.Any())
     {
-        @await Html.PartialAsync("_StatisticsBasis")
+        @await Html.PartialAsync(Model.PartialView)
     }
     else
     {
         @await Html.PartialAsync("_NoData")
     }
-    @await Html.PartialAsync("_MostXWickets")
 </div>

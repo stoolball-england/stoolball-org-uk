@@ -6,7 +6,6 @@ namespace Stoolball.Web.Matches.Models
     {
         public MatchFilterViewModel()
         {
-            FilteredItemTypeSingular = "Match";
             FilteredItemTypePlural = "Matches";
         }
     }

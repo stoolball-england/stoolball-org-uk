@@ -41,14 +41,7 @@
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
         </li>
     </ul>
-    @await Html.PartialAsync("_Filters", new FilterViewModel
-    {
-        FilteredItemTypeSingular = "Bowling figures",
-        FilteredItemTypePlural = "Bowling figures",
-        FilterDescription = Model.FilterDescription,
-        from = Model.AppliedFilter.FromDate,
-        to = Model.AppliedFilter.UntilDate
-    })
+    @await Html.PartialAsync("_Filters", Model.FilterViewModel)
 
     @if (Model.Results.Any())
     {
