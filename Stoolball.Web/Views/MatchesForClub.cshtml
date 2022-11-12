@@ -27,8 +27,8 @@
     @await Html.PartialAsync("_Filters", new MatchFilterViewModel
 {
     FilterDescription = Model.FilterDescription,
-    from = Model.AppliedMatchFilter.FromDate,
-    to = Model.AppliedMatchFilter.UntilDate
+    FromDate = Model.AppliedMatchFilter.FromDate,
+    UntilDate = Model.AppliedMatchFilter.UntilDate
 })
 
     @if (Model.Matches.Matches.Count > 0)

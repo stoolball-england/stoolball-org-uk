@@ -80,8 +80,8 @@ namespace Stoolball.Web.Teams
                 appliedFilterWithoutDefaultFilter.Team = null;
                 model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(appliedFilterWithoutDefaultFilter));
                 model.FilterViewModel.FilteredItemTypePlural = "Statistics";
-                model.FilterViewModel.from = model.AppliedFilter.FromDate;
-                model.FilterViewModel.to = model.AppliedFilter.UntilDate;
+                model.FilterViewModel.FromDate = model.AppliedFilter.FromDate;
+                model.FilterViewModel.UntilDate = model.AppliedFilter.UntilDate;
                 model.Metadata.PageTitle = $"Statistics for {model.Context.TeamName} stoolball team" + _statisticsFilterHumanizer.MatchingUserFilter(appliedFilterWithoutDefaultFilter);
                 model.Metadata.Description = $"Statistics for {model.Context.TeamName}, a {model.Context.Description().Substring(2)}";
 

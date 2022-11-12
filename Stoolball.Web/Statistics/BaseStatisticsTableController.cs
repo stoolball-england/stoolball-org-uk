@@ -115,9 +115,9 @@ namespace Stoolball.Web.Statistics
             var userFilter = _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
             model.FilterViewModel.FilteredItemTypePlural = _filterEntityPlural;
             model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter(_filterEntityPlural, userFilter);
-            model.FilterViewModel.from = model.AppliedFilter.FromDate;
-            model.FilterViewModel.to = model.AppliedFilter.UntilDate;
-            model.FilterViewModel.team = model.AppliedFilter.Team?.TeamRoute;
+            model.FilterViewModel.FromDate = model.AppliedFilter.FromDate;
+            model.FilterViewModel.UntilDate = model.AppliedFilter.UntilDate;
+            model.FilterViewModel.TeamRoute = model.AppliedFilter.Team?.TeamRoute;
             model.FilterViewModel.TeamName = model.AppliedFilter.Team?.TeamName;
             if (model.DefaultFilter.Player != null)
             {

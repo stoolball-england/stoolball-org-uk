@@ -2,6 +2,9 @@
 @using Stoolball.Teams
 @using Stoolball.Web.Filtering
 @using System.Globalization
+@{
+    var filterParameters = (IFilterParameters)Model;
+}
 <div class="filter">
     @if (!string.IsNullOrWhiteSpace(Model.FilterDescription))
     {
@@ -10,14 +13,14 @@
     <form method="get" action="@Context.Request.Path.Value" class="filter__edit d-none">
         <div class="form-group">
             <div class="filter__edit-label">
-                @Html.LabelFor(m => Model.from, Model.FilteredItemTypePlural + " from", new { aria_label = Model.FilteredItemTypePlural + " on or after date" })
+                @Html.LabelFor(m => filterParameters.from, Model.FilteredItemTypePlural + " from", new { aria_label = Model.FilteredItemTypePlural + " on or after date" })
             </div>
             <div class="filter__edit-control">
-                @Html.TextBox(nameof(Model.from), Model.from.HasValue ? Model.from.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control filter__form-control", aria_describedby = "from-date", data_val_date = "Enter a date in YYYY-MM-DD format." })
-                @Html.ValidationMessageFor(m => Model.from, null, new { id = "from-date" })
-                @Html.LabelFor(m => Model.to, "until", new { aria_label = Model.FilteredItemTypePlural + " on or before date" })
-                @Html.TextBox(nameof(Model.to), Model.to.HasValue ? Model.to.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control filter__form-control", aria_describedby = "to-date", data_val_date = "Enter a date in YYYY-MM-DD format." })
-                @Html.ValidationMessageFor(m => Model.to, null, new { id = "to-date" })
+                @Html.TextBox(nameof(filterParameters.from), filterParameters.from.HasValue ? filterParameters.from.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control filter__form-control", aria_describedby = "from-date", data_val_date = "Enter a date in YYYY-MM-DD format." })
+                @Html.ValidationMessageFor(m => filterParameters.from, null, new { id = "from-date" })
+                @Html.LabelFor(m => filterParameters.to, "until", new { aria_label = Model.FilteredItemTypePlural + " on or before date" })
+                @Html.TextBox(nameof(filterParameters.to), filterParameters.to.HasValue ? filterParameters.to.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control filter__form-control", aria_describedby = "to-date", data_val_date = "Enter a date in YYYY-MM-DD format." })
+                @Html.ValidationMessageFor(m => filterParameters.to, null, new { id = "to-date" })
             </div>
         </div>
         @if (Model.SupportsTeamFilter)
@@ -28,10 +31,10 @@
                 {
                     <div class="form-group">
                         <div class="filter__edit-label">
-                            @Html.LabelFor(m => Model.team)
+                            @Html.LabelFor(m => filterParameters.team)
                         </div>
                         <div class="filter__edit-control">
-                            @Html.DropDownListFor(m => Model.team, Model.Teams.Select(x => new SelectListItem{ Text = x.TeamName, Value = x.TeamRoute.ToString().TrimStart("/teams/") }), "Any team", new { @class="form-control" })
+                            @Html.DropDownListFor(m => filterParameters.team, Model.Teams.Select(x => new SelectListItem{ Text = x.TeamName, Value = x.TeamRoute?.ToString().TrimStart("/teams/") }), "Any team", new { @class="form-control" })
                         </div>
                     </div>
                 }
@@ -50,7 +53,7 @@
                                     @Html.TextBoxFor(m => Model.TeamName, new { @class = "form-control filter__never-submit", @readonly = "readonly" })
                                 </div>
                                 <div class="related-item__delete related-item__selected__section">
-                                    @Html.HiddenFor(m => Model.team, new { @class = "related-item__data related-item__id" })
+                                    @Html.HiddenFor(m => filterParameters.team, new { @class = "related-item__data related-item__id" })
                                     <button class="btn-delete-icon" type="button">@await Html.PartialAsync("_DeleteIcon", $"Clear team filter")</button>
                                 </div>
                             </div>

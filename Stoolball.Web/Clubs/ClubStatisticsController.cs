@@ -78,9 +78,9 @@ namespace Stoolball.Web.Clubs
 
                 model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
                 model.FilterViewModel.FilteredItemTypePlural = "Statistics";
-                model.FilterViewModel.from = model.AppliedFilter.FromDate;
-                model.FilterViewModel.to = model.AppliedFilter.UntilDate;
-                model.FilterViewModel.team = model.AppliedFilter.Team?.TeamRoute;
+                model.FilterViewModel.FromDate = model.AppliedFilter.FromDate;
+                model.FilterViewModel.UntilDate = model.AppliedFilter.UntilDate;
+                model.FilterViewModel.TeamRoute = model.AppliedFilter.Team?.TeamRoute;
                 model.FilterViewModel.SupportsTeamFilter = model.Context.Teams.Any();
                 model.FilterViewModel.Teams = model.Context.Teams;
                 model.Metadata.PageTitle = $"Statistics for {model.Context.ClubName}" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);

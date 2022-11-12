@@ -288,7 +288,7 @@ namespace Stoolball.UnitTests.Statistics
         }
 
         [Fact]
-        public async Task Team_filter_populates_team_from_teamDataSource()
+        public async Task Team_querystring_filter_populates_team_from_teamDataSource()
         {
             var queryString = "?team=example-team";
             var teamFromQueryString = new Team { TeamRoute = "/teams/example-team" };
@@ -300,7 +300,7 @@ namespace Stoolball.UnitTests.Statistics
             var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
-            var result = await filterFactory.FromRoute(queryString);
+            var result = await filterFactory.FromQueryString(queryString);
 
             _teamDataSource.Verify(x => x.ReadTeamByRoute(teamFromQueryString.TeamRoute, true), Times.Once);
             Assert.Equal(teamFromDataSource, result.Team);

@@ -318,9 +318,9 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
 
                 Assert.Equal(FILTER_ENTITY_PLURAL, model.FilterViewModel.FilteredItemTypePlural);
-                Assert.Equal(appliedFilter.FromDate, model.FilterViewModel.from);
-                Assert.Equal(appliedFilter.UntilDate, model.FilterViewModel.to);
-                Assert.Equal(appliedFilter.Team.TeamRoute.Substring(7), model.FilterViewModel.team);
+                Assert.Equal(appliedFilter.FromDate, model.FilterViewModel.FromDate);
+                Assert.Equal(appliedFilter.UntilDate, model.FilterViewModel.UntilDate);
+                Assert.Equal(appliedFilter.Team.TeamRoute, model.FilterViewModel.TeamRoute);
             }
         }
 

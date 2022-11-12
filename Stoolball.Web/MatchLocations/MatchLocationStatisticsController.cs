@@ -66,9 +66,9 @@ namespace Stoolball.Web.MatchLocations
 
                 model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
                 model.FilterViewModel.FilteredItemTypePlural = "Statistics";
-                model.FilterViewModel.from = model.AppliedFilter.FromDate;
-                model.FilterViewModel.to = model.AppliedFilter.UntilDate;
-                model.FilterViewModel.team = model.AppliedFilter.Team?.TeamRoute;
+                model.FilterViewModel.FromDate = model.AppliedFilter.FromDate;
+                model.FilterViewModel.UntilDate = model.AppliedFilter.UntilDate;
+                model.FilterViewModel.TeamRoute = model.AppliedFilter.Team?.TeamRoute;
                 model.FilterViewModel.TeamName = model.AppliedFilter.Team?.TeamName;
                 model.FilterViewModel.SupportsTeamFilter = true;
                 model.Metadata.PageTitle = $"Statistics for {model.Context.NameAndLocalityOrTown()}" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);

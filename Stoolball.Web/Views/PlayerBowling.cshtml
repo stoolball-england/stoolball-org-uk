@@ -47,10 +47,10 @@
     {
         FilteredItemTypePlural = "Statistics",
         FilterDescription = Model.FilterDescription,
-        from = Model.AppliedFilter.FromDate,
-        to = Model.AppliedFilter.UntilDate,
+        FromDate = Model.AppliedFilter.FromDate,
+        UntilDate = Model.AppliedFilter.UntilDate,
         SupportsTeamFilter = true,
-        team = Model.AppliedFilter.Team?.TeamRoute,
+        TeamRoute = Model.AppliedFilter.Team?.TeamRoute,
         Teams = teams
     })
 
