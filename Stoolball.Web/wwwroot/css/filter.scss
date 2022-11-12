@@ -22,13 +22,26 @@
     border-bottom: theme-color("alt-secondary") solid 1px;
 }
 
+.filter__edit > .form-group {
+    display: flex;
+    align-items: center;
+}
+
 .filter__edit .form-group:last-child {
     margin-bottom: 0;
 }
 
+.filter__edit-label {
+    width: 7em;
+}
+
 .filter__edit label {
     display: inline-block;
-    margin-right: $spacer/2;
+    margin: 0 $spacer/2 0 0;
+}
+
+.filter__edit-control {
+    flex-grow: 1;
 }
 
 .filter__form-control {

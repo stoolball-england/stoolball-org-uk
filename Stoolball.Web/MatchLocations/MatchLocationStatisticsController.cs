@@ -20,7 +20,7 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceDataSource;
         private readonly IBestPlayerTotalStatisticsDataSource _bestPlayerTotalDataSource;
-        private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
+        private readonly IStatisticsFilterFactory _statisticsFilterFactory;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public MatchLocationStatisticsController(ILogger<MatchLocationStatisticsController> logger,
@@ -29,14 +29,14 @@ namespace Stoolball.Web.MatchLocations
             IMatchLocationDataSource matchLocationDataSource,
             IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
             IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource,
-            IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+            IStatisticsFilterFactory statisticsFilterFactory,
             IStatisticsFilterHumanizer statisticsFilterHumanizer)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _bestPerformanceDataSource = bestPerformanceDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceDataSource));
             _bestPlayerTotalDataSource = bestPlayerTotalDataSource ?? throw new ArgumentNullException(nameof(bestPlayerTotalDataSource));
-            _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
+            _statisticsFilterFactory = statisticsFilterFactory ?? throw new ArgumentNullException(nameof(statisticsFilterFactory));
             _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
@@ -56,21 +56,21 @@ namespace Stoolball.Web.MatchLocations
             else
             {
                 model.DefaultFilter = new StatisticsFilter { MatchLocation = model.Context, MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-                model.AppliedFilter = model.DefaultFilter.Clone().Merge(_statisticsFilterQueryStringParser.ParseQueryString(Request.QueryString.Value));
+                model.AppliedFilter = model.DefaultFilter.Clone().Merge(await _statisticsFilterFactory.FromQueryString(Request.QueryString.Value));
                 model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst)).ToList();
                 model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.AppliedFilter, StatisticsSortOrder.BestFirst)).ToList();
                 model.MostRuns = (await _bestPlayerTotalDataSource.ReadMostRunsScored(model.AppliedFilter)).ToList();
                 model.MostWickets = (await _bestPlayerTotalDataSource.ReadMostWickets(model.AppliedFilter)).ToList();
                 model.MostCatches = (await _bestPlayerTotalDataSource.ReadMostCatches(model.AppliedFilter)).ToList();
-
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
 
                 model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
                 model.FilterViewModel.FilteredItemTypePlural = "Statistics";
                 model.FilterViewModel.from = model.AppliedFilter.FromDate;
                 model.FilterViewModel.to = model.AppliedFilter.UntilDate;
-                model.FilterViewModel.SupportsTeamFilter = model.Context.Teams.Any();
-                model.FilterViewModel.Teams = model.Context.Teams;
+                model.FilterViewModel.team = model.AppliedFilter.Team?.TeamRoute;
+                model.FilterViewModel.TeamName = model.AppliedFilter.Team?.TeamName;
+                model.FilterViewModel.SupportsTeamFilter = true;
                 model.Metadata.PageTitle = $"Statistics for {model.Context.NameAndLocalityOrTown()}" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
                 model.Metadata.Description = $"Statistics for stoolball matches played at {model.Context.NameAndLocalityOrTown()}.";
 

@@ -17,7 +17,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
     {
         private readonly Mock<IMatchLocationDataSource> _matchLocationDataSource = new();
         private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
-        private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
+        private readonly Mock<IStatisticsFilterFactory> _statisticsFilterFactory = new();
         private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new();
 
         private MatchLocationStatisticsController CreateController()
@@ -29,7 +29,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
                 _matchLocationDataSource.Object,
                 _bestPerformanceDataSource.Object,
                 _bestTotalDataSource.Object,
-                _statisticsFilterQueryStringParser.Object,
+                _statisticsFilterFactory.Object,
                 Mock.Of<IStatisticsFilterHumanizer>())
             {
                 ControllerContext = ControllerContext
@@ -39,7 +39,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         [Fact]
         public async Task Route_not_matching_location_returns_404()
         {
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<string>())).Returns(new StatisticsFilter());
+            _statisticsFilterFactory.Setup(x => x.FromQueryString(It.IsAny<string>())).Returns(Task.FromResult(new StatisticsFilter()));
             _matchLocationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation?>(null));
 
             using (var controller = CreateController())
@@ -53,7 +53,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         [Fact]
         public async Task Route_matching_location_returns_StatisticsSummaryViewModel()
         {
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<string>())).Returns(new StatisticsFilter());
+            _statisticsFilterFactory.Setup(x => x.FromQueryString(It.IsAny<string>())).Returns(Task.FromResult(new StatisticsFilter()));
             _matchLocationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
             _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
 

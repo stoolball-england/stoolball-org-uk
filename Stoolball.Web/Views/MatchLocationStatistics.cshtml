@@ -1,6 +1,8 @@
 ﻿@inherits UmbracoViewPage<StatisticsSummaryViewModel<MatchLocation>>
 @using Stoolball.MatchLocations
 @using Stoolball.Web.Statistics.Models
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItem")
 @{
     SmidgeHelper.RequiresCss(new CssFile("/css/statistics.min.css"){Order = 100});
     SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js"){Order = 100});

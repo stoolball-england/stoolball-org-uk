@@ -8,11 +8,11 @@
         <p class="filter__applied">Showing @Model.FilterDescription.ToFirstLower(CultureInfo.CurrentCulture).</p>
     }
     <form method="get" action="@Context.Request.Path.Value" class="filter__edit d-none">
-        <div class="form-row form-group">
-            <div class="col-md-1">
+        <div class="form-group">
+            <div class="filter__edit-label">
                 @Html.LabelFor(m => Model.from, Model.FilteredItemTypePlural + " from", new { aria_label = Model.FilteredItemTypePlural + " on or after date" })
             </div>
-            <div class="col-md-11">
+            <div class="filter__edit-control">
                 @Html.TextBox(nameof(Model.from), Model.from.HasValue ? Model.from.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control filter__form-control", aria_describedby = "from-date", data_val_date = "Enter a date in YYYY-MM-DD format." })
                 @Html.ValidationMessageFor(m => Model.from, null, new { id = "from-date" })
                 @Html.LabelFor(m => Model.to, "until", new { aria_label = Model.FilteredItemTypePlural + " on or before date" })
@@ -26,11 +26,11 @@
             {
                 @if (Model.Teams.Count() > 1)
                 {
-                    <div class="form-row form-group">
-                        <div class="col-md-1">
+                    <div class="form-group">
+                        <div class="filter__edit-label">
                             @Html.LabelFor(m => Model.team)
                         </div>
-                        <div class="col-md-11">
+                        <div class="filter__edit-control">
                             @Html.DropDownListFor(m => Model.team, Model.Teams.Select(x => new SelectListItem{ Text = x.TeamName, Value = x.TeamRoute.ToString().TrimStart("/teams/") }), "Any team", new { @class="form-control" })
                         </div>
                     </div>
@@ -38,11 +38,11 @@
             }
             else
             {
-                <div class="form-group form-row related-item">
-                    <div class="col-md-1">
+                <div class="form-group related-item">
+                    <div class="filter__edit-label">
                     @Html.LabelFor(m => Model.TeamName)
                     </div>
-                    <div class="col-md-11">
+                    <div class="filter__edit-control">
                         @if (!string.IsNullOrEmpty(Model.TeamName))
                         {
                              <div class="single-related-item__selected">
