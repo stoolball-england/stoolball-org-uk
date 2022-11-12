@@ -19,7 +19,6 @@ namespace Stoolball.Web.Statistics
     {
         private readonly IStatisticsFilterFactory _statisticsFilterFactory;
         private readonly IStatisticsBreadcrumbBuilder _statisticsBreadcrumbBuilder;
-        private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
         private readonly Func<StatisticsFilter, Task<IEnumerable<StatisticsResult<T>>>> _readResults;
         private readonly Func<StatisticsFilter, Task<int>> _readTotalResults;
@@ -34,7 +33,6 @@ namespace Stoolball.Web.Statistics
             IUmbracoContextAccessor umbracoContextAccessor,
             IStatisticsFilterFactory statisticsFilterFactory,
             IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
-            IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
             IStatisticsFilterHumanizer statisticsFilterHumanizer,
             Func<StatisticsFilter, Task<IEnumerable<StatisticsResult<T>>>> readResults,
             Func<StatisticsFilter, Task<int>> readTotalResults,
@@ -53,7 +51,6 @@ namespace Stoolball.Web.Statistics
 
             _statisticsFilterFactory = statisticsFilterFactory ?? throw new ArgumentNullException(nameof(statisticsFilterFactory));
             _statisticsBreadcrumbBuilder = statisticsBreadcrumbBuilder ?? throw new ArgumentNullException(nameof(statisticsBreadcrumbBuilder));
-            _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
             _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
             _readResults = readResults ?? throw new ArgumentNullException(nameof(readResults));
             _readTotalResults = readTotalResults ?? throw new ArgumentNullException(nameof(readTotalResults));
@@ -70,19 +67,29 @@ namespace Stoolball.Web.Statistics
         public async new Task<IActionResult> Index()
         {
             var model = new StatisticsViewModel<T>(CurrentPage) { ShowCaption = false };
-            model.DefaultFilter = await _statisticsFilterFactory.FromRoute(Request.Path);
-            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
+            model.DefaultFilter = await _statisticsFilterFactory.FromRoute(Request.Path).ConfigureAwait(false);
+            model.AppliedFilter = model.DefaultFilter.Clone().Merge(await _statisticsFilterFactory.FromQueryString(Request.QueryString.Value).ConfigureAwait(false));
+
             if (model.AppliedFilter.Team != null)
             {
                 model.ShowTeamsColumn = false;
 
+                Team? teamWithName = null;
                 if (model.DefaultFilter.Player != null)
                 {
-                    var teamWithName = model.DefaultFilter.Player.PlayerIdentities.First(x => x.Team != null && x.Team.TeamId == model.AppliedFilter.Team.TeamId).Team;
-                    if (teamWithName != null)
-                    {
-                        model.AppliedFilter.Team = teamWithName;
-                    }
+                    teamWithName = model.DefaultFilter.Player.PlayerIdentities.FirstOrDefault(x => x.Team?.TeamRoute == model.AppliedFilter.Team.TeamRoute)?.Team;
+                }
+                else if (model.DefaultFilter.Club != null)
+                {
+                    teamWithName = model.DefaultFilter.Club.Teams.FirstOrDefault(x => x.TeamRoute == model.AppliedFilter.Team.TeamRoute);
+                }
+                else if (model.DefaultFilter.Season != null)
+                {
+                    teamWithName = model.DefaultFilter.Season.Teams.FirstOrDefault(x => x?.Team?.TeamRoute == model.AppliedFilter.Team.TeamRoute)?.Team;
+                }
+                if (teamWithName != null)
+                {
+                    model.AppliedFilter.Team = teamWithName;
                 }
             }
             model.AppliedFilter.MinimumQualifyingInnings = _minimumQualifyingInningsUnfiltered;
@@ -103,21 +110,30 @@ namespace Stoolball.Web.Statistics
             model.AppliedFilter.Paging.PageUrl = new Uri(Request.GetEncodedUrl());
             model.AppliedFilter.Paging.Total = await _readTotalResults(model.AppliedFilter);
 
-            _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
+            _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.DefaultFilter);
 
             var userFilter = _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
             model.FilterViewModel.FilteredItemTypePlural = _filterEntityPlural;
             model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter(_filterEntityPlural, userFilter);
             model.FilterViewModel.from = model.AppliedFilter.FromDate;
             model.FilterViewModel.to = model.AppliedFilter.UntilDate;
-            model.FilterViewModel.team = model.AppliedFilter.Team?.TeamId;
+            model.FilterViewModel.team = model.AppliedFilter.Team?.TeamRoute;
+            model.FilterViewModel.TeamName = model.AppliedFilter.Team?.TeamName;
             if (model.DefaultFilter.Player != null)
             {
                 model.FilterViewModel.Teams = model.DefaultFilter.Player.PlayerIdentities.OrderByDescending(x => x.TotalMatches).Select(x => x.Team).OfType<Team>().ToList().Distinct(new TeamEqualityComparer());
             }
+            else if (model.DefaultFilter.Club != null)
+            {
+                model.FilterViewModel.Teams = model.DefaultFilter.Club.Teams;
+            }
+            else if (model.DefaultFilter.Season != null)
+            {
+                model.FilterViewModel.Teams = model.DefaultFilter.Season.Teams.Select(x => x.Team).OfType<Team>();
+            }
 
-            model.Metadata.PageTitle = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingFixedFilter(model.DefaultFilter) + userFilter;
-            model.Heading = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingFixedFilter(model.DefaultFilter);
+            model.Metadata.PageTitle = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingDefaultFilter(model.DefaultFilter) + userFilter;
+            model.Heading = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingDefaultFilter(model.DefaultFilter);
 
             return CurrentTemplate(model);
         }

@@ -29,7 +29,7 @@ namespace Stoolball.Statistics
             return description.ToString().TrimEnd();
         }
 
-        public string MatchingFixedFilter(StatisticsFilter filter)
+        public string MatchingDefaultFilter(StatisticsFilter filter)
         {
             if (filter == null) return string.Empty;
 

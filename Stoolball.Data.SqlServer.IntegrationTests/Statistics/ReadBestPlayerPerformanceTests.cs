@@ -82,8 +82,24 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
 
-            var matchesForTeam = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(filter.Team!.TeamId));
-            var playerIdentitiesInTeam = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team.TeamId == filter.Team!.TeamId).Select(x => x.PlayerIdentityId);
+            var matchesForTeam = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team?.TeamId).Contains(filter.Team!.TeamId));
+            var playerIdentitiesInTeam = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team?.TeamId == filter.Team!.TeamId).Select(x => x.PlayerIdentityId);
+
+            AssertTotalPerformancesInASetOfMatches(matchesForTeam, (match, identity) => identity.Where(pi => playerIdentitiesInTeam.Contains(pi.PlayerIdentityId)), result);
+        }
+
+        [Fact]
+        public async Task Read_total_performances_supports_filter_by_team_route()
+        {
+            var filter = new StatisticsFilter { Team = _databaseFixture.TestData.TeamWithFullDetails };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND TeamRoute = @TeamRoute", new Dictionary<string, object> { { "TeamRoute", _databaseFixture.TestData.TeamWithFullDetails!.TeamRoute! } }));
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+
+            var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
+
+            var matchesForTeam = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team?.TeamRoute).Contains(filter.Team!.TeamRoute));
+            var playerIdentitiesInTeam = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team?.TeamRoute == filter.Team!.TeamRoute).Select(x => x.PlayerIdentityId);
 
             AssertTotalPerformancesInASetOfMatches(matchesForTeam, (match, identity) => identity.Where(pi => playerIdentitiesInTeam.Contains(pi.PlayerIdentityId)), result);
         }

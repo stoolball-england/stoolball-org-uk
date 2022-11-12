@@ -66,40 +66,38 @@
         from = Model.AppliedFilter.FromDate,
         to = Model.AppliedFilter.UntilDate,
         SupportsTeamFilter = true,
-        team = Model.AppliedFilter.Team?.TeamId,
+        team = Model.AppliedFilter.Team?.TeamRoute,
         Teams = teams
     })
 
-    <p class="lead">
-        @(Model.Player!.PlayerName()) played 
-        @if (totalMatches > 0)
-        {
-            <a href="@Model.Player.PlayerRoute/player-performances@(queryString)">@totalMatches @(totalMatches == 1 ? "match" : "matches")</a>
-        }
-        else
-        {
-            @:0 matches
-        }
-        for @Html.Raw(filteredTeams.Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
-    </p>
-    @if (Model.TotalPlayerOfTheMatchAwards > 0)
+    @if (totalMatches == 0)
     {
-        <p class="lead">Nominated <a href="@Model.Player.PlayerRoute/player-of-match@(queryString)">player of the match</a> @(Model.TotalPlayerOfTheMatchAwards == 1 ? "once" : Model.TotalPlayerOfTheMatchAwards + " times").</p>
+        @await Html.PartialAsync("_NoData")
     }
+    else
+    {
+        <p class="lead">
+            @(Model.Player!.PlayerName()) played <a href="@Model.Player.PlayerRoute/player-performances@(queryString)">@totalMatches @(totalMatches == 1 ? "match" : "matches")</a>
+            for @Html.Raw(filteredTeams.Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
+        </p>
+        @if (Model.TotalPlayerOfTheMatchAwards > 0)
+        {
+            <p class="lead">Nominated <a href="@Model.Player.PlayerRoute/player-of-match@(queryString)">player of the match</a> @(Model.TotalPlayerOfTheMatchAwards == 1 ? "once" : Model.TotalPlayerOfTheMatchAwards + " times").</p>
+        }
 
-    <div class="statistics-pair">
-        <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__runs"><span class="statistics-pair__value">@Model.BattingStatistics.TotalRunsScored</span><span class="statistics-pair__label">@(Model.BattingStatistics.TotalRunsScored == 1 ? "run" : "runs")</span></p>
-        <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@Model.BattingStatistics.BestInningsRunsScored@(Model.BattingStatistics.BestInningsWasDismissed == false ? "*" : string.Empty)</span><span class="statistics-pair__label">best</span></p>
-    </div>
-    <div class="statistics-pair">
-        <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__wickets"><span class="statistics-pair__value">@Model.BowlingStatistics.TotalWickets</span><span class="statistics-pair__label">@(Model.BowlingStatistics.TotalWickets == 1 ? "wicket" : "wickets")</span></p>
-        <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@(Model.BowlingStatistics.BestInningsWickets.HasValue ? Model.BowlingStatistics.BestInningsWickets + "/" + (Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–") : "–")</span><span class="statistics-pair__label">best</span></p>
-    </div>
-    <div class="statistics-pair">
-        <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__catches"><span class="statistics-pair__value">@Model.FieldingStatistics.TotalCatches</span><span class="statistics-pair__label">@(Model.FieldingStatistics.TotalCatches == 1 ? "catch" : "catches")</span></p>
-        <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@Model.FieldingStatistics.TotalRunOuts</span><span class="statistics-pair__label">@(Model.FieldingStatistics.TotalRunOuts == 1 ? "run-out" : "run-outs")</span></p>
-    </div>
-
+        <div class="statistics-pair">
+            <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__runs"><span class="statistics-pair__value">@Model.BattingStatistics.TotalRunsScored</span><span class="statistics-pair__label">@(Model.BattingStatistics.TotalRunsScored == 1 ? "run" : "runs")</span></p>
+            <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@Model.BattingStatistics.BestInningsRunsScored@(Model.BattingStatistics.BestInningsWasDismissed == false ? "*" : string.Empty)</span><span class="statistics-pair__label">best</span></p>
+        </div>
+        <div class="statistics-pair">
+            <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__wickets"><span class="statistics-pair__value">@Model.BowlingStatistics.TotalWickets</span><span class="statistics-pair__label">@(Model.BowlingStatistics.TotalWickets == 1 ? "wicket" : "wickets")</span></p>
+            <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@(Model.BowlingStatistics.BestInningsWickets.HasValue ? Model.BowlingStatistics.BestInningsWickets + "/" + (Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–") : "–")</span><span class="statistics-pair__label">best</span></p>
+        </div>
+        <div class="statistics-pair">
+            <p class="statistics-pair__statistic statistics-pair__primary statistics-pair__catches"><span class="statistics-pair__value">@Model.FieldingStatistics.TotalCatches</span><span class="statistics-pair__label">@(Model.FieldingStatistics.TotalCatches == 1 ? "catch" : "catches")</span></p>
+            <p class="statistics-pair__statistic statistics-pair__secondary"><span class="statistics-pair__value">@Model.FieldingStatistics.TotalRunOuts</span><span class="statistics-pair__label">@(Model.FieldingStatistics.TotalRunOuts == 1 ? "run-out" : "run-outs")</span></p>
+        </div>
+    }
     @if (!Model.Player.MemberKey.HasValue)
     {
         <hr />

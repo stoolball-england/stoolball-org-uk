@@ -24,7 +24,7 @@ namespace Stoolball.Web.UnitTests.Clubs
         public ClubStatisticsControllerTests() : base()
         {
 
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<string>())).Returns(new StatisticsFilter());
         }
 
         private ClubStatisticsController CreateController()

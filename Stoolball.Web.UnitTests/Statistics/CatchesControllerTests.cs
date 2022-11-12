@@ -15,7 +15,6 @@ namespace Stoolball.Web.UnitTests.Statistics
     public class CatchesControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IStatisticsFilterFactory> _statisticsFilterFactory = new();
-        private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IPlayerSummaryStatisticsDataSource> _playerSummaryStatisticsDataSource = new();
         private readonly Mock<IPlayerPerformanceStatisticsDataSource> _playerPerformanceStatisticsDataSource = new();
 
@@ -29,7 +28,6 @@ namespace Stoolball.Web.UnitTests.Statistics
                 _playerSummaryStatisticsDataSource.Object,
                 _playerPerformanceStatisticsDataSource.Object,
                 Mock.Of<IStatisticsBreadcrumbBuilder>(),
-                _statisticsFilterQueryStringParser.Object,
                 Mock.Of<IStatisticsFilterHumanizer>())
             {
                 ControllerContext = ControllerContext
@@ -43,7 +41,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             var appliedFilter = defaultFilter.Clone();
 
             _statisticsFilterFactory.Setup(x => x.FromRoute(Request.Object.Path)).Returns(Task.FromResult(defaultFilter));
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(defaultFilter, Request.Object.QueryString.Value)).Returns(appliedFilter);
+            _statisticsFilterFactory.Setup(x => x.FromQueryString(Request.Object.QueryString.Value)).Returns(Task.FromResult(appliedFilter));
 
             using (var controller = CreateController())
             {
@@ -67,8 +65,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             var appliedFilter = defaultFilter.Clone();
 
             _statisticsFilterFactory.Setup(x => x.FromRoute(Request.Object.Path)).Returns(Task.FromResult(defaultFilter));
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(defaultFilter, Request.Object.QueryString.Value)).Returns(appliedFilter);
-            _playerSummaryStatisticsDataSource.Setup(x => x.ReadFieldingStatistics(appliedFilter)).Returns(Task.FromResult(new FieldingStatistics { TotalCatches = 10 }));
+            _statisticsFilterFactory.Setup(x => x.FromQueryString(Request.Object.QueryString.Value)).Returns(Task.FromResult(appliedFilter));
+            _playerSummaryStatisticsDataSource.Setup(x => x.ReadFieldingStatistics(It.Is<StatisticsFilter>(x => x != defaultFilter))).Returns(Task.FromResult(new FieldingStatistics { TotalCatches = 10 }));
 
             using (var controller = CreateController())
             {
@@ -90,8 +88,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             var appliedFilter = defaultFilter.Clone();
 
             _statisticsFilterFactory.Setup(x => x.FromRoute(Request.Object.Path)).Returns(Task.FromResult(defaultFilter));
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(defaultFilter, Request.Object.QueryString.Value)).Returns(appliedFilter);
-            _playerSummaryStatisticsDataSource.Setup(x => x.ReadFieldingStatistics(appliedFilter)).Returns(Task.FromResult(new FieldingStatistics { TotalCatches = 10 }));
+            _statisticsFilterFactory.Setup(x => x.FromQueryString(Request.Object.QueryString.Value)).Returns(Task.FromResult(appliedFilter));
+            _playerSummaryStatisticsDataSource.Setup(x => x.ReadFieldingStatistics(It.Is<StatisticsFilter>(x => x != defaultFilter))).Returns(Task.FromResult(new FieldingStatistics { TotalCatches = 10 }));
 
             using (var controller = CreateController())
             {

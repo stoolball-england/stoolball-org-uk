@@ -56,6 +56,11 @@ namespace Stoolball.Data.SqlServer
                     where.Add("OppositionTeamId = @OppositionTeamId");
                     parameters.Add("@OppositionTeamId", filter.Team.TeamId);
                 }
+                else if (filter.Team != null && !string.IsNullOrEmpty(filter.Team.TeamRoute))
+                {
+                    where.Add("OppositionTeamRoute = @OppositionTeamRoute");
+                    parameters.Add("@OppositionTeamRoute", filter.Team.TeamRoute);
+                }
 
                 if (filter.OppositionTeamIds.Any())
                 {
@@ -75,6 +80,11 @@ namespace Stoolball.Data.SqlServer
                 {
                     where.Add("TeamId = @TeamId");
                     parameters.Add("@TeamId", filter.Team.TeamId);
+                }
+                else if (filter.Team != null && !string.IsNullOrEmpty(filter.Team.TeamRoute))
+                {
+                    where.Add("TeamRoute = @TeamRoute");
+                    parameters.Add("@TeamRoute", filter.Team.TeamRoute);
                 }
 
                 if (filter.OppositionTeamIds.Any())

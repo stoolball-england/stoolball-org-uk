@@ -14,6 +14,7 @@ namespace Stoolball.UnitTests.Statistics
     public class StatisticsFilterFactoryTests
     {
         private readonly Mock<IStoolballEntityRouteParser> _routeParser = new();
+        private readonly Mock<IStatisticsFilterQueryStringParser> _queryStringParser = new();
         private readonly Mock<IRouteNormaliser> _routeNormaliser = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
         private readonly Mock<IClubDataSource> _clubDataSource = new();
@@ -25,7 +26,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Null_route_throws_ArgumentException()
         {
-            var filterFactory = new StatisticsFilterFactory(Mock.Of<IStoolballEntityRouteParser>(), _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             Assert.ThrowsAsync<ArgumentException>(async () => await filterFactory.FromRoute(null));
@@ -34,7 +35,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Empty_string_route_throws_ArgumentException()
         {
-            var filterFactory = new StatisticsFilterFactory(Mock.Of<IStoolballEntityRouteParser>(), _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             Assert.ThrowsAsync<ArgumentException>(async () => await filterFactory.FromRoute(string.Empty));
@@ -46,7 +47,7 @@ namespace Stoolball.UnitTests.Statistics
             var route = "/players/example";
             _routeParser.Setup(x => x.ParseRoute(route)).Returns(StoolballEntityType.Player);
 
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(route);
@@ -62,7 +63,7 @@ namespace Stoolball.UnitTests.Statistics
             _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(player.PlayerRoute, "players")).Returns(player.PlayerRoute);
             _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute, null)).Returns(Task.FromResult(player));
 
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(player.PlayerRoute);
@@ -76,7 +77,7 @@ namespace Stoolball.UnitTests.Statistics
         {
             var route = "/clubs/example";
             _routeParser.Setup(x => x.ParseRoute(route)).Returns(StoolballEntityType.Club);
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(route);
@@ -92,7 +93,7 @@ namespace Stoolball.UnitTests.Statistics
             _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(club.ClubRoute, "clubs")).Returns(club.ClubRoute);
             _clubDataSource.Setup(x => x.ReadClubByRoute(club.ClubRoute)).Returns(Task.FromResult(club));
 
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(club.ClubRoute);
@@ -106,7 +107,7 @@ namespace Stoolball.UnitTests.Statistics
         {
             var route = "/teams/example";
             _routeParser.Setup(x => x.ParseRoute(route)).Returns(StoolballEntityType.Team);
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(route);
@@ -122,7 +123,7 @@ namespace Stoolball.UnitTests.Statistics
             _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(team.TeamRoute, "teams")).Returns(team.TeamRoute);
             _teamDataSource.Setup(x => x.ReadTeamByRoute(team.TeamRoute, true)).Returns(Task.FromResult(team));
 
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(team.TeamRoute);
@@ -136,7 +137,7 @@ namespace Stoolball.UnitTests.Statistics
         {
             var route = "/locations/example";
             _routeParser.Setup(x => x.ParseRoute(route)).Returns(StoolballEntityType.MatchLocation);
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(route);
@@ -152,7 +153,7 @@ namespace Stoolball.UnitTests.Statistics
             _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(matchLocation.MatchLocationRoute, "locations")).Returns(matchLocation.MatchLocationRoute);
             _matchLocationDataSource.Setup(x => x.ReadMatchLocationByRoute(matchLocation.MatchLocationRoute, false)).Returns(Task.FromResult(matchLocation));
 
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(matchLocation.MatchLocationRoute);
@@ -166,7 +167,7 @@ namespace Stoolball.UnitTests.Statistics
         {
             var route = "/competitions/example";
             _routeParser.Setup(x => x.ParseRoute(route)).Returns(StoolballEntityType.Competition);
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(route);
@@ -182,7 +183,7 @@ namespace Stoolball.UnitTests.Statistics
             _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(competition.CompetitionRoute, "competitions")).Returns(competition.CompetitionRoute);
             _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(competition.CompetitionRoute)).Returns(Task.FromResult(competition));
 
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(competition.CompetitionRoute);
@@ -199,7 +200,7 @@ namespace Stoolball.UnitTests.Statistics
         public async Task Season_route_is_normalised(string seasonRoute)
         {
             _routeParser.Setup(x => x.ParseRoute(seasonRoute)).Returns(StoolballEntityType.Season);
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(seasonRoute);
@@ -212,19 +213,19 @@ namespace Stoolball.UnitTests.Statistics
         [InlineData("/competitions/example/2021/sub-page")]
         [InlineData("/competitions/example/2021-22")]
         [InlineData("/competitions/example/2021-22/sub-page")]
-        public async Task Season_route_populates_season_from_seasonDataSource(string seasonRoute)
+        public async Task Season_route_populates_season_including_teams_from_seasonDataSource(string seasonRoute)
         {
             var season = new Season { SeasonId = Guid.NewGuid(), SeasonRoute = seasonRoute };
             _routeParser.Setup(x => x.ParseRoute(seasonRoute)).Returns(StoolballEntityType.Season);
             _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(season.SeasonRoute, "competitions", Constants.Pages.SeasonUrlRegEx)).Returns(season.SeasonRoute);
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(season.SeasonRoute, false)).Returns(Task.FromResult(season));
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(season.SeasonRoute, true)).Returns(Task.FromResult(season));
 
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(season.SeasonRoute);
 
-            _seasonDataSource.Verify(x => x.ReadSeasonByRoute(season.SeasonRoute, false), Times.Once);
+            _seasonDataSource.Verify(x => x.ReadSeasonByRoute(season.SeasonRoute, true), Times.Once);
             Assert.Equal(season, result.Season);
         }
 
@@ -240,7 +241,7 @@ namespace Stoolball.UnitTests.Statistics
         [InlineData("/some-other-route", null)]
         public async Task Player_of_the_match_filter_is_applied(string route, bool? expected)
         {
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(route);
@@ -259,7 +260,7 @@ namespace Stoolball.UnitTests.Statistics
         [InlineData("/some-other-route", null)]
         public async Task Minimum_runs_scored_filter_is_applied(string route, int? expected)
         {
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(route);
@@ -278,12 +279,31 @@ namespace Stoolball.UnitTests.Statistics
         [InlineData("/some-other-route", null)]
         public async Task Minimum_wickets_taken_filter_is_applied(string route, int? expected)
         {
-            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(route);
 
             Assert.Equal(expected, result.MinimumWicketsTaken);
+        }
+
+        [Fact]
+        public async Task Team_filter_populates_team_from_teamDataSource()
+        {
+            var queryString = "?team=example-team";
+            var teamFromQueryString = new Team { TeamRoute = "/teams/example-team" };
+            var teamFromDataSource = new Team { TeamId = Guid.NewGuid(), TeamRoute = "/teams/example-team" };
+            _queryStringParser.Setup(x => x.ParseQueryString(queryString)).Returns(new StatisticsFilter { Team = teamFromQueryString });
+            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(teamFromQueryString.TeamRoute, "teams")).Returns(teamFromQueryString.TeamRoute);
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(teamFromQueryString.TeamRoute, true)).Returns(Task.FromResult(teamFromDataSource));
+
+            var filterFactory = new StatisticsFilterFactory(_routeParser.Object, _queryStringParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
+                _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
+
+            var result = await filterFactory.FromRoute(queryString);
+
+            _teamDataSource.Verify(x => x.ReadTeamByRoute(teamFromQueryString.TeamRoute, true), Times.Once);
+            Assert.Equal(teamFromDataSource, result.Team);
         }
     }
 }

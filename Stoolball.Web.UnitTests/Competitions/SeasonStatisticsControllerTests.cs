@@ -18,6 +18,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
         private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
         private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new();
+        private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
 
         private SeasonStatisticsController CreateController()
         {
@@ -25,6 +26,7 @@ namespace Stoolball.Web.UnitTests.Competitions
                 Mock.Of<ILogger<SeasonStatisticsController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
+                _statisticsFilterQueryStringParser.Object,
                 _seasonDataSource.Object,
                 _bestPerformanceDataSource.Object,
                 _bestTotalDataSource.Object)
@@ -36,7 +38,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public async Task Route_not_matching_season_returns_404()
         {
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season?>(null));
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(Request.Object.Path, false)).Returns(Task.FromResult<Season?>(null));
 
             using (var controller = CreateController())
             {
@@ -49,7 +51,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public async Task Route_matching_season_returns_StatisticsSummaryViewModel()
         {
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(Request.Object.Path, true)).ReturnsAsync(new Season
             {
                 SeasonId = Guid.NewGuid(),
                 Competition = new Competition
@@ -58,6 +60,7 @@ namespace Stoolball.Web.UnitTests.Competitions
                     CompetitionRoute = "/competitions/example-competition"
                 }
             });
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
             _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst))
                 .Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
 

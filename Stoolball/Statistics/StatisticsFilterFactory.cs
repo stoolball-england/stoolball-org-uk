@@ -13,6 +13,7 @@ namespace Stoolball.Statistics
     public class StatisticsFilterFactory : IStatisticsFilterFactory
     {
         private readonly IStoolballEntityRouteParser _stoolballEntityRouteParser;
+        private readonly IStatisticsFilterQueryStringParser _queryStringParser;
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IClubDataSource _clubDataSource;
         private readonly ITeamDataSource _teamDataSource;
@@ -23,6 +24,7 @@ namespace Stoolball.Statistics
 
         public StatisticsFilterFactory(
            IStoolballEntityRouteParser stoolballEntityRouteParser,
+           IStatisticsFilterQueryStringParser queryStringParser,
            IPlayerDataSource playerDataSource,
            IClubDataSource clubDataSource,
            ITeamDataSource teamDataSource,
@@ -32,6 +34,7 @@ namespace Stoolball.Statistics
            IRouteNormaliser routeNormaliser)
         {
             _stoolballEntityRouteParser = stoolballEntityRouteParser ?? throw new ArgumentNullException(nameof(stoolballEntityRouteParser));
+            _queryStringParser = queryStringParser ?? throw new ArgumentNullException(nameof(queryStringParser));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
@@ -83,7 +86,7 @@ namespace Stoolball.Statistics
             }
             else if (entityType == StoolballEntityType.Season)
             {
-                filter.Season = await _seasonDataSource.ReadSeasonByRoute(_routeNormaliser.NormaliseRouteToEntity(route, "competitions", Constants.Pages.SeasonUrlRegEx)).ConfigureAwait(false);
+                filter.Season = await _seasonDataSource.ReadSeasonByRoute(_routeNormaliser.NormaliseRouteToEntity(route, "competitions", Constants.Pages.SeasonUrlRegEx), true).ConfigureAwait(false); // true gets the teams
             }
             else if (entityType == StoolballEntityType.Competition)
             {
@@ -91,5 +94,18 @@ namespace Stoolball.Statistics
             }
             return filter;
         }
+
+        public async Task<StatisticsFilter> FromQueryString(string? queryString)
+        {
+            var filter = _queryStringParser.ParseQueryString(queryString);
+
+            if (!string.IsNullOrEmpty(filter.Team?.TeamRoute))
+            {
+                filter.Team = await _teamDataSource.ReadTeamByRoute(_routeNormaliser.NormaliseRouteToEntity(filter.Team.TeamRoute, "teams"), true).ConfigureAwait(false);
+            }
+
+            return filter;
+        }
+
     }
 }

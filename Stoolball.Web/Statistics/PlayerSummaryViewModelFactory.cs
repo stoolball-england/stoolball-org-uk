@@ -37,7 +37,7 @@ namespace Stoolball.Web.Statistics
         public async Task<PlayerSummaryViewModel> CreateViewModel(IPublishedContent currentPage, string path, string? queryString)
         {
             var model = new PlayerSummaryViewModel(currentPage, _userService);
-            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, queryString);
+            model.AppliedFilter = model.DefaultFilter.Clone().Merge(_statisticsFilterQueryStringParser.ParseQueryString(queryString));
             model.Player = await _playerDataSource.ReadPlayerByRoute(path, model.AppliedFilter);
 
             if (model.Player != null)
@@ -57,7 +57,7 @@ namespace Stoolball.Web.Statistics
 
                 if (model.AppliedFilter.Team != null)
                 {
-                    var teamWithName = model.Player.PlayerIdentities.First(x => x.Team != null && x.Team.TeamId == model.AppliedFilter.Team.TeamId).Team;
+                    var teamWithName = model.Player.PlayerIdentities.FirstOrDefault(x => x.Team != null && x.Team.TeamRoute == model.AppliedFilter.Team.TeamRoute)?.Team;
                     if (teamWithName != null)
                     {
                         model.AppliedFilter.Team = teamWithName;

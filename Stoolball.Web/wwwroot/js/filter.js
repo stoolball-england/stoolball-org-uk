@@ -29,5 +29,20 @@ function createFilterUI() {
       }
       edit.querySelector("input").focus();
     });
+
+    edit.addEventListener("submit", function () {
+      const neverSubmit = edit.querySelectorAll(".filter__never-submit");
+      const noEmptySubmit = edit.querySelectorAll("input,select");
+      if (noEmptySubmit) {
+        for (let i = 0; i < noEmptySubmit.length; i++) {
+          noEmptySubmit[i].disabled = !noEmptySubmit[i].value;
+        }
+      }
+      if (neverSubmit) {
+        for (let i = 0; i < neverSubmit.length; i++) {
+          neverSubmit[i].disabled = true;
+        }
+      }
+    });
   });
 })();

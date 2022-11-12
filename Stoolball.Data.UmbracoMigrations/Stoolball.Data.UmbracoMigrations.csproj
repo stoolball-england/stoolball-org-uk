@@ -9,10 +9,14 @@
     <None Remove="037_fn_TeamName\fn_TeamName.sql" />
     <None Remove="040_LinkPlayerToMember_Async_Update\IX_StoolballPlayerInMatchStatistics_PlayerRoute.sql" />
     <None Remove="040_LinkPlayerToMember_Async_Update\usp_Link_Player_To_Member_Async_Update.sql" />
+    <None Remove="041_Index_TeamRoute_OppositionTeamRoute\IX_StoolballPlayerInMatchStatistics_OppositionTeamRoute.sql" />
+    <None Remove="041_Index_TeamRoute_OppositionTeamRoute\IX_StoolballPlayerInMatchStatistics_TeamRoute.sql" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="037_fn_TeamName\fn_TeamName.sql" />
+    <EmbeddedResource Include="041_Index_TeamRoute_OppositionTeamRoute\IX_StoolballPlayerInMatchStatistics_OppositionTeamRoute.sql" />
+    <EmbeddedResource Include="041_Index_TeamRoute_OppositionTeamRoute\IX_StoolballPlayerInMatchStatistics_TeamRoute.sql" />
     <EmbeddedResource Include="040_LinkPlayerToMember_Async_Update\IX_StoolballPlayerInMatchStatistics_PlayerRoute.sql" />
     <EmbeddedResource Include="040_LinkPlayerToMember_Async_Update\usp_Link_Player_To_Member_Async_Update.sql" />
   </ItemGroup>

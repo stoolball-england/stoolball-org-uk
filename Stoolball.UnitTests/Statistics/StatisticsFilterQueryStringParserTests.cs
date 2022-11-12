@@ -7,50 +7,13 @@ namespace Stoolball.UnitTests.Statistics
     public class StatisticsFilterQueryStringParserTests
     {
         [Fact]
-        public void Null_filter_throws_ArgumentNullException()
+        public void Null_querystring_returns_filter()
         {
             var parser = new StatisticsFilterQueryStringParser();
 
-            Assert.Throws<ArgumentNullException>(() => _ = parser.ParseQueryString(null, string.Empty));
-        }
+            var result = parser.ParseQueryString(null);
 
-        [Fact]
-        public void Null_querystring_returns_cloned_filter()
-        {
-            var parser = new StatisticsFilterQueryStringParser();
-            var filter = new StatisticsFilter();
-
-            var result = parser.ParseQueryString(filter, null);
-
-            Assert.NotEqual(filter, result);
-            Assert.Equal(filter.BattingFirst, result.BattingFirst);
-            Assert.Equal(filter.BattingPositions.Count, result.BattingPositions.Count);
-            Assert.Equal(filter.BowledByPlayerIdentityIds.Count, result.BowledByPlayerIdentityIds.Count);
-            Assert.Equal(filter.CaughtByPlayerIdentityIds.Count, result.CaughtByPlayerIdentityIds.Count);
-            Assert.Equal(filter.Club?.ClubId, result.Club?.ClubId);
-            Assert.Equal(filter.Competition?.CompetitionId, result.Competition?.CompetitionId);
-            Assert.Equal(filter.DismissalTypes.Count, result.DismissalTypes.Count);
-            Assert.Equal(filter.FromDate, result.FromDate);
-            Assert.Equal(filter.MatchLocation?.MatchLocationId, result.MatchLocation?.MatchLocationId);
-            Assert.Equal(filter.MatchTypes.Count, result.MatchTypes.Count);
-            Assert.Equal(filter.MaxResultsAllowingExtraResultsIfValuesAreEqual, result.MaxResultsAllowingExtraResultsIfValuesAreEqual);
-            Assert.Equal(filter.MinimumQualifyingInnings, result.MinimumQualifyingInnings);
-            Assert.Equal(filter.OppositionTeamIds.Count, result.OppositionTeamIds.Count);
-            Assert.Equal(filter.Paging.PageSize, result.Paging.PageSize);
-            Assert.Equal(filter.Paging.PageNumber, result.Paging.PageNumber);
-            Assert.Equal(filter.Paging.Total, result.Paging.Total);
-            Assert.Equal(filter.Paging.PageUrl, result.Paging.PageUrl);
-            Assert.Equal(filter.Player?.PlayerId, result.Player?.PlayerId);
-            Assert.Equal(filter.PlayerOfTheMatch, result.PlayerOfTheMatch);
-            Assert.Equal(filter.PlayerTypes.Count, result.PlayerTypes.Count);
-            Assert.Equal(filter.RunOutByPlayerIdentityIds.Count, result.RunOutByPlayerIdentityIds.Count);
-            Assert.Equal(filter.Season?.SeasonId, result.Season?.SeasonId);
-            Assert.Equal(filter.SwapBattingFirstFilter, result.SwapBattingFirstFilter);
-            Assert.Equal(filter.SwapTeamAndOppositionFilters, result.SwapTeamAndOppositionFilters);
-            Assert.Equal(filter.Team?.TeamId, result.Team?.TeamId);
-            Assert.Equal(filter.TournamentIds.Count, result.TournamentIds.Count);
-            Assert.Equal(filter.UntilDate, result.UntilDate);
-            Assert.Equal(filter.WonMatch, result.WonMatch);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -58,7 +21,7 @@ namespace Stoolball.UnitTests.Statistics
         {
             var parser = new StatisticsFilterQueryStringParser();
 
-            var result = parser.ParseQueryString(new StatisticsFilter(), string.Empty);
+            var result = parser.ParseQueryString(string.Empty);
 
             Assert.Equal(1, result.Paging.PageNumber);
         }
@@ -68,7 +31,7 @@ namespace Stoolball.UnitTests.Statistics
         {
             var parser = new StatisticsFilterQueryStringParser();
 
-            var result = parser.ParseQueryString(new StatisticsFilter(), "page=5");
+            var result = parser.ParseQueryString("page=5");
 
             Assert.Equal(5, result.Paging.PageNumber);
         }
@@ -82,7 +45,7 @@ namespace Stoolball.UnitTests.Statistics
         {
             var parser = new StatisticsFilterQueryStringParser();
 
-            var filter = parser.ParseQueryString(new StatisticsFilter(), queryString);
+            var filter = parser.ParseQueryString(queryString);
 
             Assert.Null(filter.FromDate);
         }
@@ -92,7 +55,7 @@ namespace Stoolball.UnitTests.Statistics
         {
             var parser = new StatisticsFilterQueryStringParser();
 
-            var filter = parser.ParseQueryString(new StatisticsFilter(), "?from=2020-07-10");
+            var filter = parser.ParseQueryString("?from=2020-07-10");
 
             Assert.NotNull(filter.FromDate);
             Assert.Equal(new DateTime(2020, 7, 10), filter.FromDate!.Value.Date);
@@ -107,7 +70,7 @@ namespace Stoolball.UnitTests.Statistics
         {
             var parser = new StatisticsFilterQueryStringParser();
 
-            var filter = parser.ParseQueryString(new StatisticsFilter(), queryString);
+            var filter = parser.ParseQueryString(queryString);
 
             Assert.Null(filter.UntilDate);
         }
@@ -117,7 +80,7 @@ namespace Stoolball.UnitTests.Statistics
         {
             var parser = new StatisticsFilterQueryStringParser();
 
-            var filter = parser.ParseQueryString(new StatisticsFilter(), "to=2022-06-09");
+            var filter = parser.ParseQueryString("to=2022-06-09");
 
             Assert.NotNull(filter.UntilDate);
             Assert.Equal(new DateTime(2022, 6, 9), filter.UntilDate!.Value.Date);
@@ -126,12 +89,11 @@ namespace Stoolball.UnitTests.Statistics
         [Theory]
         [InlineData("?")]
         [InlineData("?team=")]
-        [InlineData("?team=invalid")]
-        public void Missing_empty_or_invalid_team_is_null(string queryString)
+        public void Missing_or_empty_team_is_null(string queryString)
         {
             var parser = new StatisticsFilterQueryStringParser();
 
-            var filter = parser.ParseQueryString(new StatisticsFilter(), queryString);
+            var filter = parser.ParseQueryString(queryString);
 
             Assert.Null(filter.Team);
         }
@@ -140,11 +102,11 @@ namespace Stoolball.UnitTests.Statistics
         public void Team_is_parsed()
         {
             var parser = new StatisticsFilterQueryStringParser();
-            var teamId = Guid.NewGuid().ToString();
+            var route = "example-team";
 
-            var filter = parser.ParseQueryString(new StatisticsFilter(), $"?team={teamId}");
+            var filter = parser.ParseQueryString($"?team={route}");
 
-            Assert.Equal(teamId, filter.Team?.TeamId?.ToString());
+            Assert.Equal("/teams/" + route, filter.Team?.TeamRoute?.ToString());
         }
     }
 }

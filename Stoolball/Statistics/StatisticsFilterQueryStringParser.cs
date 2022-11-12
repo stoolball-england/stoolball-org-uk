@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.WebUtilities;
 using Stoolball.Filtering;
 using Stoolball.Teams;
 
@@ -7,31 +6,30 @@ namespace Stoolball.Statistics
 {
     public class StatisticsFilterQueryStringParser : BaseFilterQueryStringParser, IStatisticsFilterQueryStringParser
     {
-        public StatisticsFilter ParseQueryString(StatisticsFilter filter, string? queryString)
+        /// <inheritdoc />
+        public StatisticsFilter ParseQueryString(string? queryString)
         {
-            if (filter == null) { throw new ArgumentNullException(nameof(filter)); }
-
-            var updatedFilter = filter.Clone();
+            var filter = new StatisticsFilter();
 
             if (!string.IsNullOrEmpty(queryString))
             {
                 var query = QueryHelpers.ParseQuery(queryString);
                 if (query.ContainsKey("page") && int.TryParse(query["page"], out var pageNumber))
                 {
-                    updatedFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
+                    filter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
                 }
 
-                var (fromDate, untilDate) = ParseDateFilter(updatedFilter.FromDate, updatedFilter.UntilDate, query);
-                updatedFilter.FromDate = fromDate;
-                updatedFilter.UntilDate = untilDate;
+                var (fromDate, untilDate) = ParseDateFilter(filter.FromDate, filter.UntilDate, query);
+                filter.FromDate = fromDate;
+                filter.UntilDate = untilDate;
 
-                if (query.ContainsKey("team") && Guid.TryParse(query["team"], out var teamId))
+                if (query.ContainsKey("team") && !string.IsNullOrEmpty(query["team"]))
                 {
-                    updatedFilter.Team = new Team { TeamId = teamId };
+                    filter.Team = new Team { TeamRoute = "/teams/" + query["team"] };
                 }
             }
 
-            return updatedFilter;
+            return filter;
         }
     }
 }

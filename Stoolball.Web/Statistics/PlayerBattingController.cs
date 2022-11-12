@@ -56,7 +56,7 @@ namespace Stoolball.Web.Statistics
             else
             {
                 model.DefaultFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5, Player = model.Player };
-                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
+                model.AppliedFilter = model.DefaultFilter.Clone().Merge(_statisticsFilterQueryStringParser.ParseQueryString(Request.QueryString.Value));
                 model.BattingStatistics = await _summaryStatisticsDataSource.ReadBattingStatistics(model.AppliedFilter);
                 model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst)).ToList();
 
@@ -64,7 +64,7 @@ namespace Stoolball.Web.Statistics
 
                 if (model.AppliedFilter.Team != null)
                 {
-                    var teamWithName = model.Player.PlayerIdentities.First(x => x.Team != null && x.Team.TeamId == model.AppliedFilter.Team.TeamId).Team;
+                    var teamWithName = model.Player.PlayerIdentities.FirstOrDefault(x => x.Team != null && x.Team.TeamRoute == model.AppliedFilter.Team.TeamRoute)?.Team;
                     if (teamWithName != null)
                     {
                         model.AppliedFilter.Team = teamWithName;

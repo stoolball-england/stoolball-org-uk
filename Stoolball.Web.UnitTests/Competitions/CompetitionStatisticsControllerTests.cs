@@ -41,7 +41,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         public async Task Route_not_matching_competition_returns_404()
         {
             _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition?>(null));
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<string>())).Returns(new StatisticsFilter());
 
             using (var controller = CreateController())
             {
@@ -54,7 +54,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public async Task Route_matching_competition_returns_StatisticsSummaryViewModel()
         {
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<string>())).Returns(new StatisticsFilter());
             _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionId = Guid.NewGuid() });
             _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
 

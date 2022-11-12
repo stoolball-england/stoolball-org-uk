@@ -131,7 +131,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Smidge\" />
+    <Folder Include="Smidge\Cache\" />
     <Folder Include="umbraco\Deploy\Revision\" />
   </ItemGroup>
 

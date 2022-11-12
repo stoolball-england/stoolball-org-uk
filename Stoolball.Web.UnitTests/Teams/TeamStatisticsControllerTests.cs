@@ -43,7 +43,7 @@ namespace Stoolball.Web.UnitTests.Teams
         public async Task Route_not_matching_team_returns_404()
         {
             _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team?>(null));
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<string>())).Returns(new StatisticsFilter());
 
             using (var controller = CreateController())
             {
@@ -57,7 +57,7 @@ namespace Stoolball.Web.UnitTests.Teams
         public async Task Route_matching_team_returns_StatisticsSummaryViewModel()
         {
             _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<string>())).Returns(new StatisticsFilter());
+            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<string>())).Returns(new StatisticsFilter());
             _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
 
             using (var controller = CreateController())

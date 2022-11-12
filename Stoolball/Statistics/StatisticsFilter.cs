@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Matches;
@@ -86,6 +87,50 @@ namespace Stoolball.Statistics
             if (Competition != null && Competition.CompetitionId.HasValue) { filter.CompetitionIds.Add(Competition.CompetitionId.Value); }
             if (Season != null && Season.SeasonId.HasValue) { filter.SeasonIds.Add(Season.SeasonId.Value); }
             return filter;
+        }
+
+        /// <summary>
+        /// Adds non-null criteria from <c>otherFilter</c> to the current filter. Non-nullable boolean properties are replaced.
+        /// </summary>
+        /// <returns>This filter</returns>
+        public StatisticsFilter Merge(StatisticsFilter otherFilter)
+        {
+            if (otherFilter is null)
+            {
+                throw new ArgumentNullException(nameof(otherFilter));
+            }
+
+            Club = otherFilter.Club ?? Club;
+            Team = otherFilter.Team ?? Team;
+            OppositionTeamIds.AddRange(otherFilter.OppositionTeamIds.Where(x => !OppositionTeamIds.Contains(x)));
+            SwapTeamAndOppositionFilters = otherFilter.SwapTeamAndOppositionFilters;
+            Player = otherFilter.Player ?? Player;
+            BowledByPlayerIdentityIds.AddRange(otherFilter.BowledByPlayerIdentityIds.Where(x => !BowledByPlayerIdentityIds.Contains(x)));
+            CaughtByPlayerIdentityIds.AddRange(otherFilter.CaughtByPlayerIdentityIds.Where(x => !CaughtByPlayerIdentityIds.Contains(x)));
+            RunOutByPlayerIdentityIds.AddRange(otherFilter.RunOutByPlayerIdentityIds.Where(x => !RunOutByPlayerIdentityIds.Contains(x)));
+            Season = otherFilter.Season ?? Season;
+            Competition = otherFilter.Competition ?? Competition;
+            MatchLocation = otherFilter.MatchLocation ?? MatchLocation;
+            TournamentIds.AddRange(otherFilter.TournamentIds.Where(x => !TournamentIds.Contains(x)));
+            MatchTypes.AddRange(otherFilter.MatchTypes.Where(x => !MatchTypes.Contains(x)));
+            PlayerTypes.AddRange(otherFilter.PlayerTypes.Where(x => !PlayerTypes.Contains(x)));
+            DismissalTypes.AddRange(otherFilter.DismissalTypes.Where(x => !DismissalTypes.Contains(x)));
+            BattingPositions.AddRange(otherFilter.BattingPositions.Where(x => !BattingPositions.Contains(x)));
+            FromDate = otherFilter.FromDate ?? FromDate;
+            UntilDate = otherFilter.UntilDate ?? UntilDate;
+            WonMatch = otherFilter.WonMatch ?? WonMatch;
+            BattingFirst = otherFilter.BattingFirst ?? BattingFirst;
+            SwapBattingFirstFilter = otherFilter.SwapBattingFirstFilter;
+            PlayerOfTheMatch = otherFilter.PlayerOfTheMatch ?? PlayerOfTheMatch;
+            Paging.PageUrl = otherFilter.Paging.PageUrl ?? Paging.PageUrl;
+            Paging.PageNumber = otherFilter.Paging.PageNumber > 1 ? otherFilter.Paging.PageNumber : Paging.PageNumber;
+            Paging.PageSize = otherFilter.Paging.PageSize != int.MaxValue ? otherFilter.Paging.PageSize : Paging.PageSize;
+            Paging.Total = otherFilter.Paging.Total > 0 ? otherFilter.Paging.Total : Paging.Total;
+            MaxResultsAllowingExtraResultsIfValuesAreEqual = otherFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual ?? MaxResultsAllowingExtraResultsIfValuesAreEqual;
+            MinimumQualifyingInnings = otherFilter.MinimumQualifyingInnings ?? MinimumQualifyingInnings;
+            MinimumRunsScored = otherFilter.MinimumRunsScored ?? MinimumRunsScored;
+            MinimumWicketsTaken = otherFilter.MinimumWicketsTaken ?? MinimumWicketsTaken;
+            return this;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Teams;
 using Umbraco.Cms.Web.Common.Controllers;
+using Umbraco.Extensions;
 
 namespace Stoolball.Web.WebApi
 {
@@ -19,7 +20,7 @@ namespace Stoolball.Web.WebApi
 
         [HttpGet]
         [Route("api/teams/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromQuery] string query, [FromQuery] string[] not, [FromQuery] string[] teamType, [FromQuery] bool includeClubTeams = true)
+        public async Task<AutocompleteResultSet> Autocomplete([FromQuery] string query, [FromQuery] string[] not, [FromQuery] string[] teamType, [FromQuery] bool includeClubTeams = true, [FromQuery] AutoCompleteDataType data = AutoCompleteDataType.Id)
         {
             if (not is null)
             {
@@ -62,7 +63,7 @@ namespace Stoolball.Web.WebApi
                 suggestions = teams.Select(x => new AutocompleteResult
                 {
                     value = x.UntilYear.HasValue ? x.TeamName + " (no longer active)" : x.TeamName,
-                    data = x.TeamId.ToString()
+                    data = data == AutoCompleteDataType.Id ? x.TeamId.ToString() : x.TeamRoute.TrimStart("/teams/")
                 })
             };
         }

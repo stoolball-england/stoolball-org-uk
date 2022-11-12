@@ -30,7 +30,7 @@
     }
 }
 <div class="container-xl">
-    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = $"Player of the match awards{humanizer.MatchingFixedFilter(Model.AppliedFilter)}", AlternativeNames = Model.DefaultFilter.Player?.AlternativeNames() ?? new() })
+    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = $"Player of the match awards{humanizer.MatchingDefaultFilter(Model.AppliedFilter)}", AlternativeNames = Model.DefaultFilter.Player?.AlternativeNames() ?? new() })
     
     @await Html.PartialAsync("_StatisticsTip")
 

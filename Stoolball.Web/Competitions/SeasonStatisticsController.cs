@@ -17,6 +17,7 @@ namespace Stoolball.Web.Competitions
 {
     public class SeasonStatisticsController : RenderController, IRenderControllerAsync
     {
+        private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceDataSource;
         private readonly IBestPlayerTotalStatisticsDataSource _bestPlayerTotalDataSource;
@@ -24,11 +25,13 @@ namespace Stoolball.Web.Competitions
         public SeasonStatisticsController(ILogger<SeasonStatisticsController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
+            IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
             ISeasonDataSource seasonDataSource,
             IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
             IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
+            _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _bestPerformanceDataSource = bestPerformanceDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceDataSource));
             _bestPlayerTotalDataSource = bestPlayerTotalDataSource ?? throw new ArgumentNullException(nameof(bestPlayerTotalDataSource));
@@ -50,7 +53,7 @@ namespace Stoolball.Web.Competitions
             else
             {
                 model.DefaultFilter = new StatisticsFilter { Season = model.Context, MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-                model.AppliedFilter = model.DefaultFilter.Clone();
+                model.AppliedFilter = model.DefaultFilter.Clone().Merge(_statisticsFilterQueryStringParser.ParseQueryString(Request.QueryString.Value));
                 model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
                 model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
                 model.MostRuns = (await _bestPlayerTotalDataSource.ReadMostRunsScored(model.AppliedFilter).ConfigureAwait(false)).ToList();

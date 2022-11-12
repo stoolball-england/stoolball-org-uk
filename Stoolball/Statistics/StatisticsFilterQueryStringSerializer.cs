@@ -7,6 +7,13 @@
             return Serialize(filter, null);
         }
 
+        private string? RemovePrefix(string? text, string prefix)
+        {
+            if (text == null) { return text; }
+            if (!text.StartsWith(prefix)) { return text; }
+            return text.Substring(prefix.Length);
+        }
+
         public string Serialize(StatisticsFilter? filter, StatisticsFilter? defaultFilter)
         {
             filter = filter ?? new StatisticsFilter();
@@ -14,7 +21,7 @@
             ResetSerializer();
 
             Serialize(filter.Club?.ClubId, "club", defaultFilter.Club?.ClubId);
-            Serialize(filter.Team?.TeamId, "team", defaultFilter.Team?.TeamId);
+            Serialize(RemovePrefix(filter.Team?.TeamRoute, "/teams/"), "team", RemovePrefix(defaultFilter.Team?.TeamRoute, "/teams/"));
             Serialize(filter.OppositionTeamIds, "opposition", defaultFilter.OppositionTeamIds);
             Serialize(filter.SwapTeamAndOppositionFilters, "swapteam", defaultFilter.SwapTeamAndOppositionFilters);
             Serialize(filter.Player?.PlayerId, "player", defaultFilter.Player?.PlayerId);

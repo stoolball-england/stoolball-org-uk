@@ -22,7 +22,6 @@ namespace Stoolball.Web.UnitTests.Statistics
     public class BaseStatisticsTableControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IStatisticsFilterFactory> _statisticsFilterFactory = new();
-        private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IStatisticsBreadcrumbBuilder> _breadcrumbBuilder = new();
         private readonly Mock<IStatisticsFilterHumanizer> _filterHumanizer = new();
         private readonly Mock<IVerifiableMethodCalls<AnyClass>> _statisticsQueryMethods = new();
@@ -44,7 +43,6 @@ namespace Stoolball.Web.UnitTests.Statistics
                 IUmbracoContextAccessor umbracoContextAccessor,
                 IStatisticsFilterFactory statisticsFilterFactory,
                 IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
-                IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
                 IStatisticsFilterHumanizer statisticsFilterHumanizer,
                 Func<StatisticsFilter, Task<IEnumerable<StatisticsResult<AnyClass>>>> readResults,
                 Func<StatisticsFilter, Task<int>> readTotalResults,
@@ -56,7 +54,6 @@ namespace Stoolball.Web.UnitTests.Statistics
                       umbracoContextAccessor,
                       statisticsFilterFactory,
                       statisticsBreadcrumbBuilder,
-                      statisticsFilterQueryStringParser,
                       statisticsFilterHumanizer,
                       readResults,
                       readTotalResults,
@@ -77,7 +74,6 @@ namespace Stoolball.Web.UnitTests.Statistics
                 UmbracoContextAccessor.Object,
                 _statisticsFilterFactory.Object,
                 _breadcrumbBuilder.Object,
-                _statisticsFilterQueryStringParser.Object,
                 _filterHumanizer.Object,
                 _statisticsQueryMethods.Object.ReadResults,
                 _statisticsQueryMethods.Object.ReadTotalResults,
@@ -111,13 +107,37 @@ namespace Stoolball.Web.UnitTests.Statistics
             };
         }
 
+        private static Club CreateClub()
+        {
+            return new Club
+            {
+                Teams = new List<Team>
+                    {
+                        new Team{ TeamRoute = "/teams/team-a", TeamName = "Team A"},
+                        new Team{ TeamRoute = "/teams/team-b", TeamName = "Team B"}
+                    }
+            };
+        }
+
+        private static Season CreateSeason()
+        {
+            return new Season
+            {
+                Teams = new List<TeamInSeason>
+                    {
+                        new TeamInSeason { Team = new Team{ TeamRoute = "/teams/team-a", TeamName = "Team A"} },
+                        new TeamInSeason { Team = new Team{ TeamRoute = "/teams/team-b", TeamName = "Team B"} }
+                    }
+            };
+        }
+
         private void SetupMocks(StatisticsFilter defaultFilter, StatisticsFilter appliedFilter, List<StatisticsResult<AnyClass>> results)
         {
             Request.Setup(x => x.Path).Returns("/play/statistics");
             _statisticsFilterFactory.Setup(x => x.FromRoute(Request.Object.Path)).Returns(Task.FromResult(defaultFilter));
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(defaultFilter, Request.Object.QueryString.Value)).Returns(appliedFilter);
-            _statisticsQueryMethods.Setup(x => x.ReadResults(appliedFilter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<AnyClass>>));
-            _statisticsQueryMethods.Setup(x => x.ReadTotalResults(appliedFilter)).Returns(Task.FromResult(results.Count));
+            _statisticsFilterFactory.Setup(x => x.FromQueryString(Request.Object.QueryString.Value)).Returns(Task.FromResult(appliedFilter));
+            _statisticsQueryMethods.Setup(x => x.ReadResults(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate))).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<AnyClass>>));
+            _statisticsQueryMethods.Setup(x => x.ReadTotalResults(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate))).Returns(Task.FromResult(results.Count));
         }
 
         private static StatisticsResult<AnyClass> CreateQueryResult()
@@ -181,8 +201,8 @@ namespace Stoolball.Web.UnitTests.Statistics
         [Fact]
         public async Task Filter_applied_to_queries_comes_from_querystring_modifies_default_filter_from_route()
         {
-            var defaultFilter = new StatisticsFilter();
-            var appliedFilter = defaultFilter.Clone();
+            var defaultFilter = new StatisticsFilter { FromDate = DateTimeOffset.UtcNow, UntilDate = DateTimeOffset.UtcNow };
+            var appliedFilter = new StatisticsFilter { FromDate = DateTimeOffset.UtcNow.AddMinutes(1) };
 
             var results = new List<StatisticsResult<AnyClass>>();
             SetupMocks(defaultFilter, appliedFilter, results);
@@ -192,11 +212,12 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var result = await controller.Index();
 
                 var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
-                Assert.Equal(model.DefaultFilter, defaultFilter);
-                Assert.Equal(model.AppliedFilter, appliedFilter);
+                Assert.Equal(defaultFilter.FromDate, model.DefaultFilter.FromDate);
+                Assert.Equal(appliedFilter.FromDate, model.AppliedFilter.FromDate);
+                Assert.Equal(defaultFilter.UntilDate, model.AppliedFilter.UntilDate);
                 _statisticsFilterFactory.Verify(x => x.FromRoute(Request.Object.Path), Times.Once);
-                _statisticsFilterQueryStringParser.Verify(x => x.ParseQueryString(defaultFilter, Request.Object.QueryString.Value), Times.Once);
-                _statisticsQueryMethods.Verify(x => x.ReadResults(appliedFilter), Times.Once);
+                _statisticsFilterFactory.Verify(x => x.FromQueryString(Request.Object.QueryString.Value), Times.Once);
+                _statisticsQueryMethods.Verify(x => x.ReadResults(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate)), Times.Once);
             }
         }
 
@@ -218,7 +239,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
 
                 Assert.Equal(results.Count, model.AppliedFilter.Paging.Total);
-                Assert.Equal(Request.Object.Scheme + "://" + Request.Object.Host + Request.Object.Path, model.AppliedFilter.Paging.PageUrl.ToString());
+                Assert.Equal(Request.Object.Scheme + "://" + Request.Object.Host + Request.Object.Path, model.AppliedFilter.Paging.PageUrl?.ToString());
             }
         }
 
@@ -226,14 +247,18 @@ namespace Stoolball.Web.UnitTests.Statistics
         [Fact]
         public async Task Builds_breadcrumbs()
         {
-            var defaultFilter = new StatisticsFilter();
-            var appliedFilter = defaultFilter.Clone();
+            var defaultFilter = new StatisticsFilter { FromDate = DateTimeOffset.UtcNow };
+            var appliedFilter = new StatisticsFilter { FromDate = DateTimeOffset.UtcNow.AddMinutes(1) };
 
             var results = new List<StatisticsResult<AnyClass>>();
             SetupMocks(defaultFilter, appliedFilter, results);
 
             List<Breadcrumb>? breadcrumbsPassedToMethod = null;
-            _breadcrumbBuilder.Setup(x => x.BuildBreadcrumbs(It.IsAny<List<Breadcrumb>>(), appliedFilter)).Callback<List<Breadcrumb>, StatisticsFilter>((breadcrumbs, filter) => { breadcrumbsPassedToMethod = breadcrumbs; });
+            _breadcrumbBuilder.Setup(x => x.BuildBreadcrumbs(It.IsAny<List<Breadcrumb>>(), It.Is<StatisticsFilter>(x => x.FromDate == defaultFilter.FromDate)))
+                .Callback<List<Breadcrumb>, StatisticsFilter>((breadcrumbs, filter) =>
+                {
+                    breadcrumbsPassedToMethod = breadcrumbs;
+                });
 
             using (var controller = CreateController())
             {
@@ -248,8 +273,8 @@ namespace Stoolball.Web.UnitTests.Statistics
         [Fact]
         public async Task Sets_filter_description_heading_and_page_title_using_filters()
         {
-            var defaultFilter = new StatisticsFilter();
-            var appliedFilter = defaultFilter.Clone();
+            var defaultFilter = new StatisticsFilter { FromDate = DateTimeOffset.UtcNow };
+            var appliedFilter = new StatisticsFilter { FromDate = DateTimeOffset.UtcNow.AddMinutes(1) };
 
             var results = new List<StatisticsResult<AnyClass>>();
             SetupMocks(defaultFilter, appliedFilter, results);
@@ -258,8 +283,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             var expectedAppliedFilter = "the applied filter";
             var expectedHeading = PAGE_TITLE + expectedFixedFilter;
             var expectedFilterDescription = "Things matching " + expectedAppliedFilter;
-            _filterHumanizer.Setup(x => x.MatchingUserFilter(appliedFilter)).Returns(expectedAppliedFilter);
-            _filterHumanizer.Setup(x => x.MatchingFixedFilter(defaultFilter)).Returns(expectedFixedFilter);
+            _filterHumanizer.Setup(x => x.MatchingUserFilter(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate))).Returns(expectedAppliedFilter);
+            _filterHumanizer.Setup(x => x.MatchingDefaultFilter(defaultFilter)).Returns(expectedFixedFilter);
             _filterHumanizer.Setup(x => x.EntitiesMatchingFilter(FILTER_ENTITY_PLURAL, expectedAppliedFilter)).Returns(expectedFilterDescription);
 
             using (var controller = CreateController())
@@ -281,7 +306,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             var appliedFilter = defaultFilter.Clone();
             appliedFilter.FromDate = DateTime.UtcNow.AddYears(-1);
             appliedFilter.UntilDate = DateTime.UtcNow.AddMonths(-6);
-            appliedFilter.Team = new Team { TeamId = Guid.NewGuid() };
+            appliedFilter.Team = new Team { TeamRoute = "/teams/example-team" };
 
             var results = new List<StatisticsResult<AnyClass>>();
             SetupMocks(defaultFilter, appliedFilter, results);
@@ -295,7 +320,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 Assert.Equal(FILTER_ENTITY_PLURAL, model.FilterViewModel.FilteredItemTypePlural);
                 Assert.Equal(appliedFilter.FromDate, model.FilterViewModel.from);
                 Assert.Equal(appliedFilter.UntilDate, model.FilterViewModel.to);
-                Assert.Equal(appliedFilter.Team.TeamId, model.FilterViewModel.team);
+                Assert.Equal(appliedFilter.Team.TeamRoute.Substring(7), model.FilterViewModel.team);
             }
         }
 
@@ -338,6 +363,72 @@ namespace Stoolball.Web.UnitTests.Statistics
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
+        public async Task Sets_FilterViewModel_Teams_if_DefaultFilter_has_Club(bool hasClub)
+        {
+            var defaultFilter = new StatisticsFilter { Club = hasClub ? CreateClub() : null };
+            var appliedFilter = defaultFilter.Clone();
+
+            var results = new List<StatisticsResult<AnyClass>>();
+            SetupMocks(defaultFilter, appliedFilter, results);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
+
+                if (hasClub)
+                {
+                    Assert.Equal(defaultFilter.Club!.Teams.Count, model.FilterViewModel.Teams.Count());
+                    foreach (var team in model.FilterViewModel.Teams)
+                    {
+                        var teamFromClub = defaultFilter.Club.Teams.SingleOrDefault(x => x.TeamRoute == team.TeamRoute);
+                        Assert.NotNull(teamFromClub);
+                    }
+                }
+                else
+                {
+                    Assert.Empty(model.FilterViewModel.Teams);
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Sets_FilterViewModel_Teams_if_DefaultFilter_has_Season(bool hasSeason)
+        {
+            var defaultFilter = new StatisticsFilter { Season = hasSeason ? CreateSeason() : null };
+            var appliedFilter = defaultFilter.Clone();
+
+            var results = new List<StatisticsResult<AnyClass>>();
+            SetupMocks(defaultFilter, appliedFilter, results);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
+
+                if (hasSeason)
+                {
+                    Assert.Equal(defaultFilter.Season!.Teams.Count, model.FilterViewModel.Teams.Count());
+                    foreach (var team in model.FilterViewModel.Teams)
+                    {
+                        var teamFromSeason = defaultFilter.Season.Teams.SingleOrDefault(x => x.Team != null && x.Team.TeamRoute == team.TeamRoute);
+                        Assert.NotNull(teamFromSeason);
+                    }
+                }
+                else
+                {
+                    Assert.Empty(model.FilterViewModel.Teams);
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
         public async Task Hide_teams_column_if_filtered_by_team(bool hasTeamFilter)
         {
             var defaultFilter = new StatisticsFilter { Team = hasTeamFilter ? new Team() : null };
@@ -356,14 +447,14 @@ namespace Stoolball.Web.UnitTests.Statistics
             }
         }
 
-        public async Task If_team_filter_is_applied_to_default_player_filter_player_team_is_copied_to_applied_filter()
+        public async Task If_team_filter_is_applied_to_default_player_filter_player_team_is_copied_to_applied_filter_and_view_model()
         {
             var defaultFilter = new StatisticsFilter
             {
                 Player = CreatePlayerWithIdentities()
             };
             var appliedFilter = defaultFilter.Clone();
-            appliedFilter.Team = new Team { TeamId = defaultFilter.Player.PlayerIdentities[0].Team!.TeamId };
+            appliedFilter.Team = new Team { TeamRoute = defaultFilter.Player.PlayerIdentities[0].Team!.TeamRoute };
 
             var results = new List<StatisticsResult<AnyClass>>();
             SetupMocks(defaultFilter, appliedFilter, results);
@@ -375,6 +466,55 @@ namespace Stoolball.Web.UnitTests.Statistics
                 var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
 
                 Assert.Equal(defaultFilter.Player.PlayerIdentities[0].Team!.TeamName, model.AppliedFilter.Team?.TeamName);
+                Assert.Equal(defaultFilter.Player.PlayerIdentities[0].Team!.TeamName, model.FilterViewModel.TeamName);
+            }
+        }
+
+        [Fact]
+        public async Task If_team_filter_is_applied_to_default_club_filter_team_name_is_copied_to_applied_filter_and_view_model()
+        {
+            var defaultFilter = new StatisticsFilter
+            {
+                Club = CreateClub()
+            };
+            var appliedFilter = defaultFilter.Clone();
+            appliedFilter.Team = new Team { TeamRoute = defaultFilter.Club.Teams[0].TeamRoute };
+
+            var results = new List<StatisticsResult<AnyClass>>();
+            SetupMocks(defaultFilter, appliedFilter, results);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
+
+                Assert.Equal(defaultFilter.Club.Teams[0].TeamName, model.AppliedFilter.Team?.TeamName);
+                Assert.Equal(defaultFilter.Club.Teams[0].TeamName, model.FilterViewModel.TeamName);
+            }
+        }
+
+        [Fact]
+        public async Task If_team_filter_is_applied_to_default_season_filter_team_name_is_copied_to_applied_filter_and_view_model()
+        {
+            var defaultFilter = new StatisticsFilter
+            {
+                Season = CreateSeason()
+            };
+            var appliedFilter = defaultFilter.Clone();
+            appliedFilter.Team = new Team { TeamRoute = defaultFilter.Season.Teams[0].Team!.TeamRoute };
+
+            var results = new List<StatisticsResult<AnyClass>>();
+            SetupMocks(defaultFilter, appliedFilter, results);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
+
+                Assert.Equal(defaultFilter.Season.Teams[0].Team!.TeamName, model.AppliedFilter.Team?.TeamName);
+                Assert.Equal(defaultFilter.Season.Teams[0].Team!.TeamName, model.FilterViewModel.TeamName);
             }
         }
 

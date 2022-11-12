@@ -56,17 +56,19 @@ namespace Stoolball.Web.Statistics
             else
             {
                 model.DefaultFilter = new StatisticsFilter { Player = model.Player, Paging = new Paging { PageSize = 5 } };
-                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
+                model.AppliedFilter = model.DefaultFilter.Clone().Merge(_statisticsFilterQueryStringParser.ParseQueryString(Request.QueryString.Value));
                 model.FieldingStatistics = await _summaryStatisticsDataSource.ReadFieldingStatistics(model.AppliedFilter);
 
                 var catchesFilter = model.AppliedFilter.Clone();
                 catchesFilter.Player = null;
+                catchesFilter.SwapTeamAndOppositionFilters = true;
                 catchesFilter.CaughtByPlayerIdentityIds = model.AppliedFilter.Player!.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList();
 
                 model.Catches = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(catchesFilter)).ToList();
 
                 var runOutsFilter = model.AppliedFilter.Clone();
                 runOutsFilter.Player = null;
+                runOutsFilter.SwapTeamAndOppositionFilters = true;
                 runOutsFilter.RunOutByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList();
                 model.RunOuts = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(runOutsFilter)).ToList();
 
@@ -75,7 +77,7 @@ namespace Stoolball.Web.Statistics
 
                 if (model.AppliedFilter.Team != null)
                 {
-                    var teamWithName = model.Player.PlayerIdentities.First(x => x.Team != null && x.Team.TeamId == model.AppliedFilter.Team.TeamId).Team;
+                    var teamWithName = model.Player.PlayerIdentities.FirstOrDefault(x => x.Team != null && x.Team.TeamRoute == model.AppliedFilter.Team.TeamRoute)?.Team;
                     if (teamWithName != null)
                     {
                         model.AppliedFilter.Team = teamWithName;

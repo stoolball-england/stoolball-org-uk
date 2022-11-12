@@ -5,12 +5,27 @@
 @using Stoolball.Web.Filtering
 @using Stoolball.Web.Statistics.Models
 @using Stoolball.Matches
+@await Html.PartialAsync("_JQueryAutocomplete")
+@await Html.PartialAsync("_RelatedItem")
 @{
     SmidgeHelper.RequiresCss(new CssFile("/css/statistics.min.css") { Order = 100 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
     SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
+    
+    if (Model.AppliedFilter.Player != null)
+    {
+        if (Model.DefaultFilter.Player != null)
+        {
+            Model.ShowPlayerColumn = Model.DefaultFilter.Player.AlternativeNames().Any();
+            Model.LinkPlayer = false;
+        }
+        else
+        {
+            Model.ShowPlayerColumn = false;
+        }
+    }
 
-    Model.FilterViewModel.SupportsTeamFilter = true;
+    Model.FilterViewModel.SupportsTeamFilter = Model.DefaultFilter.Team == null;
 }
 @section canonical {@await Html.PartialAsync("_CanonicalUrl", new[] { "page" })}
 @section head {
@@ -24,7 +39,7 @@
     }
 }
 <div class="container-xl">
-    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = Model.Heading, AlternativeNames = Model.DefaultFilter.Player.AlternativeNames() })
+    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = Model.Heading, AlternativeNames = Model.DefaultFilter.Player?.AlternativeNames() ?? new() })
 
     @await Html.PartialAsync("_StatisticsTip")
   
@@ -37,6 +52,11 @@
 
     @if (Model.Results.Any())
     {
+        @if (Model.DefaultFilter.Player == null)
+        {
+            @await Html.PartialAsync("_StatisticsBasis")
+        }
+
         @await Html.PartialAsync(Model.PartialView)
     }
     else

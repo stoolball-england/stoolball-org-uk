@@ -20,14 +20,12 @@ namespace Stoolball.Web.Statistics
             IPlayerSummaryStatisticsDataSource playerSummaryStatisticsDataSource,
             IPlayerPerformanceStatisticsDataSource playerPerformanceDataSource,
             IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
-            IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
             IStatisticsFilterHumanizer statisticsFilterHumanizer)
             : base(logger,
                   compositeViewEngine,
                   umbracoContextAccessor,
                   statisticsFilterFactory,
                   statisticsBreadcrumbBuilder,
-                  statisticsFilterQueryStringParser,
                   statisticsFilterHumanizer,
                   async filter =>
                   {

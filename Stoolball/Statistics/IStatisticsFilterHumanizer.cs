@@ -4,6 +4,6 @@
     {
         string EntitiesMatchingFilter(string entities, string matchingFilter);
         string MatchingUserFilter(StatisticsFilter filter);
-        string MatchingFixedFilter(StatisticsFilter filter);
+        string MatchingDefaultFilter(StatisticsFilter filter);
     }
 }

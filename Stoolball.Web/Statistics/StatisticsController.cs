@@ -49,7 +49,7 @@ namespace Stoolball.Web.Statistics
             model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditStatistics] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
 
             model.DefaultFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, Request.QueryString.Value);
+            model.AppliedFilter = model.DefaultFilter.Clone().Merge(_statisticsFilterQueryStringParser.ParseQueryString(Request.QueryString.Value));
             model.PlayerInnings = (await _bestPerformanceInAMatchStatisticsDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst)).ToList();
             model.MostRuns = (await _bestTotalStatisticsDataSource.ReadMostRunsScored(model.AppliedFilter)).ToList();
             model.MostWickets = (await _bestTotalStatisticsDataSource.ReadMostWickets(model.AppliedFilter)).ToList();

@@ -146,5 +146,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                x => x.Teams.Select(t => t.Team?.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId),
                x => x.Batter?.Team != null && x.Batter.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
         }
+
+        [Fact]
+        public async Task Read_batting_statistics_supports_filter_by_team_route()
+        {
+            await AssertBattingStatistics(new StatisticsFilter { Team = _databaseFixture.TestData.TeamWithFullDetails },
+               " AND TeamRoute = @TeamRoute",
+               new Dictionary<string, object> { { "TeamRoute", _databaseFixture.TestData.TeamWithFullDetails!.TeamRoute! } },
+               x => x.Teams.Select(t => t.Team?.TeamRoute).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamRoute),
+               x => x.Batter?.Team != null && x.Batter.Team.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute).ConfigureAwait(false);
+        }
     }
 }

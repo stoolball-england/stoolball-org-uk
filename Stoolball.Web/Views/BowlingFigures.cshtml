@@ -32,7 +32,7 @@
     }
 }
 <div class="container-xl">
-    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = $"Best bowling figures{humanizer.MatchingFixedFilter(Model.AppliedFilter)}", AlternativeNames = Model.DefaultFilter.Player?.AlternativeNames() ?? new() })
+    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = $"Best bowling figures{humanizer.MatchingDefaultFilter(Model.AppliedFilter)}", AlternativeNames = Model.DefaultFilter.Player?.AlternativeNames() ?? new() })
 
     @await Html.PartialAsync("_StatisticsTip")
    
