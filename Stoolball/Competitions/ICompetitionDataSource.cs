@@ -25,6 +25,6 @@ namespace Stoolball.Competitions
         /// </summary>
         /// <param name="route">/competitions/example-competition</param>
         /// <returns>A matching <see cref="Competition"/> or <c>null</c> if not found</returns>
-        Task<Competition> ReadCompetitionByRoute(string route);
+        Task<Competition?> ReadCompetitionByRoute(string route);
     }
 }

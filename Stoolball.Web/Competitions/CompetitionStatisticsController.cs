@@ -20,7 +20,7 @@ namespace Stoolball.Web.Competitions
         private readonly ICompetitionDataSource _competitionDataSource;
         private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceDataSource;
         private readonly IBestPlayerTotalStatisticsDataSource _bestPlayerTotalDataSource;
-        private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
+        private readonly IStatisticsFilterFactory _statisticsFilterFactory;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public CompetitionStatisticsController(ILogger<CompetitionStatisticsController> logger,
@@ -29,14 +29,14 @@ namespace Stoolball.Web.Competitions
             ICompetitionDataSource competitionDataSource,
             IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
             IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource,
-            IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+            IStatisticsFilterFactory statisticsFilterFactory,
             IStatisticsFilterHumanizer statisticsFilterHumanizer)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
             _bestPerformanceDataSource = bestPerformanceDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceDataSource));
             _bestPlayerTotalDataSource = bestPlayerTotalDataSource ?? throw new ArgumentNullException(nameof(bestPlayerTotalDataSource));
-            _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
+            _statisticsFilterFactory = statisticsFilterFactory ?? throw new ArgumentNullException(nameof(statisticsFilterFactory));
             _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
@@ -56,7 +56,7 @@ namespace Stoolball.Web.Competitions
             else
             {
                 model.DefaultFilter = new StatisticsFilter { Competition = model.Context, MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-                model.AppliedFilter = model.DefaultFilter.Clone().Merge(_statisticsFilterQueryStringParser.ParseQueryString(Request.QueryString.Value));
+                model.AppliedFilter = model.DefaultFilter.Clone().Merge(await _statisticsFilterFactory.FromQueryString(Request.QueryString.Value));
                 model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
                 model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
                 model.MostRuns = (await _bestPlayerTotalDataSource.ReadMostRunsScored(model.AppliedFilter).ConfigureAwait(false)).ToList();
@@ -68,6 +68,9 @@ namespace Stoolball.Web.Competitions
                 model.FilterViewModel.FilteredItemTypePlural = "Statistics";
                 model.FilterViewModel.from = model.AppliedFilter.FromDate;
                 model.FilterViewModel.to = model.AppliedFilter.UntilDate;
+                model.FilterViewModel.team = model.AppliedFilter.Team?.TeamRoute;
+                model.FilterViewModel.TeamName = model.AppliedFilter.Team?.TeamName;
+                model.FilterViewModel.SupportsTeamFilter = true;
                 model.Metadata.PageTitle = $"Statistics for {model.Context.CompetitionName}" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
                 model.Metadata.Description = $"Statistics for stoolball matches played in all the years of the {model.Context.CompetitionName}.";
 
