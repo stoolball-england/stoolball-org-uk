@@ -1,0 +1,59 @@
+﻿@using Stoolball.Matches
+@using Stoolball.Statistics
+@using Stoolball.Web.Statistics.Models
+@model StatisticsSummaryViewModel
+@inject Umbraco.Cms.Core.Services.IUserService userService
+@{
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, userService) { ShowCaption = true, ShowPlayerColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
+    individualScores.Results.AddRange(Model.PlayerInnings);
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, userService) { ShowCaption = true, ShowPlayerColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
+    bowlingFigures.Results.AddRange(Model.BowlingFigures);
+    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, userService) { ShowCaption = true, ShowTeamsColumn = Model.ShowTeamsColumn, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
+    mostRuns.Results.AddRange(Model.MostRuns);
+    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, userService) { ShowCaption = true, ShowTeamsColumn = Model.ShowTeamsColumn, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
+    mostWickets.Results.AddRange(Model.MostWickets);
+    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, userService) { ShowCaption = true, ShowTeamsColumn = Model.ShowTeamsColumn, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
+    mostCatches.Results.AddRange(Model.MostCatches);
+}
+@await Html.PartialAsync("_Filters", Model.FilterViewModel)
+
+@if ((Model.ShowInningsStatistics && !Model.InningsStatistics.Any()) && !Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any() && !Model.MostCatches.Any())
+{
+    @await Html.PartialAsync("_NoData")
+}
+else
+{
+    @if (Model.ShowInningsStatistics)
+    {
+        @await Html.PartialAsync("_InningsStatistics", Model.InningsStatistics)
+    }
+    @await Html.PartialAsync("_IndividualScores", individualScores)
+    @await Html.PartialAsync("_MostRuns", mostRuns)
+    var defaultFilterFor50Runs = Model.DefaultFilter.Clone();
+    defaultFilterFor50Runs.MinimumRunsScored = 50;
+    var appliedFilterFor50Runs = Model.AppliedFilter.Clone();
+    appliedFilterFor50Runs.MinimumRunsScored = 50;
+    @await Html.PartialAsync("_MostScoresOfX", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = defaultFilterFor50Runs, AppliedFilter = appliedFilterFor50Runs })
+    var defaultFilterFor100Runs = Model.DefaultFilter.Clone();
+    defaultFilterFor100Runs.MinimumRunsScored = 100;
+    var appliedFilterFor100Runs = Model.AppliedFilter.Clone();
+    appliedFilterFor100Runs.MinimumRunsScored = 100;
+    @await Html.PartialAsync("_MostScoresOfX", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = defaultFilterFor100Runs, AppliedFilter = appliedFilterFor100Runs })
+    @await Html.PartialAsync("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, userService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+    @await Html.PartialAsync("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, userService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+    @await Html.PartialAsync("_BowlingFigures", bowlingFigures)
+    @await Html.PartialAsync("_MostWickets", mostWickets)
+    var defaultFilterFor5Wickets = Model.DefaultFilter.Clone();
+    defaultFilterFor5Wickets.MinimumWicketsTaken = 5;
+    var appliedFilterFor5Wickets = Model.AppliedFilter.Clone();
+    appliedFilterFor5Wickets.MinimumWicketsTaken = 5;
+    @await Html.PartialAsync("_MostXWickets", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = defaultFilterFor5Wickets, AppliedFilter = appliedFilterFor5Wickets })
+    @await Html.PartialAsync("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, userService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+    @await Html.PartialAsync("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, userService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+    @await Html.PartialAsync("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, userService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+    @await Html.PartialAsync("_MostCatches", mostCatches)
+    @await Html.PartialAsync("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, userService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+    @await Html.PartialAsync("_PlayerPerformances", new StatisticsViewModel<PlayerIdentityPerformance>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+    @await Html.PartialAsync("_PlayerOfTheMatchLink", new StatisticsViewModel<PlayerIdentityPerformance>(Model) { DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+    @await Html.PartialAsync("_MostPlayerOfTheMatchAwards", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
+}

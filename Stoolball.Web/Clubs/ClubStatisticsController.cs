@@ -49,7 +49,8 @@ namespace Stoolball.Web.Clubs
         {
             var model = new StatisticsSummaryViewModel<Club>(CurrentPage)
             {
-                Context = await _clubDataSource.ReadClubByRoute(Request.Path)
+                Context = await _clubDataSource.ReadClubByRoute(Request.Path),
+                ShowInningsStatistics = true
             };
 
             if (model.Context == null)

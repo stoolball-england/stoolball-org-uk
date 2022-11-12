@@ -21,6 +21,9 @@ namespace Stoolball.Web.Statistics.Models
         public List<StatisticsResult<BestStatistic>> MostRuns { get; internal set; } = new();
         public List<StatisticsResult<BestStatistic>> MostWickets { get; internal set; } = new();
         public List<StatisticsResult<BestStatistic>> MostCatches { get; internal set; } = new();
+        public bool ShowInningsStatistics { get; set; }
+        public bool ShowTeamsColumn { get; set; } = true;
+        public InningsStatistics InningsStatistics { get; internal set; } = new();
     }
 
     public class StatisticsSummaryViewModel<T> : StatisticsSummaryViewModel
@@ -30,6 +33,5 @@ namespace Stoolball.Web.Statistics.Models
         }
 
         public T? Context { get; set; }
-        public InningsStatistics InningsStatistics { get; internal set; } = new InningsStatistics();
     }
 }

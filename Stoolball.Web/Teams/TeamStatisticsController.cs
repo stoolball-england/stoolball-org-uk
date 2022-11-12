@@ -49,7 +49,9 @@ namespace Stoolball.Web.Teams
         {
             var model = new StatisticsSummaryViewModel<Team>(CurrentPage)
             {
-                Context = await _teamDataSource.ReadTeamByRoute(Request.Path, true)
+                Context = await _teamDataSource.ReadTeamByRoute(Request.Path, true),
+                ShowInningsStatistics = true,
+                ShowTeamsColumn = false
             };
 
             if (model.Context == null)
