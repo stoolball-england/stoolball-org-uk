@@ -13,7 +13,7 @@ namespace Stoolball.Clubs
         /// </summary>
         /// <param name="route">/clubs/example-club</param>
         /// <returns>A matching <see cref="Club"/> or <c>null</c> if not found</returns>
-        Task<Club> ReadClubByRoute(string route);
+        Task<Club?> ReadClubByRoute(string route);
 
         /// <summary>
         /// Gets a list of clubs based on a query

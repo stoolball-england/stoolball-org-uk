@@ -47,13 +47,7 @@
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
         </li>
     </ul>
-    @await Html.PartialAsync("_Filters", new FilterViewModel
-    {
-      FilteredItemTypePlural = "Statistics",
-      FilterDescription = Model.FilterDescription,
-      from = Model.AppliedFilter.FromDate,
-      to = Model.AppliedFilter.UntilDate
-    })
+    @await Html.PartialAsync("_Filters", Model.FilterViewModel)
 
     @if (!Model.InningsStatistics.Any() && !Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any() && !Model.MostCatches.Any())
     {
@@ -82,7 +76,7 @@
         defaultFilterFor5Wickets.MinimumWicketsTaken = 5;
         var appliedFilterFor5Wickets = Model.AppliedFilter.Clone();
         appliedFilterFor5Wickets.MinimumWicketsTaken = 5;
-        @await Html.PartialAsync("_MostXWickets", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = appliedFilterFor5Wickets, AppliedFilter = appliedFilterFor5Wickets })
+        @await Html.PartialAsync("_MostXWickets", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = defaultFilterFor5Wickets, AppliedFilter = appliedFilterFor5Wickets })
         @await Html.PartialAsync("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
         @await Html.PartialAsync("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
         @await Html.PartialAsync("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })

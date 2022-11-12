@@ -64,8 +64,10 @@ namespace Stoolball.Web.Competitions
                 model.MostCatches = (await _bestPlayerTotalDataSource.ReadMostCatches(model.AppliedFilter).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
-
-                model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
+                model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
+                model.FilterViewModel.FilteredItemTypePlural = "Statistics";
+                model.FilterViewModel.from = model.AppliedFilter.FromDate;
+                model.FilterViewModel.to = model.AppliedFilter.UntilDate;
                 model.Metadata.PageTitle = $"Statistics for {model.Context.CompetitionName}" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
                 model.Metadata.Description = $"Statistics for stoolball matches played in all the years of the {model.Context.CompetitionName}.";
 

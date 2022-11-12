@@ -77,7 +77,7 @@
         defaultFilterFor5Wickets.MinimumWicketsTaken = 5;
         var appliedFilterFor5Wickets = Model.AppliedFilter.Clone();
         appliedFilterFor5Wickets.MinimumWicketsTaken = 5;
-        @await Html.PartialAsync("_MostXWickets", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = appliedFilterFor5Wickets, AppliedFilter = appliedFilterFor5Wickets })
+        @await Html.PartialAsync("_MostXWickets", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = defaultFilterFor5Wickets, AppliedFilter = appliedFilterFor5Wickets })
         @await Html.PartialAsync("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
         @await Html.PartialAsync("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })
         @await Html.PartialAsync("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter })

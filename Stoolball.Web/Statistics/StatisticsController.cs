@@ -56,7 +56,10 @@ namespace Stoolball.Web.Statistics
             model.BowlingFigures = (await _bestPerformanceInAMatchStatisticsDataSource.ReadBowlingFigures(model.AppliedFilter, StatisticsSortOrder.BestFirst)).ToList();
             model.MostCatches = (await _bestTotalStatisticsDataSource.ReadMostCatches(model.AppliedFilter)).ToList();
 
-            model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
+            model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
+            model.FilterViewModel.FilteredItemTypePlural = "Statistics";
+            model.FilterViewModel.from = model.AppliedFilter.FromDate;
+            model.FilterViewModel.to = model.AppliedFilter.UntilDate;
             model.Metadata.PageTitle = "Statistics for all teams" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
 
             return CurrentTemplate(model);

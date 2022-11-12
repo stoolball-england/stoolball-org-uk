@@ -30,6 +30,12 @@ namespace Stoolball.Data.SqlServer
                 join.Add($"INNER JOIN {Tables.Match} m ON mi.MatchId = m.MatchId");
             }
 
+            if ((statisticsFilter.Club != null && statisticsFilter.Club.ClubId.HasValue) ||
+                (statisticsFilter.Team != null && !string.IsNullOrEmpty(statisticsFilter.Team.TeamRoute)))
+            {
+                join.Add($"INNER JOIN {Tables.Team} t ON mt.TeamId = t.TeamId");
+            }
+
             if (statisticsFilter.FromDate.HasValue)
             {
                 where.Add("m.StartTime >= @FromDate");
@@ -44,7 +50,6 @@ namespace Stoolball.Data.SqlServer
 
             if (statisticsFilter.Club != null && statisticsFilter.Club.ClubId.HasValue)
             {
-                join.Add($"INNER JOIN {Tables.Team} t ON mt.TeamId = t.TeamId");
                 where.Add("t.ClubId = @ClubId");
                 parameters.Add("@ClubId", statisticsFilter.Club.ClubId);
             }
@@ -53,6 +58,12 @@ namespace Stoolball.Data.SqlServer
             {
                 where.Add("mt.TeamId = @TeamId");
                 parameters.Add("@TeamId", statisticsFilter.Team.TeamId);
+            }
+
+            if (statisticsFilter.Team != null && !string.IsNullOrEmpty(statisticsFilter.Team.TeamRoute))
+            {
+                where.Add("t.TeamRoute = @TeamRoute");
+                parameters.Add("@TeamRoute", statisticsFilter.Team.TeamRoute);
             }
 
             var extraJoinsForFilters = string.Join(" ", join);

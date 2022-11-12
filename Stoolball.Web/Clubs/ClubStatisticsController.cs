@@ -60,6 +60,11 @@ namespace Stoolball.Web.Clubs
             {
                 model.DefaultFilter = new StatisticsFilter { Club = model.Context, MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
                 model.AppliedFilter = model.DefaultFilter.Clone().Merge(_statisticsFilterQueryStringParser.ParseQueryString(Request.QueryString.Value));
+                if (model.AppliedFilter.Team != null)
+                {
+                    model.AppliedFilter.Team = model.Context.Teams.FirstOrDefault(x => x.TeamRoute == model.AppliedFilter.Team.TeamRoute);
+                }
+
                 model.InningsStatistics = await _inningsStatisticsDataSource.ReadInningsStatistics(model.AppliedFilter).ConfigureAwait(false);
 
                 model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
@@ -70,7 +75,13 @@ namespace Stoolball.Web.Clubs
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
 
-                model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
+                model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
+                model.FilterViewModel.FilteredItemTypePlural = "Statistics";
+                model.FilterViewModel.from = model.AppliedFilter.FromDate;
+                model.FilterViewModel.to = model.AppliedFilter.UntilDate;
+                model.FilterViewModel.team = model.AppliedFilter.Team?.TeamRoute;
+                model.FilterViewModel.SupportsTeamFilter = model.Context.Teams.Any();
+                model.FilterViewModel.Teams = model.Context.Teams;
                 model.Metadata.PageTitle = $"Statistics for {model.Context.ClubName}" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
                 model.Metadata.Description = $"Statistics for matches played by all teams in {model.Context.ClubName}.";
 

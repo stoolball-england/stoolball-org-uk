@@ -71,11 +71,16 @@ namespace Stoolball.Web.Teams
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
                 if (model.Context.Club != null)
                 {
-                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Context.Club.ClubName, Url = new Uri(model.Context.Club.ClubRoute, UriKind.Relative) });
+                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Context.Club.ClubName, Url = new Uri(model.Context.Club.ClubRoute!, UriKind.Relative) });
                 }
 
-                model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
-                model.Metadata.PageTitle = $"Statistics for {model.Context.TeamName} stoolball team" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
+                var appliedFilterWithoutDefaultFilter = model.AppliedFilter.Clone();
+                appliedFilterWithoutDefaultFilter.Team = null;
+                model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(appliedFilterWithoutDefaultFilter));
+                model.FilterViewModel.FilteredItemTypePlural = "Statistics";
+                model.FilterViewModel.from = model.AppliedFilter.FromDate;
+                model.FilterViewModel.to = model.AppliedFilter.UntilDate;
+                model.Metadata.PageTitle = $"Statistics for {model.Context.TeamName} stoolball team" + _statisticsFilterHumanizer.MatchingUserFilter(appliedFilterWithoutDefaultFilter);
                 model.Metadata.Description = $"Statistics for {model.Context.TeamName}, a {model.Context.Description().Substring(2)}";
 
                 return CurrentTemplate(model);
