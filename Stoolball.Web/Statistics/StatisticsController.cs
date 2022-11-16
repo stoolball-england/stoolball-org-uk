@@ -21,7 +21,7 @@ namespace Stoolball.Web.Statistics
         private readonly IMemberManager _memberManager;
         private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceInAMatchStatisticsDataSource;
         private readonly IBestPlayerTotalStatisticsDataSource _bestTotalStatisticsDataSource;
-        private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
+        private readonly IStatisticsFilterFactory _statisticsFilterFactory;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public StatisticsController(ILogger<StatisticsController> logger,
@@ -30,14 +30,14 @@ namespace Stoolball.Web.Statistics
             IMemberManager memberManager,
             IBestPerformanceInAMatchStatisticsDataSource bestPerformanceInAMatchStatisticsDataSource,
             IBestPlayerTotalStatisticsDataSource bestTotalStatisticsDataSource,
-            IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+            IStatisticsFilterFactory statisticsFilterFactory,
             IStatisticsFilterHumanizer statisticsFilterHumanizer)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _bestPerformanceInAMatchStatisticsDataSource = bestPerformanceInAMatchStatisticsDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceInAMatchStatisticsDataSource));
             _bestTotalStatisticsDataSource = bestTotalStatisticsDataSource ?? throw new ArgumentNullException(nameof(bestTotalStatisticsDataSource));
-            _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
+            _statisticsFilterFactory = statisticsFilterFactory ?? throw new ArgumentNullException(nameof(statisticsFilterFactory));
             _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
@@ -49,7 +49,7 @@ namespace Stoolball.Web.Statistics
             model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditStatistics] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
 
             model.DefaultFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-            model.AppliedFilter = model.DefaultFilter.Clone().Merge(_statisticsFilterQueryStringParser.ParseQueryString(Request.QueryString.Value));
+            model.AppliedFilter = model.DefaultFilter.Clone().Merge(await _statisticsFilterFactory.FromQueryString(Request.QueryString.Value));
             model.PlayerInnings = (await _bestPerformanceInAMatchStatisticsDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst)).ToList();
             model.MostRuns = (await _bestTotalStatisticsDataSource.ReadMostRunsScored(model.AppliedFilter)).ToList();
             model.MostWickets = (await _bestTotalStatisticsDataSource.ReadMostWickets(model.AppliedFilter)).ToList();
@@ -61,6 +61,9 @@ namespace Stoolball.Web.Statistics
             model.FilterViewModel.SupportsDateFilter = true;
             model.FilterViewModel.FromDate = model.AppliedFilter.FromDate;
             model.FilterViewModel.UntilDate = model.AppliedFilter.UntilDate;
+            model.FilterViewModel.SupportsTeamFilter = true;
+            model.FilterViewModel.TeamRoute = model.AppliedFilter.Team?.TeamRoute;
+            model.FilterViewModel.TeamName = model.AppliedFilter.Team?.TeamName;
             model.Metadata.PageTitle = "Statistics for all teams" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
 
             return CurrentTemplate(model);

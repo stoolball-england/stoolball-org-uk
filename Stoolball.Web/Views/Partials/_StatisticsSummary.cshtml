@@ -23,6 +23,7 @@
 }
 else
 {
+    @await Html.PartialAsync("_StatisticsBasis")
     @if (Model.ShowInningsStatistics)
     {
         @await Html.PartialAsync("_InningsStatistics", Model.InningsStatistics)

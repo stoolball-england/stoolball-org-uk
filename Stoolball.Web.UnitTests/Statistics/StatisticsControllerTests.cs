@@ -14,7 +14,8 @@ namespace Stoolball.Web.UnitTests.Statistics
     {
         private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
         private readonly Mock<IBestPlayerTotalStatisticsDataSource> _totalStatisticsDataSource = new();
-        private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
+        private readonly Mock<IStatisticsFilterFactory> _statisticsFilterFactory = new();
+        private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumanizer = new();
 
         private StatisticsController CreateController()
         {
@@ -25,8 +26,8 @@ namespace Stoolball.Web.UnitTests.Statistics
                 Mock.Of<IMemberManager>(),
                 _bestPerformanceDataSource.Object,
                 _totalStatisticsDataSource.Object,
-                _statisticsFilterQueryStringParser.Object,
-                Mock.Of<IStatisticsFilterHumanizer>())
+                _statisticsFilterFactory.Object,
+                _statisticsFilterHumanizer.Object)
             {
                 ControllerContext = ControllerContext
             };
@@ -35,7 +36,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         [Fact]
         public async Task Index_returns_StatisticsSummaryViewModel()
         {
-            _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
+            _statisticsFilterFactory.Setup(x => x.FromQueryString(Request.Object.QueryString.Value)).Returns(Task.FromResult(new StatisticsFilter()));
 
             using (var controller = CreateController())
             {
