@@ -1,43 +1,7 @@
 ﻿@inherits UmbracoViewPage<StatisticsViewModel<BestStatistic>>
-@inject IStatisticsFilterHumanizer humanizer
-@using Stoolball.Web.Filtering
 @using Stoolball.Statistics
 @using Stoolball.Web.Statistics.Models
 @{
-    SmidgeHelper.RequiresCss(new CssFile("/css/statistics.min.css") { Order = 100 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
-    SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
+    Model.PartialView = "_MostCatches"; 
 }
-@section canonical {@await Html.PartialAsync("_CanonicalUrl", new[] { "page" })}
-@section head {
-    @if (Model.AppliedFilter.Paging.PageNumber == 1)
-    {
-        <meta name="robots" content="index, nofollow">
-    }
-    else
-    {
-        <meta name="robots" content="noindex, nofollow">
-    }
-}
-<div class="container-xl">
-    <h1>Most catches@(humanizer.MatchingDefaultFilter(Model.AppliedFilter))</h1>
-
-    @await Html.PartialAsync("_StatisticsTip")
-  
-    <ul class="nav nav-tabs">
-        <li class="nav-item nav-item-admin">
-            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
-        </li>
-    </ul>
-    @await Html.PartialAsync("_Filters", Model.FilterViewModel)
-
-    @if (Model.Results.Any())
-    {
-        @await Html.PartialAsync("_StatisticsBasis")
-    }
-    else
-    {
-        @await Html.PartialAsync("_NoData")
-    }
-    @await Html.PartialAsync("_MostCatches")
-</div>
+@await Html.PartialAsync("_StatisticsTable")
