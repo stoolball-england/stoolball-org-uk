@@ -2,7 +2,7 @@
 
 namespace Stoolball.Statistics
 {
-    public class PlayerEqualityComparer : EqualityComparer<Player>
+    public class PlayerEqualityComparer : EqualityComparer<Player?>
     {
         public override bool Equals(Player? x, Player? y)
         {
