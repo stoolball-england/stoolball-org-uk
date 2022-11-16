@@ -1,4 +1,4 @@
-﻿@inherits UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
+﻿@inherits UmbracoViewPage<StatisticsViewModel>
 @inject IStatisticsFilterHumanizer humanizer
 @using Stoolball.Statistics
 @using Stoolball.Teams
@@ -50,7 +50,7 @@
     </ul>
     @await Html.PartialAsync("_Filters", Model.FilterViewModel)
 
-    @if (Model.Results.Any())
+    @if (Model.HasResults())
     {
         @if (Model.DefaultFilter.Player == null)
         {

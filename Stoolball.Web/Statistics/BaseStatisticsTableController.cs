@@ -68,7 +68,8 @@ namespace Stoolball.Web.Statistics
         {
             var model = new StatisticsViewModel<T>(CurrentPage) { ShowCaption = false };
             model.DefaultFilter = await _statisticsFilterFactory.FromRoute(Request.Path).ConfigureAwait(false);
-            model.AppliedFilter = model.DefaultFilter.Clone().Merge(await _statisticsFilterFactory.FromQueryString(Request.QueryString.Value).ConfigureAwait(false));
+            var userFilter = await _statisticsFilterFactory.FromQueryString(Request.QueryString.Value).ConfigureAwait(false);
+            model.AppliedFilter = model.DefaultFilter.Clone().Merge(userFilter);
 
             if (model.AppliedFilter.Team != null)
             {
@@ -112,9 +113,9 @@ namespace Stoolball.Web.Statistics
 
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.DefaultFilter);
 
-            var userFilter = _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
+            var userFilterDescription = _statisticsFilterHumanizer.MatchingUserFilter(userFilter);
             model.FilterViewModel.FilteredItemTypePlural = _filterEntityPlural;
-            model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter(_filterEntityPlural, userFilter);
+            model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter(_filterEntityPlural, userFilterDescription);
             model.FilterViewModel.SupportsDateFilter = true;
             model.FilterViewModel.FromDate = model.AppliedFilter.FromDate;
             model.FilterViewModel.UntilDate = model.AppliedFilter.UntilDate;
@@ -133,7 +134,7 @@ namespace Stoolball.Web.Statistics
                 model.FilterViewModel.Teams = model.DefaultFilter.Season.Teams.Select(x => x.Team).OfType<Team>();
             }
 
-            model.Metadata.PageTitle = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingDefaultFilter(model.DefaultFilter) + userFilter;
+            model.Metadata.PageTitle = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingDefaultFilter(model.DefaultFilter) + userFilterDescription;
             model.Heading = _pageTitle(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingDefaultFilter(model.DefaultFilter);
 
             return CurrentTemplate(model);

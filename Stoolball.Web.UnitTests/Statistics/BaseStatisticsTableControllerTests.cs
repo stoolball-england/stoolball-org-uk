@@ -131,13 +131,13 @@ namespace Stoolball.Web.UnitTests.Statistics
             };
         }
 
-        private void SetupMocks(StatisticsFilter defaultFilter, StatisticsFilter appliedFilter, List<StatisticsResult<AnyClass>> results)
+        private void SetupMocks(StatisticsFilter defaultFilter, StatisticsFilter userFilter, List<StatisticsResult<AnyClass>> results)
         {
             Request.Setup(x => x.Path).Returns("/play/statistics");
             _statisticsFilterFactory.Setup(x => x.FromRoute(Request.Object.Path)).Returns(Task.FromResult(defaultFilter));
-            _statisticsFilterFactory.Setup(x => x.FromQueryString(Request.Object.QueryString.Value)).Returns(Task.FromResult(appliedFilter));
-            _statisticsQueryMethods.Setup(x => x.ReadResults(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate))).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<AnyClass>>));
-            _statisticsQueryMethods.Setup(x => x.ReadTotalResults(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate))).Returns(Task.FromResult(results.Count));
+            _statisticsFilterFactory.Setup(x => x.FromQueryString(Request.Object.QueryString.Value)).Returns(Task.FromResult(userFilter));
+            _statisticsQueryMethods.Setup(x => x.ReadResults(It.Is<StatisticsFilter>(x => x.FromDate == userFilter.FromDate))).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<AnyClass>>));
+            _statisticsQueryMethods.Setup(x => x.ReadTotalResults(It.Is<StatisticsFilter>(x => x.FromDate == userFilter.FromDate))).Returns(Task.FromResult(results.Count));
         }
 
         private static StatisticsResult<AnyClass> CreateQueryResult()
@@ -467,6 +467,32 @@ namespace Stoolball.Web.UnitTests.Statistics
 
                 Assert.Equal(defaultFilter.Player.PlayerIdentities[0].Team!.TeamName, model.AppliedFilter.Team?.TeamName);
                 Assert.Equal(defaultFilter.Player.PlayerIdentities[0].Team!.TeamName, model.FilterViewModel.TeamName);
+            }
+        }
+
+        [Fact]
+        public async Task Default_team_filter_does_not_add_team_name_to_filter_description_or_duplicate_it_in_page_title()
+        {
+            var teamName = "Example team";
+            var defaultFilter = new StatisticsFilter
+            {
+                Team = new Team { TeamName = teamName }
+            };
+
+            var results = new List<StatisticsResult<AnyClass>>();
+            SetupMocks(defaultFilter, new StatisticsFilter(), results);
+            _filterHumanizer.Setup(x => x.MatchingUserFilter(It.Is<StatisticsFilter>(f => f.Team != null && f.Team.TeamName == teamName))).Returns($" for {teamName}");
+            _filterHumanizer.Setup(x => x.MatchingDefaultFilter(It.Is<StatisticsFilter>(f => f.Team != null && f.Team.TeamName == teamName))).Returns($" for {teamName}");
+            _filterHumanizer.Setup(x => x.EntitiesMatchingFilter(FILTER_ENTITY_PLURAL, It.IsAny<string>())).Returns<string, string>((a, b) => string.IsNullOrEmpty(b) ? string.Empty : a + b);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
+
+                Assert.Equal(string.Empty, model.FilterViewModel.FilterDescription);
+                Assert.Equal("Amazing things for Example team", model.Metadata.PageTitle);
             }
         }
 
