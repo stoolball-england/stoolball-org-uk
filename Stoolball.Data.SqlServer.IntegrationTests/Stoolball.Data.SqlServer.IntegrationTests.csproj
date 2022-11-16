@@ -25,7 +25,7 @@
     <PackageReference Include="Microsoft.SqlServer.DacFx" Version="150.4897.1" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="161.46041.41" />
     <PackageReference Include="Moq" Version="4.15.2" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
