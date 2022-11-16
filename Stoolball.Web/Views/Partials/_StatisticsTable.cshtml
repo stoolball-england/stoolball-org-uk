@@ -12,17 +12,10 @@
     SmidgeHelper.RequiresJs(new JavaScriptFile("/js/filter.js") { Order = 100 });
     SmidgeHelper.RequiresCss(new CssFile("/css/filter.min.css") { Order = 100 });
     
-    if (Model.AppliedFilter.Player != null)
+    if (Model.DefaultFilter.Player != null)
     {
-        if (Model.DefaultFilter.Player != null)
-        {
-            Model.ShowPlayerColumn = Model.DefaultFilter.Player.AlternativeNames().Any();
-            Model.LinkPlayer = false;
-        }
-        else
-        {
-            Model.ShowPlayerColumn = false;
-        }
+        Model.ShowPlayerColumn = Model.DefaultFilter.Player.AlternativeNames().Any();
+        Model.LinkPlayer = false;
     }
 
     Model.FilterViewModel.SupportsTeamFilter = Model.DefaultFilter.Team == null;
