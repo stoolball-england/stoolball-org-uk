@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Stoolball.Teams;
-using Umbraco.Extensions;
 
 namespace Stoolball.Web.Filtering
 {
-    public class FilterViewModel : IFilterParameters
+    public class FilterViewModel
     {
         public string? FilteredItemTypePlural { get; set; }
         public string? FilterDescription { get; set; }
@@ -20,10 +19,5 @@ namespace Stoolball.Web.Filtering
         public bool SupportsTeamFilter { get; set; }
 
         public IEnumerable<Team> Teams { get; set; } = Array.Empty<Team>();
-        DateTimeOffset? IFilterParameters.from { get => FromDate; }
-        DateTimeOffset? IFilterParameters.to { get => UntilDate; }
-
-        [DisplayName("Team")]
-        string? IFilterParameters.team { get => TeamRoute?.TrimStart("/teams/"); }
     }
 }
