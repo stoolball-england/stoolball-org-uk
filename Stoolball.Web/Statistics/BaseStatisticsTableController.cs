@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
@@ -24,6 +25,7 @@ namespace Stoolball.Web.Statistics
         private readonly Func<StatisticsFilter, Task<int>> _readTotalResults;
         private readonly Func<StatisticsFilter, string> _pageTitle;
         private readonly string _filterEntityPlural;
+        private readonly IHtmlContent? _minimumQualifyingInningsTemplate;
         private readonly int? _minimumQualifyingInningsUnfiltered;
         private readonly int? _minimumQualifyingInningsFiltered;
         private readonly Func<StatisticsFilter, bool>? _validateFilter;
@@ -38,6 +40,7 @@ namespace Stoolball.Web.Statistics
             Func<StatisticsFilter, Task<int>> readTotalResults,
             Func<StatisticsFilter, string> pageTitle,
             string filterEntityPlural,
+            IHtmlContent? minimumQualifyingInningsTemplate = null,
             int? minimumQualifyingInningsUnfiltered = null,
             int? minimumQualifyingInningsFiltered = null,
             Func<StatisticsFilter, bool>? validateFilter = null
@@ -56,6 +59,7 @@ namespace Stoolball.Web.Statistics
             _readTotalResults = readTotalResults ?? throw new ArgumentNullException(nameof(readTotalResults));
             _pageTitle = pageTitle ?? throw new ArgumentNullException(nameof(pageTitle));
             _filterEntityPlural = filterEntityPlural;
+            _minimumQualifyingInningsTemplate = minimumQualifyingInningsTemplate;
             _minimumQualifyingInningsUnfiltered = minimumQualifyingInningsUnfiltered;
             _minimumQualifyingInningsFiltered = minimumQualifyingInningsFiltered;
             _validateFilter = validateFilter;
@@ -93,6 +97,7 @@ namespace Stoolball.Web.Statistics
                     model.AppliedFilter.Team = teamWithName;
                 }
             }
+            model.MinimumQualifyingInningsTemplate = _minimumQualifyingInningsTemplate;
             model.AppliedFilter.MinimumQualifyingInnings = _minimumQualifyingInningsUnfiltered;
             if (_minimumQualifyingInningsFiltered.HasValue &&
                 (model.AppliedFilter.Team != null ||

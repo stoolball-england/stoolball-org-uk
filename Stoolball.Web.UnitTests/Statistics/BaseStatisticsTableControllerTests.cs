@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
@@ -46,6 +47,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 IStatisticsFilterHumanizer statisticsFilterHumanizer,
                 Func<StatisticsFilter, Task<IEnumerable<StatisticsResult<AnyClass>>>> readResults,
                 Func<StatisticsFilter, Task<int>> readTotalResults,
+                IHtmlContent minimumQualifyingInningsTemplate,
                 int? minimumQualifyingInningsUnfiltered,
                 int? minimumQualifyingInningsFiltered,
                 Func<StatisticsFilter, bool>? validateFilter = null)
@@ -59,6 +61,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                       readTotalResults,
                       filter => PAGE_TITLE,
                       FILTER_ENTITY_PLURAL,
+                      minimumQualifyingInningsTemplate,
                       minimumQualifyingInningsUnfiltered,
                       minimumQualifyingInningsFiltered,
                       validateFilter)
@@ -66,7 +69,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             }
         }
 
-        private ConcreteControllerForTesting CreateController(int? minimumQualifyingInningsUnfiltered = null, int? minimumQualifyingInningsFiltered = null, Func<StatisticsFilter, bool>? validateFilter = null)
+        private ConcreteControllerForTesting CreateController(IHtmlContent minimumQualifyingInningsTemplate = null, int? minimumQualifyingInningsUnfiltered = null, int? minimumQualifyingInningsFiltered = null, Func<StatisticsFilter, bool>? validateFilter = null)
         {
             return new ConcreteControllerForTesting(
                 Mock.Of<ILogger<ConcreteControllerForTesting>>(),
@@ -77,6 +80,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 _filterHumanizer.Object,
                 _statisticsQueryMethods.Object.ReadResults,
                 _statisticsQueryMethods.Object.ReadTotalResults,
+                minimumQualifyingInningsTemplate,
                 minimumQualifyingInningsUnfiltered,
                 minimumQualifyingInningsFiltered,
                 validateFilter)
@@ -567,12 +571,14 @@ namespace Stoolball.Web.UnitTests.Statistics
             var results = new List<StatisticsResult<AnyClass>>();
             SetupMocks(defaultFilter, appliedFilter, results);
 
-            using (var controller = CreateController(minimumUnfiltered, minimumFiltered))
+            var expectedTemplate = new HtmlString("Template");
+            using (var controller = CreateController(expectedTemplate, minimumUnfiltered, minimumFiltered))
             {
                 var result = await controller.Index();
 
                 var model = ((StatisticsViewModel<AnyClass>)((ViewResult)result).Model);
 
+                Assert.Equal(expectedTemplate, model.MinimumQualifyingInningsTemplate);
                 Assert.Equal(expected, model.AppliedFilter.MinimumQualifyingInnings);
             }
         }

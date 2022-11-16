@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Stoolball.Statistics;
@@ -27,6 +28,7 @@ namespace Stoolball.Web.Statistics
                   filter => statisticsDataSource.ReadTotalPlayersWithBowlingAverage(filter),
                   filter => "Best bowling average",
                   "Averages",
+                  new HtmlString("Players must have bowled at least <strong>{0} times</strong> to appear in this list."),
                   10, 5
                   )
         { }

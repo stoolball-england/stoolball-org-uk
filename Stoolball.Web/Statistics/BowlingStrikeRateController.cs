@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Stoolball.Statistics;
@@ -27,6 +28,7 @@ namespace Stoolball.Web.Statistics
                   filter => statisticsDataSource.ReadTotalPlayersWithBowlingStrikeRate(filter),
                   filter => "Best bowling strike rate",
                   "Strike rates",
+                  new HtmlString("Players must have overs recorded in at least <strong>{0} innings</strong> to appear in this list."),
                   10, 5
                   )
         { }

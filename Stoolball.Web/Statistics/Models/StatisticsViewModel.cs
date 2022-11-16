@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Html;
 using Stoolball.Statistics;
 using Stoolball.Web.Filtering;
 using Stoolball.Web.Models;
@@ -16,6 +17,7 @@ namespace Stoolball.Web.Statistics.Models
         public StatisticsFilter DefaultFilter { get; set; } = new();
         public StatisticsFilter AppliedFilter { get; set; } = new();
         public FilterViewModel FilterViewModel { get; set; } = new();
+        public IHtmlContent? MinimumQualifyingInningsTemplate { get; set; }
         public bool ShowLinkOnly { get; set; }
         public bool ShowCaption { get; set; } = true;
         public bool ShowPlayerColumn { get; set; } = true;

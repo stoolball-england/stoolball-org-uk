@@ -49,11 +49,18 @@
         {
             @await Html.PartialAsync("_StatisticsBasis")
         }
-
-        @await Html.PartialAsync(Model.PartialView)
     }
     else
     {
         @await Html.PartialAsync("_NoData")
+    }
+
+    @if (Model.MinimumQualifyingInningsTemplate != null) 
+    {
+        <p>@Html.Raw(string.Format(Model.MinimumQualifyingInningsTemplate.ToHtmlString(), Model.AppliedFilter.MinimumQualifyingInnings))</p>
+    }
+    @if (Model.HasResults())
+    {
+        @await Html.PartialAsync(Model.PartialView)
     }
 </div>
