@@ -9,6 +9,7 @@ namespace Stoolball.Web.Filtering
     {
         public string? FilteredItemTypePlural { get; set; }
         public string? FilterDescription { get; set; }
+        public bool SupportsDateFilter { get; set; }
         public DateTimeOffset? FromDate { get; set; }
         public DateTimeOffset? UntilDate { get; set; }
 

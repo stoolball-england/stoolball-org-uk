@@ -58,6 +58,7 @@ namespace Stoolball.Web.Statistics
 
             model.FilterViewModel.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Statistics", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
             model.FilterViewModel.FilteredItemTypePlural = "Statistics";
+            model.FilterViewModel.SupportsDateFilter = true;
             model.FilterViewModel.FromDate = model.AppliedFilter.FromDate;
             model.FilterViewModel.UntilDate = model.AppliedFilter.UntilDate;
             model.Metadata.PageTitle = "Statistics for all teams" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);

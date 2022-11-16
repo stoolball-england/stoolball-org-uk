@@ -24,6 +24,7 @@
     </ul>
     @await Html.PartialAsync("_Filters", new MatchFilterViewModel {
         FilterDescription = Model.FilterDescription,
+        SupportsDateFilter = true,
         FromDate = Model.AppliedMatchFilter.FromDate,
         UntilDate = Model.AppliedMatchFilter.UntilDate
     })

@@ -13,8 +13,10 @@
         <p class="filter__applied">Showing @Model.FilterDescription.ToFirstLower(CultureInfo.CurrentCulture).</p>
     }
     <form method="get" action="@Context.Request.Path.Value" class="filter__edit d-none">
-        <div class="form-group">
-            <div class="filter__edit-label">
+        @if (Model.SupportsDateFilter)
+        {
+            <div class="form-group">
+                <div class="filter__edit-label">
                 @Html.LabelFor(m => from, Model.FilteredItemTypePlural + " from", new { aria_label = Model.FilteredItemTypePlural + " on or after date" })
             </div>
             <div class="filter__edit-control">
@@ -25,6 +27,7 @@
                 @Html.ValidationMessageFor(m => to, null, new { id = "to-date" })
             </div>
         </div>
+        }
         @if (Model.SupportsTeamFilter)
         {
             @if (Model.Teams.Any())
