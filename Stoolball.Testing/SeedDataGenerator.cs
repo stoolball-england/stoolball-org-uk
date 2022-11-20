@@ -823,7 +823,7 @@ namespace Stoolball.Testing
                 {
                     MatchId = matchInTournament.MatchId,
                     MatchName = matchInTournament.MatchName,
-                    Teams = new List<TeamInTournament> { testData.TournamentInThePastWithFullDetails.Teams.Single(x => x.Team.TeamId == testData.TeamWithFullDetails.TeamId), teamInTournament }
+                    Teams = new List<TeamInTournament> { testData.TournamentInThePastWithFullDetails.Teams.Single(x => x.Team?.TeamId == testData.TeamWithFullDetails.TeamId), teamInTournament }
                 });
             }
 
@@ -871,6 +871,8 @@ namespace Stoolball.Testing
             testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
             testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberKey;
 
+            CreateAMatchWhereSomeoneOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(testData);
+
             // Find any player who has a single identity, and associate them to a different member
             testData.Players.First(x => x.PlayerIdentities.Count == 1).MemberKey = testData.Members[1].memberKey;
 
@@ -892,6 +894,78 @@ namespace Stoolball.Testing
             testData.MatchLocations.AddRange(testData.Schools.SelectMany(x => x.Teams).SelectMany(x => x.MatchLocations).Distinct(new MatchLocationEqualityComparer()));
 
             return testData;
+        }
+
+        private void CreateAMatchWhereSomeoneOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(TestData testData)
+        {
+            // Find any player with a single identity on a team other than testData.TeamWithFullDetails, and give them a second identity on testData.TeamWithFullDetails.
+            // Important to use testData.TeamWithFullDetails because it's used in tests that filter by team.
+            // Create a match between the teams.
+            // Make sure the identity NOT on testData.TeamWithFullDetails has an award but no other part in the match.
+            // Make sure the identity that IS on testData.TeamWithFullDetails has batted and taken wickets, catches and run-outs in another match, so that they have averages, economy etc.
+            //
+            // When test queries filter by testData.TeamWithFullDetails they should NOT include the match where the player won an award for a different team in TotalMatches for the player.
+            var anyMatchInvolvingTeamWithFullDetails = testData.Matches.First(x => x.Teams.Select(t => t.Team!.TeamId).Contains(testData.TeamWithFullDetails!.TeamId));
+
+            var player = testData.Players.First(x => x.PlayerIdentities.Count == 1 && x.PlayerIdentities[0].Team!.TeamId != testData.TeamWithFullDetails!.TeamId);
+            var newPlayerIdentity = new PlayerIdentity
+            {
+                PlayerIdentityId = Guid.NewGuid(),
+                Player = player,
+                PlayerIdentityName = "Award winner",
+                Team = testData.TeamWithFullDetails,
+                FirstPlayed = anyMatchInvolvingTeamWithFullDetails.StartTime,
+                LastPlayed = anyMatchInvolvingTeamWithFullDetails.StartTime
+            };
+            player.PlayerIdentities.Add(newPlayerIdentity);
+            testData.PlayerIdentities.Add(newPlayerIdentity);
+
+            var battingInningsForTeamWithFullDetails = anyMatchInvolvingTeamWithFullDetails.MatchInnings.First(x => x.BattingTeam!.Team!.TeamId == testData.TeamWithFullDetails!.TeamId);
+            battingInningsForTeamWithFullDetails.PlayerInnings.Add(new PlayerInnings
+            {
+                PlayerInningsId = Guid.NewGuid(),
+                Batter = newPlayerIdentity,
+                DismissalType = DismissalType.Bowled,
+                RunsScored = 40,
+                BallsFaced = 36
+            });
+            var bowlingInningsForTeamWithFullDetails = anyMatchInvolvingTeamWithFullDetails.MatchInnings.First(x => x.BowlingTeam!.Team!.TeamId == testData.TeamWithFullDetails!.TeamId);
+            bowlingInningsForTeamWithFullDetails.PlayerInnings.Add(new PlayerInnings
+            {
+                PlayerInningsId = Guid.NewGuid(),
+                Batter = bowlingInningsForTeamWithFullDetails.PlayerInnings.First().Batter,
+                DismissalType = DismissalType.CaughtAndBowled,
+                Bowler = newPlayerIdentity
+            });
+            bowlingInningsForTeamWithFullDetails.PlayerInnings.Add(new PlayerInnings
+            {
+                PlayerInningsId = Guid.NewGuid(),
+                Batter = bowlingInningsForTeamWithFullDetails.PlayerInnings.First().Batter,
+                DismissalType = DismissalType.RunOut,
+                DismissedBy = newPlayerIdentity
+            });
+            bowlingInningsForTeamWithFullDetails.OversBowled.Add(new Over
+            {
+                OverId = Guid.NewGuid(),
+                OverSet = bowlingInningsForTeamWithFullDetails.OverSets.First(),
+                Bowler = newPlayerIdentity,
+                BallsBowled = 8,
+                RunsConceded = 10
+            });
+            bowlingInningsForTeamWithFullDetails.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(bowlingInningsForTeamWithFullDetails);
+
+            var teamA = player.PlayerIdentities[0].Team;
+            var teamB = testData.TeamWithFullDetails;
+            var matchBetweenTheTeams = CreateMatchBetween(teamA!, new List<PlayerIdentity>(), teamB!, new List<PlayerIdentity>(), FiftyFiftyChance());
+            matchBetweenTheTeams.MatchLocation = null;
+            matchBetweenTheTeams.Season = null;
+            testData.Matches.Add(matchBetweenTheTeams);
+            matchBetweenTheTeams.Awards.Add(new MatchAward
+            {
+                AwardedToId = Guid.NewGuid(),
+                Award = _playerOfTheMatch,
+                PlayerIdentity = player.PlayerIdentities[0]
+            });
         }
 
         private void CreateSchoolTeamsForSchools(List<School> schools, Func<Faker<Team>> teamFakerMaker, Func<Faker<MatchLocation>> locationFakerMaker)
