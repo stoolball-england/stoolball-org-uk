@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
+using Stoolball.Data.Abstractions;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Security;
@@ -25,12 +25,12 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IMatchLocationRepository _matchLocationRepository;
         private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
-        private readonly IListingCacheClearer<MatchLocation> _cacheClearer;
+        private readonly IListingCacheInvalidator<MatchLocation> _cacheClearer;
 
         public EditMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchLocationDataSource matchLocationDataSource, IMatchLocationRepository matchLocationRepository,
-            IAuthorizationPolicy<MatchLocation> authorizationPolicy, IListingCacheClearer<MatchLocation> cacheClearer)
+            IAuthorizationPolicy<MatchLocation> authorizationPolicy, IListingCacheInvalidator<MatchLocation> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -59,7 +59,7 @@ namespace Stoolball.Web.MatchLocations
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedMatchLocation = await _matchLocationRepository.UpdateMatchLocation(location, currentMember.Key, currentMember.Name);
-                _cacheClearer.ClearCache();
+                _cacheClearer.InvalidateCache();
 
                 return Redirect(updatedMatchLocation.MatchLocationRoute + "/edit");
             }

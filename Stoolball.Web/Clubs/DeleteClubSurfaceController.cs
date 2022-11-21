@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Clubs;
+using Stoolball.Data.Abstractions;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
@@ -25,12 +25,12 @@ namespace Stoolball.Web.Clubs
         private readonly IClubDataSource _clubDataSource;
         private readonly IClubRepository _clubRepository;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
-        private readonly IListingCacheClearer<Team> _cacheClearer;
+        private readonly IListingCacheInvalidator<Team> _cacheClearer;
 
         public DeleteClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IClubDataSource clubDataSource, IClubRepository clubRepository, IAuthorizationPolicy<Club> authorizationPolicy,
-            IListingCacheClearer<Team> cacheClearer)
+            IListingCacheInvalidator<Team> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -67,7 +67,7 @@ namespace Stoolball.Web.Clubs
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _clubRepository.DeleteClub(viewModel.Club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _cacheClearer.ClearCache();
+                _cacheClearer.InvalidateCache();
                 viewModel.Deleted = true;
             }
 

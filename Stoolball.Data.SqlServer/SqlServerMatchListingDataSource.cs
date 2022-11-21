@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;

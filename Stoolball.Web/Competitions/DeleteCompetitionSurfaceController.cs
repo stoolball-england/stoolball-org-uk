@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
@@ -30,13 +30,13 @@ namespace Stoolball.Web.Competitions
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly ITeamDataSource _teamDataSource;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
-        private readonly IListingCacheClearer<Competition> _competitionListingCacheClearer;
-        private readonly IMatchListingCacheClearer _matchListingCacheClearer;
+        private readonly IListingCacheInvalidator<Competition> _competitionListingCacheClearer;
+        private readonly IMatchListingCacheInvalidator _matchListingCacheClearer;
 
         public DeleteCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, ICompetitionDataSource competitionDataSource,
             ICompetitionRepository competitionRepository, IMatchListingDataSource matchDataSource, ITeamDataSource teamDataSource, IAuthorizationPolicy<Competition> authorizationPolicy,
-            IListingCacheClearer<Competition> competitionListingCacheClearer, IMatchListingCacheClearer matchListingCacheClearer)
+            IListingCacheInvalidator<Competition> competitionListingCacheClearer, IMatchListingCacheInvalidator matchListingCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -76,8 +76,8 @@ namespace Stoolball.Web.Competitions
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _competitionRepository.DeleteCompetition(viewModel.Competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _competitionListingCacheClearer.ClearCache();
-                foreach (var season in viewModel.Competition.Seasons) { _matchListingCacheClearer.ClearCacheForSeason(season.SeasonId!.Value); }
+                _competitionListingCacheClearer.InvalidateCache();
+                foreach (var season in viewModel.Competition.Seasons) { _matchListingCacheClearer.InvalidateCacheForSeason(season.SeasonId!.Value); }
                 viewModel.Deleted = true;
             }
             else

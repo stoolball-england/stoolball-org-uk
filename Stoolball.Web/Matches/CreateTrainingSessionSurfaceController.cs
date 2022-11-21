@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
@@ -31,12 +32,12 @@ namespace Stoolball.Web.Matches
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
         private readonly IEditMatchHelper _editMatchHelper;
         private readonly IMatchValidator _matchValidator;
-        private readonly IMatchListingCacheClearer _cacheClearer;
+        private readonly IMatchListingCacheInvalidator _cacheClearer;
 
         public CreateTrainingSessionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchRepository matchRepository, ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource,
-            ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator, IMatchListingCacheClearer cacheClearer)
+            ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator, IMatchListingCacheInvalidator cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -95,7 +96,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheForMatch(createdMatch).ConfigureAwait(false);
+                await _cacheClearer.InvalidateCacheForMatch(createdMatch).ConfigureAwait(false);
 
                 if (Request.Form["AddAnother"].Any())
                 {

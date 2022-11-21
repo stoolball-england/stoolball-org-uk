@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Comments;
 using Stoolball.Competitions;
-using Stoolball.Data.Cache;
+using Stoolball.Data.Abstractions;
+using Stoolball.Data.MemoryCache;
 using Stoolball.Data.SqlServer;
 using Stoolball.Dates;
 using Stoolball.Email;
@@ -193,11 +193,11 @@ namespace Stoolball.Web
             // Caching
             services.AddMemoryCache();
             services.AddTransient<IReadThroughCache, ReadThroughCache>();
-            services.AddTransient<IPlayerCacheClearer, PlayerCacheClearer>();
-            services.AddTransient<IMatchListingCacheClearer, MatchListingCacheClearer>();
-            services.AddTransient<IListingCacheClearer<Competition>, CompetitionListingCacheClearer>();
-            services.AddTransient<IListingCacheClearer<MatchLocation>, MatchLocationListingCacheClearer>();
-            services.AddTransient<IListingCacheClearer<Team>, TeamListingCacheClearer>();
+            services.AddTransient<IPlayerCacheInvalidator, PlayerCacheInvalidator>();
+            services.AddTransient<IMatchListingCacheInvalidator, MatchListingCacheInvalidator>();
+            services.AddTransient<IListingCacheInvalidator<Competition>, CompetitionListingCacheInvalidator>();
+            services.AddTransient<IListingCacheInvalidator<MatchLocation>, MatchLocationListingCacheInvalidator>();
+            services.AddTransient<IListingCacheInvalidator<Team>, TeamListingCacheInvalidator>();
 
             // Repositories
             services.AddTransient<IAuditRepository, SqlServerAuditRepository>();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Stoolball.Data.Abstractions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -32,13 +33,13 @@ namespace Stoolball.Web.Matches
         private readonly IMatchInningsUrlParser _matchInningsUrlParser;
         private readonly IPlayerInningsScaffolder _playerInningsScaffolder;
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
-        private readonly IPlayerCacheClearer _playerCacheClearer;
+        private readonly IPlayerCacheInvalidator _playerCacheClearer;
 
         public EditBattingScorecardSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchDataSource matchDataSource, IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter,
             IMatchInningsUrlParser matchInningsUrlParser, IPlayerInningsScaffolder playerInningsScaffolder, IBowlingFiguresCalculator bowlingFiguresCalculator,
-            IPlayerCacheClearer playerCacheClearer)
+            IPlayerCacheInvalidator playerCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -150,7 +151,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _matchRepository.UpdateBattingScorecard(model.Match, model.CurrentInnings.MatchInnings.MatchInningsId!.Value, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _playerCacheClearer.ClearCacheForTeams(model.CurrentInnings.MatchInnings.BattingTeam.Team, model.CurrentInnings.MatchInnings.BowlingTeam.Team);
+                _playerCacheClearer.InvalidateCacheForTeams(model.CurrentInnings.MatchInnings.BattingTeam.Team, model.CurrentInnings.MatchInnings.BowlingTeam.Team);
 
                 // redirect to the bowling scorecard for this innings
                 return Redirect($"{model.Match.MatchRoute}/edit/innings/{model.InningsOrderInMatch!.Value}/bowling");

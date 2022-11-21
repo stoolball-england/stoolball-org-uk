@@ -7,6 +7,7 @@ using Dapper;
 using Humanizer;
 using Moq;
 using Newtonsoft.Json;
+using Stoolball.Data.Abstractions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Routing;
@@ -29,7 +30,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         private readonly Mock<IRouteGenerator> _routeGenerator = new();
         private readonly Mock<IBestRouteSelector> _routeSelector = new();
         private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
-        private readonly Mock<IPlayerCacheClearer> _playerCacheClearer = new();
+        private readonly Mock<IPlayerCacheInvalidator> _playerCacheClearer = new();
 
         public SqlServerPlayerRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {

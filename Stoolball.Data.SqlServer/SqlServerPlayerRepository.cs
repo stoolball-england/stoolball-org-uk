@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Newtonsoft.Json;
+using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Statistics;
@@ -27,7 +28,7 @@ namespace Stoolball.Data.SqlServer
         private readonly IStoolballEntityCopier _copier;
         private readonly IPlayerNameFormatter _playerNameFormatter;
         private readonly IBestRouteSelector _bestRouteSelector;
-        private readonly IPlayerCacheClearer _playerCacheClearer;
+        private readonly IPlayerCacheInvalidator _playerCacheClearer;
         internal const string PROCESS_ASYNC_STORED_PROCEDURE = "usp_Link_Player_To_Member_Async_Update";
         internal const string LOG_TEMPLATE_WARN_SQL_TIMEOUT = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " running. Caught SQL Timeout. {allowedRetries} retries remaining";
         internal const string LOG_TEMPLATE_INFO_PLAYERS_AFFECTED = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " running. Players affected: {affectedRoutes}";
@@ -43,7 +44,7 @@ namespace Stoolball.Data.SqlServer
             IStoolballEntityCopier copier,
             IPlayerNameFormatter playerNameFormatter,
             IBestRouteSelector bestRouteSelector,
-            IPlayerCacheClearer playerCacheClearer)
+            IPlayerCacheInvalidator playerCacheClearer)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _dapperWrapper = dapperWrapper ?? throw new ArgumentNullException(nameof(dapperWrapper));
@@ -389,7 +390,7 @@ namespace Stoolball.Data.SqlServer
                         affectedRoutes = await _dapperWrapper.QueryAsync<string>("usp_Link_Player_To_Member_Async_Update", commandType: CommandType.StoredProcedure, connection: connection).ConfigureAwait(false);
                         foreach (var route in affectedRoutes)
                         {
-                            _playerCacheClearer.ClearCacheForPlayer(new Player { PlayerRoute = route });
+                            _playerCacheClearer.InvalidateCacheForPlayer(new Player { PlayerRoute = route });
                         }
                         _logger.Info(LOG_TEMPLATE_INFO_PLAYERS_AFFECTED, affectedRoutes.Any() ? string.Join<string>(", ", affectedRoutes) : "None");
                     }

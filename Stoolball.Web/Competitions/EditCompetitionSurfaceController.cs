@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Competitions.Models;
@@ -27,11 +27,11 @@ namespace Stoolball.Web.Competitions
         private readonly ICompetitionRepository _competitionRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
         private readonly IPostSaveRedirector _postSaveRedirector;
-        private readonly IListingCacheClearer<Competition> _cacheClearer;
+        private readonly IListingCacheInvalidator<Competition> _cacheClearer;
 
         public EditCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, ICompetitionDataSource competitionDataSource,
-            ICompetitionRepository competitionRepository, IAuthorizationPolicy<Competition> authorizationPolicy, IPostSaveRedirector postSaveRedirector, IListingCacheClearer<Competition> cacheClearer)
+            ICompetitionRepository competitionRepository, IAuthorizationPolicy<Competition> authorizationPolicy, IPostSaveRedirector postSaveRedirector, IListingCacheInvalidator<Competition> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -68,7 +68,7 @@ namespace Stoolball.Web.Competitions
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedCompetition = await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _cacheClearer.ClearCache();
+                _cacheClearer.InvalidateCache();
 
                 return _postSaveRedirector.WorkOutRedirect(competition.CompetitionRoute, updatedCompetition.CompetitionRoute, "/edit", Request.Form["UrlReferrer"]);
             }

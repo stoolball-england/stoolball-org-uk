@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
@@ -28,12 +29,12 @@ namespace Stoolball.Web.Competitions
         private readonly ISeasonRepository _seasonRepository;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
-        private readonly IMatchListingCacheClearer _cacheClearer;
+        private readonly IMatchListingCacheInvalidator _cacheClearer;
 
         public DeleteSeasonSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             ISeasonDataSource seasonDataSource, ISeasonRepository seasonRepository, IMatchListingDataSource matchDataSource, IAuthorizationPolicy<Competition> authorizationPolicy,
-            IMatchListingCacheClearer cacheClearer)
+            IMatchListingCacheInvalidator cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -68,7 +69,7 @@ namespace Stoolball.Web.Competitions
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _seasonRepository.DeleteSeason(viewModel.Season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _cacheClearer.ClearCacheForSeason(viewModel.Season.SeasonId!.Value);
+                _cacheClearer.InvalidateCacheForSeason(viewModel.Season.SeasonId!.Value);
                 viewModel.Deleted = true;
             }
             else

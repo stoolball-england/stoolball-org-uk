@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
@@ -28,12 +29,12 @@ namespace Stoolball.Web.Matches
         private readonly ITeamDataSource _teamDataSource;
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IMatchValidator _matchValidator;
-        private readonly IMatchListingCacheClearer _cacheClearer;
+        private readonly IMatchListingCacheInvalidator _cacheClearer;
 
         public CreateTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             ITournamentRepository tournamentRepository, ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource,
-            IMatchValidator matchValidator, IMatchListingCacheClearer cacheClearer)
+            IMatchValidator matchValidator, IMatchListingCacheInvalidator cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -133,7 +134,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var createdTournament = await _tournamentRepository.CreateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheForTournament(createdTournament).ConfigureAwait(false);
+                await _cacheClearer.InvalidateCacheForTournament(createdTournament).ConfigureAwait(false);
 
                 return Redirect(createdTournament.TournamentRoute);
             }

@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Stoolball.Data.Abstractions\Stoolball.Data.Abstractions.csproj" />
     <ProjectReference Include="..\Stoolball\Stoolball.csproj" />
   </ItemGroup>
 

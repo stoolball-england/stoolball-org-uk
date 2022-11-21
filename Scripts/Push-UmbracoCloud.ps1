@@ -1,7 +1,7 @@
 $projectRoot = Resolve-Path "$PSScriptRoot\.."
 $cloudRoot = Resolve-Path "$projectRoot\.UmbracoCloud"
 
-$foldersToCopy = "Stoolball", "Stoolball.Data.SqlServer", "Stoolball.Data.Cache", "Stoolball.Data.UmbracoMigrations", "Stoolball.Web"
+$foldersToCopy = "Stoolball", "Stoolball.Data.SqlServer", "Stoolball.Data.Abstractions", "Stoolball.Data.MemoryCache", "Stoolball.Data.UmbracoMigrations", "Stoolball.Web"
 
 # Get the path to the Umbraco project from the .umbraco Umbraco Cloud config file
 $projectConfig = Get-Content $projectRoot/.umbraco

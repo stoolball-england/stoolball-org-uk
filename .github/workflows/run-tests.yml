@@ -92,6 +92,35 @@ jobs:
         name: stoolball-unit-tests
         path: unit-tests.cobertura.xml
 
+  stoolball-cache-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore ./Stoolball.Data.MemoryCache.UnitTests/Stoolball.Data.MemoryCache.UnitTests.csproj
+
+    - name: Build unit tests
+      run: dotnet build --no-restore ./Stoolball.Data.MemoryCache.UnitTests/Stoolball.Data.MemoryCache.UnitTests.csproj
+
+    - name: Run Stoolball.Data.MemoryCache.UnitTests 
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings ./Stoolball.Data.MemoryCache.UnitTests/coverlet.runsettings ./Stoolball.Data.MemoryCache.UnitTests/Stoolball.Data.MemoryCache.UnitTests.csproj
+
+    - name: Move coverage to root
+      shell: pwsh
+      run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./cache-unit-tests.cobertura.xml }
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: stoolball-cache-unit-tests
+        path: cache-unit-tests.cobertura.xml
+
   stoolball-sql-unit-tests:
     runs-on: ubuntu-latest
     steps:
@@ -178,6 +207,11 @@ jobs:
       with:
         name: stoolball-sql-unit-tests
 
+    - name: Download Stoolball.Data.MemoryCache.UnitTests results
+      uses: actions/download-artifact@v2
+      with:
+        name: stoolball-cache-unit-tests
+
     - name: Download Stoolball.Data.SqlServer.IntegrationTests results
       uses: actions/download-artifact@v2
       with:
@@ -194,4 +228,4 @@ jobs:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       with:
         project-token: ${{ env.CODACY_PROJECT_TOKEN }}
-        coverage-reports: unit-tests.cobertura.xml,integration-tests.cobertura.xml,web-unit-tests.cobertura.xml,web-js-tests.cobertura.xml,sql-unit-tests.cobertura.xml
+        coverage-reports: unit-tests.cobertura.xml,integration-tests.cobertura.xml,web-unit-tests.cobertura.xml,web-js-tests.cobertura.xml,sql-unit-tests.cobertura.xml,cache-unit-tests.cobertura.xml

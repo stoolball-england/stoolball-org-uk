@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -30,12 +31,12 @@ namespace Stoolball.Web.Matches
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IEditMatchHelper _editMatchHelper;
         private readonly IMatchValidator _matchValidator;
-        private readonly IMatchListingCacheClearer _cacheClearer;
+        private readonly IMatchListingCacheInvalidator _cacheClearer;
 
         public EditLeagueMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource, IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy,
-            IDateTimeFormatter dateTimeFormatter, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator, IMatchListingCacheClearer cacheClearer)
+            IDateTimeFormatter dateTimeFormatter, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator, IMatchListingCacheInvalidator cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -91,7 +92,7 @@ namespace Stoolball.Web.Matches
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheForMatch(beforeUpdate, updatedMatch).ConfigureAwait(false);
+                await _cacheClearer.InvalidateCacheForMatch(beforeUpdate, updatedMatch).ConfigureAwait(false);
 
                 return Redirect(updatedMatch.MatchRoute);
             }

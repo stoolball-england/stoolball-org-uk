@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.SqlServer", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.SqlServer.IntegrationTests", "Stoolball.Data.SqlServer.IntegrationTests\Stoolball.Data.SqlServer.IntegrationTests.csproj", "{6D674132-E075-4A6E-86E5-88771B6E3A25}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.Cache", "Stoolball.Data.Cache\Stoolball.Data.Cache.csproj", "{1C2F2523-9D88-4289-BB2B-22611AC50D81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.MemoryCache", "Stoolball.Data.MemoryCache\Stoolball.Data.MemoryCache.csproj", "{1C2F2523-9D88-4289-BB2B-22611AC50D81}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Testing", "Stoolball.Testing\Stoolball.Testing.csproj", "{B230B6CF-4FD3-4C44-8894-5ED789BFF191}"
 EndProject
@@ -27,7 +27,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.UmbracoMigra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Web.UnitTests", "Stoolball.Web.UnitTests\Stoolball.Web.UnitTests.csproj", "{AAE780D1-79EE-4324-90E4-22DFACAF3037}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Data.SqlServer.UnitTests", "Stoolball.Data.SqlServer.UnitTests\Stoolball.Data.SqlServer.UnitTests.csproj", "{C37A2E63-4731-40F7-8075-696ABFA5C482}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.SqlServer.UnitTests", "Stoolball.Data.SqlServer.UnitTests\Stoolball.Data.SqlServer.UnitTests.csproj", "{C37A2E63-4731-40F7-8075-696ABFA5C482}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.MemoryCache.UnitTests", "Stoolball.Data.MemoryCache.UnitTests\Stoolball.Data.MemoryCache.UnitTests.csproj", "{1596025F-51CA-44A2-B2A1-3E681093322A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Data.Abstractions", "Stoolball.Data.Abstractions\Stoolball.Data.Abstractions.csproj", "{DDEFB0BB-0F58-49EA-A07B-0FF6D20F78A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +79,14 @@ Global
 		{C37A2E63-4731-40F7-8075-696ABFA5C482}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C37A2E63-4731-40F7-8075-696ABFA5C482}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C37A2E63-4731-40F7-8075-696ABFA5C482}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1596025F-51CA-44A2-B2A1-3E681093322A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1596025F-51CA-44A2-B2A1-3E681093322A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1596025F-51CA-44A2-B2A1-3E681093322A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1596025F-51CA-44A2-B2A1-3E681093322A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDEFB0BB-0F58-49EA-A07B-0FF6D20F78A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDEFB0BB-0F58-49EA-A07B-0FF6D20F78A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDEFB0BB-0F58-49EA-A07B-0FF6D20F78A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDEFB0BB-0F58-49EA-A07B-0FF6D20F78A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

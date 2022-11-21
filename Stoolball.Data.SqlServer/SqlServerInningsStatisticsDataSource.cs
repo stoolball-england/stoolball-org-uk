@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
+using Stoolball.Data.Abstractions;
 using Stoolball.Statistics;
 
 namespace Stoolball.Data.SqlServer

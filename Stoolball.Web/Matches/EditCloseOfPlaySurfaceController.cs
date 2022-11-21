@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Awards;
+using Stoolball.Data.Abstractions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -30,13 +31,13 @@ namespace Stoolball.Web.Matches
         private readonly IMatchRepository _matchRepository;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
-        private readonly IMatchListingCacheClearer _matchListingCacheClearer;
-        private readonly IPlayerCacheClearer _playerCacheClearer;
+        private readonly IMatchListingCacheInvalidator _matchListingCacheClearer;
+        private readonly IPlayerCacheInvalidator _playerCacheClearer;
 
         public EditCloseOfPlaySurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchDataSource matchDataSource, IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter,
-            IMatchListingCacheClearer matchListingCacheClearer, IPlayerCacheClearer playerCacheClearer)
+            IMatchListingCacheInvalidator matchListingCacheClearer, IPlayerCacheInvalidator playerCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -98,8 +99,8 @@ namespace Stoolball.Web.Matches
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedMatch = await _matchRepository.UpdateCloseOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _matchListingCacheClearer.ClearCacheForMatch(beforeUpdate, updatedMatch).ConfigureAwait(false);
-                _playerCacheClearer.ClearCacheForTeams(model.Match.Teams.Select(x => x.Team).ToArray());
+                await _matchListingCacheClearer.InvalidateCacheForMatch(beforeUpdate, updatedMatch).ConfigureAwait(false);
+                _playerCacheClearer.InvalidateCacheForTeams(model.Match.Teams.Select(x => x.Team).ToArray());
 
                 return Redirect(updatedMatch.MatchRoute);
             }

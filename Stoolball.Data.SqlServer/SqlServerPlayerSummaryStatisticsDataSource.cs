@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Dapper;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 

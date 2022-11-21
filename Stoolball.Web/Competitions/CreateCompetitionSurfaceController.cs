@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Navigation;
 using Stoolball.Routing;
 using Stoolball.Security;
@@ -28,11 +28,11 @@ namespace Stoolball.Web.Competitions
         private readonly ICompetitionRepository _competitionRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
         private readonly IRouteGenerator _routeGenerator;
-        private readonly IListingCacheClearer<Competition> _cacheClearer;
+        private readonly IListingCacheInvalidator<Competition> _cacheClearer;
 
         public CreateCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, ICompetitionRepository seasonRepository,
-            IAuthorizationPolicy<Competition> authorizationPolicy, IRouteGenerator routeGenerator, IListingCacheClearer<Competition> cacheClearer)
+            IAuthorizationPolicy<Competition> authorizationPolicy, IRouteGenerator routeGenerator, IListingCacheInvalidator<Competition> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -95,7 +95,7 @@ namespace Stoolball.Web.Competitions
 
                 // Create the competition
                 var createdCompetition = await _competitionRepository.CreateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _cacheClearer.ClearCache();
+                _cacheClearer.InvalidateCache();
 
                 // Redirect to the competition
                 return Redirect(createdCompetition.CompetitionRoute);

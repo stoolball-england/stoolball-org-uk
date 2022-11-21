@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Clubs;
+using Stoolball.Data.Abstractions;
 using Stoolball.Navigation;
 using Stoolball.Routing;
 using Stoolball.Security;
@@ -29,12 +29,12 @@ namespace Stoolball.Web.Clubs
         private readonly IClubRepository _clubRepository;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
-        private readonly IListingCacheClearer<Team> _cacheClearer;
+        private readonly IListingCacheInvalidator<Team> _cacheClearer;
 
         public CreateClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IClubRepository clubRepository, IRouteGenerator routeGenerator, IAuthorizationPolicy<Club> authorizationPolicy,
-            IListingCacheClearer<Team> cacheClearer)
+            IListingCacheInvalidator<Team> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -99,7 +99,7 @@ namespace Stoolball.Web.Clubs
                 // Create the club
                 var createdClub = await _clubRepository.CreateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                _cacheClearer.ClearCache();
+                _cacheClearer.InvalidateCache();
 
                 // Redirect to the club
                 return Redirect(createdClub.ClubRoute);

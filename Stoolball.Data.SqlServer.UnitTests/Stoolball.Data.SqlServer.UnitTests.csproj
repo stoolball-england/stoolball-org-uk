@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Stoolball.Data.Abstractions\Stoolball.Data.Abstractions.csproj" />
     <ProjectReference Include="..\Stoolball.Data.SqlServer\Stoolball.Data.SqlServer.csproj" />
   </ItemGroup>
 

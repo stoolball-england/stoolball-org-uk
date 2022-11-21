@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Stoolball.Data.Abstractions;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;

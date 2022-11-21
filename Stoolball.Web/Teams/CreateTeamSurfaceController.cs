@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
+using Stoolball.Data.Abstractions;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Security;
@@ -26,12 +26,12 @@ namespace Stoolball.Web.Teams
         private readonly IMemberManager _memberManager;
         private readonly ITeamRepository _teamRepository;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
-        private readonly IListingCacheClearer<Team> _teamListingCacheClearer;
-        private readonly IListingCacheClearer<MatchLocation> _matchLocationCacheClearer;
+        private readonly IListingCacheInvalidator<Team> _teamListingCacheClearer;
+        private readonly IListingCacheInvalidator<MatchLocation> _matchLocationCacheClearer;
 
         public CreateTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
-            ITeamRepository teamRepository, IAuthorizationPolicy<Team> authorizationPolicy, IListingCacheClearer<Team> teamListingCacheClearer, IListingCacheClearer<MatchLocation> matchLocationCacheClearer)
+            ITeamRepository teamRepository, IAuthorizationPolicy<Team> authorizationPolicy, IListingCacheInvalidator<Team> teamListingCacheClearer, IListingCacheInvalidator<MatchLocation> matchLocationCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -83,8 +83,8 @@ namespace Stoolball.Web.Teams
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var createdTeam = await _teamRepository.CreateTeam(team, currentMember.Key, (await _memberManager.GetCurrentMemberAsync()).UserName, currentMember.Name).ConfigureAwait(false);
 
-                _teamListingCacheClearer.ClearCache();
-                _matchLocationCacheClearer.ClearCache(); // Because if a match location gets its first team, it should start appearing in listings
+                _teamListingCacheClearer.InvalidateCache();
+                _matchLocationCacheClearer.InvalidateCache(); // Because if a match location gets its first team, it should start appearing in listings
 
                 // Redirect to the team
                 return Redirect(createdTeam.TeamRoute);

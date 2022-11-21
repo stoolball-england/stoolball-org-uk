@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Stoolball.Data.Abstractions;
 using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
 using Stoolball.Web.Statistics.Models;
@@ -21,7 +22,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IMemberManager> _memberManager = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
         private readonly Mock<IPlayerRepository> _playerRepository = new();
-        private readonly Mock<IPlayerCacheClearer> _cacheClearer = new();
+        private readonly Mock<IPlayerCacheInvalidator> _cacheClearer = new();
 
         private LinkedPlayersForMemberSurfaceController CreateController()
         {
@@ -133,7 +134,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.UpdateLinkedPlayers(formData);
 
-                _cacheClearer.Verify(x => x.ClearCacheForPlayer(player), Times.Never);
+                _cacheClearer.Verify(x => x.InvalidateCacheForPlayer(player), Times.Never);
             }
         }
 
@@ -154,7 +155,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.UpdateLinkedPlayers(formData);
 
-                _cacheClearer.Verify(x => x.ClearCacheForPlayer(player), Times.Once);
+                _cacheClearer.Verify(x => x.InvalidateCacheForPlayer(player), Times.Once);
             }
         }
 

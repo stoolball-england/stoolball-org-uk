@@ -182,7 +182,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Stoolball.Data.Cache\Stoolball.Data.Cache.csproj" />
+    <ProjectReference Include="..\Stoolball.Data.MemoryCache\Stoolball.Data.MemoryCache.csproj" />
     <ProjectReference Include="..\Stoolball.Data.UmbracoMigrations\Stoolball.Data.UmbracoMigrations.csproj" />
     <ProjectReference Include="..\Stoolball\Stoolball.csproj" />
   </ItemGroup>

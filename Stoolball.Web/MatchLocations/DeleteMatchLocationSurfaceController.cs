@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
@@ -28,13 +28,13 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationRepository _matchLocationRepository;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
-        private readonly IListingCacheClearer<MatchLocation> _matchLocationCacheClearer;
-        private readonly IMatchListingCacheClearer _matchListingCacheClearer;
+        private readonly IListingCacheInvalidator<MatchLocation> _matchLocationCacheClearer;
+        private readonly IMatchListingCacheInvalidator _matchListingCacheClearer;
 
         public DeleteMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory,
             ServiceContext serviceContext, AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IMatchLocationDataSource matchLocationDataSource, IMatchLocationRepository matchLocationRepository, IMatchListingDataSource matchDataSource,
-            IAuthorizationPolicy<MatchLocation> authorizationPolicy, IListingCacheClearer<MatchLocation> matchLocationCacheClearer, IMatchListingCacheClearer matchListingCacheClearer)
+            IAuthorizationPolicy<MatchLocation> authorizationPolicy, IListingCacheInvalidator<MatchLocation> matchLocationCacheClearer, IMatchListingCacheInvalidator matchListingCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -73,8 +73,8 @@ namespace Stoolball.Web.MatchLocations
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _matchLocationRepository.DeleteMatchLocation(viewModel.MatchLocation, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _matchLocationCacheClearer.ClearCache();
-                _matchListingCacheClearer.ClearCacheForMatchLocation(viewModel.MatchLocation.MatchLocationId!.Value);
+                _matchLocationCacheClearer.InvalidateCache();
+                _matchListingCacheClearer.InvalidateCacheForMatchLocation(viewModel.MatchLocation.MatchLocationId!.Value);
                 viewModel.Deleted = true;
             }
             else

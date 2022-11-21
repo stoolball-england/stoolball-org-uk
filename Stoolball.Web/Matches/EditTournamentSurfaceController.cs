@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Stoolball.Data.Abstractions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -25,7 +26,7 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMemberManager _memberManager;
         private readonly ITournamentDataSource _tournamentDataSource;
-        private readonly IMatchListingCacheClearer _cacheClearer;
+        private readonly IMatchListingCacheInvalidator _cacheClearer;
         private readonly ITournamentRepository _tournamentRepository;
         private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
@@ -33,7 +34,7 @@ namespace Stoolball.Web.Matches
 
         public EditTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
-            ITournamentDataSource tournamentDataSource, ITournamentRepository tournamentRepository, IMatchListingCacheClearer cacheClearer,
+            ITournamentDataSource tournamentDataSource, ITournamentRepository tournamentRepository, IMatchListingCacheInvalidator cacheClearer,
             IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchValidator matchValidator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
@@ -127,7 +128,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedTournament = await _tournamentRepository.UpdateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                await _cacheClearer.ClearCacheForTournament(beforeUpdate, updatedTournament).ConfigureAwait(false);
+                await _cacheClearer.InvalidateCacheForTournament(beforeUpdate, updatedTournament).ConfigureAwait(false);
 
                 // Redirect to the tournament
                 return Redirect(updatedTournament.TournamentRoute);

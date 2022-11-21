@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Caching;
 using Stoolball.Clubs;
+using Stoolball.Data.Abstractions;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
@@ -26,12 +26,12 @@ namespace Stoolball.Web.Clubs
         private readonly IClubDataSource _clubDataSource;
         private readonly IClubRepository _clubRepository;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
-        private readonly IListingCacheClearer<Team> _cacheClearer;
+        private readonly IListingCacheInvalidator<Team> _cacheClearer;
 
         public EditClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             IClubDataSource clubDataSource, IClubRepository clubRepository, IAuthorizationPolicy<Club> authorizationPolicy,
-            IListingCacheClearer<Team> cacheClearer)
+            IListingCacheInvalidator<Team> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -69,7 +69,7 @@ namespace Stoolball.Web.Clubs
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedClub = await _clubRepository.UpdateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                _cacheClearer.ClearCache();
+                _cacheClearer.InvalidateCache();
 
                 // redirect back to the club actions page that led here
                 return Redirect(updatedClub.ClubRoute + "/edit");

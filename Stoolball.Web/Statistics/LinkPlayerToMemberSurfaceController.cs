@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Stoolball.Data.Abstractions;
 using Stoolball.Statistics;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Cache;
@@ -20,14 +21,14 @@ namespace Stoolball.Web.Statistics
         private readonly IPlayerSummaryViewModelFactory _viewModelFactory;
         private readonly IMemberManager _memberManager;
         private readonly IPlayerRepository _playerRepository;
-        private readonly IPlayerCacheClearer _playerCacheClearer;
+        private readonly IPlayerCacheInvalidator _playerCacheClearer;
 
         public LinkPlayerToMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory,
             ServiceContext serviceContext, AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider,
             IPlayerSummaryViewModelFactory viewModelFactory,
             IMemberManager memberManager,
             IPlayerRepository playerRepository,
-            IPlayerCacheClearer playerCacheClearer)
+            IPlayerCacheInvalidator playerCacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
@@ -58,8 +59,8 @@ namespace Stoolball.Web.Statistics
             var updatedPlayer = await _playerRepository.LinkPlayerToMemberAccount(model.Player, currentMember.Key, currentMember.Name);
 
             // Clear the cache for both the old player route and the new, so that the obsolete player route redirects rather than returning a cached result
-            _playerCacheClearer.ClearCacheForPlayer(model.Player);
-            _playerCacheClearer.ClearCacheForPlayer(updatedPlayer);
+            _playerCacheClearer.InvalidateCacheForPlayer(model.Player);
+            _playerCacheClearer.InvalidateCacheForPlayer(updatedPlayer);
 
             model.Player = updatedPlayer;
 

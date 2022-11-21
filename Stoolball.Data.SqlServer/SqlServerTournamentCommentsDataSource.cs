@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Comments;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 
 namespace Stoolball.Data.SqlServer
