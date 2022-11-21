@@ -21,11 +21,13 @@ namespace Stoolball.UnitTests.Statistics
 
         public MatchFixture()
         {
+            var randomiser = new Randomiser(new Random());
             var bowlingFiguresCalculator = new BowlingFiguresCalculator(_oversHelper);
             var playerIdentityFinder = new PlayerIdentityFinder();
             var matchFinder = new MatchFinder();
-            var seedDataGenerator = new SeedDataGenerator(_oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory());
+            var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
+            var seedDataGenerator = new SeedDataGenerator(randomiser, _oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
+                new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory(), playerOfTheMatchAward);
 
             var homeTeam = new TeamInMatch
             {

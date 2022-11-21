@@ -13,27 +13,29 @@ using Stoolball.Schools;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing.Fakers;
+using Stoolball.Testing.MatchDataProviders;
 
 namespace Stoolball.Testing
 {
     internal class SeedDataGenerator
     {
-        private readonly Random _randomiser = new Random();
+        private readonly Randomiser _randomiser;
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly IPlayerIdentityFinder _playerIdentityFinder;
         private readonly IMatchFinder _matchFinder;
+        private readonly MatchFactory _matchFactory;
         private readonly IFakerFactory<Team> _teamFakerFactory;
         private readonly IFakerFactory<MatchLocation> _matchLocationFakerFactory;
         private readonly IFakerFactory<School> _schoolFakerFactory;
+        private readonly Award _playerOfTheMatchAward;
         private readonly IOversHelper _oversHelper;
         private List<(Team team, List<PlayerIdentity> identities)> _teams = new();
-        private List<MatchLocation> _matchLocations = new List<MatchLocation>();
-        private List<Competition> _competitions = new List<Competition>();
-        private readonly Award _playerOfTheMatch = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
 
-        internal SeedDataGenerator(IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
-            IFakerFactory<Team> teamFakerFactory, IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory)
+        internal SeedDataGenerator(Randomiser randomiser, IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder,
+            IMatchFinder matchFinder, IFakerFactory<Team> teamFakerFactory, IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory,
+            Award playerOfTheMatchAward)
         {
+            _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
@@ -41,6 +43,8 @@ namespace Stoolball.Testing
             _teamFakerFactory = teamFakerFactory ?? throw new ArgumentNullException(nameof(teamFakerFactory));
             _matchLocationFakerFactory = matchLocationFakerFactory ?? throw new ArgumentNullException(nameof(matchLocationFakerFactory));
             _schoolFakerFactory = schoolFakerFactory ?? throw new ArgumentNullException(nameof(schoolFakerFactory));
+            _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
+            _matchFactory = new MatchFactory(_randomiser, _playerOfTheMatchAward);
         }
 
         internal Club CreateClubWithMinimalDetails()
@@ -287,22 +291,6 @@ namespace Stoolball.Testing
             return matchLocation;
         }
 
-        internal Match CreateMatchInThePastWithMinimalDetails()
-        {
-            return new Match
-            {
-                MatchId = Guid.NewGuid(),
-                MatchName = "To be confirmed vs To be confirmed",
-                MatchType = MatchType.KnockoutMatch,
-                MatchInnings = new List<MatchInnings>
-                {
-                    new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 1 },
-                    new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 2 }
-                },
-                MatchRoute = "/matches/minimal-match-" + Guid.NewGuid(),
-                StartTime = new DateTimeOffset(2020, 6, 6, 18, 30, 0, TimeSpan.FromHours(1))
-            };
-        }
 
         internal Match CreateMatchInThePastWithFullDetails(List<(Guid memberId, string memberName)> members)
         {
@@ -390,7 +378,7 @@ namespace Stoolball.Testing
                     },
                     new MatchAward {
                         AwardedToId = Guid.NewGuid(),
-                        Award = _playerOfTheMatch,
+                        Award = _playerOfTheMatchAward,
                         PlayerIdentity = homePlayers[2],
                         Reason = "Taking wickets"
                     }
@@ -754,8 +742,38 @@ namespace Stoolball.Testing
             var testData = new TestData();
             var playerComparer = new PlayerEqualityComparer();
 
+            _teams = GenerateTeams();
+
+            // Create a pool of competitions
+            for (var i = 0; i < 10; i++)
+            {
+                testData.Competitions.Add(IsEven(i) ? CreateCompetitionWithFullDetails() : CreateCompetitionWithMinimalDetails());
+                if (IsEven(i))
+                {
+                    var team1 = _teams[_randomiser.PositiveIntegerLessThan(_teams.Count)].team;
+                    Team team2;
+                    do
+                    {
+                        team2 = _teams[_randomiser.PositiveIntegerLessThan(_teams.Count)].team;
+                    }
+                    while (team2.TeamId == team1.TeamId);
+                    var season = CreateSeasonWithFullDetails(testData.Competitions[testData.Competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i, team1, team2);
+                    testData.Competitions[testData.Competitions.Count - 1].Seasons.Add(season);
+                }
+                else
+                {
+                    testData.Competitions[testData.Competitions.Count - 1].Seasons.Add(CreateSeasonWithMinimalDetails(testData.Competitions[testData.Competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i));
+                }
+            }
+
+            // Create a pool of match locations 
+            for (var i = 0; i < 10; i++)
+            {
+                testData.MatchLocations.Add(IsEven(i) ? CreateMatchLocationWithFullDetails() : CreateMatchLocationWithMinimalDetails());
+            }
+
             // Create match and tournament data
-            testData.Matches = GenerateMatchData();
+            testData.Matches = GenerateMatchData(testData, _teams);
             testData.MatchInThePastWithFullDetails = testData.Matches.First(x =>
                     x.StartTime < DateTime.UtcNow &&
                     x.Teams.Any() &&
@@ -810,7 +828,7 @@ namespace Stoolball.Testing
             foreach (var teamInTournament in testData.TournamentInThePastWithFullDetails.Teams)
             {
                 // Create a tournament match where the fully-detailed team plays everyone including themselves
-                var matchInTournament = CreateMatchBetween(testData.TeamWithFullDetails, new List<PlayerIdentity>(), teamInTournament.Team, new List<PlayerIdentity>(), true);
+                var matchInTournament = _matchFactory.CreateMatchBetween(testData.TeamWithFullDetails, new List<PlayerIdentity>(), teamInTournament.Team, new List<PlayerIdentity>(), true, testData);
                 matchInTournament.Tournament = testData.TournamentInThePastWithFullDetails;
                 matchInTournament.OrderInTournament = matchOrderInTournament;
                 matchInTournament.StartTime = testData.TournamentInThePastWithFullDetails.StartTime.AddMinutes((matchOrderInTournament - 1) * 45);
@@ -868,10 +886,26 @@ namespace Stoolball.Testing
                 .Select(x => x.Bowler.Player)
                 .First();
             testData.BowlerWithMultipleIdentities.PlayerIdentities.Clear();
-            testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
+            testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player?.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
             testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberKey;
 
-            CreateAMatchWhereSomeoneOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(testData);
+            var matchProviders = new BaseMatchDataProvider[]{
+                new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward)
+            };
+            foreach (var provider in matchProviders)
+            {
+                var matchesFromProvider = provider.CreateMatches(testData);
+                foreach (var match in matchesFromProvider)
+                {
+                    testData.Matches.Add(match);
+
+                    var newPlayerIdentities = _playerIdentityFinder.PlayerIdentitiesInMatch(match).Where(x => !testData.PlayerIdentities.Select(pi => pi.PlayerIdentityId).Contains(x.PlayerIdentityId)).ToList();
+                    if (newPlayerIdentities.Any()) { testData.PlayerIdentities.AddRange(newPlayerIdentities); }
+
+                    var newPlayers = newPlayerIdentities.Select(x => x.Player).Where(x => x != null && !testData.Players.Select(p => p.PlayerId).Contains(x.PlayerId)).OfType<Player>();
+                    if (newPlayers.Any()) { testData.Players.AddRange(newPlayers); }
+                }
+            }
 
             // Find any player who has a single identity, and associate them to a different member
             testData.Players.First(x => x.PlayerIdentities.Count == 1).MemberKey = testData.Members[1].memberKey;
@@ -896,77 +930,6 @@ namespace Stoolball.Testing
             return testData;
         }
 
-        private void CreateAMatchWhereSomeoneOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(TestData testData)
-        {
-            // Find any player with a single identity on a team other than testData.TeamWithFullDetails, and give them a second identity on testData.TeamWithFullDetails.
-            // Important to use testData.TeamWithFullDetails because it's used in tests that filter by team.
-            // Create a match between the teams.
-            // Make sure the identity NOT on testData.TeamWithFullDetails has an award but no other part in the match.
-            // Make sure the identity that IS on testData.TeamWithFullDetails has batted and taken wickets, catches and run-outs in another match, so that they have averages, economy etc.
-            //
-            // When test queries filter by testData.TeamWithFullDetails they should NOT include the match where the player won an award for a different team in TotalMatches for the player.
-            var anyMatchInvolvingTeamWithFullDetails = testData.Matches.First(x => x.Teams.Select(t => t.Team!.TeamId).Contains(testData.TeamWithFullDetails!.TeamId));
-
-            var player = testData.Players.First(x => x.PlayerIdentities.Count == 1 && x.PlayerIdentities[0].Team!.TeamId != testData.TeamWithFullDetails!.TeamId);
-            var newPlayerIdentity = new PlayerIdentity
-            {
-                PlayerIdentityId = Guid.NewGuid(),
-                Player = player,
-                PlayerIdentityName = "Award winner",
-                Team = testData.TeamWithFullDetails,
-                FirstPlayed = anyMatchInvolvingTeamWithFullDetails.StartTime,
-                LastPlayed = anyMatchInvolvingTeamWithFullDetails.StartTime
-            };
-            player.PlayerIdentities.Add(newPlayerIdentity);
-            testData.PlayerIdentities.Add(newPlayerIdentity);
-
-            var battingInningsForTeamWithFullDetails = anyMatchInvolvingTeamWithFullDetails.MatchInnings.First(x => x.BattingTeam!.Team!.TeamId == testData.TeamWithFullDetails!.TeamId);
-            battingInningsForTeamWithFullDetails.PlayerInnings.Add(new PlayerInnings
-            {
-                PlayerInningsId = Guid.NewGuid(),
-                Batter = newPlayerIdentity,
-                DismissalType = DismissalType.Bowled,
-                RunsScored = 40,
-                BallsFaced = 36
-            });
-            var bowlingInningsForTeamWithFullDetails = anyMatchInvolvingTeamWithFullDetails.MatchInnings.First(x => x.BowlingTeam!.Team!.TeamId == testData.TeamWithFullDetails!.TeamId);
-            bowlingInningsForTeamWithFullDetails.PlayerInnings.Add(new PlayerInnings
-            {
-                PlayerInningsId = Guid.NewGuid(),
-                Batter = bowlingInningsForTeamWithFullDetails.PlayerInnings.First().Batter,
-                DismissalType = DismissalType.CaughtAndBowled,
-                Bowler = newPlayerIdentity
-            });
-            bowlingInningsForTeamWithFullDetails.PlayerInnings.Add(new PlayerInnings
-            {
-                PlayerInningsId = Guid.NewGuid(),
-                Batter = bowlingInningsForTeamWithFullDetails.PlayerInnings.First().Batter,
-                DismissalType = DismissalType.RunOut,
-                DismissedBy = newPlayerIdentity
-            });
-            bowlingInningsForTeamWithFullDetails.OversBowled.Add(new Over
-            {
-                OverId = Guid.NewGuid(),
-                OverSet = bowlingInningsForTeamWithFullDetails.OverSets.First(),
-                Bowler = newPlayerIdentity,
-                BallsBowled = 8,
-                RunsConceded = 10
-            });
-            bowlingInningsForTeamWithFullDetails.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(bowlingInningsForTeamWithFullDetails);
-
-            var teamA = player.PlayerIdentities[0].Team;
-            var teamB = testData.TeamWithFullDetails;
-            var matchBetweenTheTeams = CreateMatchBetween(teamA!, new List<PlayerIdentity>(), teamB!, new List<PlayerIdentity>(), FiftyFiftyChance());
-            matchBetweenTheTeams.MatchLocation = null;
-            matchBetweenTheTeams.Season = null;
-            testData.Matches.Add(matchBetweenTheTeams);
-            matchBetweenTheTeams.Awards.Add(new MatchAward
-            {
-                AwardedToId = Guid.NewGuid(),
-                Award = _playerOfTheMatch,
-                PlayerIdentity = player.PlayerIdentities[0]
-            });
-        }
 
         private void CreateSchoolTeamsForSchools(List<School> schools, Func<Faker<Team>> teamFakerMaker, Func<Faker<MatchLocation>> locationFakerMaker)
         {
@@ -1167,64 +1130,33 @@ namespace Stoolball.Testing
         }
 
 
-        internal List<Match> GenerateMatchData()
+        internal List<Match> GenerateMatchData(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
         {
-            // Create utilities to randomise and build data
-            _teams = GenerateTeams();
-
-            // Create a pool of match locations 
-            for (var i = 0; i < 10; i++)
-            {
-                _matchLocations.Add(IsEven(i) ? CreateMatchLocationWithFullDetails() : CreateMatchLocationWithMinimalDetails());
-            }
-
-            // Create a pool of competitions
-            for (var i = 0; i < 10; i++)
-            {
-                _competitions.Add(IsEven(i) ? CreateCompetitionWithFullDetails() : CreateCompetitionWithMinimalDetails());
-                if (IsEven(i))
-                {
-                    var team1 = _teams[_randomiser.Next(_teams.Count)].team;
-                    Team team2;
-                    do
-                    {
-                        team2 = _teams[_randomiser.Next(_teams.Count)].team;
-                    }
-                    while (team2.TeamId == team1.TeamId);
-                    var season = CreateSeasonWithFullDetails(_competitions[_competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i, team1, team2);
-                    _competitions[_competitions.Count - 1].Seasons.Add(season);
-                }
-                else
-                {
-                    _competitions[_competitions.Count - 1].Seasons.Add(CreateSeasonWithMinimalDetails(_competitions[_competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i));
-                }
-            }
-
             // Randomly assign at least two players from each team a second identity - one on the same team, one on a different team.
             // This ensure we always have lots of teams with multiple identities for the same player for both scenarios.
-            foreach (var (team, playerIdentities) in _teams)
+            foreach (var (team, playerIdentities) in teamsWithIdentities)
             {
                 // On the same team
-                var player1 = playerIdentities[_randomiser.Next(playerIdentities.Count)];
+                var player1 = playerIdentities[_randomiser.PositiveIntegerLessThan(playerIdentities.Count)];
                 PlayerIdentity player2;
                 do
                 {
-                    player2 = playerIdentities[_randomiser.Next(playerIdentities.Count)];
+                    player2 = playerIdentities[_randomiser.PositiveIntegerLessThan(playerIdentities.Count)];
                 } while (player1.PlayerIdentityId == player2.PlayerIdentityId);
                 player2.Player = player1.Player;
 
                 // On a different team
-                var player3 = playerIdentities[_randomiser.Next(playerIdentities.Count)];
+                var player3 = playerIdentities[_randomiser.PositiveIntegerLessThan(playerIdentities.Count)];
                 (Team? targetTeam, List<PlayerIdentity>? targetIdentities) = (null, null);
                 do
                 {
-                    (targetTeam, targetIdentities) = _teams[_randomiser.Next(_teams.Count)];
+                    (targetTeam, targetIdentities) = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
                 } while (targetTeam.TeamId == team.TeamId);
-                var player4 = targetIdentities[_randomiser.Next(targetIdentities.Count)];
+                var player4 = targetIdentities[_randomiser.PositiveIntegerLessThan(targetIdentities.Count)];
                 player4.Player = player3.Player;
             }
 
-            var allIdentities = _teams.SelectMany(x => x.identities);
+            var allIdentities = teamsWithIdentities.SelectMany(x => x.identities);
             foreach (var player in allIdentities.Select(x => x.Player))
             {
                 player.PlayerIdentities = allIdentities.Where(x => x.Player.PlayerId == player.PlayerId).ToList();
@@ -1234,36 +1166,36 @@ namespace Stoolball.Testing
             var matches = new List<Match>();
             for (var i = 0; i < 40; i++)
             {
-                var homeTeamBatsFirst = FiftyFiftyChance();
+                var homeTeamBatsFirst = _randomiser.FiftyFiftyChance();
 
-                var (teamA, teamAPlayers) = _teams[_randomiser.Next(_teams.Count)];
+                var (teamA, teamAPlayers) = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
                 (Team? teamB, List<PlayerIdentity>? teamBPlayers) = (null, null);
                 do
                 {
-                    (teamB, teamBPlayers) = _teams[_randomiser.Next(_teams.Count)];
+                    (teamB, teamBPlayers) = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
                 }
                 while (teamA.TeamId == teamB.TeamId);
 
-                matches.Add(CreateMatchBetween(teamA, teamAPlayers, teamB, teamBPlayers, homeTeamBatsFirst));
+                matches.Add(_matchFactory.CreateMatchBetween(teamA, teamAPlayers, teamB, teamBPlayers, homeTeamBatsFirst, testData));
             }
 
             // Pick any innings and create a five-wicket haul for someone
             var inningsWithFiveWicketHaul = matches.SelectMany(x => x.MatchInnings).Where(x => x.PlayerInnings.Any(pi => pi.Bowler != null)).First();
             var bowlerWithFiveWicketHaul = inningsWithFiveWicketHaul.PlayerInnings.First(x => x.Bowler != null).Bowler;
-            for (var i = 0; i < _randomiser.Next(5, 7); i++)
+            for (var i = 0; i < _randomiser.Between(5, 6); i++)
             {
-                inningsWithFiveWicketHaul.PlayerInnings[i].DismissalType = StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER[_randomiser.Next(StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Count)];
+                inningsWithFiveWicketHaul.PlayerInnings[i].DismissalType = StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER[_randomiser.PositiveIntegerLessThan(StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Count)];
                 inningsWithFiveWicketHaul.PlayerInnings[i].Bowler = bowlerWithFiveWicketHaul;
             }
 
-            matches.Add(CreateMatchWithTeamScoresButNoPlayerData());
+            matches.Add(CreateMatchWithTeamScoresButNoPlayerData(testData, teamsWithIdentities));
 
-            matches.Add(CreateMatchWithFieldingByMultipleIdentities());
+            matches.Add(CreateMatchWithFieldingByMultipleIdentities(testData, teamsWithIdentities));
 
-            matches.Add(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams());
+            matches.Add(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams(testData, teamsWithIdentities));
 
             // Ensure there's always an intra-club match to test
-            matches.Add(CreateMatchBetween(_teams[0].team, _teams[0].identities, _teams[0].team, _teams[0].identities, FiftyFiftyChance()));
+            matches.Add(_matchFactory.CreateMatchBetween(teamsWithIdentities[0].team, teamsWithIdentities[0].identities, teamsWithIdentities[0].team, teamsWithIdentities[0].identities, _randomiser.FiftyFiftyChance(), testData));
 
             // Aim to make this one obsolete by recreating everything offered by CreateMatchInThePastWithFullDetails in the generated match data above
             matches.Add(CreateMatchInThePastWithFullDetails(CreateMembers()));
@@ -1283,11 +1215,11 @@ namespace Stoolball.Testing
             return i % 2 == 0;
         }
 
-        private Match CreateMatchWithTeamScoresButNoPlayerData()
+        private Match CreateMatchWithTeamScoresButNoPlayerData(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
         {
-            var anyTeam1 = _teams[_randomiser.Next(_teams.Count)];
-            var anyTeam2 = _teams[_randomiser.Next(_teams.Count)];
-            var match = CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, FiftyFiftyChance());
+            var anyTeam1 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
+            var anyTeam2 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
+            var match = _matchFactory.CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, _randomiser.FiftyFiftyChance(), testData);
 
             // remove any generated player data
             foreach (var innings in match.MatchInnings)
@@ -1316,11 +1248,11 @@ namespace Stoolball.Testing
             return match;
         }
 
-        private Match CreateMatchWithFieldingByMultipleIdentities()
+        private Match CreateMatchWithFieldingByMultipleIdentities(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
         {
-            var anyTeam1 = _teams[_randomiser.Next(_teams.Count)];
-            var anyTeam2 = _teams[_randomiser.Next(_teams.Count)];
-            var match = CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, FiftyFiftyChance());
+            var anyTeam1 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
+            var anyTeam2 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
+            var match = _matchFactory.CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, _randomiser.FiftyFiftyChance(), testData);
 
             // in the first innings a fielder should take catches under multiple identities
             var firstInnings = match.MatchInnings[0];
@@ -1367,19 +1299,19 @@ namespace Stoolball.Testing
             return match;
         }
 
-        private Match CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams()
+        private Match CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
         {
             // Ensure there's always a match to test where someone swaps sides during the innings (eg a batter is loaned as a fielder and takes a wicket)
 
             // 1. Find any player with identities on two teams
-            var anyPlayerWithIdentitiesOnMultipleTeams = _teams.SelectMany(x => x.identities)
+            var anyPlayerWithIdentitiesOnMultipleTeams = teamsWithIdentities.SelectMany(x => x.identities)
                 .GroupBy(x => x.Player.PlayerId, x => x, (playerId, playerIdentities) => new Player { PlayerId = playerId, PlayerIdentities = playerIdentities.ToList() })
                 .Where(x => x.PlayerIdentities.Select(t => t.Team.TeamId!.Value).Distinct().Count() > 1)
                 .First();
 
             // 2. Create a match between those teams
-            var teamsForPlayer = _teams.Where(t => anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.Select(x => x.Team.TeamId).Contains(t.team.TeamId)).ToList();
-            var match = CreateMatchBetween(teamsForPlayer[0].team, teamsForPlayer[0].identities, teamsForPlayer[1].team, teamsForPlayer[1].identities, FiftyFiftyChance());
+            var teamsForPlayer = teamsWithIdentities.Where(t => anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.Select(x => x.Team.TeamId).Contains(t.team.TeamId)).ToList();
+            var match = _matchFactory.CreateMatchBetween(teamsForPlayer[0].team, teamsForPlayer[0].identities, teamsForPlayer[1].team, teamsForPlayer[1].identities, _randomiser.FiftyFiftyChance(), testData);
 
             // 3. We know they'll be recorded as a batter in both innings. Ensure they take a wicket too.
             var wicketTaken = match.MatchInnings.First().PlayerInnings.First();
@@ -1387,222 +1319,6 @@ namespace Stoolball.Testing
             wicketTaken.Bowler = anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.First(x => x.Team.TeamId == match.MatchInnings.First().BowlingTeam.Team.TeamId);
 
             return match;
-        }
-
-        private bool FiftyFiftyChance()
-        {
-            return _randomiser.Next(2) == 0;
-        }
-
-        private Match CreateMatchBetween(Team teamA, List<PlayerIdentity> teamAPlayers, Team teamB, List<PlayerIdentity> teamBPlayers, bool homeTeamBatsFirst)
-        {
-            var teamAInMatch = new TeamInMatch
-            {
-                MatchTeamId = Guid.NewGuid(),
-                TeamRole = homeTeamBatsFirst ? TeamRole.Home : TeamRole.Away,
-                Team = teamA,
-                WonToss = _randomiser.Next(2) == 0,
-                BattedFirst = true
-            };
-
-            var teamBInMatch = new TeamInMatch
-            {
-                MatchTeamId = Guid.NewGuid(),
-                TeamRole = homeTeamBatsFirst ? TeamRole.Away : TeamRole.Home,
-                Team = teamB,
-                WonToss = !teamAInMatch.WonToss,
-                BattedFirst = false
-            };
-
-            var match = CreateMatchInThePastWithMinimalDetails();
-            match.Teams.Add(teamAInMatch);
-            match.Teams.Add(teamBInMatch);
-
-            // create a date accurate to the minute, otherwise integration tests can fail due to fractions of a second which are never seen in real data
-            var randomStartTime = DateTimeOffset.UtcNow.AddMonths(_randomiser.Next(30) * -1 - 1);
-            match.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(new DateTimeOffset(randomStartTime.Year, randomStartTime.Month, randomStartTime.Day, randomStartTime.Hour, randomStartTime.Minute, 0, TimeSpan.Zero), Constants.UkTimeZone());
-
-            // Some matches should have multiple innings
-            if (_randomiser.Next(4) == 0)
-            {
-                match.MatchInnings.Add(CreateMatchInnings(3));
-                match.MatchInnings.Add(CreateMatchInnings(4));
-            }
-
-            foreach (var innings in match.MatchInnings.Where(x => x.InningsOrderInMatch % 2 == 1))
-            {
-                var pairedInnings = match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                CreateRandomScorecardData(match, innings, teamAInMatch, teamBInMatch, teamAPlayers, teamBPlayers);
-                CreateRandomScorecardData(match, pairedInnings, teamBInMatch, teamAInMatch, teamBPlayers, teamAPlayers);
-            }
-
-            // Most matches have a match location
-            if (OneInFourChance())
-            {
-                match.MatchLocation = _matchLocations[_randomiser.Next(_matchLocations.Count)];
-            }
-
-            // Most matches have a season and competition
-            if (OneInFourChance())
-            {
-                match.Season = _competitions[_randomiser.Next(_competitions.Count)].Seasons.First();
-            }
-
-            // Give someone an award
-            if (FiftyFiftyChance() && teamAPlayers.Any())
-            {
-                match.Awards.Add(new MatchAward
-                {
-                    AwardedToId = Guid.NewGuid(),
-                    Award = _playerOfTheMatch,
-                    PlayerIdentity = teamAPlayers.First(),
-                    Reason = "Well played"
-                });
-            }
-
-            return match;
-        }
-
-        private bool OneInFourChance()
-        {
-            return _randomiser.Next(4) != 0;
-        }
-
-        private MatchInnings CreateMatchInnings(int inningsOrderInMatch)
-        {
-            return new MatchInnings
-            {
-                MatchInningsId = Guid.NewGuid(),
-                InningsOrderInMatch = inningsOrderInMatch,
-                NoBalls = _randomiser.Next(30),
-                Wides = _randomiser.Next(30),
-                Byes = _randomiser.Next(30),
-                BonusOrPenaltyRuns = _randomiser.Next(-5, 5),
-                Runs = _randomiser.Next(100, 250),
-                Wickets = _randomiser.Next(11),
-                OverSets = CreateOverSets()
-            };
-        }
-
-        private void CreateRandomScorecardData(Match match, MatchInnings innings, TeamInMatch battingTeam, TeamInMatch bowlingTeam, List<PlayerIdentity> battingPlayers, List<PlayerIdentity> bowlingPlayers)
-        {
-            innings.BattingMatchTeamId = battingTeam.MatchTeamId;
-            innings.BowlingMatchTeamId = bowlingTeam.MatchTeamId;
-            innings.BattingTeam = battingTeam;
-            innings.BowlingTeam = bowlingTeam;
-
-            for (var p = 0; p < battingPlayers.Count; p++)
-            {
-                var fielderOrMissingData = _randomiser.Next(2) == 0 ? bowlingPlayers[_randomiser.Next(bowlingPlayers.Count)] : null;
-                var bowlerOrMissingData = _randomiser.Next(2) == 0 ? bowlingPlayers[_randomiser.Next(bowlingPlayers.Count)] : null;
-                innings.PlayerInnings.Add(CreateRandomPlayerInnings(match, p + 1, battingPlayers[p], fielderOrMissingData, bowlerOrMissingData));
-            }
-
-            // sometimes pick a random player to bat twice in the innings
-            if (FiftyFiftyChance() && battingPlayers.Any() && bowlingPlayers.Any())
-            {
-                innings.PlayerInnings.Add(CreateRandomPlayerInnings(match, battingPlayers.Count, battingPlayers[_randomiser.Next(battingPlayers.Count)], bowlingPlayers[_randomiser.Next(bowlingPlayers.Count)], bowlingPlayers[_randomiser.Next(bowlingPlayers.Count)]));
-            }
-
-            // pick 4 players to bowl - note there may be other bowlers recorded as taking wickets on the batting card above
-            var bowlers = new List<PlayerIdentity>();
-            var comparer = new PlayerIdentityEqualityComparer();
-
-            // if there's a player with multiple identities in this team, let both identities bowl!
-            var playerWithMultipleIdentitiesInThisTeam = bowlingPlayers.FirstOrDefault(x => bowlingPlayers.Count(p => p.Player.PlayerId == x.Player.PlayerId) > 1);
-            if (playerWithMultipleIdentitiesInThisTeam != null) { bowlers.Add(playerWithMultipleIdentitiesInThisTeam); }
-
-            while (bowlers.Count < 4 && bowlingPlayers.Count >= 4)
-            {
-                var potentialBowler = bowlingPlayers[_randomiser.Next(bowlingPlayers.Count)];
-                if (!bowlers.Contains(potentialBowler, comparer)) { bowlers.Add(potentialBowler); }
-            }
-
-            // Create up to 12 random overs, or a missing bowling card
-            var hasBowlingData = _randomiser.Next(5) > 0;
-            if (!innings.OverSets.Any())
-            {
-                innings.OverSets.Add(new OverSet
-                {
-                    OverSetId = Guid.NewGuid(),
-                    OverSetNumber = 1,
-                    Overs = _randomiser.Next(8, 13),
-                    BallsPerOver = 8
-                });
-            }
-            if (hasBowlingData && bowlers.Count >= 4)
-            {
-                for (var i = 1; i <= innings.OverSets[0].Overs; i++)
-                {
-                    if (i < 6 && i % 2 == 1) { innings.OversBowled.Add(CreateRandomOver(innings.OverSets[0], i, bowlers[0])); }
-                    if (i < 6 && i % 2 == 0) { innings.OversBowled.Add(CreateRandomOver(innings.OverSets[0], i, bowlers[1])); }
-                    if (i >= 6 && i % 2 == 1) { innings.OversBowled.Add(CreateRandomOver(innings.OverSets[0], i, bowlers[2])); }
-                    if (i >= 6 && i % 2 == 0) { innings.OversBowled.Add(CreateRandomOver(innings.OverSets[0], i, bowlers[3])); }
-                }
-            }
-        }
-
-        private Over CreateRandomOver(OverSet overSet, int overNumber, PlayerIdentity playerIdentity)
-        {
-            // BallsBowled is usually provided but over data beyond the bowler name can be missing. 
-            // The last over is often fewer balls.
-            var ballsBowled = _randomiser.Next(10) == 0 ? (int?)null : 8;
-            if (overNumber == 12) { ballsBowled = _randomiser.Next(9); }
-
-            // Random numbers for the over, simulating missing data
-            int? noBalls = null, wides = null, runsConceded = null;
-            if (ballsBowled.HasValue)
-            {
-                noBalls = _randomiser.Next(4) == 0 ? (int?)null : _randomiser.Next(5);
-                wides = _randomiser.Next(4) == 0 ? (int?)null : _randomiser.Next(5);
-                runsConceded = _randomiser.Next(4) == 0 ? (int?)null : _randomiser.Next(-5, 20); // Can be negative in a match where penalty runs are scored for losing a wicket
-            }
-
-            return new Over
-            {
-                OverId = Guid.NewGuid(),
-                OverSet = overSet,
-                Bowler = playerIdentity,
-                OverNumber = overNumber,
-                BallsBowled = ballsBowled,
-                NoBalls = noBalls,
-                Wides = wides,
-                RunsConceded = runsConceded
-            };
-        }
-
-        private PlayerInnings CreateRandomPlayerInnings(Match match, int battingPosition, PlayerIdentity batter, PlayerIdentity? fielderOrMissingData, PlayerIdentity? bowlerOrMissingData)
-        {
-            var dismissalTypes = Enum.GetValues(typeof(DismissalType));
-            var dismissal = (DismissalType)dismissalTypes.GetValue(_randomiser.Next(dismissalTypes.Length))!;
-            if (dismissal != DismissalType.Caught || dismissal != DismissalType.RunOut)
-            {
-                fielderOrMissingData = null;
-            }
-            if (!StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(dismissal))
-            {
-                bowlerOrMissingData = null;
-            }
-            var runsScored = _randomiser.Next(2) == 0 ? _randomiser.Next(-20, 102) : (int?)null; // simulate missing data; can also be negative in a match where penalty runs are awarded if the player is out
-            var ballsFaced = _randomiser.Next(2) == 0 ? _randomiser.Next(151) : (int?)null; // simulate missing data
-            if (dismissal == DismissalType.DidNotBat || dismissal == DismissalType.TimedOut)
-            {
-                runsScored = null;
-                ballsFaced = null;
-            }
-
-            return new PlayerInnings
-            {
-                PlayerInningsId = Guid.NewGuid(),
-                Match = match,
-                BattingPosition = battingPosition,
-                Batter = batter,
-                DismissalType = dismissal,
-                DismissedBy = fielderOrMissingData,
-                Bowler = bowlerOrMissingData,
-                RunsScored = runsScored,
-                BallsFaced = ballsFaced
-            };
         }
 
         private List<PlayerIdentity> CreatePlayerIdentitiesForTeam(Team team, string playerName)

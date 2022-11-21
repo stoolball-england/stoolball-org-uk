@@ -1,5 +1,6 @@
 ﻿using System;
 using Bogus;
+using Stoolball.Awards;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Testing;
@@ -14,6 +15,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         public SqlServerTestDataFixture() : base("StoolballStatisticsDataSourceIntegrationTests")
         {
             // Populate seed data so that there's a consistent baseline for each test run
+            var randomiser = new Randomiser(new Random());
             var oversHelper = new OversHelper();
             var bowlingFiguresCalculator = new BowlingFiguresCalculator(oversHelper);
             var playerIdentityFinder = new PlayerIdentityFinder();
@@ -22,7 +24,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var teamFakerFactory = new TeamFakerFactory();
             var matchLocationFakerFactory = new MatchLocationFakerFactory();
             var schoolFakerFactory = new SchoolFakerFactory();
-            var randomSeedDataGenerator = new SeedDataGenerator(oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder, teamFakerFactory, matchLocationFakerFactory, schoolFakerFactory);
+            var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
+            var randomSeedDataGenerator = new SeedDataGenerator(randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder, teamFakerFactory, matchLocationFakerFactory, schoolFakerFactory, playerOfTheMatchAward);
 
             // Use Bogus to generate Schools data
             Randomizer.Seed = new Random(85437684);

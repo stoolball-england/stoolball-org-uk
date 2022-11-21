@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Moq;
+using Stoolball.Awards;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Testing;
@@ -12,12 +14,14 @@ namespace Stoolball.UnitTests.Testing
     {
         // Run each test enough times to be confident random data generation always matches the test
         private const int _iterations = 10;
+        private readonly Randomiser _randomiser = new(new Random());
+        private readonly Award _playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
 
         [Fact]
         public void Over_exists_with_only_a_bowler_name()
         {
-            var generator = new SeedDataGenerator(Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
-                Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>());
+            var generator = new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
+                Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>(), _playerOfTheMatchAward);
 
             for (var i = 0; i < _iterations; i++)
             {
@@ -30,12 +34,13 @@ namespace Stoolball.UnitTests.Testing
         [Fact]
         public void Five_wicket_haul_exists()
         {
-            var generator = new SeedDataGenerator(Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
-                Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>());
+            var generator = new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
+                Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>(), _playerOfTheMatchAward);
 
             for (var i = 0; i < _iterations; i++)
             {
-                var innings = generator.GenerateMatchData().SelectMany(x => x.MatchInnings);
+                var teams = generator.GenerateTeams();
+                var innings = generator.GenerateMatchData(new TestData(), teams).SelectMany(x => x.MatchInnings);
 
                 var inningsWithFiveWicketHaulExists = innings.Any(x => // return true for this MatchInnings if...
                             x.PlayerInnings.Where(pi => StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(pi.DismissalType) && pi.Bowler != null) // for all wickets credited to a bowler...

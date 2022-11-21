@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Stoolball.Awards;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Logging;
@@ -51,12 +52,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         {
             // Populate seed data so that there's a consistent baseline for each test run
             // Create dates accurate to the minute, otherwise integration tests can fail due to fractions of a second which are never seen in real data
+            var randomiser = new Randomiser(new Random());
             var oversHelper = new OversHelper();
             var playerIdentityFinder = new PlayerIdentityFinder();
             var matchFinder = new MatchFinder();
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
-            var seedDataGenerator = new SeedDataGenerator(oversHelper, new BowlingFiguresCalculator(oversHelper), playerIdentityFinder, matchFinder,
-                new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory());
+            var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
+            var seedDataGenerator = new SeedDataGenerator(randomiser, oversHelper, new BowlingFiguresCalculator(oversHelper), playerIdentityFinder, matchFinder,
+                new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory(), playerOfTheMatchAward);
+            var matchFactory = new MatchFactory(randomiser, playerOfTheMatchAward);
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
@@ -137,12 +141,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     Seasons.Add(season.Season);
                 }
 
-                MatchInThePastWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
+                MatchInThePastWithMinimalDetails = matchFactory.CreateMatchInThePastWithMinimalDetails();
                 repo.CreateMatch(MatchInThePastWithMinimalDetails);
                 Matches.Add(MatchInThePastWithMinimalDetails);
                 MatchListings.Add(MatchInThePastWithMinimalDetails.ToMatchListing());
 
-                MatchInTheFutureWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
+                MatchInTheFutureWithMinimalDetails = matchFactory.CreateMatchInThePastWithMinimalDetails();
                 MatchInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(1), UkTimeZone());
                 repo.CreateMatch(MatchInTheFutureWithMinimalDetails);
                 Matches.Add(MatchInTheFutureWithMinimalDetails);
@@ -221,7 +225,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 MatchListings.Add(TournamentInThePastWithFullDetails.ToMatchListing());
                 for (var i = 0; i < 5; i++)
                 {
-                    var tournamentMatch = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
+                    var tournamentMatch = matchFactory.CreateMatchInThePastWithMinimalDetails();
                     tournamentMatch.Tournament = TournamentInThePastWithFullDetails;
                     tournamentMatch.StartTime = TournamentInThePastWithFullDetails.StartTime.AddHours(i);
                     tournamentMatch.OrderInTournament = i + 1;
@@ -328,7 +332,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     repo.CreateMatchLocation(matchLocation);
                     MatchLocations.Add(matchLocation);
 
-                    var match = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
+                    var match = matchFactory.CreateMatchInThePastWithMinimalDetails();
                     match.MatchLocation = matchLocation;
                     match.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(i - 15), UkTimeZone());
                     match.MatchType = i % 2 == 0 ? MatchType.FriendlyMatch : MatchType.LeagueMatch;
