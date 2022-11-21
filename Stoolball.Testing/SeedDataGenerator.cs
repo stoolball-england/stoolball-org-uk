@@ -16,7 +16,7 @@ using Stoolball.Testing.Fakers;
 
 namespace Stoolball.Testing
 {
-    public class SeedDataGenerator
+    internal class SeedDataGenerator
     {
         private readonly Random _randomiser = new Random();
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
@@ -31,7 +31,7 @@ namespace Stoolball.Testing
         private List<Competition> _competitions = new List<Competition>();
         private readonly Award _playerOfTheMatch = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
 
-        public SeedDataGenerator(IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
+        internal SeedDataGenerator(IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
             IFakerFactory<Team> teamFakerFactory, IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory)
         {
             _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
@@ -43,7 +43,7 @@ namespace Stoolball.Testing
             _schoolFakerFactory = schoolFakerFactory ?? throw new ArgumentNullException(nameof(schoolFakerFactory));
         }
 
-        public Club CreateClubWithMinimalDetails()
+        internal Club CreateClubWithMinimalDetails()
         {
             return new Club
             {
@@ -55,7 +55,7 @@ namespace Stoolball.Testing
             };
         }
 
-        public Club CreateClubWithTeams()
+        internal Club CreateClubWithTeams()
         {
             var club = new Club
             {
@@ -87,7 +87,7 @@ namespace Stoolball.Testing
             return club;
         }
 
-        public Competition CreateCompetitionWithMinimalDetails()
+        internal Competition CreateCompetitionWithMinimalDetails()
         {
             return new Competition
             {
@@ -99,7 +99,7 @@ namespace Stoolball.Testing
             };
         }
 
-        public Competition CreateCompetitionWithFullDetails()
+        internal Competition CreateCompetitionWithFullDetails()
         {
             var competition = new Competition
             {
@@ -127,7 +127,7 @@ namespace Stoolball.Testing
             return competition;
         }
 
-        public Season CreateSeasonWithMinimalDetails(Competition competition, int fromYear, int untilYear)
+        internal Season CreateSeasonWithMinimalDetails(Competition competition, int fromYear, int untilYear)
         {
             return new Season
             {
@@ -141,7 +141,7 @@ namespace Stoolball.Testing
             };
         }
 
-        public Season CreateSeasonWithFullDetails(Competition competition, int fromYear, int untilYear, Team team1, Team team2)
+        internal Season CreateSeasonWithFullDetails(Competition competition, int fromYear, int untilYear, Team team1, Team team2)
         {
             var season = new Season
             {
@@ -183,7 +183,7 @@ namespace Stoolball.Testing
             return season;
         }
 
-        public Team CreateTeamWithMinimalDetails(string teamName)
+        internal Team CreateTeamWithMinimalDetails(string teamName)
         {
             return new Team
             {
@@ -194,7 +194,7 @@ namespace Stoolball.Testing
                 MemberGroupName = teamName + " owners"
             };
         }
-        public Team CreateTeamWithFullDetails(string teamName)
+        internal Team CreateTeamWithFullDetails(string teamName)
         {
             var competition = CreateCompetitionWithMinimalDetails();
             var team = new Team
@@ -248,7 +248,7 @@ namespace Stoolball.Testing
             return team;
         }
 
-        public MatchLocation CreateMatchLocationWithMinimalDetails()
+        internal MatchLocation CreateMatchLocationWithMinimalDetails()
         {
             return new MatchLocation
             {
@@ -267,7 +267,7 @@ namespace Stoolball.Testing
             };
         }
 
-        public MatchLocation CreateMatchLocationWithFullDetails()
+        internal MatchLocation CreateMatchLocationWithFullDetails()
         {
             var activeTeam = CreateTeamWithMinimalDetails("Team active");
             var anotherActiveTeam = CreateTeamWithMinimalDetails("Team that plays");
@@ -287,7 +287,7 @@ namespace Stoolball.Testing
             return matchLocation;
         }
 
-        public Match CreateMatchInThePastWithMinimalDetails()
+        internal Match CreateMatchInThePastWithMinimalDetails()
         {
             return new Match
             {
@@ -304,7 +304,7 @@ namespace Stoolball.Testing
             };
         }
 
-        public Match CreateMatchInThePastWithFullDetails(List<(Guid memberId, string memberName)> members)
+        internal Match CreateMatchInThePastWithFullDetails(List<(Guid memberId, string memberName)> members)
         {
             // Note: Team names would sort the away team first alphabetically
             var homeTeam = new TeamInMatch
@@ -493,7 +493,7 @@ namespace Stoolball.Testing
             return match;
         }
 
-        public List<(Guid memberId, string memberName)> CreateMembers()
+        internal List<(Guid memberId, string memberName)> CreateMembers()
         {
             return new List<(Guid memberId, string memberName)> {
                 (Guid.NewGuid(), "Jane Smith"),
@@ -504,12 +504,12 @@ namespace Stoolball.Testing
             };
         }
 
-        public List<OverSet> CreateOverSets()
+        internal List<OverSet> CreateOverSets()
         {
             return new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
         }
 
-        public Tournament CreateTournamentInThePastWithMinimalDetails()
+        internal Tournament CreateTournamentInThePastWithMinimalDetails()
         {
             return new Tournament
             {
@@ -521,7 +521,7 @@ namespace Stoolball.Testing
             };
         }
 
-        public Tournament CreateTournamentInThePastWithFullDetailsExceptMatches(List<(Guid memberKey, string memberName)> members)
+        internal Tournament CreateTournamentInThePastWithFullDetailsExceptMatches(List<(Guid memberKey, string memberName)> members)
         {
             var competition1 = CreateCompetitionWithMinimalDetails();
             var competition2 = CreateCompetitionWithMinimalDetails();
@@ -569,7 +569,7 @@ namespace Stoolball.Testing
             return tournament;
         }
 
-        private static List<PlayerInnings> CreateBattingScorecard(PlayerIdentity[] battingTeam, PlayerIdentity[] bowlingTeam)
+        internal static List<PlayerInnings> CreateBattingScorecard(PlayerIdentity[] battingTeam, PlayerIdentity[] bowlingTeam)
         {
             return new List<PlayerInnings>{
                             new PlayerInnings {
@@ -662,7 +662,7 @@ namespace Stoolball.Testing
                         };
         }
 
-        public List<Over> CreateOversBowled(List<PlayerIdentity> bowlingTeam, IEnumerable<OverSet> overSets)
+        internal List<Over> CreateOversBowled(List<PlayerIdentity> bowlingTeam, IEnumerable<OverSet> overSets)
         {
             var oversBowled = new List<Over>();
             for (var i = 0; i < 15; i++)
@@ -707,7 +707,7 @@ namespace Stoolball.Testing
             };
         }
 
-        public List<HtmlComment> CreateComments(int howMany, List<(Guid memberKey, string memberName)> members)
+        internal List<HtmlComment> CreateComments(int howMany, List<(Guid memberKey, string memberName)> members)
         {
             var randomiser = new Random();
             var comments = new List<HtmlComment>();
@@ -749,7 +749,7 @@ namespace Stoolball.Testing
             return poolOfTeams;
         }
 
-        public TestData GenerateTestData()
+        internal TestData GenerateTestData()
         {
             var testData = new TestData();
             var playerComparer = new PlayerEqualityComparer();
@@ -1167,7 +1167,7 @@ namespace Stoolball.Testing
         }
 
 
-        public List<Match> GenerateMatchData()
+        internal List<Match> GenerateMatchData()
         {
             // Create utilities to randomise and build data
             _teams = GenerateTeams();

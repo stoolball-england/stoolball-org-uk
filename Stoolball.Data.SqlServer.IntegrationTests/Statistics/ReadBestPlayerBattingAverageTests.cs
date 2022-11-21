@@ -18,6 +18,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         private readonly SqlServerTestDataFixture _databaseFixture;
         private readonly Mock<IStatisticsQueryBuilder> _queryBuilder = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
+        private readonly TestDataQueryHelper _queryHelper = new();
 
         public ReadBestPlayerBattingAverageTests(SqlServerTestDataFixture databaseFixture)
         {
@@ -280,7 +281,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => true, x => true, x => true).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => true, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
         [Fact]
@@ -298,7 +299,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => true, i => i.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId, i => i.BattingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
+            var teamIdsForClub = filter.Club!.Teams.Select(x => x.TeamId);
+
+            await ActAndAssertStatistics(filter, dataSource,
+                x => true,
+                i => teamIdsForClub.Contains(i.BowlingTeam?.Team?.TeamId),
+                i => teamIdsForClub.Contains(i.BattingTeam?.Team?.TeamId),
+                aw => teamIdsForClub.Contains(aw.PlayerIdentity?.Team?.TeamId)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -316,7 +323,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => true, i => i.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId, i => i.BattingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource,
+                x => true,
+                i => i.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId,
+                i => i.BattingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId,
+                aw => aw.PlayerIdentity?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
         }
 
         [Fact]
@@ -334,7 +345,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => true, i => i.BowlingTeam?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute, i => i.BattingTeam?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource,
+                x => true,
+                i => i.BowlingTeam?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute,
+                i => i.BattingTeam?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute,
+                aw => aw.PlayerIdentity?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute).ConfigureAwait(false);
         }
 
         [Fact]
@@ -352,7 +367,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId, x => true, x => true).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
 
@@ -371,7 +386,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => x.Season?.Competition?.CompetitionId == filter.Competition.CompetitionId, x => true, x => true).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => x.Season?.Competition?.CompetitionId == filter.Competition.CompetitionId, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
         [Fact]
@@ -389,7 +404,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => x.Season?.SeasonId == filter.Season.SeasonId, x => true, x => true).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => x.Season?.SeasonId == filter.Season.SeasonId, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
         [Fact]
@@ -411,24 +426,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate, x => true, x => true).ConfigureAwait(false);
+            await ActAndAssertStatistics(filter, dataSource, x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate, x => true, x => true, x => true).ConfigureAwait(false);
         }
 
-        private async Task ActAndAssertStatistics(StatisticsFilter filter, SqlServerBestPlayerAverageStatisticsDataSource dataSource, Func<Stoolball.Matches.Match, bool> matchFilter, Func<MatchInnings, bool> bowlingInningsFilter, Func<MatchInnings, bool> battingInningsFilter)
+        private async Task ActAndAssertStatistics(StatisticsFilter filter, SqlServerBestPlayerAverageStatisticsDataSource dataSource, Func<Stoolball.Matches.Match, bool> matchFilter, Func<MatchInnings, bool> bowlingInningsFilter, Func<MatchInnings, bool> battingInningsFilter, Func<MatchAward, bool> awardsFilter)
         {
             var results = await dataSource.ReadBestBattingAverage(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Players.Select(p => new BestStatistic
             {
                 Player = p,
-                TotalMatches = (int)_databaseFixture.TestData.Matches
-                            .Where(matchFilter)
-                            .Count(m => m.MatchInnings.Where(battingInningsFilter).Any(mi => mi.PlayerInnings.Any(pi => pi.Batter?.Player?.PlayerId == p.PlayerId))
-                                    || m.MatchInnings.Where(bowlingInningsFilter).Any(mi =>
-                                        mi.PlayerInnings.Any(pi => pi.DismissedBy?.Player?.PlayerId == p.PlayerId || pi.Bowler?.Player?.PlayerId == p.PlayerId) ||
-                                        mi.OversBowled.Any(o => o.Bowler?.Player?.PlayerId == p.PlayerId) ||
-                                        mi.BowlingFigures.Any(bf => bf.Bowler?.Player?.PlayerId == p.PlayerId)
-                                    ) || m.Awards.Any(aw => aw.PlayerIdentity?.Player?.PlayerId == p.PlayerId)),
+                TotalMatches = _queryHelper.TotalMatchesForPlayer(p, _databaseFixture.TestData.Matches, matchFilter, bowlingInningsFilter, battingInningsFilter, awardsFilter),
                 TotalInnings = (int)_databaseFixture.TestData.Matches
                             .Where(matchFilter)
                             .SelectMany(m => m.MatchInnings)
@@ -476,6 +484,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 }
             }
         }
+
 
         [Fact]
         public async Task Read_best_batting_average_supports_minimum_qualifying_innings()

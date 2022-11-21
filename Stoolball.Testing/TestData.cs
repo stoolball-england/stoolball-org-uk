@@ -11,26 +11,26 @@ namespace Stoolball.Testing
 {
     public class TestData
     {
-        public Player? BowlerWithMultipleIdentities { get; internal set; }
-        public List<Player> Players { get; internal set; } = new List<Player>();
-        public List<PlayerInnings> PlayerInnings { get; internal set; } = new List<PlayerInnings>();
-        public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
-        public List<Match> Matches { get; internal set; } = new List<Match>();
-        public Team? TeamWithFullDetails { get; internal set; }
-        public List<Team> Teams { get; internal set; } = new List<Team>();
-        public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
-        public List<Competition> Competitions { get; internal set; } = new List<Competition>();
-        public List<Player> PlayersWithMultipleIdentities { get; internal set; } = new List<Player>();
-        public MatchLocation? MatchLocationWithFullDetails { get; internal set; }
-        public Competition? CompetitionWithFullDetails { get; internal set; }
-        public List<Season> Seasons { get; internal set; } = new List<Season>();
-        public Season? SeasonWithFullDetails { get; internal set; }
-        public List<(Guid memberKey, string memberName)> Members { get; internal set; } = new();
-        public Match? MatchInThePastWithFullDetails { get; internal set; }
-        public Tournament? TournamentInThePastWithFullDetails { get; internal set; }
-        public List<Tournament> Tournaments { get; internal set; } = new List<Tournament>();
-        public List<School> Schools { get; internal set; } = new List<School>();
-        public Tournament? TournamentInThePastWithMinimalDetails { get; internal set; }
-        public Tournament? TournamentInTheFutureWithMinimalDetails { get; internal set; }
+        internal Player? BowlerWithMultipleIdentities { get; set; }
+        internal List<Player> Players { get; set; } = new List<Player>();
+        internal List<PlayerInnings> PlayerInnings { get; set; } = new List<PlayerInnings>();
+        internal List<PlayerIdentity> PlayerIdentities { get; set; } = new List<PlayerIdentity>();
+        internal List<Match> Matches { get; set; } = new List<Match>();
+        internal Team? TeamWithFullDetails { get; set; }
+        internal List<Team> Teams { get; set; } = new List<Team>();
+        internal List<MatchLocation> MatchLocations { get; set; } = new List<MatchLocation>();
+        internal List<Competition> Competitions { get; set; } = new List<Competition>();
+        internal List<Player> PlayersWithMultipleIdentities { get; set; } = new List<Player>();
+        internal MatchLocation? MatchLocationWithFullDetails { get; set; }
+        internal Competition? CompetitionWithFullDetails { get; set; }
+        internal List<Season> Seasons { get; set; } = new List<Season>();
+        internal Season? SeasonWithFullDetails { get; set; }
+        internal List<(Guid memberKey, string memberName)> Members { get; set; } = new();
+        internal Match? MatchInThePastWithFullDetails { get; set; }
+        internal Tournament? TournamentInThePastWithFullDetails { get; set; }
+        internal List<Tournament> Tournaments { get; set; } = new List<Tournament>();
+        internal List<School> Schools { get; set; } = new List<School>();
+        internal Tournament? TournamentInThePastWithMinimalDetails { get; set; }
+        internal Tournament? TournamentInTheFutureWithMinimalDetails { get; set; }
     }
 }

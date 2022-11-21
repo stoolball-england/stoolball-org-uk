@@ -5,9 +5,9 @@ using Stoolball.Matches;
 
 namespace Stoolball.Testing
 {
-    public class DateRangeGenerator
+    internal class DateRangeGenerator
     {
-        public (DateTimeOffset fromDate, DateTimeOffset untilDate) SelectDateRangeToTest(IEnumerable<Match> matches)
+        internal (DateTimeOffset fromDate, DateTimeOffset untilDate) SelectDateRangeToTest(IEnumerable<Match> matches)
         {
             var allMatchDates = matches.Select(x => x.StartTime).OrderBy(x => x);
             var oneThirdOfTheTimeBetweenFirstAndLast = TimeSpan.FromTicks((allMatchDates.Last() - allMatchDates.First()).Ticks / 3);

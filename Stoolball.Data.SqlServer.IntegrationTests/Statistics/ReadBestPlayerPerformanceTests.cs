@@ -31,7 +31,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(null).ConfigureAwait(false);
 
-            AssertTotalPerformancesInASetOfMatches(_databaseFixture.TestData.Matches, (match, identity) => identity, result);
+            var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches);
+
+            Assert.Equal(performances.Count(), result);
         }
 
         [Fact]
@@ -43,10 +45,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
 
-            var matchFinder = new Stoolball.Matches.MatchFinder();
-            var matchesForPlayer = matchFinder.MatchesPlayedByPlayer(_databaseFixture.TestData.Matches, filter.Player!.PlayerId!.Value);
+            var matchesForPlayer = new MatchFinder().MatchesPlayedByPlayer(_databaseFixture.TestData.Matches, filter.Player!.PlayerId!.Value);
+            var performances = AllPlayerIdentityPerformances(matchesForPlayer);
+            performances = performances.Where(x => x.PlayerId == filter.Player.PlayerId);
 
-            AssertTotalPerformancesInASetOfMatches(matchesForPlayer, (match, identity) => identity.Where(pi => pi.Player?.PlayerId == filter.Player.PlayerId), result);
+            Assert.Equal(performances.Count(), result);
         }
 
         [Fact]
@@ -58,16 +61,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
 
-            var matchesForClub = new List<Stoolball.Matches.Match>();
             var teamIdsInClub = filter.Club!.Teams.Select(x => x.TeamId);
-            foreach (var teamId in teamIdsInClub)
-            {
-                matchesForClub.AddRange(_databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team?.TeamId).Contains(teamId)));
-            }
-            matchesForClub = matchesForClub.Distinct(new MatchEqualityComparer()).ToList();
             var playerIdentitiesInClub = _databaseFixture.TestData.PlayerIdentities.Where(x => teamIdsInClub.Contains(x.Team?.TeamId)).Select(x => x.PlayerIdentityId);
+            var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Teams.Any(t => teamIdsInClub.Contains(t.Team?.TeamId))));
+            performances = performances.Where(x => playerIdentitiesInClub.Contains(x.PlayerIdentityId));
 
-            AssertTotalPerformancesInASetOfMatches(matchesForClub, (match, identity) => identity.Where(pi => playerIdentitiesInClub.Contains(pi.PlayerIdentityId)), result);
+            Assert.Equal(performances.Count(), result);
         }
 
         [Fact]
@@ -81,8 +80,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var matchesForTeam = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team?.TeamId).Contains(filter.Team!.TeamId));
             var playerIdentitiesInTeam = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team?.TeamId == filter.Team!.TeamId).Select(x => x.PlayerIdentityId);
+            var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team?.TeamId).Contains(filter.Team!.TeamId)));
+            performances = performances.Where(x => playerIdentitiesInTeam.Contains(x.PlayerIdentityId));
 
-            AssertTotalPerformancesInASetOfMatches(matchesForTeam, (match, identity) => identity.Where(pi => playerIdentitiesInTeam.Contains(pi.PlayerIdentityId)), result);
+            Assert.Equal(performances.Count(), result);
         }
 
         [Fact]
@@ -96,8 +97,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var matchesForTeam = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team?.TeamRoute).Contains(filter.Team!.TeamRoute));
             var playerIdentitiesInTeam = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team?.TeamRoute == filter.Team!.TeamRoute).Select(x => x.PlayerIdentityId);
+            var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team?.TeamRoute).Contains(filter.Team!.TeamRoute)));
+            performances = performances.Where(x => playerIdentitiesInTeam.Contains(x.PlayerIdentityId));
 
-            AssertTotalPerformancesInASetOfMatches(matchesForTeam, (match, identity) => identity.Where(pi => playerIdentitiesInTeam.Contains(pi.PlayerIdentityId)), result);
+            Assert.Equal(performances.Count(), result);
         }
 
         [Fact]
@@ -109,9 +112,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
 
-            var matchesForLocation = _databaseFixture.TestData.Matches.Where(x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId);
+            var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId));
 
-            AssertTotalPerformancesInASetOfMatches(matchesForLocation, (match, identity) => identity, result);
+            Assert.Equal(performances.Count(), result);
         }
 
         [Fact]
@@ -123,9 +126,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
 
-            var matchesForCompetition = _databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == filter.Competition.CompetitionId);
+            var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Season?.Competition.CompetitionId == filter.Competition.CompetitionId));
 
-            AssertTotalPerformancesInASetOfMatches(matchesForCompetition, (match, identity) => identity, result);
+            Assert.Equal(performances.Count(), result);
         }
 
 
@@ -138,9 +141,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
 
-            var matchesForSeason = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == filter.Season.SeasonId);
+            var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == filter.Season.SeasonId));
 
-            AssertTotalPerformancesInASetOfMatches(matchesForSeason, (match, identity) => identity, result);
+            Assert.Equal(performances.Count(), result);
         }
 
         [Fact]
@@ -155,9 +158,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
 
-            var matchesForDates = _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate);
+            var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate));
 
-            AssertTotalPerformancesInASetOfMatches(matchesForDates, (match, identity) => identity, result);
+            Assert.Equal(performances.Count(), result);
         }
 
         [Fact]
@@ -169,29 +172,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
 
-            var matchesWithAwards = _databaseFixture.TestData.Matches.Where(x => x.Awards.Any(aw => aw.Award?.AwardName == "Player of the match"));
+            var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Awards.Any(aw => aw.Award?.AwardName == "Player of the match"))).Where(x => x.PlayerOfTheMatch);
 
-            AssertTotalPerformancesInASetOfMatches(matchesWithAwards, (match, identity) => identity.Where(pi => match.Awards.Where(aw => aw.Award?.AwardName == "Player of the match").Select(aw => aw.PlayerIdentity?.PlayerIdentityId).Contains(pi.PlayerIdentityId)), result);
-        }
-
-        private void AssertTotalPerformancesInASetOfMatches(IEnumerable<Stoolball.Matches.Match> matches, Func<Stoolball.Matches.Match, IEnumerable<PlayerIdentity>, IEnumerable<PlayerIdentity>> playerIdentityFilter, int totalReturnedFromDatabase)
-        {
-            // A single identity can have multiple batting performances from the same innings, but only one bowling, fielding or awards performance,
-            // so count batting performances first then add on a count of any performances which don't already feature in the batting.
-            var playerIdentityFinder = new PlayerIdentityFinder();
-            var expected = 0;
-            foreach (var match in matches)
-            {
-                var batterIdentitiesInExpectedPlayerInnings = playerIdentityFilter(match, match.MatchInnings.SelectMany(x => x.PlayerInnings).Where(x => x.Batter != null).Select(x => x.Batter!) ?? Array.Empty<PlayerIdentity>());
-                expected += batterIdentitiesInExpectedPlayerInnings.Count();
-
-                var battersInMatch = batterIdentitiesInExpectedPlayerInnings.Select(x => x.PlayerIdentityId);
-                var identitiesInMatchButNotInPlayerInnings = playerIdentityFilter(match, playerIdentityFinder.PlayerIdentitiesInMatch(match).Where(x => !battersInMatch.Contains(x.PlayerIdentityId)));
-                expected += identitiesInMatchButNotInPlayerInnings.Count();
-            }
-
-            Assert.NotEqual(0, expected);
-            Assert.Equal(expected, totalReturnedFromDatabase);
+            Assert.Equal(performances.Count(), result);
         }
 
         [Fact]
