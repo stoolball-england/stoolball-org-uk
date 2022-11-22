@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.Navigation;

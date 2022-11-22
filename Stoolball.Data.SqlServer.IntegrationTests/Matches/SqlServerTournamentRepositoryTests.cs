@@ -9,6 +9,7 @@ using Dapper;
 using Ganss.XSS;
 using Moq;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Matches;

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
+using Stoolball.Data.Abstractions;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Umbraco.Cms.Core.Web;

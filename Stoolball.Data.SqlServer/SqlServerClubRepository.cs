@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Newtonsoft.Json;
 using Stoolball.Clubs;
+using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using static Stoolball.Constants;

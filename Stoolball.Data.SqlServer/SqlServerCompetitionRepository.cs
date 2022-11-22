@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Newtonsoft.Json;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Html;
 using Stoolball.Logging;
 using Stoolball.Routing;

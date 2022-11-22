@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Stoolball.Clubs;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Web.Clubs;

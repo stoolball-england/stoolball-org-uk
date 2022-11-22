@@ -1,6 +1,4 @@
-﻿using Stoolball.Statistics;
-
-namespace Stoolball.Data.Abstractions
+﻿namespace Stoolball.Data.Abstractions
 {
     public interface ICacheableBestPlayerTotalStatisticsDataSource : IBestPlayerTotalStatisticsDataSource
     {

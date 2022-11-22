@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Teams;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Matches.Models;

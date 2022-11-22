@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Stoolball.Schools;
 
-namespace Stoolball.Schools
+namespace Stoolball.Data.Abstractions
 {
     /// <summary>
     /// Get school data from a data source

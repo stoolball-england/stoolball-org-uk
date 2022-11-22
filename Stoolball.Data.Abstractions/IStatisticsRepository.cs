@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Stoolball.Matches;
+using Stoolball.Statistics;
 
-namespace Stoolball.Statistics
+namespace Stoolball.Data.Abstractions
 {
     public interface IStatisticsRepository
     {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Stoolball.Data.Abstractions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;

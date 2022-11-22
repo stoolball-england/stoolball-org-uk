@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using Stoolball.Statistics;
 
-namespace Stoolball.Statistics
+namespace Stoolball.Data.Abstractions
 {
     /// <summary>
     /// Get stoolball player data from a data source

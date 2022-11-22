@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Stoolball.MatchLocations;
 
-namespace Stoolball.MatchLocations
+namespace Stoolball.Data.Abstractions
 {
     /// <summary>
     /// Get stoolball match location data from a data source

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Stoolball.Clubs;
 
-namespace Stoolball.Clubs
+namespace Stoolball.Data.Abstractions
 {
     public interface IClubRepository
     {

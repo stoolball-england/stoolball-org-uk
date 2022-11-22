@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Data.Abstractions;
-using Stoolball.Statistics;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics.Models;
 using Umbraco.Cms.Core.Cache;

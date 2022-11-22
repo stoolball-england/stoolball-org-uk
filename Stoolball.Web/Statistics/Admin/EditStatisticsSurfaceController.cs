@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Stoolball.Data.Abstractions;
 using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Matches;

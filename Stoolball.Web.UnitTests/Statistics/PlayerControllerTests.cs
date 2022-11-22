@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Moq;
+using Stoolball.Data.Abstractions;
 using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
 using Stoolball.Web.Statistics.Models;

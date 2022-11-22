@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Stoolball.Data.Abstractions;
 using Stoolball.Email;
 using Stoolball.MatchLocations;
 using Stoolball.Security;

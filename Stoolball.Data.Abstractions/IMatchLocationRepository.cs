@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Stoolball.MatchLocations;
 
-namespace Stoolball.MatchLocations
+namespace Stoolball.Data.Abstractions
 {
     public interface IMatchLocationRepository
     {

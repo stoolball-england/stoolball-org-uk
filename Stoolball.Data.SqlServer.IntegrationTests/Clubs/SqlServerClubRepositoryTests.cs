@@ -6,6 +6,7 @@ using System.Transactions;
 using Dapper;
 using Moq;
 using Stoolball.Clubs;
+using Stoolball.Data.Abstractions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Routing;

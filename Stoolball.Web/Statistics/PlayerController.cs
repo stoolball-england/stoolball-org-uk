@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
-using Stoolball.Statistics;
+using Stoolball.Data.Abstractions;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Security;

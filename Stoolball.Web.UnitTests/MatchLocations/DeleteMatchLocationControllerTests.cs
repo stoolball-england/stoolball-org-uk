@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Stoolball.Matches;
+using Stoolball.Data.Abstractions;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
 using Stoolball.Web.MatchLocations;

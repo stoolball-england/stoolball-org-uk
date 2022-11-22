@@ -2,6 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
+using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
 
 namespace Stoolball.Data.SqlServer

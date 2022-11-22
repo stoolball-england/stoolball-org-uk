@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Stoolball.Data.Abstractions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;

@@ -1,6 +1,4 @@
-﻿using Stoolball.MatchLocations;
-
-namespace Stoolball.Data.Abstractions
+﻿namespace Stoolball.Data.Abstractions
 {
     /// <summary>
     /// Get stoolball match location data from a data source

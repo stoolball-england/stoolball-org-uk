@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Stoolball.Competitions;
 
-namespace Stoolball.Competitions
+namespace Stoolball.Data.Abstractions
 {
     public interface ICompetitionRepository
     {

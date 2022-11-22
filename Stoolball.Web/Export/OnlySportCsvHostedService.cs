@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CsvHelper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Logging;

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Stoolball.Clubs;
-using Stoolball.Competitions;
-using Stoolball.MatchLocations;
+using Stoolball.Data.Abstractions;
 using Stoolball.Navigation;
 using Stoolball.Routing;
-using Stoolball.Teams;
+using Stoolball.Statistics;
 
-namespace Stoolball.Statistics
+namespace Stoolball.Web.Statistics
 {
     public class StatisticsFilterFactory : IStatisticsFilterFactory
     {

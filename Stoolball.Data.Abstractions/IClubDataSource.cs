@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Stoolball.Clubs;
 
-namespace Stoolball.Clubs
+namespace Stoolball.Data.Abstractions
 {
     /// <summary>
     /// Get stoolball club data from a data source

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Threading.Tasks;
+using Stoolball.Matches;
 
-namespace Stoolball.Matches
+namespace Stoolball.Data.Abstractions
 {
     public interface IMatchRepository
     {

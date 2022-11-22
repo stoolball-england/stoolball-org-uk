@@ -1,7 +1,8 @@
 ﻿using System.Data;
 using System.Threading.Tasks;
+using Stoolball.Logging;
 
-namespace Stoolball.Logging
+namespace Stoolball.Data.Abstractions
 {
     /// <summary>
     /// A store of audit records for changes to stoolball data

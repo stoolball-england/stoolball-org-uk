@@ -5,6 +5,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
+using Stoolball.Data.Abstractions;
 using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;

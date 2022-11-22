@@ -3,13 +3,15 @@ using System.Threading.Tasks;
 using Moq;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Web.Statistics;
 using Xunit;
 
-namespace Stoolball.UnitTests.Statistics
+namespace Stoolball.Web.UnitTests.Statistics
 {
     public class StatisticsFilterFactoryTests
     {

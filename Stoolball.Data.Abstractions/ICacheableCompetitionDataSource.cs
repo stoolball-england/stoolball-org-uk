@@ -1,6 +1,4 @@
-﻿using Stoolball.Competitions;
-
-namespace Stoolball.Data.Abstractions
+﻿namespace Stoolball.Data.Abstractions
 {
     /// <summary>
     /// Get stoolball competition data from a data source

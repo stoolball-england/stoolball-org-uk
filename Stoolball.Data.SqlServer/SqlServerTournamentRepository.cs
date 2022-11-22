@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Ganss.XSS;
 using Newtonsoft.Json;
+using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Routing;

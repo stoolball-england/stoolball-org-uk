@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Stoolball.Clubs;
+using Stoolball.Data.Abstractions;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Routing;

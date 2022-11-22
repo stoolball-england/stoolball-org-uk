@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Competitions.Models;

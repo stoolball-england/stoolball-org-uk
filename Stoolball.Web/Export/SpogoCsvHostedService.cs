@@ -9,6 +9,7 @@ using CsvHelper;
 using Humanizer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using Stoolball.Data.Abstractions;
 using Stoolball.Email;
 using Stoolball.Teams;
 using Umbraco.Cms.Core;

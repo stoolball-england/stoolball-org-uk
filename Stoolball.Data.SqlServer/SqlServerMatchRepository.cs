@@ -9,6 +9,7 @@ using Dapper;
 using Ganss.XSS;
 using Newtonsoft.Json;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Stoolball.Statistics;
 
-namespace Stoolball.Statistics
+namespace Stoolball.Data.Abstractions
 {
     public interface IInningsStatisticsDataSource
     {

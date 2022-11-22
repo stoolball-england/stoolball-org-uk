@@ -1,6 +1,4 @@
-﻿using Stoolball.Comments;
-
-namespace Stoolball.Data.Abstractions
+﻿namespace Stoolball.Data.Abstractions
 {
     /// <summary>
     /// Get comments on a stoolball entity from a data source

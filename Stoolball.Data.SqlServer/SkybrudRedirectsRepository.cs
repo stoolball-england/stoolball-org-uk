@@ -2,7 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using Stoolball.Routing;
+using Stoolball.Data.Abstractions;
 
 namespace Stoolball.Data.SqlServer
 {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Threading.Tasks;
+using Stoolball.Statistics;
 
-namespace Stoolball.Statistics
+namespace Stoolball.Data.Abstractions
 {
     public interface IPlayerRepository
     {

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
+using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;

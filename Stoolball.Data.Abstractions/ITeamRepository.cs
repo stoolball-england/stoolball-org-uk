@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Threading.Tasks;
+using Stoolball.Teams;
 
-namespace Stoolball.Teams
+namespace Stoolball.Data.Abstractions
 {
     public interface ITeamRepository
     {

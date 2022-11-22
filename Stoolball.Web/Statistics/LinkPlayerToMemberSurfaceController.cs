@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Data.Abstractions;
-using Stoolball.Statistics;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Logging;

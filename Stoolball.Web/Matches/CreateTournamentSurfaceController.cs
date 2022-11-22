@@ -1,13 +1,11 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Security;
-using Stoolball.Teams;
 using Stoolball.Web.Matches.Models;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Cache;

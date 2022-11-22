@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Stoolball.Competitions;
+using Stoolball.Data.Abstractions;
 using Stoolball.Email;
 using Stoolball.Security;
 using Stoolball.Web.Competitions;

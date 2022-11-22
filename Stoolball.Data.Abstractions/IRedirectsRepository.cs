@@ -2,7 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 
-namespace Stoolball.Routing
+namespace Stoolball.Data.Abstractions
 {
     public interface IRedirectsRepository
     {

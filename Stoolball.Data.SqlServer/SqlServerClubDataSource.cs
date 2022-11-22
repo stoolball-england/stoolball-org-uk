@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Clubs;
+using Stoolball.Data.Abstractions;
 using Stoolball.Routing;
 using Stoolball.Teams;
 

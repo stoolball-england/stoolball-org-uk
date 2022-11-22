@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Stoolball.Data.Abstractions;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Routing;

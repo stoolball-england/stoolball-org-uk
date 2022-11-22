@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Dapper;
 using Moq;
+using Stoolball.Data.Abstractions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Html;
 using Stoolball.Logging;

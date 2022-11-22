@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using AngleSharp.Css.Dom;
 using Ganss.XSS;
 using Moq;
+using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Routing;
-using Stoolball.Teams;
 using Xunit;
 using static Stoolball.Constants;
 

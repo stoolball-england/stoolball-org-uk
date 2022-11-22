@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Stoolball.Matches;
 
-namespace Stoolball.Matches
+namespace Stoolball.Data.Abstractions
 {
     public interface ITournamentRepository
     {

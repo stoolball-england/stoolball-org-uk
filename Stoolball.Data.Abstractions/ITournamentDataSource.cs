@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Stoolball.Matches;
 
-namespace Stoolball.Matches
+namespace Stoolball.Data.Abstractions
 {
     /// <summary>
     /// Get stoolball tournament data from a data source
