@@ -30,7 +30,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         public Season SeasonWithMinimalDetails { get; private set; }
         public MatchLocation MatchLocationWithMinimalDetails { get; private set; }
         public MatchLocation MatchLocationWithFullDetails { get; private set; }
-        public Club ClubWithMinimalDetails { get; private set; }
         public Club ClubWithTeamsAndMatchLocation { get; private set; }
         public MatchLocation MatchLocationForClub { get; private set; }
         public Team TeamWithMinimalDetails { get; private set; }
@@ -74,9 +73,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     repo.CreateMember(member);
                 }
 
-                ClubWithMinimalDetails = seedDataGenerator.CreateClubWithMinimalDetails();
-                repo.CreateClub(ClubWithMinimalDetails);
-                Clubs.Add(ClubWithMinimalDetails);
+                Clubs.Add(seedDataGenerator.CreateClubWithMinimalDetails());
 
                 ClubWithOneTeam = seedDataGenerator.CreateClubWithMinimalDetails();
                 repo.CreateClub(ClubWithOneTeam);

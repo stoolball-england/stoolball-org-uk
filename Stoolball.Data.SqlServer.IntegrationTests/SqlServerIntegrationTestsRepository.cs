@@ -48,12 +48,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 CreateSchool(school);
             }
 
+            foreach (var club in data.Clubs)
+            {
+                CreateClub(club);
+            }
+
             foreach (var team in data.Teams)
             {
-                if (team.Club != null)
-                {
-                    CreateClub(team.Club);
-                }
                 CreateTeam(team);
             }
             foreach (var playerIdentity in data.PlayerIdentities)
@@ -79,7 +80,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             }
             foreach (var season in data.Seasons)
             {
-                if (season.Competition.CompetitionId == null) { throw new InvalidOperationException(nameof(season.Competition.CompetitionId) + " must not be null"); }
+                if (season.Competition?.CompetitionId == null) { throw new InvalidOperationException(nameof(season.Competition.CompetitionId) + " must not be null"); }
                 CreateSeason(season, season.Competition.CompetitionId.Value);
                 foreach (var teamInSeason in season.Teams)
                 {

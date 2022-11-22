@@ -11,12 +11,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 {
-    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class SqlServerClubDataSourceTests
     {
-        private readonly SqlServerDataSourceFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
 
-        public SqlServerClubDataSourceTests(SqlServerDataSourceFixture databaseFixture)
+        public SqlServerClubDataSourceTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -53,27 +53,27 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
         public async Task Read_minimal_club_by_route_returns_basic_club_fields()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.ClubWithMinimalDetails.ClubRoute, "clubs")).Returns(_databaseFixture.ClubWithMinimalDetails.ClubRoute);
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.ClubWithMinimalDetails.ClubRoute, "clubs")).Returns(_databaseFixture.TestData.ClubWithMinimalDetails.ClubRoute);
             var clubDataSource = new SqlServerClubDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await clubDataSource.ReadClubByRoute(_databaseFixture.ClubWithMinimalDetails.ClubRoute).ConfigureAwait(false);
+            var result = await clubDataSource.ReadClubByRoute(_databaseFixture.TestData.ClubWithMinimalDetails.ClubRoute).ConfigureAwait(false);
             Assert.NotNull(result);
 
-            Assert.Equal(_databaseFixture.ClubWithMinimalDetails.ClubId, result!.ClubId);
-            Assert.Equal(_databaseFixture.ClubWithMinimalDetails.ClubName, result.ClubName);
-            Assert.Equal(_databaseFixture.ClubWithMinimalDetails.ClubRoute, result.ClubRoute);
-            Assert.Equal(_databaseFixture.ClubWithMinimalDetails.MemberGroupKey, result.MemberGroupKey);
-            Assert.Equal(_databaseFixture.ClubWithMinimalDetails.MemberGroupName, result.MemberGroupName);
+            Assert.Equal(_databaseFixture.TestData.ClubWithMinimalDetails.ClubId, result!.ClubId);
+            Assert.Equal(_databaseFixture.TestData.ClubWithMinimalDetails.ClubName, result.ClubName);
+            Assert.Equal(_databaseFixture.TestData.ClubWithMinimalDetails.ClubRoute, result.ClubRoute);
+            Assert.Equal(_databaseFixture.TestData.ClubWithMinimalDetails.MemberGroupKey, result.MemberGroupKey);
+            Assert.Equal(_databaseFixture.TestData.ClubWithMinimalDetails.MemberGroupName, result.MemberGroupName);
         }
 
         [Fact]
         public async Task Read_club_by_route_returns_teams_alphabetically_with_inactive_last()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.ClubWithTeamsAndMatchLocation.ClubRoute, "clubs")).Returns(_databaseFixture.ClubWithTeamsAndMatchLocation.ClubRoute);
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.ClubWithTeamsAndMatchLocation.ClubRoute, "clubs")).Returns(_databaseFixture.TestData.ClubWithTeamsAndMatchLocation.ClubRoute);
             var clubDataSource = new SqlServerClubDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await clubDataSource.ReadClubByRoute(_databaseFixture.ClubWithTeamsAndMatchLocation.ClubRoute).ConfigureAwait(false);
+            var result = await clubDataSource.ReadClubByRoute(_databaseFixture.TestData.ClubWithTeamsAndMatchLocation.ClubRoute).ConfigureAwait(false);
             Assert.NotNull(result);
 
             AssertTeamsSortedAlphabeticallyWithInactiveLast(result!.Teams);
@@ -87,7 +87,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 
             var results = await clubDataSource.ReadClubs(null).ConfigureAwait(false);
 
-            foreach (var club in _databaseFixture.Clubs)
+            foreach (var club in _databaseFixture.TestData.Clubs)
             {
                 var result = results.SingleOrDefault(x => x.ClubId == club.ClubId);
 
@@ -107,7 +107,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 
             var results = await clubDataSource.ReadClubs(null).ConfigureAwait(false);
 
-            foreach (var club in _databaseFixture.Clubs)
+            foreach (var club in _databaseFixture.TestData.Clubs)
             {
                 var resultClub = results.SingleOrDefault(x => x.ClubId == club.ClubId);
                 Assert.NotNull(resultClub);
@@ -147,8 +147,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 
             var results = await clubDataSource.ReadClubs(null).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.Clubs.Count, results.Count);
-            foreach (var club in _databaseFixture.Clubs)
+            Assert.Equal(_databaseFixture.TestData.Clubs.Count, results.Count);
+            foreach (var club in _databaseFixture.TestData.Clubs)
             {
                 Assert.NotNull(results.SingleOrDefault(x => x.ClubId == club.ClubId));
             }
@@ -161,10 +161,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var clubDataSource = new SqlServerClubDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await clubDataSource.ReadClubs(new ClubFilter { TeamIds = new List<Guid> { _databaseFixture.ClubWithTeamsAndMatchLocation.Teams[0].TeamId!.Value } }).ConfigureAwait(false);
+            var result = await clubDataSource.ReadClubs(new ClubFilter { TeamIds = new List<Guid> { _databaseFixture.TestData.ClubWithTeamsAndMatchLocation.Teams[0].TeamId!.Value } }).ConfigureAwait(false);
 
             Assert.Single(result);
-            Assert.True(result[0].Teams.Any(x => x.TeamId == _databaseFixture.ClubWithTeamsAndMatchLocation.Teams[0].TeamId));
+            Assert.True(result[0].Teams.Any(x => x.TeamId == _databaseFixture.TestData.ClubWithTeamsAndMatchLocation.Teams[0].TeamId));
         }
     }
 }

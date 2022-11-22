@@ -817,6 +817,23 @@ namespace Stoolball.Testing
                         teamsInMatches.Select(t => t.TeamId).Contains(x.TeamId)
             );
 
+            testData.ClubWithMinimalDetails = CreateClubWithMinimalDetails();
+
+            testData.ClubWithTeamsAndMatchLocation = CreateClubWithTeams();
+            testData.MatchLocationForClub = CreateMatchLocationWithMinimalDetails();
+            testData.MatchLocationForClub.PrimaryAddressableObjectName = "Club PAON";
+            testData.MatchLocationForClub.SecondaryAddressableObjectName = "Club SAON";
+            testData.MatchLocationForClub.Locality = "Club locality";
+            testData.MatchLocationForClub.Town = "Club town";
+            testData.MatchLocationForClub.AdministrativeArea = "Club area";
+            var teamWithMatchLocation = testData.ClubWithTeamsAndMatchLocation.Teams.First(x => !x.UntilYear.HasValue);
+            teamWithMatchLocation.MatchLocations.Add(testData.MatchLocationForClub);
+            testData.MatchLocationForClub.Teams.Add(teamWithMatchLocation);
+
+            testData.Teams.AddRange(testData.ClubWithTeamsAndMatchLocation.Teams);
+            testData.Clubs.Add(testData.ClubWithMinimalDetails);
+            testData.Clubs.AddRange(testData.Teams.Select(x => x.Club).OfType<Club>().Distinct(new ClubEqualityComparer()));
+
             testData.TournamentInThePastWithFullDetails!.Teams.Add(new TeamInTournament
             {
                 TournamentTeamId = Guid.NewGuid(),
@@ -846,20 +863,23 @@ namespace Stoolball.Testing
             }
 
             testData.MatchLocations = testData.Matches.Where(m => m.MatchLocation != null).Select(m => m.MatchLocation)
-                .Union(testData.Tournaments.Where(t => t.TournamentLocation != null).Select(t => t.TournamentLocation))
+                .Union(testData.Tournaments.Select(t => t.TournamentLocation))
                 .Union(testData.Teams.SelectMany(x => x.MatchLocations))
+                .OfType<MatchLocation>()
                 .Distinct(new MatchLocationEqualityComparer()).ToList();
+
             testData.MatchLocationWithFullDetails = testData.MatchLocations.First(x => x.Teams.Count > 0);
-            testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season.Competition)
+            testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
                 .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
-                .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season.Competition))
+                .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season?.Competition))
+                .OfType<Competition>()
                 .Distinct(new CompetitionEqualityComparer()).ToList();
             testData.CompetitionWithFullDetails = testData.Competitions.First(x => x.Seasons.Any());
             testData.Seasons = testData.Competitions.SelectMany(x => x.Seasons).Distinct(new SeasonEqualityComparer()).ToList();
             testData.SeasonWithFullDetails = testData.Seasons.First(x => x.Teams.Any() && x.PointsRules.Any() && x.PointsAdjustments.Any());
 
             testData.PlayerIdentities = testData.Matches.SelectMany(m => _playerIdentityFinder.PlayerIdentitiesInMatch(m)).Distinct(new PlayerIdentityEqualityComparer()).ToList();
-            testData.Players = testData.PlayerIdentities.Select(x => x.Player).Distinct(playerComparer).ToList();
+            testData.Players = testData.PlayerIdentities.Select(x => x.Player).OfType<Player>().Distinct(playerComparer).ToList();
 
             foreach (var identity in testData.PlayerIdentities)
             {
