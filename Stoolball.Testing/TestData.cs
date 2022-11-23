@@ -22,6 +22,7 @@ namespace Stoolball.Testing
         internal List<Match> Matches { get; set; } = new();
         internal Team? TeamWithFullDetails { get; set; }
         internal List<Team> Teams { get; set; } = new();
+        internal List<TeamListing> TeamListings { get; set; } = new();
         internal MatchLocation? MatchLocationForClub { get; set; }
         internal List<MatchLocation> MatchLocations { get; set; } = new();
         internal List<Competition> Competitions { get; set; } = new();

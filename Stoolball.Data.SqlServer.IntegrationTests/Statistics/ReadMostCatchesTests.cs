@@ -445,7 +445,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
                 Assert.Equal(player.TotalMatches, result!.Result?.TotalMatches);
                 Assert.Null(result.Result?.TotalInnings);
-                Assert.Equal(player.Total, result.Result.Total);
+                Assert.Equal(player.Total, result.Result?.Total);
             }
         }
 
@@ -461,14 +461,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
                                                                    .SelectMany(m => m.MatchInnings)
                                                                    .SelectMany(mi => mi.PlayerInnings)
-                                                                   .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player.PlayerId == x.PlayerId) ||
-                                                                                (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player.PlayerId == x.PlayerId))
+                                                                   .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == x.PlayerId) ||
+                                                                                (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == x.PlayerId))
                                                                    .Any());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result?.Player?.PlayerId == player.PlayerId));
             }
         }
 
@@ -483,7 +483,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 },
                 Club = _databaseFixture.TestData.TeamWithFullDetails!.Club
             };
-            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithFullDetails.Club.ClubId! } }));
+            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithFullDetails.Club!.ClubId! } }));
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
@@ -491,16 +491,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
                                                                     .SelectMany(m => m.MatchInnings)
-                                                                    .Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
+                                                                    .Where(i => i.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
                                                                     .SelectMany(mi => mi.PlayerInnings)
-                                                                    .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player.PlayerId == x.PlayerId) ||
-                                                                                (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player.PlayerId == x.PlayerId))
+                                                                    .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == x.PlayerId) ||
+                                                                                (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == x.PlayerId))
                                                                     .Any());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result?.Player?.PlayerId == player.PlayerId));
             }
         }
 
@@ -522,52 +522,60 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var results = await dataSource.ReadMostCatches(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                                    .Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
+                                                                    .Where(x => x.Teams.Select(t => t.Team?.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
                                                                     .SelectMany(m => m.MatchInnings)
-                                                                    .Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
+                                                                    .Where(i => i.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
                                                                     .SelectMany(mi => mi.PlayerInnings)
-                                                                    .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player.PlayerId == x.PlayerId) ||
-                                                                                (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player.PlayerId == x.PlayerId))
+                                                                    .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == x.PlayerId) ||
+                                                                                (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == x.PlayerId))
                                                                     .Any());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result?.Player?.PlayerId == player.PlayerId));
             }
         }
 
         [Fact]
         public async Task Read_most_catches_supports_filter_by_match_location_id()
         {
-            var filter = new StatisticsFilter
-            {
-                Paging = new Paging
-                {
-                    PageSize = int.MaxValue
-                },
-                MatchLocation = _databaseFixture.TestData.MatchLocations.First()
-            };
-            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", filter.MatchLocation.MatchLocationId! } }));
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            var results = await dataSource.ReadMostCatches(filter).ConfigureAwait(false);
-
-            var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                                        .Where(x => x.MatchLocation?.MatchLocationId == _databaseFixture.TestData.MatchLocations.First().MatchLocationId)
-                                                                        .SelectMany(m => m.MatchInnings)
-                                                                        .SelectMany(mi => mi.PlayerInnings)
-                                                                        .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player.PlayerId == x.PlayerId) ||
-                                                                                    (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player.PlayerId == x.PlayerId))
-                                                                        .Any());
-
-            Assert.True(expected.Count() > 0);
-            Assert.Equal(expected.Count(), results.Count());
-            foreach (var player in expected)
+            var foundAtLeastOne = false;
+            foreach (var location in _databaseFixture.TestData.MatchLocations)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId));
+                var filter = new StatisticsFilter
+                {
+                    Paging = new Paging
+                    {
+                        PageSize = int.MaxValue
+                    },
+                    MatchLocation = _databaseFixture.TestData.MatchLocations.First()
+                };
+                _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", filter.MatchLocation.MatchLocationId! } }));
+
+                var results = await dataSource.ReadMostCatches(filter).ConfigureAwait(false);
+
+                var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
+                                                                            .Where(x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId)
+                                                                            .SelectMany(m => m.MatchInnings)
+                                                                            .SelectMany(mi => mi.PlayerInnings)
+                                                                            .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == x.PlayerId) ||
+                                                                                        (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == x.PlayerId))
+                                                                            .Any());
+
+                foundAtLeastOne = foundAtLeastOne || expected.Any();
+
+                Assert.Equal(expected.Count(), results.Count());
+                foreach (var player in expected)
+                {
+                    Assert.NotNull(results.SingleOrDefault(x => x.Result?.Player?.PlayerId == player.PlayerId));
+                }
             }
+
+            Assert.True(foundAtLeastOne);
         }
 
         [Fact]
@@ -591,14 +599,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                                         .Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId)
                                                                         .SelectMany(m => m.MatchInnings)
                                                                         .SelectMany(mi => mi.PlayerInnings)
-                                                                        .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player.PlayerId == x.PlayerId) ||
-                                                                                    (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player.PlayerId == x.PlayerId))
+                                                                        .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == x.PlayerId) ||
+                                                                                    (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == x.PlayerId))
                                                                         .Any());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result?.Player?.PlayerId == player.PlayerId));
             }
         }
 
@@ -623,14 +631,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                         .Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
                                                         .SelectMany(m => m.MatchInnings)
                                                         .SelectMany(mi => mi.PlayerInnings)
-                                                        .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player.PlayerId == x.PlayerId) ||
-                                                                    (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player.PlayerId == x.PlayerId))
+                                                        .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == x.PlayerId) ||
+                                                                    (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == x.PlayerId))
                                                         .Any());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result?.Player?.PlayerId == player.PlayerId));
             }
         }
 
@@ -659,14 +667,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                         .Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)
                                                         .SelectMany(m => m.MatchInnings)
                                                         .SelectMany(mi => mi.PlayerInnings)
-                                                        .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player.PlayerId == x.PlayerId) ||
-                                                                    (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player.PlayerId == x.PlayerId))
+                                                        .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == x.PlayerId) ||
+                                                                    (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == x.PlayerId))
                                                         .Any());
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result?.Player?.PlayerId == player.PlayerId));
             }
         }
 
@@ -683,8 +691,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             int? previousTotal = int.MaxValue;
             foreach (var result in results)
             {
-                Assert.True(result.Result.Total <= previousTotal);
-                previousTotal = result.Result.Total;
+                Assert.True(result.Result?.Total <= previousTotal);
+                previousTotal = result.Result?.Total;
             }
         }
 
@@ -699,7 +707,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                             .SelectMany(x => x.PlayerInnings)
                             .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy != null) ||
                                             (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler != null))
-                            .Select(x => x.DismissalType == DismissalType.Caught ? x.DismissedBy.Player.PlayerId : x.Bowler.Player.PlayerId)
+                            .Select(x => x.DismissalType == DismissalType.Caught ? x.DismissedBy?.Player?.PlayerId : x.Bowler?.Player?.PlayerId)
                             .Distinct()
                             .Count();
             while (remaining > 0)
@@ -731,10 +739,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             // The test data is altered to ensure the 5th and 6th results are the same
             Assert.True(results.Count > 5);
 
-            var fifthValue = results[4].Result.Total;
+            var fifthValue = results[4].Result?.Total;
             for (var i = 4; i < results.Count; i++)
             {
-                Assert.Equal(fifthValue, results[i].Result.Total);
+                Assert.Equal(fifthValue, results[i].Result?.Total);
             }
         }
     }

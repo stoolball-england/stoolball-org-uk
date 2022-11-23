@@ -188,6 +188,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches);
 
+            Assert.NotEmpty(performances);
             AssertPerformancesEachOccurOnceInResults(performances, results);
         }
 
@@ -211,6 +212,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var performances = AllPlayerIdentityPerformances(matchesForPlayer);
             performances = performances.Where(x => x.PlayerId == filter.Player.PlayerId);
 
+            Assert.NotEmpty(performances);
             AssertPerformancesEachOccurOnceInResults(performances, results);
         }
 
@@ -235,6 +237,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Teams.Any(t => teamIdsInClub.Contains(t.Team?.TeamId))));
             performances = performances.Where(x => playerIdentitiesInClub.Contains(x.PlayerIdentityId));
 
+            Assert.NotEmpty(performances);
             AssertPerformancesEachOccurOnceInResults(performances, results);
         }
 
@@ -258,6 +261,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team?.TeamId).Contains(filter.Team!.TeamId)));
             performances = performances.Where(x => playerIdentitiesInTeam.Contains(x.PlayerIdentityId));
 
+            Assert.NotEmpty(performances);
             AssertPerformancesEachOccurOnceInResults(performances, results);
         }
 
@@ -282,28 +286,36 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team?.TeamRoute).Contains(filter.Team!.TeamRoute)));
             performances = performances.Where(x => playerIdentitiesInTeam.Contains(x.PlayerIdentityId));
 
+            Assert.NotEmpty(performances);
             AssertPerformancesEachOccurOnceInResults(performances, results);
         }
 
         [Fact]
         public async Task Read_performances_supports_filter_by_match_location_id()
         {
-            var filter = new StatisticsFilter
+            var foundAtLeastOne = false;
+            foreach (var location in _databaseFixture.TestData.MatchLocations)
             {
-                Paging = new Paging
+                var filter = new StatisticsFilter
                 {
-                    PageSize = int.MaxValue
-                },
-                MatchLocation = _databaseFixture.TestData.MatchLocations.First()
-            };
-            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", _databaseFixture.TestData.MatchLocations.First().MatchLocationId! } }));
-            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
+                    Paging = new Paging
+                    {
+                        PageSize = int.MaxValue
+                    },
+                    MatchLocation = location
+                };
+                _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", filter.MatchLocation.MatchLocationId! } }));
+                var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
-            var results = await dataSource.ReadPlayerIdentityPerformances(filter).ConfigureAwait(false);
+                var results = await dataSource.ReadPlayerIdentityPerformances(filter).ConfigureAwait(false);
 
-            var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId));
+                var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId));
 
-            AssertPerformancesEachOccurOnceInResults(performances, results);
+                foundAtLeastOne = foundAtLeastOne || performances.Any();
+
+                AssertPerformancesEachOccurOnceInResults(performances, results);
+            }
+            Assert.True(foundAtLeastOne);
         }
 
         [Fact]
@@ -324,6 +336,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == filter.Competition.CompetitionId));
 
+            Assert.NotEmpty(performances);
             AssertPerformancesEachOccurOnceInResults(performances, results);
         }
 
@@ -345,6 +358,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == filter.Season.SeasonId));
 
+            Assert.NotEmpty(performances);
             AssertPerformancesEachOccurOnceInResults(performances, results);
         }
 
@@ -370,6 +384,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate));
 
+            Assert.NotEmpty(performances);
             AssertPerformancesEachOccurOnceInResults(performances, results);
         }
 
@@ -391,12 +406,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var performances = AllPlayerIdentityPerformances(_databaseFixture.TestData.Matches.Where(x => x.Awards.Any(aw => aw.Award?.AwardName == "Player of the match"))).Where(x => x.PlayerOfTheMatch);
 
+            Assert.NotEmpty(performances);
             AssertPerformancesEachOccurOnceInResults(performances, results);
         }
 
         private void AssertPerformancesEachOccurOnceInResults(IEnumerable<PlayerInMatchStatisticsRecord> performances, IEnumerable<StatisticsResult<PlayerIdentityPerformance>> results)
         {
-            Assert.NotEmpty(performances);
             Assert.Equal(performances.Count(), results.Count());
             foreach (var performance in performances)
             {

@@ -39,13 +39,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         public List<Match> Matches { get; internal set; } = new List<Match>();
         public List<MatchListing> MatchListings { get; internal set; } = new List<MatchListing>();
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
-        public List<Club> Clubs { get; internal set; } = new List<Club>();
         public List<Team> Teams { get; internal set; } = new List<Team>();
-        public List<TeamListing> TeamListings { get; internal set; } = new List<TeamListing>();
         public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
         public Season SeasonWithFullDetails { get; private set; }
         public List<MatchListing> TournamentMatchListings { get; private set; } = new List<MatchListing>();
-        public Club ClubWithOneTeam { get; private set; }
 
         public SqlServerDataSourceFixture() : base("StoolballDataSourceIntegrationTests")
         {
@@ -73,17 +70,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     repo.CreateMember(member);
                 }
 
-                Clubs.Add(seedDataGenerator.CreateClubWithMinimalDetails());
-
-                ClubWithOneTeam = seedDataGenerator.CreateClubWithMinimalDetails();
-                repo.CreateClub(ClubWithOneTeam);
-                Clubs.Add(ClubWithOneTeam);
+                // clubWithOneTeam remains here to populate the Teams list. It already exists and is in that list in SqlServerTestDataFixture.
+                var clubWithOneTeam = seedDataGenerator.CreateClubWithMinimalDetails();
+                repo.CreateClub(clubWithOneTeam);
                 var onlyTeamInClub = seedDataGenerator.CreateTeamWithMinimalDetails("Only team in the club");
-                ClubWithOneTeam.Teams.Add(onlyTeamInClub);
-                onlyTeamInClub.Club = ClubWithOneTeam;
+                clubWithOneTeam.Teams.Add(onlyTeamInClub);
+                onlyTeamInClub.Club = clubWithOneTeam;
                 repo.CreateTeam(onlyTeamInClub);
                 Teams.Add(onlyTeamInClub);
 
+                // ClubWithTeamsAndMatchLocation and MatchLocationForClub remain here to populate the MatchLocations and Teams lists.
+                // They already exist and populate the equivalent lists in SqlServerTestDataFixture.
                 ClubWithTeamsAndMatchLocation = seedDataGenerator.CreateClubWithTeams();
                 MatchLocationForClub = seedDataGenerator.CreateMatchLocationWithMinimalDetails();
                 MatchLocationForClub.PrimaryAddressableObjectName = "Club PAON";
@@ -95,7 +92,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 teamWithMatchLocation.MatchLocations.Add(MatchLocationForClub);
                 MatchLocationForClub.Teams.Add(teamWithMatchLocation);
                 repo.CreateClub(ClubWithTeamsAndMatchLocation);
-                Clubs.Add(ClubWithTeamsAndMatchLocation);
                 foreach (var team in ClubWithTeamsAndMatchLocation.Teams)
                 {
                     repo.CreateTeam(team);
@@ -315,9 +311,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 repo.CreateMatchLocation(MatchLocationWithFullDetails);
                 Teams.AddRange(MatchLocationWithFullDetails.Teams);
                 MatchLocations.Add(MatchLocationWithFullDetails);
-
-                foreach (var team in Teams.Where(t => t.Club == null || t.Club.ClubId == ClubWithOneTeam.ClubId)) { TeamListings.Add(team.ToTeamListing()); }
-                foreach (var club in Clubs.Where(c => c.Teams.Count == 0 || c.Teams.Count > 1)) { TeamListings.Add(club.ToTeamListing()); }
 
                 for (var i = 0; i < 30; i++)
                 {

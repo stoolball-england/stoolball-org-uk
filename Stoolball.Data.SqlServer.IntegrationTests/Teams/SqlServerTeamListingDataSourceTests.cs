@@ -9,12 +9,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 {
-    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class SqlServerTeamListingDataSourceTests
     {
-        private readonly SqlServerDataSourceFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
 
-        public SqlServerTeamListingDataSourceTests(SqlServerDataSourceFixture databaseFixture)
+        public SqlServerTeamListingDataSourceTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -30,32 +30,35 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(null).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TeamListings.Count, result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count, result);
         }
 
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_name()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.TeamName.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.TeamWithFullDetails!.TeamName!.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TeamListings.Count(x => x.ClubOrTeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.ClubOrTeamName?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false), result);
         }
 
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_name_where_the_club_name_is_different()
         {
-            var team = _databaseFixture.Clubs.Where(x => x.Teams.Count > 1).SelectMany(x => x.Teams).First(x => !x.Club.ClubName.Contains(x.TeamName, StringComparison.OrdinalIgnoreCase));
+            var team = _databaseFixture.TestData.Clubs
+                .Where(x => x.Teams.Count > 1)
+                .SelectMany(x => x.Teams).Where(x => !string.IsNullOrEmpty(x.TeamName))
+                .First(x => !x.Club?.ClubName?.Contains(x.TeamName!, StringComparison.OrdinalIgnoreCase) ?? false);
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = team.TeamName.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = team.TeamName!.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            var matchedByClubName = _databaseFixture.Clubs.Where(x => x.ClubName.Contains(query.Query, StringComparison.OrdinalIgnoreCase));
-            var matchedByTeamName = _databaseFixture.Teams.Where(x => x.TeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase) && (x.Club == null || !matchedByClubName.Select(c => x.Club.ClubId).Contains(x.Club.ClubId)));
-            Assert.Equal(matchedByClubName.Count() + matchedByTeamName.Count(x => x.Club == null) + matchedByTeamName.Where(x => x.Club != null).Select(x => x.Club.ClubId).OfType<Guid>().Distinct().Count(), result);
+            var matchedByClubName = _databaseFixture.TestData.Clubs.Where(x => x.ClubName.Contains(query.Query, StringComparison.OrdinalIgnoreCase));
+            var matchedByTeamName = _databaseFixture.TestData.Teams.Where(x => x.TeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase) && (x.Club == null || !matchedByClubName.Select(c => x.Club.ClubId).Contains(x.Club.ClubId)));
+            Assert.Equal(matchedByClubName.Count() + matchedByTeamName.Count(x => x.Club == null) + matchedByTeamName.Where(x => x.Club != null).Select(x => x.Club?.ClubId).OfType<Guid>().Distinct().Count(), result);
         }
 
         [Fact]
@@ -66,40 +69,40 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TeamListings.Count(x => x.PlayerTypes.Contains(PlayerType.Ladies)), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.PlayerTypes.Contains(PlayerType.Ladies)), result);
         }
 
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_locality()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().Locality.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.TeamWithFullDetails!.MatchLocations.First().Locality!.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.Teams.Where(x => x.Club == null).Count(x => x.MatchLocations.Any(ml => ml.Locality.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.Locality?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false)), result);
         }
 
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_town()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().Town.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.TeamWithFullDetails!.MatchLocations.First().Town!.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.Teams.Where(x => x.Club == null).Count(x => x.MatchLocations.Any(ml => ml.Town.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.Town?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false)), result);
         }
 
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_administrative_area()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().AdministrativeArea.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.TeamWithFullDetails!.MatchLocations.First().AdministrativeArea!.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.Teams.Where(x => x.Club == null).Count(x => x.MatchLocations.Any(ml => ml.AdministrativeArea.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.AdministrativeArea?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false)), result);
         }
 
         [Fact]
@@ -110,9 +113,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TeamListings
-               .Count(x => _databaseFixture.Teams.Where(t => t.TeamType == TeamType.Representative).Select(t => t.TeamId).Contains(x.TeamListingId) ||
-                           _databaseFixture.Clubs.Where(c => c.Teams.Any(t => t.TeamType == TeamType.Representative)).Select(c => c.ClubId).Contains(x.TeamListingId));
+            var expected = _databaseFixture.TestData.TeamListings
+               .Count(x => _databaseFixture.TestData.Teams.Where(t => t.TeamType == TeamType.Representative).Select(t => t.TeamId).Contains(x.TeamListingId) ||
+                           _databaseFixture.TestData.Clubs.Where(c => c.Teams.Any(t => t.TeamType == TeamType.Representative)).Select(c => c.ClubId).Contains(x.TeamListingId));
             Assert.Equal(expected, result);
         }
 
@@ -124,7 +127,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.Clubs.Count(c => !c.Teams.Any());
+            var expected = _databaseFixture.TestData.Clubs.Count(c => !c.Teams.Any());
             Assert.Equal(expected, result);
         }
 
@@ -137,40 +140,40 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TeamListings.Count(x => x.ClubOrTeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.ClubOrTeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)), result);
         }
 
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_club_with_locality()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.Locality.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.MatchLocationForClub.Locality.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.Locality.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.Locality.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
         }
 
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_club_with_town()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.Town.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.MatchLocationForClub.Town.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.Town.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.Town.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
         }
 
         [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_club_with_administrative_area()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.AdministrativeArea.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.MatchLocationForClub.AdministrativeArea.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.AdministrativeArea.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.AdministrativeArea.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
         }
 
         [Fact]
@@ -180,7 +183,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
-            foreach (var team in _databaseFixture.Teams.Where(x => x.Club == null))
+            foreach (var team in _databaseFixture.TestData.Teams.Where(x => x.Club == null))
             {
                 var result = results.SingleOrDefault(x => x.TeamListingId == team.TeamId);
 
@@ -200,7 +203,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
-            foreach (var club in _databaseFixture.TeamListings.Where(x => _databaseFixture.Clubs.Select(c => c.ClubId).ToList().Contains(x.TeamListingId)))
+            foreach (var club in _databaseFixture.TestData.TeamListings.Where(x => _databaseFixture.TestData.Clubs.Select(c => c.ClubId).ToList().Contains(x.TeamListingId)))
             {
                 var result = results.SingleOrDefault(x => x.TeamListingId == club.TeamListingId);
 
@@ -224,7 +227,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
-            foreach (var team in _databaseFixture.Teams.Where(x => x.Club == null))
+            foreach (var team in _databaseFixture.TestData.Teams.Where(x => x.Club == null))
             {
                 var result = results.SingleOrDefault(x => x.TeamListingId == team.TeamId);
                 Assert.NotNull(result);
@@ -248,10 +251,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
-            var result = results.SingleOrDefault(x => x.TeamListingId == _databaseFixture.ClubWithTeamsAndMatchLocation.ClubId);
+            var result = results.SingleOrDefault(x => x.TeamListingId == _databaseFixture.TestData.ClubWithTeamsAndMatchLocation!.ClubId);
             Assert.NotNull(result);
 
-            foreach (var matchLocation in _databaseFixture.ClubWithTeamsAndMatchLocation.Teams.SelectMany(x => x.MatchLocations))
+            foreach (var matchLocation in _databaseFixture.TestData.ClubWithTeamsAndMatchLocation!.Teams.SelectMany(x => x.MatchLocations))
             {
                 var resultMatchLocation = result!.MatchLocations.SingleOrDefault(x => x.MatchLocationId == matchLocation.MatchLocationId);
                 Assert.NotNull(resultMatchLocation);
@@ -289,8 +292,68 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var results = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
-            Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == _databaseFixture.ClubWithOneTeam.Teams.First().TeamId));
-            Assert.Null(results.SingleOrDefault(x => x.TeamListingId == _databaseFixture.ClubWithOneTeam.ClubId));
+            var foundClubWithNoTeams = false;
+            var foundClubWithOneActiveTeam = false;
+            var foundClubWithOneInactiveTeam = false;
+            var foundClubWithOneActiveTeamAndOthersInactive = false;
+            var foundClubWithMultipleActiveTeams = false;
+
+            foreach (var club in _databaseFixture.TestData.Clubs)
+            {
+                var isClubWithNoTeams = !club.Teams.Any();
+                var isClubWithOneActiveTeam = club.Teams.Count == 1 && !club.Teams[0].UntilYear.HasValue;
+                var isClubWithOneInactiveTeam = club.Teams.Count == 1 && club.Teams[0].UntilYear.HasValue;
+                var isClubWithOneActiveTeamAndOthersInactive = club.Teams.Count > 1 && club.Teams.Count(t => !t.UntilYear.HasValue) == 1;
+                var isClubWithMultipleActiveTeams = club.Teams.Count(t => !t.UntilYear.HasValue) > 1;
+
+                if (isClubWithNoTeams)
+                {
+                    Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == club.ClubId));
+                    foundClubWithNoTeams = true;
+                }
+
+                if (isClubWithOneActiveTeam)
+                {
+                    Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == club.Teams.Single().TeamId));
+                    Assert.Null(results.SingleOrDefault(x => x.TeamListingId == club.ClubId));
+                    foundClubWithOneActiveTeam = true;
+                }
+
+                else if (isClubWithOneInactiveTeam)
+                {
+                    Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == club.Teams.Single().TeamId));
+                    Assert.Null(results.SingleOrDefault(x => x.TeamListingId == club.ClubId));
+                    foundClubWithOneInactiveTeam = true;
+                }
+
+                else if (isClubWithOneActiveTeamAndOthersInactive)
+                {
+                    Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == club.Teams.Single(x => !x.UntilYear.HasValue).TeamId));
+                    foreach (var team in club.Teams.Where(x => x.UntilYear.HasValue))
+                    {
+                        Assert.Null(results.SingleOrDefault(x => x.TeamListingId == team.TeamId));
+                    }
+                    Assert.Null(results.SingleOrDefault(x => x.TeamListingId == club.ClubId));
+                    foundClubWithOneActiveTeamAndOthersInactive = true;
+                }
+
+                else if (isClubWithMultipleActiveTeams)
+                {
+                    Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == club.ClubId));
+                    foreach (var team in club.Teams)
+                    {
+                        var resultForTeam = results.SingleOrDefault(x => x.TeamListingId == team.TeamId);
+                        Assert.Null(resultForTeam);
+                    }
+                    foundClubWithMultipleActiveTeams = true;
+                }
+            }
+
+            Assert.True(foundClubWithNoTeams);
+            Assert.True(foundClubWithOneActiveTeam);
+            Assert.True(foundClubWithOneInactiveTeam);
+            Assert.True(foundClubWithOneActiveTeamAndOthersInactive);
+            Assert.True(foundClubWithMultipleActiveTeams);
         }
 
         [Fact]
@@ -300,8 +363,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeamListings(null).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TeamListings.Count, result.Count);
-            foreach (var team in _databaseFixture.TeamListings)
+            var expected = _databaseFixture.TestData.TeamListings.Select(x => x.TeamListingId);
+            var missing = result.Where(x => !expected.Contains(x.TeamListingId));
+
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count, result.Count);
+            foreach (var team in _databaseFixture.TestData.TeamListings)
             {
                 Assert.NotNull(result.SingleOrDefault(x => x.TeamListingId == team.TeamListingId));
             }
@@ -311,12 +377,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_team_listings_supports_case_insensitive_filter_by_team_name()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.TeamName.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.TeamWithFullDetails!.TeamName!.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TeamListings.Count(x => x.ClubOrTeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)), result.Count);
-            foreach (var team in _databaseFixture.TeamListings.Where(x => x.ClubOrTeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)))
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.ClubOrTeamName?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false), result.Count);
+            foreach (var team in _databaseFixture.TestData.TeamListings.Where(x => x.ClubOrTeamName?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false))
             {
                 Assert.NotNull(result.SingleOrDefault(x => x.TeamListingId == team.TeamListingId));
             }
@@ -325,51 +391,48 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_listings_supports_case_insensitive_filter_by_team_name_where_the_club_name_is_different()
         {
-            var team = _databaseFixture.Clubs.Where(x => x.Teams.Count > 1).SelectMany(x => x.Teams).First(x => !x.Club.ClubName.Contains(x.TeamName, StringComparison.OrdinalIgnoreCase));
+            var team = _databaseFixture.TestData.Clubs.Where(x => x.Teams.Count(t => !t.UntilYear.HasValue) > 1)
+                                .SelectMany(x => x.Teams)
+                                .Where(x => !string.IsNullOrEmpty(x.TeamName))
+                                .First(x => !x.Club?.ClubName?.Contains(x.TeamName!, StringComparison.OrdinalIgnoreCase) ?? false);
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = team.TeamName.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = team.TeamName!.ToUpperInvariant() };
 
             var results = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
             foreach (var result in results)
             {
-                var club = _databaseFixture.Clubs.SingleOrDefault(x => x.ClubId == result.TeamListingId);
+                var club = _databaseFixture.TestData.Clubs.SingleOrDefault(x => x.ClubId == result.TeamListingId);
                 if (club != null)
                 {
-                    var clubNameMatches = club.ClubName.Contains(team.TeamName, StringComparison.OrdinalIgnoreCase);
-                    var teamNameMatches = club.Teams.Any(x => x.TeamName.Contains(team.TeamName, StringComparison.OrdinalIgnoreCase));
+                    var clubNameMatches = club.ClubName?.Contains(team.TeamName, StringComparison.OrdinalIgnoreCase) ?? false;
+                    var teamNameMatches = club.Teams.Any(x => x.TeamName?.Contains(team.TeamName, StringComparison.OrdinalIgnoreCase) ?? false);
                     Assert.True(clubNameMatches || teamNameMatches);
                 }
                 else
                 {
-                    var resultTeam = _databaseFixture.Teams.SingleOrDefault(x => x.TeamId == result.TeamListingId);
+                    var resultTeam = _databaseFixture.TestData.Teams.SingleOrDefault(x => x.TeamId == result.TeamListingId);
                     Assert.Contains(team.TeamName, result.ClubOrTeamName, StringComparison.OrdinalIgnoreCase);
                 }
 
             }
-            if (team.Club.Teams.Count > 1)
-            {
-                Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == team.Club.ClubId));
-            }
-            else
-            {
-                Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == team.TeamId));
-            }
+
+            Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == team.Club?.ClubId));
         }
 
         [Fact]
         public async Task Read_team_listings_supports_case_insensitive_filter_by_team_locality()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().Locality.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.TeamWithFullDetails!.MatchLocations.First().Locality!.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.Teams.Where(x => x.Club == null && x.MatchLocations.Any(ml => ml.Locality.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.Locality?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
-                Assert.NotNull(result.SingleOrDefault(x => x.TeamListingId == team.TeamId));
+                Assert.NotNull(result.SingleOrDefault(x => x.TeamListingId == team.TeamListingId));
             }
         }
 
@@ -377,15 +440,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_team_listings_supports_case_insensitive_filter_by_team_town()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().Town.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.TeamWithFullDetails!.MatchLocations.First().Town!.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.Teams.Where(x => x.Club == null && x.MatchLocations.Any(ml => ml.Town.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.Town?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
-                Assert.NotNull(result.SingleOrDefault(x => x.TeamListingId == team.TeamId));
+                Assert.NotNull(result.SingleOrDefault(x => x.TeamListingId == team.TeamListingId));
             }
         }
 
@@ -393,15 +456,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_team_listings_supports_case_insensitive_filter_by_team_administrative_area()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.TeamWithFullDetails.MatchLocations.First().AdministrativeArea.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.TeamWithFullDetails!.MatchLocations.First().AdministrativeArea!.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.Teams.Where(x => x.Club == null && x.MatchLocations.Any(ml => ml.AdministrativeArea.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.AdministrativeArea!.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
             Assert.Equal(expected.Count(), result.Count);
-            foreach (var team in expected)
+            foreach (var teamListing in expected)
             {
-                Assert.NotNull(result.SingleOrDefault(x => x.TeamListingId == team.TeamId));
+                Assert.NotNull(result.SingleOrDefault(x => x.TeamListingId == teamListing.TeamListingId));
             }
         }
 
@@ -413,9 +476,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TeamListings
-                .Where(x => _databaseFixture.Teams.Where(t => t.TeamType == TeamType.Representative && t.TeamId.HasValue).Select(t => t.TeamId!.Value).Contains(x.TeamListingId!.Value) ||
-                            _databaseFixture.Clubs.Where(c => c.Teams.Any(t => t.TeamType == TeamType.Representative && c.ClubId.HasValue)).Select(c => c.ClubId!.Value).Contains(x.TeamListingId.Value));
+            var expected = _databaseFixture.TestData.TeamListings
+                .Where(x => _databaseFixture.TestData.Teams.Where(t => t.TeamType == TeamType.Representative && t.TeamId.HasValue).Select(t => t.TeamId!.Value).Contains(x.TeamListingId!.Value) ||
+                            _databaseFixture.TestData.Clubs.Where(c => c.Teams.Any(t => t.TeamType == TeamType.Representative && c.ClubId.HasValue)).Select(c => c.ClubId!.Value).Contains(x.TeamListingId.Value));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
@@ -431,7 +494,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.Clubs.Where(x => !x.Teams.Any());
+            var expected = _databaseFixture.TestData.Clubs.Where(x => !x.Teams.Any());
             Assert.Equal(expected.Count(), result.Count);
             foreach (var listing in expected)
             {
@@ -447,8 +510,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TeamListings.Count(x => x.ClubOrTeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)), result.Count);
-            foreach (var listing in _databaseFixture.TeamListings.Where(x => x.ClubOrTeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)))
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.ClubOrTeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)), result.Count);
+            foreach (var listing in _databaseFixture.TestData.TeamListings.Where(x => x.ClubOrTeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)))
             {
                 Assert.NotNull(result.SingleOrDefault(x => x.TeamListingId == listing.TeamListingId));
             }
@@ -458,11 +521,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_team_listings_supports_case_insensitive_filter_by_club_with_locality()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.Locality.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.MatchLocationForClub.Locality.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.Locality.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.Locality.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
@@ -474,11 +537,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_team_listings_supports_case_insensitive_filter_by_club_with_town()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.Town.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.MatchLocationForClub.Town.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.Town.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.Town.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
@@ -490,11 +553,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_team_listings_supports_case_insensitive_filter_by_club_with_administrative_area()
         {
             var teamDataSource = CreateDataSource();
-            var query = new TeamListingFilter { Query = _databaseFixture.MatchLocationForClub.AdministrativeArea.ToUpperInvariant() };
+            var query = new TeamListingFilter { Query = _databaseFixture.TestData.MatchLocationForClub.AdministrativeArea.ToUpperInvariant() };
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.AdministrativeArea.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.AdministrativeArea.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
@@ -509,7 +572,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             const int pageSize = 10;
             var pageNumber = 1;
-            var remaining = _databaseFixture.TeamListings.Count;
+            var remaining = _databaseFixture.TestData.TeamListings.Count;
             while (remaining > 0)
             {
                 var result = await teamDataSource.ReadTeamListings(new TeamListingFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = pageSize } }).ConfigureAwait(false);

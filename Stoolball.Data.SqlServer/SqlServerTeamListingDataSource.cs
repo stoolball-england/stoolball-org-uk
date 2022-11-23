@@ -204,10 +204,14 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@TeamTypes", teamQuery.TeamTypes.Select(x => x.ToString()));
             }
 
-            // For listings, clubs with one active team are treated like a team without a club, so that the team is returned
+            // For listings, clubs with one team (active or inactive), or one active team, are treated like a team without a club, so that the team is returned
             if (teamQuery != null)
             {
-                where.Add($"(t.ClubId IS NULL OR (SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamVersion} ON {Tables.Team}.TeamId = {Tables.TeamVersion}.TeamId WHERE ClubId = t.ClubId AND {Tables.TeamVersion}.UntilDate IS NULL) = 1)");
+                where.Add(@$"(
+                                (t.ClubId IS NULL) OR 
+                                ((SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamVersion} ON {Tables.Team}.TeamId = {Tables.TeamVersion}.TeamId WHERE ClubId = t.ClubId) = 1) OR
+                                ((SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamVersion} ON {Tables.Team}.TeamId = {Tables.TeamVersion}.TeamId WHERE ClubId = t.ClubId AND {Tables.TeamVersion}.UntilDate IS NULL) = 1 AND tn.UntilDate IS NULL) 
+                             )");
             }
 
             return (where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "WHERE 1=1", parameters); // Always have a where clause so that it can be appended to
@@ -242,10 +246,13 @@ namespace Stoolball.Data.SqlServer
                 }
             }
 
-            // For listings, clubs with one active team are treated like a team without a club, so that the team is returned
+            // For listings, clubs with one team (active or inactive), or one active team, are treated like a team without a club, so that the team is returned
             if (filter != null)
             {
-                where.Add($"(SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamVersion} ON {Tables.Team}.TeamId = {Tables.TeamVersion}.TeamId WHERE ClubId = c.ClubId AND {Tables.TeamVersion}.UntilDate IS NULL) != 1");
+                where.Add(@$"(
+                                ((SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} WHERE ClubId = c.ClubId) = 0) OR
+                                ((SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamVersion} ON {Tables.Team}.TeamId = {Tables.TeamVersion}.TeamId WHERE ClubId = c.ClubId AND {Tables.TeamVersion}.UntilDate IS NULL) > 1)
+                             )");
             }
 
             return (where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "WHERE 1=1", parameters); // Always have a where clause so that it can be appended to

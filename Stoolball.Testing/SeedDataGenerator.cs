@@ -29,7 +29,6 @@ namespace Stoolball.Testing
         private readonly IFakerFactory<School> _schoolFakerFactory;
         private readonly Award _playerOfTheMatchAward;
         private readonly IOversHelper _oversHelper;
-        private List<(Team team, List<PlayerIdentity> identities)> _teams = new();
 
         internal SeedDataGenerator(Randomiser randomiser, IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder,
             IMatchFinder matchFinder, IFakerFactory<Team> teamFakerFactory, IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory,
@@ -723,7 +722,7 @@ namespace Stoolball.Testing
             {
                 var team = IsEven(i) ? CreateTeamWithFullDetails($"Team {i + 1}") : CreateTeamWithMinimalDetails($"Team {i + 1}");
                 poolOfTeams.Add((team, CreatePlayerIdentitiesForTeam(team, $"{team.TeamName} pool player")));
-                if (i % 2 == 0)
+                if (IsEven(i))
                 {
                     poolOfTeams[poolOfTeams.Count - 1].team.Club = CreateClubWithMinimalDetails();
                 }
@@ -731,7 +730,7 @@ namespace Stoolball.Testing
 
             foreach (var club in poolOfTeams.Where(x => x.team.Club != null).Select(x => x.team.Club))
             {
-                club.Teams.AddRange(poolOfTeams.Where(x => x.team.Club?.ClubId == club.ClubId).Select(x => x.team));
+                club!.Teams.AddRange(poolOfTeams.Where(x => x.team.Club?.ClubId == club.ClubId).Select(x => x.team));
             }
 
             return poolOfTeams;
@@ -742,7 +741,7 @@ namespace Stoolball.Testing
             var testData = new TestData();
             var playerComparer = new PlayerEqualityComparer();
 
-            _teams = GenerateTeams();
+            var poolOfTeamsWithPlayers = GenerateTeams();
 
             // Create a pool of competitions
             for (var i = 0; i < 10; i++)
@@ -750,11 +749,11 @@ namespace Stoolball.Testing
                 testData.Competitions.Add(IsEven(i) ? CreateCompetitionWithFullDetails() : CreateCompetitionWithMinimalDetails());
                 if (IsEven(i))
                 {
-                    var team1 = _teams[_randomiser.PositiveIntegerLessThan(_teams.Count)].team;
+                    var team1 = poolOfTeamsWithPlayers[_randomiser.PositiveIntegerLessThan(poolOfTeamsWithPlayers.Count)].team;
                     Team team2;
                     do
                     {
-                        team2 = _teams[_randomiser.PositiveIntegerLessThan(_teams.Count)].team;
+                        team2 = poolOfTeamsWithPlayers[_randomiser.PositiveIntegerLessThan(poolOfTeamsWithPlayers.Count)].team;
                     }
                     while (team2.TeamId == team1.TeamId);
                     var season = CreateSeasonWithFullDetails(testData.Competitions[testData.Competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i, team1, team2);
@@ -771,9 +770,10 @@ namespace Stoolball.Testing
             {
                 testData.MatchLocations.Add(IsEven(i) ? CreateMatchLocationWithFullDetails() : CreateMatchLocationWithMinimalDetails());
             }
+            testData.MatchLocations.AddRange(poolOfTeamsWithPlayers.SelectMany(x => x.team.MatchLocations).OfType<MatchLocation>());
 
             // Create match and tournament data
-            testData.Matches = GenerateMatchData(testData, _teams);
+            testData.Matches = GenerateMatchData(testData, poolOfTeamsWithPlayers);
             testData.MatchInThePastWithFullDetails = testData.Matches.First(x =>
                     x.StartTime < DateTime.UtcNow &&
                     x.Teams.Any() &&
@@ -790,7 +790,7 @@ namespace Stoolball.Testing
                             i.BowlingFigures.Any()
                         )
                     );
-            testData.Members = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberKey: x.MemberKey, memberName: x.MemberName)).Distinct(new MemberEqualityComparer()).ToList();
+            testData.Members = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberKey: x.MemberKey, memberName: x.MemberName ?? string.Empty)).Distinct(new MemberEqualityComparer()).ToList();
             for (var i = 0; i < 10; i++)
             {
                 var tournament = CreateTournamentInThePastWithFullDetailsExceptMatches(testData.Members);
@@ -805,19 +805,20 @@ namespace Stoolball.Testing
             testData.TournamentInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(1), Constants.UkTimeZone());
             testData.Tournaments.Add(testData.TournamentInTheFutureWithMinimalDetails);
 
-            var teamsInMatches = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team);
-            var teamsInTournaments = testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team);
-            testData.Teams = teamsInMatches.Union(teamsInTournaments).Distinct(new TeamEqualityComparer()).ToList(); // teams that got used
-
-            // Get a detailed team that's played a match, then make sure it's played in a tournament too
-            testData.TeamWithFullDetails = testData.Teams.First(x =>
-                        x.Club != null &&
-                        x.MatchLocations.Any() &&
-                        x.Seasons.Any() &&
-                        teamsInMatches.Select(t => t.TeamId).Contains(x.TeamId)
-            );
-
             testData.ClubWithMinimalDetails = CreateClubWithMinimalDetails();
+
+            var clubWithOneActiveTeam = CreateClubWithMinimalDetails();
+            var onlyTeamInClub = CreateTeamWithMinimalDetails("Only team in the club");
+            clubWithOneActiveTeam.Teams.Add(onlyTeamInClub);
+            onlyTeamInClub.Club = clubWithOneActiveTeam;
+
+            var clubWithOneActiveTeamAndOthersInactive = CreateClubWithMinimalDetails();
+            var activeTeamInClub = CreateTeamWithMinimalDetails("Only active team in the club");
+            var inactiveTeamInClub = CreateTeamWithMinimalDetails("Inactive team in a club with an active team");
+            inactiveTeamInClub.UntilYear = DateTimeOffset.UtcNow.Year - 2;
+            clubWithOneActiveTeamAndOthersInactive.Teams.AddRange(new[] { activeTeamInClub, inactiveTeamInClub });
+            activeTeamInClub.Club = clubWithOneActiveTeamAndOthersInactive;
+            inactiveTeamInClub.Club = clubWithOneActiveTeamAndOthersInactive;
 
             testData.ClubWithTeamsAndMatchLocation = CreateClubWithTeams();
             testData.MatchLocationForClub = CreateMatchLocationWithMinimalDetails();
@@ -830,9 +831,30 @@ namespace Stoolball.Testing
             teamWithMatchLocation.MatchLocations.Add(testData.MatchLocationForClub);
             testData.MatchLocationForClub.Teams.Add(teamWithMatchLocation);
 
+            var teamsInMatches = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
+            var teamsInTournaments = testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
+            var teamsInSeasons = testData.Competitions.SelectMany(x => x.Seasons).SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
+            var teamsAtMatchLocations = testData.MatchLocations.SelectMany(x => x.Teams);
+            testData.Teams = poolOfTeamsWithPlayers.Select(x => x.team)
+                            .Union(teamsInMatches)
+                            .Union(teamsInTournaments)
+                            .Union(teamsInSeasons)
+                            .Union(teamsAtMatchLocations).Distinct(new TeamEqualityComparer()).ToList();
+            testData.Teams.Add(onlyTeamInClub);
+            testData.Teams.Add(activeTeamInClub);
+            testData.Teams.Add(inactiveTeamInClub);
             testData.Teams.AddRange(testData.ClubWithTeamsAndMatchLocation.Teams);
+
             testData.Clubs.Add(testData.ClubWithMinimalDetails);
             testData.Clubs.AddRange(testData.Teams.Select(x => x.Club).OfType<Club>().Distinct(new ClubEqualityComparer()));
+
+            // Get a detailed team that's played a match, then make sure it's played in a tournament too
+            testData.TeamWithFullDetails = testData.Teams.First(x =>
+                        x.Club != null &&
+                        x.MatchLocations.Any() &&
+                        x.Seasons.Any() &&
+                        teamsInMatches.Select(t => t.TeamId).Contains(x.TeamId)
+            );
 
             testData.TournamentInThePastWithFullDetails!.Teams.Add(new TeamInTournament
             {
@@ -862,11 +884,12 @@ namespace Stoolball.Testing
                 });
             }
 
-            testData.MatchLocations = testData.Matches.Where(m => m.MatchLocation != null).Select(m => m.MatchLocation)
+            testData.MatchLocations.AddRange(testData.Matches.Select(m => m.MatchLocation)
                 .Union(testData.Tournaments.Select(t => t.TournamentLocation))
                 .Union(testData.Teams.SelectMany(x => x.MatchLocations))
                 .OfType<MatchLocation>()
-                .Distinct(new MatchLocationEqualityComparer()).ToList();
+                .Distinct(new MatchLocationEqualityComparer())
+                .Where(x => !testData.MatchLocations.Select(ml => ml.MatchLocationId).Contains(x.MatchLocationId)).ToList());
 
             testData.MatchLocationWithFullDetails = testData.MatchLocations.First(x => x.Teams.Count > 0);
             testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
@@ -946,6 +969,18 @@ namespace Stoolball.Testing
 
             testData.Teams.AddRange(testData.Schools.SelectMany(x => x.Teams));
             testData.MatchLocations.AddRange(testData.Schools.SelectMany(x => x.Teams).SelectMany(x => x.MatchLocations).Distinct(new MatchLocationEqualityComparer()));
+
+            foreach (var team in testData.Teams.Where(t => t.Club == null ||
+                                                           t.Club.Teams.Count() == 1 ||
+                                                          (t.Club.Teams.Count(x => !x.UntilYear.HasValue) == 1 && !t.UntilYear.HasValue)))
+            {
+                testData.TeamListings.Add(team.ToTeamListing());
+            }
+            foreach (var club in testData.Clubs.Where(c => c.Teams.Count == 0 ||
+                                                           c.Teams.Count(x => !x.UntilYear.HasValue) > 1))
+            {
+                testData.TeamListings.Add(club.ToTeamListing());
+            }
 
             return testData;
         }
