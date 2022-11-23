@@ -27,6 +27,7 @@ namespace Stoolball.Testing
         internal MatchLocation? MatchLocationWithMinimalDetails { get; set; }
         internal MatchLocation? MatchLocationForClub { get; set; }
         internal List<MatchLocation> MatchLocations { get; set; } = new();
+        internal Competition? CompetitionWithMinimalDetails { get; set; }
         internal List<Competition> Competitions { get; set; } = new();
         internal List<Player> PlayersWithMultipleIdentities { get; set; } = new();
         internal MatchLocation? MatchLocationWithFullDetails { get; set; }

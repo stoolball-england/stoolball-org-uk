@@ -20,10 +20,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         public Match MatchInThePastWithFullDetails { get; private set; }
         public Match MatchInThePastWithFullDetailsAndTournament { get; private set; }
         public Tournament TournamentInThePastWithFullDetails { get; private set; }
-        public Competition CompetitionWithMinimalDetails { get; private set; }
-        public Competition CompetitionWithFullDetails { get; private set; }
         public Season SeasonWithMinimalDetails { get; private set; }
-        public List<Competition> Competitions { get; internal set; } = new List<Competition>();
         public List<Season> Seasons { get; internal set; } = new List<Season>();
         public List<Match> Matches { get; internal set; } = new List<Match>();
         public List<MatchListing> MatchListings { get; internal set; } = new List<MatchListing>();
@@ -71,7 +68,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     }
                 }
                 repo.CreateCompetition(teamWithFullDetails.Seasons[0].Season.Competition);
-                Competitions.Add(teamWithFullDetails.Seasons[0].Season.Competition);
                 foreach (var season in teamWithFullDetails.Seasons)
                 {
                     repo.CreateSeason(season.Season, season.Season.Competition.CompetitionId!.Value);
@@ -106,7 +102,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 repo.CreateCompetition(MatchInThePastWithFullDetails.Season.Competition);
                 repo.CreateSeason(MatchInThePastWithFullDetails.Season, MatchInThePastWithFullDetails.Season.Competition.CompetitionId!.Value);
                 repo.CreateMatch(MatchInThePastWithFullDetails);
-                Competitions.Add(MatchInThePastWithFullDetails.Season.Competition);
                 Seasons.Add(MatchInThePastWithFullDetails.Season);
                 Matches.Add(MatchInThePastWithFullDetails);
                 MatchListings.Add(MatchInThePastWithFullDetails.ToMatchListing());
@@ -150,7 +145,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 foreach (var season in TournamentInThePastWithFullDetails.Seasons)
                 {
                     repo.CreateCompetition(season.Competition);
-                    Competitions.Add(season.Competition);
                     repo.CreateSeason(season, season.Competition.CompetitionId!.Value);
                     repo.AddTournamentToSeason(TournamentInThePastWithFullDetails, season);
                     Seasons.Add(season);
@@ -199,23 +193,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 repo.CreateCompetition(MatchInThePastWithFullDetailsAndTournament.Season.Competition);
                 repo.CreateSeason(MatchInThePastWithFullDetailsAndTournament.Season, MatchInThePastWithFullDetailsAndTournament.Season.Competition.CompetitionId!.Value);
                 repo.CreateMatch(MatchInThePastWithFullDetailsAndTournament);
-                Competitions.Add(MatchInThePastWithFullDetailsAndTournament.Season.Competition);
                 Matches.Add(MatchInThePastWithFullDetailsAndTournament);
                 TournamentMatchListings.Add(MatchInThePastWithFullDetailsAndTournament.ToMatchListing());
                 Seasons.Add(MatchInThePastWithFullDetailsAndTournament.Season);
-
-                CompetitionWithMinimalDetails = seedDataGenerator.CreateCompetitionWithMinimalDetails();
-                repo.CreateCompetition(CompetitionWithMinimalDetails);
-                Competitions.Add(CompetitionWithMinimalDetails);
-
-                CompetitionWithFullDetails = seedDataGenerator.CreateCompetitionWithFullDetails();
-                repo.CreateCompetition(CompetitionWithFullDetails);
-                foreach (var season in CompetitionWithFullDetails.Seasons)
-                {
-                    repo.CreateSeason(season, CompetitionWithFullDetails.CompetitionId!.Value);
-                    Seasons.Add(season);
-                }
-                Competitions.Add(CompetitionWithFullDetails);
 
                 var competitionForSeason = seedDataGenerator.CreateCompetitionWithMinimalDetails();
                 competitionForSeason.UntilYear = 2021;
@@ -223,7 +203,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 competitionForSeason.Seasons.Add(SeasonWithMinimalDetails);
                 repo.CreateCompetition(competitionForSeason);
                 repo.CreateSeason(SeasonWithMinimalDetails, competitionForSeason.CompetitionId!.Value);
-                Competitions.Add(competitionForSeason);
                 Seasons.Add(SeasonWithMinimalDetails);
 
                 SeasonWithFullDetails = seedDataGenerator.CreateSeasonWithFullDetails(competitionForSeason, 2021, 2021, seedDataGenerator.CreateTeamWithMinimalDetails("Team 1 in season"), seedDataGenerator.CreateTeamWithMinimalDetails("Team 2 in season"));
@@ -241,10 +220,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
                 for (var i = 0; i < 30; i++)
                 {
-                    var competition = seedDataGenerator.CreateCompetitionWithMinimalDetails();
-                    repo.CreateCompetition(competition);
-                    Competitions.Add(competition);
-
                     var matchLocation = seedDataGenerator.CreateMatchLocationWithMinimalDetails();
                     repo.CreateMatchLocation(matchLocation);
 

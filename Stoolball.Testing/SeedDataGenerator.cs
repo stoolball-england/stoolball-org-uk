@@ -923,8 +923,16 @@ namespace Stoolball.Testing
             testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
                 .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
                 .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season?.Competition))
+                .Union(new[] { CreateCompetitionWithMinimalDetails() })
                 .OfType<Competition>()
                 .Distinct(new CompetitionEqualityComparer()).ToList();
+            testData.CompetitionWithMinimalDetails = testData.Competitions.First(x =>
+                !x.Seasons.Any() &&
+                string.IsNullOrEmpty(x.Introduction) &&
+                !x.UntilYear.HasValue &&
+                string.IsNullOrEmpty(x.PublicContactDetails) && string.IsNullOrEmpty(x.PrivateContactDetails) &&
+                string.IsNullOrEmpty(x.Facebook) && string.IsNullOrEmpty(x.Twitter) && string.IsNullOrEmpty(x.Instagram) && string.IsNullOrEmpty(x.YouTube) && string.IsNullOrEmpty(x.Website)
+                );
             testData.CompetitionWithFullDetails = testData.Competitions.First(x => x.Seasons.Any());
             testData.Seasons = testData.Competitions.SelectMany(x => x.Seasons).Distinct(new SeasonEqualityComparer()).ToList();
             testData.SeasonWithFullDetails = testData.Seasons.First(x => x.Teams.Any() && x.PointsRules.Any() && x.PointsAdjustments.Any());
@@ -934,10 +942,10 @@ namespace Stoolball.Testing
 
             foreach (var identity in testData.PlayerIdentities)
             {
-                if (testData.PlayerIdentities.Count(x => x.Player.PlayerId == identity.Player.PlayerId) > 1 &&
-                    !testData.PlayersWithMultipleIdentities.Any(x => x.PlayerId == identity.Player.PlayerId))
+                if (testData.PlayerIdentities.Count(x => x.Player?.PlayerId == identity.Player?.PlayerId) > 1 &&
+                    !testData.PlayersWithMultipleIdentities.Any(x => x.PlayerId == identity.Player?.PlayerId))
                 {
-                    testData.PlayersWithMultipleIdentities.Add(identity.Player);
+                    testData.PlayersWithMultipleIdentities.Add(identity.Player!);
                 }
             }
 
