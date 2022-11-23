@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Stoolball.Awards;
 using Stoolball.Competitions;
 using Stoolball.Logging;
 using Stoolball.Matches;
-using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing;
@@ -25,13 +23,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         public Competition CompetitionWithMinimalDetails { get; private set; }
         public Competition CompetitionWithFullDetails { get; private set; }
         public Season SeasonWithMinimalDetails { get; private set; }
-        public MatchLocation MatchLocationWithMinimalDetails { get; private set; }
-        public MatchLocation MatchLocationWithFullDetails { get; private set; }
         public List<Competition> Competitions { get; internal set; } = new List<Competition>();
         public List<Season> Seasons { get; internal set; } = new List<Season>();
         public List<Match> Matches { get; internal set; } = new List<Match>();
         public List<MatchListing> MatchListings { get; internal set; } = new List<MatchListing>();
-        public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
         public Season SeasonWithFullDetails { get; private set; }
         public List<MatchListing> TournamentMatchListings { get; private set; } = new List<MatchListing>();
 
@@ -61,30 +56,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     repo.CreateMember(member);
                 }
 
-                // ClubWithTeamsAndMatchLocation and MatchLocationForClub remain here to populate the MatchLocations list.
-                // They already exist and populate the equivalent lists in SqlServerTestDataFixture.
-                var clubWithTeamsAndMatchLocation = seedDataGenerator.CreateClubWithTeams();
-                var matchLocationForClub = seedDataGenerator.CreateMatchLocationWithMinimalDetails();
-                matchLocationForClub.PrimaryAddressableObjectName = "Club PAON";
-                matchLocationForClub.SecondaryAddressableObjectName = "Club SAON";
-                matchLocationForClub.Locality = "Club locality";
-                matchLocationForClub.Town = "Club town";
-                matchLocationForClub.AdministrativeArea = "Club area";
-                var teamWithMatchLocation = clubWithTeamsAndMatchLocation.Teams.First(x => !x.UntilYear.HasValue);
-                teamWithMatchLocation.MatchLocations.Add(matchLocationForClub);
-                matchLocationForClub.Teams.Add(teamWithMatchLocation);
-                repo.CreateClub(clubWithTeamsAndMatchLocation);
-                foreach (var team in clubWithTeamsAndMatchLocation.Teams)
-                {
-                    repo.CreateTeam(team);
-                    foreach (var matchLocation in team.MatchLocations)
-                    {
-                        repo.CreateMatchLocation(matchLocation);
-                        repo.AddTeamToMatchLocation(team, matchLocation);
-                        MatchLocations.Add(matchLocation);
-                    }
-                }
-
                 var teamWithFullDetails = seedDataGenerator.CreateTeamWithFullDetails("Team with full details");
                 repo.CreateTeam(teamWithFullDetails);
                 foreach (var matchLocation in teamWithFullDetails.MatchLocations)
@@ -98,7 +69,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                         }
                         repo.AddTeamToMatchLocation(team, matchLocation);
                     }
-                    MatchLocations.Add(matchLocation);
                 }
                 repo.CreateCompetition(teamWithFullDetails.Seasons[0].Season.Competition);
                 Competitions.Add(teamWithFullDetails.Seasons[0].Season.Competition);
@@ -138,7 +108,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 repo.CreateMatch(MatchInThePastWithFullDetails);
                 Competitions.Add(MatchInThePastWithFullDetails.Season.Competition);
                 Seasons.Add(MatchInThePastWithFullDetails.Season);
-                MatchLocations.Add(MatchInThePastWithFullDetails.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetails);
                 MatchListings.Add(MatchInThePastWithFullDetails.ToMatchListing());
                 MatchInThePastWithFullDetails.History.AddRange(new[] { new AuditRecord {
@@ -172,7 +141,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 {
                     repo.CreateTeam(team.Team);
                 }
-                MatchLocations.Add(TournamentInThePastWithFullDetails.TournamentLocation);
                 repo.CreateMatchLocation(TournamentInThePastWithFullDetails.TournamentLocation);
                 repo.CreateTournament(TournamentInThePastWithFullDetails);
                 foreach (var team in TournamentInThePastWithFullDetails.Teams)
@@ -232,7 +200,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 repo.CreateSeason(MatchInThePastWithFullDetailsAndTournament.Season, MatchInThePastWithFullDetailsAndTournament.Season.Competition.CompetitionId!.Value);
                 repo.CreateMatch(MatchInThePastWithFullDetailsAndTournament);
                 Competitions.Add(MatchInThePastWithFullDetailsAndTournament.Season.Competition);
-                MatchLocations.Add(MatchInThePastWithFullDetailsAndTournament.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetailsAndTournament);
                 TournamentMatchListings.Add(MatchInThePastWithFullDetailsAndTournament.ToMatchListing());
                 Seasons.Add(MatchInThePastWithFullDetailsAndTournament.Season);
@@ -272,14 +239,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 }
                 Seasons.Add(SeasonWithFullDetails);
 
-                MatchLocationWithMinimalDetails = seedDataGenerator.CreateMatchLocationWithMinimalDetails();
-                repo.CreateMatchLocation(MatchLocationWithMinimalDetails);
-                MatchLocations.Add(MatchLocationWithMinimalDetails);
-
-                MatchLocationWithFullDetails = seedDataGenerator.CreateMatchLocationWithFullDetails();
-                repo.CreateMatchLocation(MatchLocationWithFullDetails);
-                MatchLocations.Add(MatchLocationWithFullDetails);
-
                 for (var i = 0; i < 30; i++)
                 {
                     var competition = seedDataGenerator.CreateCompetitionWithMinimalDetails();
@@ -288,7 +247,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
                     var matchLocation = seedDataGenerator.CreateMatchLocationWithMinimalDetails();
                     repo.CreateMatchLocation(matchLocation);
-                    MatchLocations.Add(matchLocation);
 
                     var match = matchFactory.CreateMatchInThePastWithMinimalDetails();
                     match.MatchLocation = matchLocation;

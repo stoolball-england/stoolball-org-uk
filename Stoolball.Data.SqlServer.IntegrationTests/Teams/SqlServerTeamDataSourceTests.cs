@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
-using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
 using Xunit;
@@ -25,29 +24,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         private SqlServerTeamDataSource CreateDataSource()
         {
             return new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-        }
-
-        private static void ChangeCaseAndSometimesTrimOneEnd(List<string> strings)
-        {
-            var randomiser = new Random();
-            var minimumLength = 8; // We want it to remain unique enough that it doesn't match other fields
-            for (var i = 0; i < strings.Count; i++)
-            {
-                // maybe trim some characters from the start or end because we want partial searches to work
-                var howManyToTrim = randomiser.Next(0, 4);
-                var trimStart = randomiser.Next(0, 2) == 0;
-                if (trimStart && strings[i].Length > (howManyToTrim + minimumLength))
-                {
-                    strings[i] = strings[i].Substring(howManyToTrim);
-                }
-                else if (!trimStart && strings[i].Length > (howManyToTrim + minimumLength))
-                {
-                    strings[i] = strings[i].Substring(0, strings[i].Length - howManyToTrim);
-                }
-
-                // change the case to prove it's case insensitive
-                strings[i] = strings[i] == strings[i].ToUpperInvariant() ? strings[i].ToLowerInvariant() : strings[i].ToUpperInvariant();
-            }
         }
 
         [Fact]
@@ -183,8 +159,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_total_teams_supports_case_insensitive_filter_by_team_name()
         {
             var teamDataSource = CreateDataSource();
-            var uniqueTeamNames = _databaseFixture.TestData.Teams.Select(x => x.TeamName).OfType<string>().Distinct().ToList();
-            ChangeCaseAndSometimesTrimOneEnd(uniqueTeamNames);
+            var uniqueTeamNames = _databaseFixture.TestData.Teams.Select(x => x.TeamName).OfType<string>()
+                .Distinct()
+                .ToList()
+                .ChangeCaseAndSometimesTrimOneEnd();
 
             for (var i = 0; i < uniqueTeamNames.Count; i++)
             {
@@ -202,8 +180,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_total_teams_supports_case_insensitive_filter_by_locality()
         {
             var teamDataSource = CreateDataSource();
-            var uniqueLocalities = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations).OfType<MatchLocation>().Where(x => !string.IsNullOrEmpty(x.Locality)).Select(x => x.Locality).OfType<string>().Distinct().ToList();
-            ChangeCaseAndSometimesTrimOneEnd(uniqueLocalities);
+            var uniqueLocalities = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations)
+                .Where(x => !string.IsNullOrEmpty(x.Locality)).Select(x => x.Locality).OfType<string>()
+                .Distinct()
+                .ToList()
+                .ChangeCaseAndSometimesTrimOneEnd();
 
             for (var i = 0; i < uniqueLocalities.Count; i++)
             {
@@ -220,8 +201,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_total_teams_supports_case_insensitive_filter_by_town()
         {
             var teamDataSource = CreateDataSource();
-            var uniqueTowns = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations).OfType<MatchLocation>().Where(x => !string.IsNullOrEmpty(x.Town)).Select(x => x.Town).OfType<string>().Distinct().ToList();
-            ChangeCaseAndSometimesTrimOneEnd(uniqueTowns);
+            var uniqueTowns = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations)
+                .Where(x => !string.IsNullOrEmpty(x.Town)).Select(x => x.Town).OfType<string>()
+                .Distinct()
+                .ToList()
+                .ChangeCaseAndSometimesTrimOneEnd();
 
             for (var i = 0; i < uniqueTowns.Count; i++)
             {
@@ -238,8 +222,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_total_teams_supports_case_insensitive_filter_by_administrative_area()
         {
             var teamDataSource = CreateDataSource();
-            var uniqueAdministrativeAreas = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations).OfType<MatchLocation>().Where(x => !string.IsNullOrEmpty(x.AdministrativeArea)).Select(x => x.AdministrativeArea).OfType<string>().Distinct().ToList();
-            ChangeCaseAndSometimesTrimOneEnd(uniqueAdministrativeAreas);
+            var uniqueAdministrativeAreas = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations)
+                .Where(x => !string.IsNullOrEmpty(x.AdministrativeArea)).Select(x => x.AdministrativeArea).OfType<string>()
+                .Distinct()
+                .ToList()
+                .ChangeCaseAndSometimesTrimOneEnd();
 
             for (var i = 0; i < uniqueAdministrativeAreas.Count; i++)
             {
@@ -422,8 +409,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_teams_supports_case_insensitive_filter_by_team_name()
         {
             var teamDataSource = CreateDataSource();
-            var uniqueTeamNames = _databaseFixture.TestData.Teams.Select(x => x.TeamName).OfType<string>().Distinct().ToList();
-            ChangeCaseAndSometimesTrimOneEnd(uniqueTeamNames);
+            var uniqueTeamNames = _databaseFixture.TestData.Teams.Select(x => x.TeamName).OfType<string>()
+                .Distinct()
+                .ToList()
+                .ChangeCaseAndSometimesTrimOneEnd();
 
             for (var i = 0; i < uniqueTeamNames.Count; i++)
             {
@@ -445,8 +434,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_teams_supports_case_insensitive_filter_by_locality()
         {
             var teamDataSource = CreateDataSource();
-            var uniqueLocalities = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations).OfType<MatchLocation>().Where(x => !string.IsNullOrEmpty(x.Locality)).Select(x => x.Locality).OfType<string>().Distinct().ToList();
-            ChangeCaseAndSometimesTrimOneEnd(uniqueLocalities);
+            var uniqueLocalities = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations)
+                .Where(x => !string.IsNullOrEmpty(x.Locality)).Select(x => x.Locality).OfType<string>()
+                .Distinct()
+                .ToList()
+                .ChangeCaseAndSometimesTrimOneEnd();
 
             for (var i = 0; i < uniqueLocalities.Count; i++)
             {
@@ -468,8 +460,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_teams_supports_case_insensitive_filter_by_town()
         {
             var teamDataSource = CreateDataSource();
-            var uniqueTowns = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations).OfType<MatchLocation>().Where(x => !string.IsNullOrEmpty(x.Town)).Select(x => x.Town).OfType<string>().Distinct().ToList();
-            ChangeCaseAndSometimesTrimOneEnd(uniqueTowns);
+            var uniqueTowns = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations)
+                .Where(x => !string.IsNullOrEmpty(x.Town)).Select(x => x.Town).OfType<string>()
+                .Distinct()
+                .ToList()
+                .ChangeCaseAndSometimesTrimOneEnd();
 
             for (var i = 0; i < uniqueTowns.Count; i++)
             {
@@ -491,8 +486,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         public async Task Read_teams_supports_case_insensitive_filter_by_administrative_area()
         {
             var teamDataSource = CreateDataSource();
-            var uniqueAdministrativeAreas = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations).OfType<MatchLocation>().Where(x => !string.IsNullOrEmpty(x.AdministrativeArea)).Select(x => x.AdministrativeArea).OfType<string>().Distinct().ToList();
-            ChangeCaseAndSometimesTrimOneEnd(uniqueAdministrativeAreas);
+            var uniqueAdministrativeAreas = _databaseFixture.TestData.Teams.SelectMany(x => x.MatchLocations)
+                .Where(x => !string.IsNullOrEmpty(x.AdministrativeArea)).Select(x => x.AdministrativeArea).OfType<string>()
+                .Distinct()
+                .ToList()
+                .ChangeCaseAndSometimesTrimOneEnd();
 
             for (var i = 0; i < uniqueAdministrativeAreas.Count; i++)
             {

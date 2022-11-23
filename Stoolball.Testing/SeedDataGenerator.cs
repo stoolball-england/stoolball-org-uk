@@ -917,7 +917,9 @@ namespace Stoolball.Testing
                 matchesWithACatch[_randomiser.PositiveIntegerLessThan(matchesWithACatch.Count)].MatchLocation = testData.MatchLocations[_randomiser.PositiveIntegerLessThan(testData.MatchLocations.Count)];
             }
 
-            testData.MatchLocationWithFullDetails = testData.MatchLocations.First(x => x.Teams.Count > 0);
+            testData.MatchLocationWithFullDetails = testData.MatchLocations.First(x => x.Teams.Any());
+            testData.MatchLocationWithMinimalDetails = testData.MatchLocations.First(x => !x.Teams.Any());
+
             testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
                 .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
                 .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season?.Competition))
@@ -1038,18 +1040,33 @@ namespace Stoolball.Testing
                 {
                     // handle special case
                     var location = locationFaker.Generate(1).First();
-                    schools[i].Teams.ForEach(x => x.MatchLocations.Add(location));
+                    schools[i].Teams.ForEach(x =>
+                    {
+                        x.MatchLocations.Add(location);
+                        location.Teams.Add(x);
+                    });
                 }
                 else if (i == 11)
                 {
                     // handle special case
-                    schools[i].Teams[0].MatchLocations.AddRange(locationFaker.Generate(2));
-                    schools[i].Teams[1].MatchLocations.Add(locationFaker.Generate(1).First());
+                    var locations1and2 = locationFaker.Generate(2);
+                    schools[i].Teams[0].MatchLocations.AddRange(locations1and2);
+                    locations1and2[0].Teams.Add(schools[i].Teams[0]);
+                    locations1and2[1].Teams.Add(schools[i].Teams[0]);
+
+                    var location3 = locationFaker.Generate(1).First();
+                    schools[i].Teams[1].MatchLocations.Add(location3);
+                    location3.Teams.Add(schools[i].Teams[1]);
                 }
                 else if (i > 7)
                 {
                     // add a match location to each team
-                    schools[i].Teams.ForEach(x => x.MatchLocations.Add(locationFaker.Generate(1).First()));
+                    schools[i].Teams.ForEach(x =>
+                    {
+                        var location = locationFaker.Generate(1).First();
+                        x.MatchLocations.Add(location);
+                        location.Teams.Add(x);
+                    });
                 }
 
                 // Up to 11, all teams are active.
