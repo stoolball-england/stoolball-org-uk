@@ -178,9 +178,10 @@ namespace Stoolball.Testing
                 }
             };
 
-            foreach (var team in season.Teams)
+            foreach (var teamInSeason in season.Teams)
             {
-                team.Season = season;
+                teamInSeason.Season = season;
+                teamInSeason.Team?.Seasons.Add(teamInSeason);
             }
 
             return season;
@@ -848,6 +849,22 @@ namespace Stoolball.Testing
             testData.Clubs.Add(testData.ClubWithMinimalDetails);
             testData.Clubs.AddRange(testData.Teams.Select(x => x.Club).OfType<Club>().Distinct(new ClubEqualityComparer()));
 
+            // Get a minimal team
+            //            TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");
+            testData.TeamWithMinimalDetails = testData.Teams.First(x =>
+                        string.IsNullOrEmpty(x.Introduction) &&
+                        !x.AgeRangeLower.HasValue && !x.AgeRangeUpper.HasValue &&
+                        string.IsNullOrEmpty(x.Facebook) && string.IsNullOrEmpty(x.Twitter) && string.IsNullOrEmpty(x.Instagram) && string.IsNullOrEmpty(x.YouTube) && string.IsNullOrEmpty(x.Website) &&
+                        string.IsNullOrEmpty(x.PlayingTimes) && string.IsNullOrEmpty(x.Cost) &&
+                        !x.UntilYear.HasValue &&
+                        string.IsNullOrEmpty(x.PublicContactDetails) && string.IsNullOrEmpty(x.PrivateContactDetails) &&
+                        x.Club == null &&
+                        !x.MatchLocations.Any() &&
+                        !x.Seasons.Any() &&
+                        !teamsInMatches.Any(t => t.TeamId == x.TeamId)
+                        );
+            if (testData.TeamWithMinimalDetails == null) { throw new InvalidOperationException($"{nameof(testData.TeamWithMinimalDetails)} not found"); }
+
             // Get a detailed team that's played a match, then make sure it's played in a tournament too
             testData.TeamWithFullDetails = testData.Teams.First(x =>
                         x.Club != null &&
@@ -855,6 +872,7 @@ namespace Stoolball.Testing
                         x.Seasons.Any() &&
                         teamsInMatches.Select(t => t.TeamId).Contains(x.TeamId)
             );
+            if (testData.TeamWithFullDetails == null) { throw new InvalidOperationException($"{nameof(testData.TeamWithFullDetails)} not found"); }
 
             testData.TournamentInThePastWithFullDetails!.Teams.Add(new TeamInTournament
             {
