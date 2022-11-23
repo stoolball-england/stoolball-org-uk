@@ -351,7 +351,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
         public async Task Update_club_updates_teams_respecting_existing_clubs()
         {
             var club = _databaseFixture.TestData.Teams.Last(x => x.Club != null).Club;
-            _routeGenerator.Setup(x => x.GenerateUniqueRoute(club.ClubRoute, "/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club.ClubRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(club!.ClubRoute!, "/clubs", club.ClubName!, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(club!.ClubRoute!));
+
+            var copyOfClubTeamsBeforeTest = club.Teams.Select(x => x).ToList();
 
             var teamRemoved = club.Teams.First();
             club.Teams.Remove(teamRemoved);
@@ -377,6 +379,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
                 Assert.Contains(teamAdded.TeamId, teamsResult);
                 Assert.DoesNotContain(teamTakenFromAnotherClub.TeamId, teamsResult);
             }
+
+            // reset changes to in-memory data so that other tests aren't affected
+            club.Teams.Clear();
+            club.Teams.AddRange(copyOfClubTeamsBeforeTest);
         }
 
         [Fact]
