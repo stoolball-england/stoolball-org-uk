@@ -891,6 +891,14 @@ namespace Stoolball.Testing
                 .Distinct(new MatchLocationEqualityComparer())
                 .Where(x => !testData.MatchLocations.Select(ml => ml.MatchLocationId).Contains(x.MatchLocationId)).ToList());
 
+            // Data can be filtered by match location, so make sure there is at least one example of various kinds of data that has a match location
+            var matchesWithACatch = testData.Matches.Where(m => m.MatchInnings.SelectMany(mi => mi.PlayerInnings).Any(pi => pi.DismissalType == DismissalType.Caught || pi.DismissalType == DismissalType.CaughtAndBowled)).ToList();
+            if (!matchesWithACatch.Any()) { throw new InvalidOperationException("No catches were generated."); }
+            if (!matchesWithACatch.Any(m => m.MatchLocation != null))
+            {
+                matchesWithACatch[_randomiser.PositiveIntegerLessThan(matchesWithACatch.Count)].MatchLocation = testData.MatchLocations[_randomiser.PositiveIntegerLessThan(testData.MatchLocations.Count)];
+            }
+
             testData.MatchLocationWithFullDetails = testData.MatchLocations.First(x => x.Teams.Count > 0);
             testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
                 .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
@@ -928,7 +936,7 @@ namespace Stoolball.Testing
                 .Where(x => testData.PlayersWithMultipleIdentities.Contains(x.Bowler.Player, playerComparer))
                 .Select(x => x.Bowler.Player)
                 .First();
-            testData.BowlerWithMultipleIdentities.PlayerIdentities.Clear();
+            testData.BowlerWithMultipleIdentities!.PlayerIdentities.Clear();
             testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player?.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
             testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberKey;
 
