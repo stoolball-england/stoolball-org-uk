@@ -6,12 +6,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
 {
-    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class SqlServerMatchCommentsDataSourceTests
     {
-        private readonly SqlServerDataSourceFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
 
-        public SqlServerMatchCommentsDataSourceTests(SqlServerDataSourceFixture databaseFixture)
+        public SqlServerMatchCommentsDataSourceTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -21,12 +21,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
         {
             var commentsDataSource = new SqlServerMatchCommentsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var match in _databaseFixture.Matches)
+            var foundAtLeastOne = false;
+            foreach (var match in _databaseFixture.TestData.Matches)
             {
                 var result = await commentsDataSource.ReadTotalComments(match.MatchId!.Value).ConfigureAwait(false);
 
                 Assert.Equal(match.Comments.Count, result);
+                foundAtLeastOne = foundAtLeastOne || result > 0;
             }
+            Assert.True(foundAtLeastOne);
         }
 
         [Fact]
@@ -34,7 +37,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
         {
             var commentsDataSource = new SqlServerMatchCommentsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var match in _databaseFixture.Matches)
+            var foundAtLeastOne = false;
+            foreach (var match in _databaseFixture.TestData.Matches)
             {
                 var results = await commentsDataSource.ReadComments(match.MatchId!.Value).ConfigureAwait(false);
 
@@ -47,8 +51,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
                     Assert.Equal(comment.MemberName, result!.MemberName);
                     Assert.Equal(comment.CommentDate, result.CommentDate);
                     Assert.Equal(comment.Comment, result.Comment);
+                    foundAtLeastOne = true;
                 }
             }
+            Assert.True(foundAtLeastOne);
         }
 
         [Fact]
@@ -56,7 +62,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
         {
             var commentsDataSource = new SqlServerMatchCommentsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var match in _databaseFixture.Matches)
+            var foundAtLeastOne = false;
+            foreach (var match in _databaseFixture.TestData.Matches)
             {
                 var results = await commentsDataSource.ReadComments(match.MatchId!.Value).ConfigureAwait(false);
 
@@ -65,8 +72,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
                 {
                     Assert.True(result.CommentDate <= previousCommentDate);
                     previousCommentDate = result.CommentDate;
+                    foundAtLeastOne = true;
                 }
             }
+            Assert.True(foundAtLeastOne);
         }
     }
 }

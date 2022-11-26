@@ -1247,6 +1247,8 @@ namespace Stoolball.Testing
 
         internal List<Match> GenerateMatchData(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
         {
+            var members = CreateMembers();
+
             // Randomly assign at least two players from each team a second identity - one on the same team, one on a different team.
             // This ensure we always have lots of teams with multiple identities for the same player for both scenarios.
             foreach (var (team, playerIdentities) in teamsWithIdentities)
@@ -1274,7 +1276,7 @@ namespace Stoolball.Testing
             var allIdentities = teamsWithIdentities.SelectMany(x => x.identities);
             foreach (var player in allIdentities.Select(x => x.Player))
             {
-                player.PlayerIdentities = allIdentities.Where(x => x.Player.PlayerId == player.PlayerId).ToList();
+                player.PlayerIdentities = allIdentities.Where(x => x.Player?.PlayerId == player.PlayerId).ToList();
             }
 
             // Create matches for them to play in, with scorecards
@@ -1291,7 +1293,12 @@ namespace Stoolball.Testing
                 }
                 while (teamA.TeamId == teamB.TeamId);
 
-                matches.Add(_matchFactory.CreateMatchBetween(teamA, teamAPlayers, teamB, teamBPlayers, homeTeamBatsFirst, testData));
+                var match = _matchFactory.CreateMatchBetween(teamA, teamAPlayers, teamB, teamBPlayers, homeTeamBatsFirst, testData);
+                if (_randomiser.FiftyFiftyChance())
+                {
+                    match.Comments = CreateComments(_randomiser.Between(1, 15), members);
+                }
+                matches.Add(match);
             }
 
             // Pick any innings and create a five-wicket haul for someone
@@ -1313,7 +1320,7 @@ namespace Stoolball.Testing
             matches.Add(_matchFactory.CreateMatchBetween(teamsWithIdentities[0].team, teamsWithIdentities[0].identities, teamsWithIdentities[0].team, teamsWithIdentities[0].identities, _randomiser.FiftyFiftyChance(), testData));
 
             // Aim to make this one obsolete by recreating everything offered by CreateMatchInThePastWithFullDetails in the generated match data above
-            matches.Add(CreateMatchInThePastWithFullDetails(CreateMembers()));
+            matches.Add(CreateMatchInThePastWithFullDetails(members));
 
             // Generate bowling figures for each innings
             foreach (var innings in matches.SelectMany(x => x.MatchInnings))
