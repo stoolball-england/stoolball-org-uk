@@ -201,6 +201,7 @@ namespace Stoolball.Testing
         internal Team CreateTeamWithFullDetails(string teamName)
         {
             var competition = CreateCompetitionWithMinimalDetails();
+            competition.PlayerType = PlayerType.Ladies; // Ensures there is always at least one Ladies competition
             var team = new Team
             {
                 TeamId = Guid.NewGuid(),
@@ -934,7 +935,15 @@ namespace Stoolball.Testing
                 string.IsNullOrEmpty(x.Facebook) && string.IsNullOrEmpty(x.Twitter) && string.IsNullOrEmpty(x.Instagram) && string.IsNullOrEmpty(x.YouTube) && string.IsNullOrEmpty(x.Website)
                 );
             testData.CompetitionWithFullDetails = testData.Competitions.First(x => x.Seasons.Any());
+
+            var competitionForSeason = CreateCompetitionWithMinimalDetails();
+            competitionForSeason.UntilYear = 2021;
+            testData.SeasonWithMinimalDetails = CreateSeasonWithMinimalDetails(competitionForSeason, 2020, 2020);
+            competitionForSeason.Seasons.Add(testData.SeasonWithMinimalDetails);
+            testData.Competitions.Add(competitionForSeason);
+
             testData.Seasons = testData.Competitions.SelectMany(x => x.Seasons).Distinct(new SeasonEqualityComparer()).ToList();
+
             testData.SeasonWithFullDetails = testData.Seasons.First(x => x.Teams.Any() && x.PointsRules.Any() && x.PointsAdjustments.Any());
 
             testData.PlayerIdentities = testData.Matches.SelectMany(m => _playerIdentityFinder.PlayerIdentitiesInMatch(m)).Distinct(new PlayerIdentityEqualityComparer()).ToList();

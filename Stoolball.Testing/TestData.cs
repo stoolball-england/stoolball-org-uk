@@ -33,6 +33,7 @@ namespace Stoolball.Testing
         internal MatchLocation? MatchLocationWithFullDetails { get; set; }
         internal Competition? CompetitionWithFullDetails { get; set; }
         internal List<Season> Seasons { get; set; } = new();
+        internal Season? SeasonWithMinimalDetails { get; set; }
         internal Season? SeasonWithFullDetails { get; set; }
         internal List<(Guid memberKey, string memberName)> Members { get; set; } = new();
         internal Match? MatchInThePastWithFullDetails { get; set; }
