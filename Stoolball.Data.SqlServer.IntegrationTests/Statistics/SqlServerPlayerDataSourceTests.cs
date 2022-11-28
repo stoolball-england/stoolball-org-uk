@@ -356,7 +356,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_supports_filter_by_match_location_id()
         {
-            var expectedMatchLocationId = _databaseFixture.TestData.MatchInThePastWithFullDetails!.MatchLocation.MatchLocationId!.Value;
+            var expectedMatchLocationId = _databaseFixture.TestData.MatchInThePastWithFullDetails!.MatchLocation!.MatchLocationId!.Value;
             var matches = _databaseFixture.TestData.Matches.Where(x => x.MatchLocation?.MatchLocationId == expectedMatchLocationId);
             var playerFilter = new PlayerFilter { MatchLocationIds = new List<Guid> { expectedMatchLocationId } };
 
@@ -366,7 +366,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_supports_filter_by_competition_id()
         {
-            var expectedCompetitionId = _databaseFixture.TestData.MatchInThePastWithFullDetails!.Season.Competition.CompetitionId!.Value;
+            var expectedCompetitionId = _databaseFixture.TestData.MatchInThePastWithFullDetails!.Season!.Competition!.CompetitionId!.Value;
             var matches = _databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == expectedCompetitionId);
             var playerFilter = new PlayerFilter { CompetitionIds = new List<Guid> { expectedCompetitionId } };
 
@@ -376,7 +376,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_identities_supports_filter_by_season_id()
         {
-            var expectedSeasonId = _databaseFixture.TestData.MatchInThePastWithFullDetails!.Season.SeasonId!.Value;
+            var expectedSeasonId = _databaseFixture.TestData.MatchInThePastWithFullDetails!.Season!.SeasonId!.Value;
             var matches = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == expectedSeasonId);
             var playerFilter = new PlayerFilter { SeasonIds = new List<Guid> { expectedSeasonId } };
 
@@ -390,7 +390,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var playerIdentityFinder = new PlayerIdentityFinder();
             foreach (var match in matches)
             {
-                playerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(match));
+                playerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(match).Where(x => !playerIdentities.Select(pi => pi.PlayerIdentityId).Contains(x.PlayerIdentityId)));
             }
 
             var results = await playerDataSource.ReadPlayerIdentities(playerFilter);

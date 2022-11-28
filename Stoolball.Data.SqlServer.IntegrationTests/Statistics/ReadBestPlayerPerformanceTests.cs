@@ -487,7 +487,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var statsBuilder = new PlayerInMatchStatisticsBuilder(new PlayerIdentityFinder(), new OversHelper());
             foreach (var match in matches)
             {
-                performances.AddRange(statsBuilder.BuildStatisticsForMatch(match));
+                if (match.Teams.Count == 2)
+                {
+                    performances.AddRange(statsBuilder.BuildStatisticsForMatch(match));
+                }
             }
             return performances;
         }

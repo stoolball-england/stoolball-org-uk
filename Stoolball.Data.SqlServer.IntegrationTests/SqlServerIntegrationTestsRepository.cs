@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Globalization;
+using System.Linq;
 using Dapper;
 using Stoolball.Awards;
 using Stoolball.Clubs;
@@ -104,10 +105,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 CreateMatch(match);
 
-                var statisticsRecords = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(match);
-                foreach (var record in statisticsRecords)
+                if (match.StartTime <= DateTimeOffset.UtcNow &&
+                    (match.MatchInnings.Any(x => x.PlayerInnings.Any() || x.OversBowled.Any() || x.BowlingFigures.Any()) || match.Awards.Any())
+                    )
                 {
-                    CreatePlayerInMatchStatisticsRecord(record);
+                    var statisticsRecords = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(match);
+                    foreach (var record in statisticsRecords)
+                    {
+                        CreatePlayerInMatchStatisticsRecord(record);
+                    }
                 }
             }
         }
@@ -188,6 +194,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         CommentDate = comment.CommentDate.UtcDateTime,
                         comment.Comment
                     });
+            }
+
+            foreach (var audit in tournament.History)
+            {
+                CreateAudit(audit);
             }
         }
 
@@ -411,6 +422,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         CommentDate = comment.CommentDate.UtcDateTime,
                         comment.Comment
                     });
+            }
+
+            foreach (var audit in match.History)
+            {
+                CreateAudit(audit);
             }
         }
 

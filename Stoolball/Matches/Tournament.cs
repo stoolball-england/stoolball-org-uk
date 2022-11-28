@@ -147,7 +147,8 @@ namespace Stoolball.Matches
                 PlayersPerTeam = PlayersPerTeam,
                 TournamentQualificationType = QualificationType,
                 SpacesInTournament = SpacesInTournament,
-                MatchLocation = TournamentLocation
+                MatchLocation = TournamentLocation,
+                Teams = Teams.Select(x => new TeamInMatch { Team = x.Team, PlayingAsTeamName = x.PlayingAsTeamName }).ToList(),
             };
         }
     }

@@ -87,7 +87,12 @@ namespace Stoolball.Testing
             // Most matches have a season and competition
             if (_randomiser.OneInFourChance() && testData.Competitions.Any())
             {
-                match.Season = testData.Competitions[_randomiser.PositiveIntegerLessThan(testData.Competitions.Count)].Seasons.First();
+                do
+                {
+                    var competition = testData.Competitions[_randomiser.PositiveIntegerLessThan(testData.Competitions.Count)];
+                    match.Season = competition.Seasons.FirstOrDefault();
+                }
+                while (match.Season == null);
             }
 
             // Give someone an award

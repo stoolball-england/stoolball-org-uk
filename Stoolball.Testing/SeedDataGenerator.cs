@@ -7,6 +7,7 @@ using Stoolball.Awards;
 using Stoolball.Clubs;
 using Stoolball.Comments;
 using Stoolball.Competitions;
+using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Schools;
@@ -14,6 +15,7 @@ using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing.Fakers;
 using Stoolball.Testing.MatchDataProviders;
+using static Stoolball.Constants;
 
 namespace Stoolball.Testing
 {
@@ -776,11 +778,49 @@ namespace Stoolball.Testing
 
             // Create match and tournament data
             testData.Matches = GenerateMatchData(testData, poolOfTeamsWithPlayers);
+
+            testData.MatchInThePastWithMinimalDetails = testData.Matches.First(x =>
+                x.StartTime < DateTime.UtcNow &&
+                !x.Teams.Any() &&
+                x.Season == null &&
+                x.MatchLocation == null &&
+                x.Tournament == null &&
+                !x.Awards.Any() &&
+                !x.Comments.Any() &&
+                !x.MatchInnings.Any(i =>
+                   i.BattingTeam != null &&
+                   i.BowlingTeam != null &&
+                   i.PlayerInnings.Any() &&
+                   i.OverSets.Any() &&
+                   i.OversBowled.Any() &&
+                   i.BowlingFigures.Any()
+                )
+            );
+
+            testData.MatchInTheFutureWithMinimalDetails = testData.Matches.First(x =>
+                x.StartTime > DateTime.UtcNow &&
+                !x.Teams.Any() &&
+                x.Season == null &&
+                x.MatchLocation == null &&
+                x.Tournament == null &&
+                !x.Awards.Any() &&
+                !x.Comments.Any() &&
+                !x.MatchInnings.Any(i =>
+                   i.BattingTeam != null &&
+                   i.BowlingTeam != null &&
+                   i.PlayerInnings.Any() &&
+                   i.OverSets.Any() &&
+                   i.OversBowled.Any() &&
+                   i.BowlingFigures.Any()
+                )
+            );
+
             testData.MatchInThePastWithFullDetails = testData.Matches.First(x =>
                     x.StartTime < DateTime.UtcNow &&
                     x.Teams.Any() &&
                     x.Season != null && x.Season.Competition != null &&
                     x.MatchLocation != null &&
+                    x.Tournament == null &&
                     x.Awards.Any() &&
                     x.Comments.Any() &&
                     x.MatchInnings.Any(i =>
@@ -792,13 +832,68 @@ namespace Stoolball.Testing
                             i.BowlingFigures.Any()
                         )
                     );
+
+            testData.MatchInThePastWithFullDetails.Teams[0].Team!.UntilYear = 2020;
+            testData.MatchInThePastWithFullDetails.History.AddRange(new[] { new AuditRecord {
+                    Action = AuditAction.Create,
+                    ActorName = nameof(SeedDataGenerator),
+                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(-1),
+                    EntityUri = testData.MatchInThePastWithFullDetails.EntityUri
+                }, new AuditRecord {
+                    Action = AuditAction.Update,
+                    ActorName = nameof(SeedDataGenerator),
+                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute(),
+                    EntityUri = testData.MatchInThePastWithFullDetails.EntityUri
+                } });
+
+            testData.MatchInThePastWithFullDetailsAndTournament = testData.Matches.First(x =>
+                    x.StartTime < DateTime.UtcNow &&
+                    x.Teams.Any() &&
+                    x.Season != null && x.Season.Competition != null &&
+                    x.MatchLocation != null &&
+                    x.Tournament != null &&
+                    x.Awards.Any() &&
+                    x.Comments.Any() &&
+                    x.MatchInnings.Any(i =>
+                            i.BattingTeam != null &&
+                            i.BowlingTeam != null &&
+                            i.PlayerInnings.Any() &&
+                            i.OverSets.Any() &&
+                            i.OversBowled.Any() &&
+                            i.BowlingFigures.Any()
+                        )
+                    );
+
             testData.Members = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberKey: x.MemberKey, memberName: x.MemberName ?? string.Empty)).Distinct(new MemberEqualityComparer()).ToList();
+
+            testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
             for (var i = 0; i < 10; i++)
             {
                 var tournament = CreateTournamentInThePastWithFullDetailsExceptMatches(testData.Members);
                 if (testData.TournamentInThePastWithFullDetails == null) { testData.TournamentInThePastWithFullDetails = tournament; }
                 testData.Tournaments.Add(tournament);
+
+                var tournament2 = CreateTournamentInThePastWithMinimalDetails();
+                if (!_randomiser.OneInFourChance())
+                {
+                    tournament2.TournamentLocation = testData.MatchLocations[_randomiser.PositiveIntegerLessThan(testData.MatchLocations.Count)];
+                }
+                tournament2.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(i - 20).AddDays(5), UkTimeZone());
+                tournament2.Comments = CreateComments(i, testData.Members);
+                testData.Tournaments.Add(tournament2);
             }
+
+            testData.TournamentInThePastWithFullDetails.History.AddRange(new[] { new AuditRecord {
+                    Action = AuditAction.Create,
+                    ActorName = nameof(SeedDataGenerator),
+                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(-2),
+                    EntityUri = testData.TournamentInThePastWithFullDetails.EntityUri
+                }, new AuditRecord {
+                    Action = AuditAction.Update,
+                    ActorName = nameof(SeedDataGenerator),
+                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddDays(-7),
+                    EntityUri = testData.TournamentInThePastWithFullDetails.EntityUri
+                } });
 
             testData.TournamentInThePastWithMinimalDetails = CreateTournamentInThePastWithMinimalDetails();
             testData.Tournaments.Add(testData.TournamentInThePastWithMinimalDetails);
@@ -994,6 +1089,9 @@ namespace Stoolball.Testing
                     if (newPlayers.Any()) { testData.Players.AddRange(newPlayers); }
                 }
             }
+
+            testData.MatchListings.AddRange(testData.Matches.Where(x => x.Tournament == null).Select(x => x.ToMatchListing()).Union(testData.Tournaments.Select(x => x.ToMatchListing())));
+            testData.TournamentMatchListings.AddRange(testData.Matches.Where(x => x.Tournament != null).Select(x => x.ToMatchListing()));
 
             // Find any player who has a single identity, and associate them to a different member
             testData.Players.First(x => x.PlayerIdentities.Count == 1).MemberKey = testData.Members[1].memberKey;
@@ -1319,8 +1417,17 @@ namespace Stoolball.Testing
             // Ensure there's always an intra-club match to test
             matches.Add(_matchFactory.CreateMatchBetween(teamsWithIdentities[0].team, teamsWithIdentities[0].identities, teamsWithIdentities[0].team, teamsWithIdentities[0].identities, _randomiser.FiftyFiftyChance(), testData));
 
-            // Aim to make this one obsolete by recreating everything offered by CreateMatchInThePastWithFullDetails in the generated match data above
+            // Aim to make these obsolete by recreating everything offered by CreateMatchInThePastWithFullDetails in the generated match data above
+            var matchInTheFutureWithMinimalDetails = _matchFactory.CreateMatchInThePastWithMinimalDetails();
+            matchInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(1), UkTimeZone());
+            matches.Add(matchInTheFutureWithMinimalDetails);
+            matches.Add(_matchFactory.CreateMatchInThePastWithMinimalDetails());
             matches.Add(CreateMatchInThePastWithFullDetails(members));
+
+            var matchInThePastWithFullDetailsAndTournament = CreateMatchInThePastWithFullDetails(members);
+            matchInThePastWithFullDetailsAndTournament.Tournament = CreateTournamentInThePastWithMinimalDetails();
+            matchInThePastWithFullDetailsAndTournament.Season!.FromYear = matchInThePastWithFullDetailsAndTournament.Season.UntilYear = 2018;
+            matches.Add(matchInThePastWithFullDetailsAndTournament);
 
             // Generate bowling figures for each innings
             foreach (var innings in matches.SelectMany(x => x.MatchInnings))

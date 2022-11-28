@@ -36,11 +36,16 @@ namespace Stoolball.Testing
         internal Season? SeasonWithMinimalDetails { get; set; }
         internal Season? SeasonWithFullDetails { get; set; }
         internal List<(Guid memberKey, string memberName)> Members { get; set; } = new();
+        internal Match? MatchInThePastWithMinimalDetails { get; set; }
+        internal Match? MatchInTheFutureWithMinimalDetails { get; set; }
         internal Match? MatchInThePastWithFullDetails { get; set; }
+        internal Match? MatchInThePastWithFullDetailsAndTournament { get; set; }
         internal Tournament? TournamentInThePastWithFullDetails { get; set; }
         internal List<Tournament> Tournaments { get; set; } = new();
-        internal List<School> Schools { get; set; } = new();
         internal Tournament? TournamentInThePastWithMinimalDetails { get; set; }
         internal Tournament? TournamentInTheFutureWithMinimalDetails { get; set; }
+        internal List<MatchListing> MatchListings { get; set; } = new();
+        internal List<MatchListing> TournamentMatchListings { get; set; } = new();
+        internal List<School> Schools { get; set; } = new();
     }
 }

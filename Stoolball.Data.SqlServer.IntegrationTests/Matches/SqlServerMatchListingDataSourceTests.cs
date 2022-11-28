@@ -10,12 +10,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 {
-    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class SqlServerMatchListingDataSourceTests
     {
-        private readonly SqlServerDataSourceFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
 
-        public SqlServerMatchListingDataSourceTests(SqlServerDataSourceFixture databaseFixture)
+        public SqlServerMatchListingDataSourceTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -27,7 +27,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadTotalMatches(null).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count, result);
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count, result);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadTotalMatches(new MatchFilter { IncludeMatches = true, IncludeTournaments = false }).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase)), result);
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase)), result);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadTotalMatches(new MatchFilter { IncludeMatches = false, IncludeTournaments = true }).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase)), result);
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase)), result);
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadTotalMatches(new MatchFilter { MatchTypes = new List<MatchType> { MatchType.LeagueMatch } }).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase) || x.MatchType == MatchType.LeagueMatch), result);
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase) || x.MatchType == MatchType.LeagueMatch), result);
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadTotalMatches(new MatchFilter { PlayerTypes = new List<PlayerType> { PlayerType.Mixed } }).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.PlayerType == PlayerType.Mixed), result);
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count(x => x.PlayerType == PlayerType.Mixed), result);
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadTotalMatches(new MatchFilter { MatchResultTypes = new List<MatchResultType?> { MatchResultType.HomeWin } }).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.MatchResultType == MatchResultType.HomeWin), result);
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count(x => x.MatchResultType == MatchResultType.HomeWin), result);
         }
 
         [Fact]
@@ -87,47 +87,62 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadTotalMatches(new MatchFilter { MatchResultTypes = new List<MatchResultType?> { null } }).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count(x => !x.MatchResultType.HasValue), result);
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count(x => !x.MatchResultType.HasValue), result);
         }
 
         [Fact]
         public async Task Read_total_matches_supports_filter_matches_by_team()
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamThatIsInATournamentAndAMatch = _databaseFixture.TestData.Teams.First(x =>
+                _databaseFixture.TestData.Matches.SelectMany(m => m.Teams).Select(t => t.Team?.TeamId).Contains(x.TeamId) &&
+                _databaseFixture.TestData.Tournaments.SelectMany(t => t.Teams).Select(t => t.Team?.TeamId).Contains(x.TeamId));
+            var filter = new MatchFilter { TeamIds = new List<Guid> { teamThatIsInATournamentAndAMatch.TeamId!.Value } };
 
-            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { TeamIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Teams.First().Team.TeamId!.Value } }).ConfigureAwait(false);
+            var result = await matchDataSource.ReadTotalMatches(filter).ConfigureAwait(false);
 
-            Assert.Equal(1, result);
+            var expected = _databaseFixture.TestData.MatchListings.Count(x => x.Teams.Select(x => x.Team?.TeamId).Contains(filter.TeamIds[0]));
+
+            Assert.Equal(expected, result);
         }
 
         [Fact]
         public async Task Read_total_matches_supports_filter_matches_by_competition()
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+            var filter = new MatchFilter { CompetitionIds = new List<Guid> { _databaseFixture.TestData.MatchInThePastWithFullDetails!.Season!.Competition!.CompetitionId!.Value } };
 
-            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { CompetitionIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Season.Competition.CompetitionId!.Value } }).ConfigureAwait(false);
+            var result = await matchDataSource.ReadTotalMatches(filter).ConfigureAwait(false);
 
-            Assert.Equal(1, result);
+            var expected = _databaseFixture.TestData.Matches.Count(x => x.Season?.Competition?.CompetitionId == filter.CompetitionIds[0]);
+
+            Assert.Equal(expected, result);
         }
 
         [Fact]
         public async Task Read_total_matches_supports_filter_matches_by_season()
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+            var filter = new MatchFilter { SeasonIds = new List<Guid> { _databaseFixture.TestData.MatchInThePastWithFullDetails!.Season!.SeasonId!.Value } };
 
-            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { SeasonIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Season.SeasonId!.Value } }).ConfigureAwait(false);
+            var result = await matchDataSource.ReadTotalMatches(filter).ConfigureAwait(false);
 
-            Assert.Equal(1, result);
+            var expected = _databaseFixture.TestData.Matches.Count(x => x.Season?.SeasonId == filter.SeasonIds[0]);
+
+            Assert.Equal(expected, result);
         }
 
         [Fact]
         public async Task Read_total_matches_supports_filter_matches_by_match_location()
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+            var filter = new MatchFilter { MatchLocationIds = new List<Guid> { _databaseFixture.TestData.MatchInThePastWithFullDetails!.MatchLocation!.MatchLocationId!.Value } };
 
-            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { MatchLocationIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.MatchLocation.MatchLocationId!.Value } }).ConfigureAwait(false);
+            var result = await matchDataSource.ReadTotalMatches(filter).ConfigureAwait(false);
 
-            Assert.Equal(1, result);
+            var expected = _databaseFixture.TestData.Matches.Count(x => x.MatchLocation?.MatchLocationId == filter.MatchLocationIds[0]);
+
+            Assert.Equal(expected, result);
         }
 
         [Fact]
@@ -137,7 +152,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadTotalMatches(new MatchFilter { FromDate = DateTimeOffset.UtcNow }).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.StartTime >= DateTimeOffset.UtcNow), result);
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count(x => x.StartTime >= DateTimeOffset.UtcNow), result);
         }
 
         [Fact]
@@ -147,7 +162,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadTotalMatches(new MatchFilter { UntilDate = DateTimeOffset.UtcNow }).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.StartTime <= DateTimeOffset.UtcNow), result);
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count(x => x.StartTime <= DateTimeOffset.UtcNow), result);
         }
 
         [Fact]
@@ -157,7 +172,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadTotalMatches(new MatchFilter { IncludeTournamentMatches = true }).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count + _databaseFixture.TournamentMatchListings.Count, result);
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count + _databaseFixture.TestData.TournamentMatchListings.Count, result);
         }
 
         [Fact]
@@ -165,7 +180,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { TournamentId = _databaseFixture.TournamentInThePastWithFullDetails.TournamentId }).ConfigureAwait(false);
+            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { TournamentId = _databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentId }).ConfigureAwait(false);
 
             Assert.Equal(1, result);
         }
@@ -175,7 +190,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { TeamIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Teams.First().Team.TeamId!.Value } }).ConfigureAwait(false);
+            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { TeamIds = new List<Guid> { _databaseFixture.TestData.TournamentInThePastWithFullDetails.Teams.First().Team.TeamId!.Value } }).ConfigureAwait(false);
 
             Assert.Equal(1, result);
         }
@@ -185,7 +200,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { CompetitionIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Seasons.First().Competition.CompetitionId!.Value } }).ConfigureAwait(false);
+            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { CompetitionIds = new List<Guid> { _databaseFixture.TestData.TournamentInThePastWithFullDetails.Seasons.First().Competition.CompetitionId!.Value } }).ConfigureAwait(false);
 
             Assert.Equal(1, result);
         }
@@ -195,7 +210,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { SeasonIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Seasons.First().SeasonId!.Value } }).ConfigureAwait(false);
+            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { SeasonIds = new List<Guid> { _databaseFixture.TestData.TournamentInThePastWithFullDetails.Seasons.First().SeasonId!.Value } }).ConfigureAwait(false);
 
             Assert.Equal(1, result);
         }
@@ -205,7 +220,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { MatchLocationIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.MatchLocationId!.Value } }).ConfigureAwait(false);
+            var result = await matchDataSource.ReadTotalMatches(new MatchFilter { MatchLocationIds = new List<Guid> { _databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentLocation.MatchLocationId!.Value } }).ConfigureAwait(false);
 
             Assert.Equal(1, result);
         }
@@ -217,8 +232,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
-            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase)))
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.TestData.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase)))
             {
                 var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
                 Assert.NotNull(result);
@@ -241,8 +256,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
-            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase) && x.Teams.Any()))
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.TestData.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase) && x.Teams.Any()))
             {
                 var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
                 Assert.NotNull(result);
@@ -253,25 +268,25 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                     Assert.NotNull(resultTeam);
 
                     Assert.Equal(team.TeamRole, resultTeam!.TeamRole);
-                    Assert.Equal(team.Team.TeamId, resultTeam.Team.TeamId);
+                    Assert.Equal(team.Team.TeamId, resultTeam.Team?.TeamId);
                 }
             }
         }
 
         [Fact]
-        public async Task Read_match_listings_returns_MatchInnings_with_runs_and_wickets_only_if_not_null()
+        public async Task Read_match_listings_returns_MatchInnings_with_runs_and_wickets_only_if_batting_team_is_not_null()
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
-            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase)))
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.TestData.MatchListings.Where(x => x.MatchRoute?.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase) ?? false))
             {
                 var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
                 Assert.NotNull(result);
 
-                if (listing.MatchInnings.Any(x => x.Runs.HasValue || x.Wickets.HasValue))
+                if (listing.MatchInnings.Any(x => x.BattingTeam != null))
                 {
                     Assert.Equal(listing.MatchInnings.Count, result!.MatchInnings.Count);
                     foreach (var innings in listing.MatchInnings)
@@ -297,10 +312,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var result = results.SingleOrDefault(x => x.MatchId == _databaseFixture.MatchInThePastWithFullDetails.MatchId);
+            var result = results.SingleOrDefault(x => x.MatchId == _databaseFixture.TestData.MatchInThePastWithFullDetails!.MatchId);
             Assert.NotNull(result);
-            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.History.First().AuditDate, result!.FirstAuditDate);
-            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.History.Last().AuditDate, result.LastAuditDate);
+            Assert.Equal(_databaseFixture.TestData.MatchInThePastWithFullDetails!.History.First().AuditDate, result!.FirstAuditDate);
+            Assert.Equal(_databaseFixture.TestData.MatchInThePastWithFullDetails.History.Last().AuditDate, result.LastAuditDate);
         }
 
         [Fact]
@@ -310,8 +325,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
-            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase)))
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.TestData.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase)))
             {
                 var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
                 Assert.NotNull(result);
@@ -334,13 +349,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
-            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchLocation != null))
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.TestData.MatchListings.Where(x => x.MatchLocation != null))
             {
                 var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
-                Assert.NotNull(result);
+                Assert.NotNull(result?.MatchLocation);
 
-                Assert.Equal(listing.MatchLocation.MatchLocationId, result!.MatchLocation.MatchLocationId);
+                Assert.Equal(listing.MatchLocation.MatchLocationId, result!.MatchLocation!.MatchLocationId);
                 Assert.Equal(listing.MatchLocation.SecondaryAddressableObjectName, result.MatchLocation.SecondaryAddressableObjectName);
                 Assert.Equal(listing.MatchLocation.PrimaryAddressableObjectName, result.MatchLocation.PrimaryAddressableObjectName);
                 Assert.Equal(listing.MatchLocation.Locality, result.MatchLocation.Locality);
@@ -357,8 +372,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
-            foreach (var match in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase)))
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count, results.Count);
+            foreach (var match in _databaseFixture.TestData.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase)))
             {
                 var result = results.SingleOrDefault(x => x.MatchRoute == match.MatchRoute);
                 Assert.NotNull(result);
@@ -373,10 +388,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var result = results.SingleOrDefault(x => x.MatchId == _databaseFixture.TournamentInThePastWithFullDetails.TournamentId);
+            var result = results.SingleOrDefault(x => x.MatchId == _databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentId);
             Assert.NotNull(result);
-            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.History.First().AuditDate, result!.FirstAuditDate);
-            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.History.Last().AuditDate, result.LastAuditDate);
+            Assert.Equal(_databaseFixture.TestData.TournamentInThePastWithFullDetails!.History.First().AuditDate, result!.FirstAuditDate);
+            Assert.Equal(_databaseFixture.TestData.TournamentInThePastWithFullDetails.History.Last().AuditDate, result.LastAuditDate);
         }
 
         [Fact]
@@ -401,7 +416,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
 
-            var dataWithAuditHistory = _databaseFixture.Matches.Where(x => x.History.Any()).Select(x => x.MatchId).Union(new[] { _databaseFixture.TournamentInThePastWithFullDetails.TournamentId });
+            var dataWithAuditHistory = _databaseFixture.TestData.Matches.Where(x => x.History.Any()).Select(x => x.MatchId).Union(new[] { _databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentId });
             var resultsWithAuditHistoryExpected = results.Where(x => dataWithAuditHistory.Contains(x.MatchId));
 
             DateTimeOffset? previousUpdate = DateTimeOffset.MaxValue;
@@ -419,8 +434,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
-            foreach (var listing in _databaseFixture.MatchListings)
+            var missing = _databaseFixture.TestData.MatchListings.Where(x => !results.Select(r => r.MatchId).Contains(x.MatchId)).ToList();
+            Assert.Equal(_databaseFixture.TestData.MatchListings.Count, results.Count);
+
+            foreach (var listing in _databaseFixture.TestData.MatchListings)
             {
                 Assert.NotNull(results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute));
             }
@@ -433,7 +450,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(new MatchFilter { IncludeMatches = true, IncludeTournaments = false }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase));
+            var expected = _databaseFixture.TestData.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase));
             Assert.Equal(expected.Count(), results.Count);
             foreach (var listing in expected)
             {
@@ -448,7 +465,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(new MatchFilter { IncludeMatches = false, IncludeTournaments = true }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase));
+            var expected = _databaseFixture.TestData.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase));
             Assert.Equal(expected.Count(), results.Count);
             foreach (var listing in expected)
             {
@@ -463,7 +480,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(new MatchFilter { MatchTypes = new List<MatchType> { MatchType.FriendlyMatch } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase) || x.MatchType == MatchType.FriendlyMatch);
+            var expected = _databaseFixture.TestData.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase) || x.MatchType == MatchType.FriendlyMatch);
             Assert.Equal(expected.Count(), results.Count);
             foreach (var listing in expected)
             {
@@ -478,7 +495,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(new MatchFilter { PlayerTypes = new List<PlayerType> { PlayerType.Mixed } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.MatchListings.Where(x => x.PlayerType == PlayerType.Mixed);
+            var expected = _databaseFixture.TestData.MatchListings.Where(x => x.PlayerType == PlayerType.Mixed);
             Assert.Equal(expected.Count(), results.Count);
             foreach (var listing in expected)
             {
@@ -493,7 +510,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(new MatchFilter { MatchResultTypes = new List<MatchResultType?> { MatchResultType.HomeWin } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.MatchListings.Where(x => x.MatchResultType == MatchResultType.HomeWin);
+            var expected = _databaseFixture.TestData.MatchListings.Where(x => x.MatchResultType == MatchResultType.HomeWin);
             Assert.Equal(expected.Count(), results.Count);
             foreach (var listing in expected)
             {
@@ -508,7 +525,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(new MatchFilter { MatchResultTypes = new List<MatchResultType?> { null } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.MatchListings.Where(x => !x.MatchResultType.HasValue);
+            var expected = _databaseFixture.TestData.MatchListings.Where(x => !x.MatchResultType.HasValue);
             Assert.Equal(expected.Count(), results.Count);
             foreach (var listing in expected)
             {
@@ -520,44 +537,77 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         public async Task Read_match_listings_supports_filter_matches_by_team()
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+            var teamThatIsInATournamentAndAMatch = _databaseFixture.TestData.Teams.First(x =>
+                    _databaseFixture.TestData.Matches.SelectMany(m => m.Teams).Select(t => t.Team?.TeamId).Contains(x.TeamId) &&
+                    _databaseFixture.TestData.Tournaments.SelectMany(t => t.Teams).Select(t => t.Team?.TeamId).Contains(x.TeamId));
+            var filter = new MatchFilter { TeamIds = new List<Guid> { teamThatIsInATournamentAndAMatch.TeamId!.Value } };
 
-            var results = await matchDataSource.ReadMatchListings(new MatchFilter { TeamIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Teams.First().Team.TeamId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+            var results = await matchDataSource.ReadMatchListings(filter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Single(results);
-            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute, results.Single().MatchRoute);
+            var expected = _databaseFixture.TestData.MatchListings.Where(x => x.Teams.Select(x => x.Team?.TeamId).Contains(filter.TeamIds[0]));
+
+            var missing = results.Where(x => !expected.ToList().Select(y => y.MatchId).Contains(x.MatchId)).ToList();
+
+            Assert.Equal(expected.Count(), results.Count());
+            foreach (var match in expected)
+            {
+                var matchFromResults = results.SingleOrDefault(x => x.MatchId == match.MatchId);
+                Assert.NotNull(matchFromResults);
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_supports_filter_matches_by_competition()
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+            var filter = new MatchFilter { CompetitionIds = new List<Guid> { _databaseFixture.TestData.MatchInThePastWithFullDetails!.Season!.Competition!.CompetitionId!.Value } };
 
-            var results = await matchDataSource.ReadMatchListings(new MatchFilter { CompetitionIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Season.Competition.CompetitionId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+            var results = await matchDataSource.ReadMatchListings(filter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Single(results);
-            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute, results.Single().MatchRoute);
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == filter.CompetitionIds[0]);
+
+            Assert.Equal(expected.Count(), results.Count());
+            foreach (var match in expected)
+            {
+                var matchFromResults = results.SingleOrDefault(x => x.MatchId == match.MatchId);
+                Assert.NotNull(matchFromResults);
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_supports_filter_matches_by_season()
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+            var filter = new MatchFilter { SeasonIds = new List<Guid> { _databaseFixture.TestData.MatchInThePastWithFullDetails!.Season!.SeasonId!.Value } };
 
-            var results = await matchDataSource.ReadMatchListings(new MatchFilter { SeasonIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Season.SeasonId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+            var results = await matchDataSource.ReadMatchListings(filter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Single(results);
-            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute, results.Single().MatchRoute);
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == filter.SeasonIds[0]);
+
+            Assert.Equal(expected.Count(), results.Count());
+            foreach (var match in expected)
+            {
+                var matchFromResults = results.SingleOrDefault(x => x.MatchId == match.MatchId);
+                Assert.NotNull(matchFromResults);
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_supports_filter_matches_by_match_location()
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+            var filter = new MatchFilter { MatchLocationIds = new List<Guid> { _databaseFixture.TestData.MatchInThePastWithFullDetails!.MatchLocation!.MatchLocationId!.Value } };
 
-            var results = await matchDataSource.ReadMatchListings(new MatchFilter { MatchLocationIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.MatchLocation.MatchLocationId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+            var results = await matchDataSource.ReadMatchListings(filter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            Assert.Single(results);
-            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute, results.Single().MatchRoute);
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.MatchLocation?.MatchLocationId == filter.MatchLocationIds[0]);
+
+            Assert.Equal(expected.Count(), results.Count());
+            foreach (var match in expected)
+            {
+                var matchFromResults = results.SingleOrDefault(x => x.MatchId == match.MatchId);
+                Assert.NotNull(matchFromResults);
+            }
         }
 
         [Fact]
@@ -567,7 +617,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(new MatchFilter { FromDate = DateTimeOffset.UtcNow }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.MatchListings.Where(x => x.StartTime >= DateTimeOffset.Now);
+            var expected = _databaseFixture.TestData.MatchListings.Where(x => x.StartTime >= DateTimeOffset.Now);
             Assert.Equal(expected.Count(), results.Count);
             foreach (var listing in expected)
             {
@@ -582,7 +632,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(new MatchFilter { UntilDate = DateTimeOffset.UtcNow }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.MatchListings.Where(x => x.StartTime <= DateTimeOffset.Now);
+            var expected = _databaseFixture.TestData.MatchListings.Where(x => x.StartTime <= DateTimeOffset.Now);
             Assert.Equal(expected.Count(), results.Count);
             foreach (var listing in expected)
             {
@@ -598,8 +648,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             var results = await matchDataSource.ReadMatchListings(new MatchFilter { IncludeTournamentMatches = true }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
             var expected = new List<MatchListing>();
-            expected.AddRange(_databaseFixture.MatchListings);
-            expected.AddRange(_databaseFixture.TournamentMatchListings);
+            expected.AddRange(_databaseFixture.TestData.MatchListings);
+            expected.AddRange(_databaseFixture.TestData.TournamentMatchListings);
             Assert.Equal(expected.Count, results.Count);
             foreach (var listing in expected)
             {
@@ -614,12 +664,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var results = await matchDataSource.ReadMatchListings(new MatchFilter
             {
-                TournamentId = _databaseFixture.TournamentInThePastWithFullDetails.TournamentId,
+                TournamentId = _databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentId,
                 IncludeTournamentMatches = true,
                 IncludeTournaments = false,
             }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TournamentMatchListings.Where(x => x.MatchRoute != _databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute);
+            var expected = _databaseFixture.TestData.TournamentMatchListings.Where(x => x.MatchRoute != _databaseFixture.TestData.MatchInThePastWithFullDetailsAndTournament!.MatchRoute);
             Assert.Equal(expected.Count(), results.Count);
             foreach (var listing in expected)
             {
@@ -632,10 +682,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await matchDataSource.ReadMatchListings(new MatchFilter { TeamIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Teams.First().Team.TeamId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+            var results = await matchDataSource.ReadMatchListings(new MatchFilter { TeamIds = new List<Guid> { _databaseFixture.TestData.TournamentInThePastWithFullDetails!.Teams.First().Team!.TeamId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
             Assert.Single(results);
-            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
+            Assert.Equal(_databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
         }
 
         [Fact]
@@ -643,10 +693,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await matchDataSource.ReadMatchListings(new MatchFilter { CompetitionIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Seasons.First().Competition.CompetitionId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+            var results = await matchDataSource.ReadMatchListings(new MatchFilter { CompetitionIds = new List<Guid> { _databaseFixture.TestData.TournamentInThePastWithFullDetails.Seasons.First().Competition.CompetitionId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
             Assert.Single(results);
-            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
+            Assert.Equal(_databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
         }
 
         [Fact]
@@ -654,10 +704,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await matchDataSource.ReadMatchListings(new MatchFilter { SeasonIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Seasons.First().SeasonId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+            var results = await matchDataSource.ReadMatchListings(new MatchFilter { SeasonIds = new List<Guid> { _databaseFixture.TestData.TournamentInThePastWithFullDetails!.Seasons.First().SeasonId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
             Assert.Single(results);
-            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
+            Assert.Equal(_databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
         }
 
         [Fact]
@@ -665,10 +715,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await matchDataSource.ReadMatchListings(new MatchFilter { MatchLocationIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.MatchLocationId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+            var results = await matchDataSource.ReadMatchListings(new MatchFilter { MatchLocationIds = new List<Guid> { _databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentLocation!.MatchLocationId!.Value } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
             Assert.Single(results);
-            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
+            Assert.Equal(_databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
         }
 
         [Fact]
@@ -676,10 +726,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await matchDataSource.ReadMatchListings(new MatchFilter { TournamentId = _databaseFixture.TournamentInThePastWithFullDetails.TournamentId }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+            var results = await matchDataSource.ReadMatchListings(new MatchFilter { TournamentId = _databaseFixture.TestData.TournamentInThePastWithFullDetails!.TournamentId }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
             Assert.Single(results);
-            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
+            Assert.Equal(_databaseFixture.TestData.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
         }
 
         [Fact]
@@ -689,7 +739,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             const int pageSize = 10;
             var pageNumber = 1;
-            var remaining = _databaseFixture.MatchListings.Count;
+            var remaining = _databaseFixture.TestData.MatchListings.Count;
             while (remaining > 0)
             {
                 var result = await matchDataSource.ReadMatchListings(new MatchFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = pageSize } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
