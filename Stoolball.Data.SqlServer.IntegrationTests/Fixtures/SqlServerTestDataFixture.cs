@@ -12,7 +12,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
     {
         public TestData TestData { get; set; }
 
-        public SqlServerTestDataFixture() : base("StoolballStatisticsDataSourceIntegrationTests")
+        public SqlServerTestDataFixture() : base("StoolballIntegrationTests")
         {
             // Populate seed data so that there's a consistent baseline for each test run
             var randomiser = new Randomiser(new Random());
