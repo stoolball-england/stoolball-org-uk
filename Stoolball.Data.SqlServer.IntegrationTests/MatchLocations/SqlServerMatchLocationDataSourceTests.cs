@@ -23,6 +23,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
 
+        private static Func<MatchLocation, bool> MatchLocationsMatchingQuery(string query)
+        {
+            return x => (!string.IsNullOrEmpty(x.SecondaryAddressableObjectName) && x.SecondaryAddressableObjectName.Contains(query, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(x.PrimaryAddressableObjectName) && x.PrimaryAddressableObjectName.Contains(query, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(x.Locality) && x.Locality.Contains(query, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(x.Town) && x.Town.Contains(query, StringComparison.OrdinalIgnoreCase));
+        }
+
         [Fact]
         public async Task Read_minimal_location_by_route_returns_basic_fields()
         {
@@ -134,11 +142,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             foreach (var saon in uniqueSAONs)
             {
-                var query = new MatchLocationFilter { Query = saon };
+                var filter = new MatchLocationFilter { Query = saon };
 
-                var result = await matchLocationDataSource.ReadTotalMatchLocations(query).ConfigureAwait(false);
+                var result = await matchLocationDataSource.ReadTotalMatchLocations(filter).ConfigureAwait(false);
 
-                Assert.Equal(_databaseFixture.TestData.MatchLocations.Count(x => x.SecondaryAddressableObjectName?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false), result);
+                var expected = _databaseFixture.TestData.MatchLocations.Count(MatchLocationsMatchingQuery(filter.Query));
+                Assert.Equal(expected, result);
             }
         }
 
@@ -155,14 +164,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             foreach (var paon in uniquePAONs)
             {
-                var query = new MatchLocationFilter { Query = paon };
+                var filter = new MatchLocationFilter { Query = paon };
 
-                var result = await matchLocationDataSource.ReadTotalMatchLocations(query).ConfigureAwait(false);
+                var result = await matchLocationDataSource.ReadTotalMatchLocations(filter).ConfigureAwait(false);
 
-                Assert.Equal(_databaseFixture.TestData.MatchLocations.Count(x => x.PrimaryAddressableObjectName?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false), result);
+                var expected = _databaseFixture.TestData.MatchLocations.Count(MatchLocationsMatchingQuery(filter.Query));
+                Assert.Equal(expected, result);
             }
         }
-
 
         [Fact]
         public async Task Read_total_locations_supports_case_insensitive_filter_locality()
@@ -177,11 +186,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             foreach (var locality in uniqueLocalities)
             {
-                var query = new MatchLocationFilter { Query = locality };
+                var filter = new MatchLocationFilter { Query = locality };
 
-                var result = await matchLocationDataSource.ReadTotalMatchLocations(query).ConfigureAwait(false);
+                var result = await matchLocationDataSource.ReadTotalMatchLocations(filter).ConfigureAwait(false);
 
-                Assert.Equal(_databaseFixture.TestData.MatchLocations.Count(x => x.Locality?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false), result);
+                var expected = _databaseFixture.TestData.MatchLocations.Count(MatchLocationsMatchingQuery(filter.Query));
+                Assert.Equal(expected, result);
             }
         }
 
@@ -198,11 +208,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             foreach (var town in uniqueTowns)
             {
-                var query = new MatchLocationFilter { Query = town };
+                var filter = new MatchLocationFilter { Query = town };
 
-                var result = await matchLocationDataSource.ReadTotalMatchLocations(query).ConfigureAwait(false);
+                var result = await matchLocationDataSource.ReadTotalMatchLocations(filter).ConfigureAwait(false);
 
-                Assert.Equal(_databaseFixture.TestData.MatchLocations.Count(x => x.Town?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false), result);
+                var expected = _databaseFixture.TestData.MatchLocations.Count(MatchLocationsMatchingQuery(filter.Query));
+                Assert.Equal(expected, result);
             }
         }
 
@@ -331,12 +342,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             foreach (var saon in uniqueSAONs)
             {
-                var query = new MatchLocationFilter { Paging = new Paging { PageSize = int.MaxValue }, Query = saon };
+                var filter = new MatchLocationFilter { Paging = new Paging { PageSize = int.MaxValue }, Query = saon };
 
-                var result = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
+                var result = await matchLocationDataSource.ReadMatchLocations(filter).ConfigureAwait(false);
 
-                var expected = _databaseFixture.TestData.MatchLocations.Where(x => x.SecondaryAddressableObjectName?.Contains(saon, StringComparison.OrdinalIgnoreCase) ?? false);
-                Assert.Equal(expected.Count(), result.Count);
+                var expected = _databaseFixture.TestData.MatchLocations.Where(MatchLocationsMatchingQuery(filter.Query)).ToList();
+                Assert.Equal(expected.Count, result.Count);
                 foreach (var location in expected)
                 {
                     Assert.NotNull(result.SingleOrDefault(x => x.MatchLocationId == location.MatchLocationId));
@@ -357,12 +368,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             foreach (var paon in uniquePAONs)
             {
-                var query = new MatchLocationFilter { Paging = new Paging { PageSize = int.MaxValue }, Query = paon };
+                var filter = new MatchLocationFilter { Paging = new Paging { PageSize = int.MaxValue }, Query = paon };
 
-                var result = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
+                var result = await matchLocationDataSource.ReadMatchLocations(filter).ConfigureAwait(false);
 
-                var expected = _databaseFixture.TestData.MatchLocations.Where(x => x.PrimaryAddressableObjectName?.Contains(paon, StringComparison.OrdinalIgnoreCase) ?? false);
-                Assert.Equal(expected.Count(), result.Count);
+                var expected = _databaseFixture.TestData.MatchLocations.Where(MatchLocationsMatchingQuery(filter.Query)).ToList();
+                Assert.Equal(expected.Count, result.Count);
                 foreach (var location in expected)
                 {
                     Assert.NotNull(result.SingleOrDefault(x => x.MatchLocationId == location.MatchLocationId));
@@ -384,12 +395,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             foreach (var locality in uniqueLocalities)
             {
-                var query = new MatchLocationFilter { Paging = new Paging { PageSize = int.MaxValue }, Query = locality };
+                var filter = new MatchLocationFilter { Paging = new Paging { PageSize = int.MaxValue }, Query = locality };
 
-                var result = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
+                var result = await matchLocationDataSource.ReadMatchLocations(filter).ConfigureAwait(false);
 
-                var expected = _databaseFixture.TestData.MatchLocations.Where(x => x.Locality?.Contains(locality, StringComparison.OrdinalIgnoreCase) ?? false);
-                Assert.Equal(expected.Count(), result.Count);
+                var expected = _databaseFixture.TestData.MatchLocations.Where(MatchLocationsMatchingQuery(filter.Query)).ToList();
+                Assert.Equal(expected.Count, result.Count);
                 foreach (var location in expected)
                 {
                     Assert.NotNull(result.SingleOrDefault(x => x.MatchLocationId == location.MatchLocationId));
@@ -410,12 +421,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             foreach (var town in uniqueTowns)
             {
-                var query = new MatchLocationFilter { Paging = new Paging { PageSize = int.MaxValue }, Query = town };
+                var filter = new MatchLocationFilter { Paging = new Paging { PageSize = int.MaxValue }, Query = town };
 
-                var result = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
+                var result = await matchLocationDataSource.ReadMatchLocations(filter).ConfigureAwait(false);
 
-                var expected = _databaseFixture.TestData.MatchLocations.Where(x => x.Town?.Contains(town, StringComparison.OrdinalIgnoreCase) ?? false);
-                Assert.Equal(expected.Count(), result.Count);
+                var expected = _databaseFixture.TestData.MatchLocations.Where(MatchLocationsMatchingQuery(filter.Query)).ToList();
+                Assert.Equal(expected.Count, result.Count);
                 foreach (var location in expected)
                 {
                     Assert.NotNull(result.SingleOrDefault(x => x.MatchLocationId == location.MatchLocationId));
