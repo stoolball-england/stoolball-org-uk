@@ -64,21 +64,33 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         public async Task Read_competition_by_route_returns_seasons_most_recent_first()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute);
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithFullDetails!.CompetitionRoute!, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithFullDetails!.CompetitionRoute!);
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute).ConfigureAwait(false);
+            var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute!).ConfigureAwait(false);
 
             Assert.NotNull(result);
-            for (var season = 0; season < _databaseFixture.TestData.CompetitionWithFullDetails.Seasons.Count; season++)
+            Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons.Count, result!.Seasons.Count);
+            int? previousFromYear = int.MaxValue;
+            int? previousUntilYear = int.MaxValue;
+            foreach (var season in _databaseFixture.TestData.CompetitionWithFullDetails.Seasons)
             {
-                Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].FromYear, result!.Seasons[season].FromYear);
-                Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].UntilYear, result.Seasons[season].UntilYear);
-                Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].SeasonRoute, result.Seasons[season].SeasonRoute);
-                Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].PlayersPerTeam, result.Seasons[season].PlayersPerTeam);
-                Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].EnableTournaments, result.Seasons[season].EnableTournaments);
-                Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].EnableLastPlayerBatsOn, result.Seasons[season].EnableLastPlayerBatsOn);
-                Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].EnableBonusOrPenaltyRuns, result.Seasons[season].EnableBonusOrPenaltyRuns);
+                var resultSeason = result.Seasons.SingleOrDefault(x => x.SeasonId == season.SeasonId);
+                Assert.NotNull(resultSeason);
+
+                Assert.Equal(season.FromYear, resultSeason!.FromYear);
+                Assert.True(resultSeason.FromYear <= previousFromYear);
+                previousFromYear = resultSeason.FromYear;
+
+                Assert.Equal(season.UntilYear, resultSeason.UntilYear);
+                Assert.True(resultSeason.UntilYear <= previousUntilYear);
+                previousUntilYear = resultSeason.UntilYear;
+
+                Assert.Equal(season.SeasonRoute, resultSeason.SeasonRoute);
+                Assert.Equal(season.PlayersPerTeam, resultSeason.PlayersPerTeam);
+                Assert.Equal(season.EnableTournaments, resultSeason.EnableTournaments);
+                Assert.Equal(season.EnableLastPlayerBatsOn, resultSeason.EnableLastPlayerBatsOn);
+                Assert.Equal(season.EnableBonusOrPenaltyRuns, resultSeason.EnableBonusOrPenaltyRuns);
             }
         }
 
@@ -86,10 +98,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         public async Task Read_competition_by_route_returns_default_over_sets()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute);
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithFullDetails!.CompetitionRoute!, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithFullDetails!.CompetitionRoute!);
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute).ConfigureAwait(false);
+            var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute!).ConfigureAwait(false);
 
             Assert.NotNull(result);
             for (var season = 0; season < _databaseFixture.TestData.CompetitionWithFullDetails.Seasons.Count; season++)
@@ -108,10 +120,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         public async Task Read_competition_by_route_returns_match_types()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute);
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithFullDetails!.CompetitionRoute!, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithFullDetails!.CompetitionRoute!);
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute).ConfigureAwait(false);
+            var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute!).ConfigureAwait(false);
 
             Assert.NotNull(result);
             for (var season = 0; season < _databaseFixture.TestData.CompetitionWithFullDetails.Seasons.Count; season++)
@@ -203,7 +215,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
                     foreach (var team in expectedSeason.Teams)
                     {
-                        var resultTeam = resultSeason.Teams.SingleOrDefault(x => x.Team.TeamId == team.Team.TeamId);
+                        var resultTeam = resultSeason.Teams.SingleOrDefault(x => x.Team?.TeamId == team.Team?.TeamId);
 
                         Assert.NotNull(resultTeam);
                     }
