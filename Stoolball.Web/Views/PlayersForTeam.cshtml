@@ -1,5 +1,9 @@
 ﻿@inherits UmbracoViewPage<Stoolball.Web.Teams.Models.TeamViewModel>
+@using Stoolball.Security
 @using Stoolball.Statistics
+@{
+    var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam];
+}
 <div class="container-xl">
     <h1>@Model.Team!.TeamNameLocationAndPlayerType()</h1>
 
@@ -23,6 +27,12 @@
         <li class="nav-item">
             <a class="nav-link" href="@Model.Team.TeamRoute/statistics">Statistics</a>
         </li>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Team.TeamRoute/edit/players">Edit players</a>
+            </li>
+        }
     </ul>
     @if (Model.Players.Any())
     {

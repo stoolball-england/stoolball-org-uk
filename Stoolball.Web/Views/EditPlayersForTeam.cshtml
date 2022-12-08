@@ -1,0 +1,66 @@
+﻿@inherits UmbracoViewPage<Stoolball.Web.Teams.Models.TeamViewModel>
+@using Humanizer
+@using Stoolball.Security
+@using Stoolball.Statistics
+@{
+    var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam];
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@functions 
+{
+    public void ListIdentities(List<PlayerIdentity> identities)
+    {
+        <ul class="list-columns-wide">
+            @foreach (var identity in identities.OrderBy(x => x.PlayerIdentityName))
+            {
+                var otherIdentities = identity.Player.PlayerIdentities.Where(x => x.PlayerIdentityId != identity.PlayerIdentityId).ToList();
+                <li><div><a href="@Model.Team!.TeamRoute/edit/players">@identity.PlayerIdentityName</a> <span class="text-nowrap">(@identity.TotalMatches @(identity.TotalMatches > 1 ? "matches" : "match"))</span></div>
+                    @if (otherIdentities.Count > 0)
+                    {
+                        <small class="linked">linked to @otherIdentities.Humanize(x => x.PlayerIdentityName)</small>
+                    }
+                </li>
+            }
+        </ul>
+    }
+}
+<div class="container-xl">
+    <h1>Edit players for @Model.Team!.TeamNameLocationAndPlayerType()</h1>
+
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam])
+    {
+        <p class="alert alert-info alert-tip">You can't add or delete players here. Players come from scorecards added to this website – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a></p>
+
+        @if (Model.PlayerIdentities.Any())
+        {
+            var recentPlayers = Model.PlayerIdentities.Where(x => x.LastPlayed > DateTimeOffset.UtcNow.AddYears(-2)).ToList();
+            if (recentPlayers.Any())
+            {
+                <h2>Current and recent players</h2>
+                ListIdentities(recentPlayers);
+            }
+            var moreThanTwo = Model.PlayerIdentities.Where(x => x.LastPlayed <= DateTimeOffset.UtcNow.AddYears(-2) && x.LastPlayed >= DateTimeOffset.UtcNow.AddYears(-5)).ToList();
+            if (moreThanTwo.Any())
+            {
+                <h2>More than two years ago</h2>
+                ListIdentities(moreThanTwo);
+            }
+            var moreThanFive = Model.PlayerIdentities.Where(x => x.LastPlayed <= DateTimeOffset.UtcNow.AddYears(-5)).ToList();
+            if (moreThanFive.Any())
+            {
+                <h2>More than five years ago</h2>
+                ListIdentities(moreThanFive);
+            }
+        }
+        else
+        {
+            <p>There are no players for this team yet.</p>
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

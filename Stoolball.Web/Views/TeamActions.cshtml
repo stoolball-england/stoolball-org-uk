@@ -16,6 +16,9 @@
             {
                 <dt><a href="@Model.Team.TeamRoute/edit/team">Edit @Model.Team.TeamName</a></dt>
                 <dd>Set the introduction, type of team, home grounds and sports halls, cost to play, contact details and more.</dd>
+
+                <dt><a href="@Model.Team.TeamRoute/edit/players">Edit players</a></dt>
+                <dd>Rename players who have incomplete or misspelled names.</dd>
             }
             @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam])
             {

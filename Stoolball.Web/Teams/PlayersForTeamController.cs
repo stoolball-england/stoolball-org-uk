@@ -52,12 +52,10 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                var identities = await _playerDataSource.ReadPlayerIdentities(new PlayerFilter { TeamIds = new List<Guid> { model.Team.TeamId!.Value } });
-                model.Players = identities.Select(x => x.Player).Distinct(new PlayerEqualityComparer()).ToList();
-                foreach (var player in model.Players)
-                {
-                    player.PlayerIdentities = identities.Where(x => x.Player.PlayerId == player.PlayerId).ToList();
-                }
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
+
+                model.PlayerIdentities = await _playerDataSource.ReadPlayerIdentities(new PlayerFilter { TeamIds = new List<Guid> { model.Team.TeamId!.Value } });
+                model.Players = model.PlayerIdentities.Select(x => x.Player).OfType<Player>().Distinct(new PlayerEqualityComparer()).ToList();
 
                 model.Metadata.PageTitle = "Players for " + model.Team.TeamName + " stoolball team";
                 model.Metadata.Description = model.Team.Description();
@@ -65,7 +63,7 @@ namespace Stoolball.Web.Teams
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
                 if (model.Team.Club != null)
                 {
-                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.Club.ClubName, Url = new Uri(model.Team.Club.ClubRoute, UriKind.Relative) });
+                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.Club.ClubName, Url = new Uri(model.Team.Club.ClubRoute!, UriKind.Relative) });
                 }
 
                 return CurrentTemplate(model);

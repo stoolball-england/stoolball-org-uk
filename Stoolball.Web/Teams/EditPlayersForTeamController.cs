@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Stoolball.Data.Abstractions;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -15,31 +17,33 @@ using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Teams
 {
-    public class EditTeamController : RenderController, IRenderControllerAsync
+    public class EditPlayersForTeamController : RenderController, IRenderControllerAsync
     {
         private readonly ITeamDataSource _teamDataSource;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
+        private readonly IPlayerDataSource _playerDataSource;
 
-        public EditTeamController(ILogger<EditTeamController> logger,
+        public EditPlayersForTeamController(ILogger<EditPlayersForTeamController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
             ITeamDataSource teamDataSource,
-            IAuthorizationPolicy<Team> authorizationPolicy)
+            IAuthorizationPolicy<Team> authorizationPolicy,
+            IPlayerDataSource playerDataSource)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
         }
 
         [HttpGet]
-        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
+        [ContentSecurityPolicy]
         public async new Task<IActionResult> Index()
         {
             var model = new TeamViewModel(CurrentPage)
             {
                 Team = await _teamDataSource.ReadTeamByRoute(Request.Path, true)
             };
-
 
             if (model.Team == null)
             {
@@ -49,7 +53,9 @@ namespace Stoolball.Web.Teams
             {
                 model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
 
-                model.Metadata.PageTitle = "Edit " + model.Team.TeamName;
+                model.PlayerIdentities = await _playerDataSource.ReadPlayerIdentities(new PlayerFilter { TeamIds = new List<Guid> { model.Team.TeamId!.Value } });
+
+                model.Metadata.PageTitle = "Edit players for " + model.Team.TeamName + " stoolball team";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
                 if (model.Team.Club != null)

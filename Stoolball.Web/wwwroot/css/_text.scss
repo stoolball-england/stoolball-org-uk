@@ -209,3 +209,10 @@ li {
     padding-left: 25px;
     background: left 1px/20px url(/images/icons/iconmonstr-star-filled.svg) no-repeat;
 }
+
+
+// Decorate text indicating an item linked with another item
+small.linked {
+    padding-left: 18px;
+    background: left 1px/12px url(/images/icons/iconmonstr-link-2.svg) no-repeat;
+}

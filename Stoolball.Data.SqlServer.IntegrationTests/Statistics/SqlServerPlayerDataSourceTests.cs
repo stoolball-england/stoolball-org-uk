@@ -251,11 +251,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             foreach (var identity in _databaseFixture.TestData.PlayerIdentities)
             {
-                var result = results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId);
-                Assert.NotNull(result);
+                var identityFromResults = results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId);
+                Assert.NotNull(identityFromResults?.Player);
 
-                Assert.Equal(identity.Player.PlayerId, result!.Player.PlayerId);
-                Assert.Equal(identity.Player.PlayerRoute, result.Player.PlayerRoute);
+                Assert.Equal(identity.Player!.PlayerId, identityFromResults!.Player!.PlayerId);
+                Assert.Equal(identity.Player.PlayerRoute, identityFromResults.Player.PlayerRoute);
+
+                var allIdentitiesMatchingFilterForThisPlayer = results.Where(x => x.Player?.PlayerId == identity.Player.PlayerId).ToList();
+                Assert.Equal(allIdentitiesMatchingFilterForThisPlayer.Count, identityFromResults.Player.PlayerIdentities.Count);
+                foreach (var identityForPlayer in allIdentitiesMatchingFilterForThisPlayer)
+                {
+                    var resultIdentityForPlayer = identityFromResults.Player.PlayerIdentities.SingleOrDefault(x => x.PlayerIdentityId == identityForPlayer.PlayerIdentityId);
+                    Assert.NotNull(resultIdentityForPlayer);
+                }
             }
         }
 

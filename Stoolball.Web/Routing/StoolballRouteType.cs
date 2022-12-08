@@ -82,6 +82,7 @@
         LinkPlayerToMember,
         LinkedPlayersForMember,
         PlayersForTeam,
+        EditPlayersForTeam,
         ClubStatistics,
         TeamStatistics,
         MatchLocationStatistics,

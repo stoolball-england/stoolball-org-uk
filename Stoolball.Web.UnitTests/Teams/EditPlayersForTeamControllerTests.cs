@@ -15,16 +15,16 @@ using Xunit;
 
 namespace Stoolball.Web.UnitTests.Teams
 {
-    public class PlayersForTeamControllerTests : UmbracoBaseTest
+    public class EditPlayersForTeamControllerTests : UmbracoBaseTest
     {
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
         private readonly Mock<IAuthorizationPolicy<Team>> _authorizationPolicy = new();
 
-        private PlayersForTeamController CreateController()
+        private EditPlayersForTeamController CreateController()
         {
-            return new PlayersForTeamController(
-                Mock.Of<ILogger<PlayersForTeamController>>(),
+            return new EditPlayersForTeamController(
+                Mock.Of<ILogger<EditPlayersForTeamController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _teamDataSource.Object,
@@ -32,6 +32,16 @@ namespace Stoolball.Web.UnitTests.Teams
                 _playerDataSource.Object)
             {
                 ControllerContext = ControllerContext
+            };
+        }
+
+        private static Team CreateTeam()
+        {
+            return new Team
+            {
+                TeamId = Guid.NewGuid(),
+                TeamName = "Example team",
+                TeamRoute = "/teams/example-team"
             };
         }
 
@@ -69,7 +79,7 @@ namespace Stoolball.Web.UnitTests.Teams
         [Fact]
         public async Task Route_matching_team_sets_authorization()
         {
-            var team = new Team { TeamId = Guid.NewGuid() };
+            var team = CreateTeam();
             SetupMocks(team);
 
             using (var controller = CreateController())
@@ -83,9 +93,9 @@ namespace Stoolball.Web.UnitTests.Teams
         }
 
         [Fact]
-        public async Task Route_matching_team_returns_players()
+        public async Task Route_matching_team_returns_player_identities()
         {
-            var team = new Team { TeamId = Guid.NewGuid() };
+            var team = CreateTeam();
             SetupMocks(team);
 
             using (var controller = CreateController())
@@ -94,14 +104,14 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (TeamViewModel)((ViewResult)result).Model;
 
-                Assert.Single(model.Players);
+                Assert.Single(model.PlayerIdentities);
             }
         }
 
         [Fact]
-        public async Task Route_matching_team_sets_page_title_and_description()
+        public async Task Route_matching_team_sets_page_title()
         {
-            var team = new Team { TeamId = Guid.NewGuid(), TeamName = "Example team" };
+            var team = CreateTeam();
             SetupMocks(team);
 
             using (var controller = CreateController())
@@ -110,8 +120,7 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (TeamViewModel)((ViewResult)result).Model;
 
-                Assert.Equal($"Players for {team.TeamName} stoolball team", model.Metadata.PageTitle);
-                Assert.Equal(team.Description(), model.Metadata.Description);
+                Assert.Equal($"Edit players for {team.TeamName} stoolball team", model.Metadata.PageTitle);
             }
         }
 
@@ -120,12 +129,7 @@ namespace Stoolball.Web.UnitTests.Teams
         [InlineData(false)]
         public async Task Route_matching_team_sets_breadcrumbs_including_club(bool hasClub)
         {
-            var team = new Team
-            {
-                TeamId = Guid.NewGuid(),
-                TeamName = "Example team",
-                TeamRoute = "/teams/example-team"
-            };
+            var team = CreateTeam();
 
             if (hasClub)
             {
@@ -144,7 +148,8 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (TeamViewModel)((ViewResult)result).Model;
 
-                Assert.Equal(hasClub ? 4 : 3, model.Breadcrumbs.Count);
+                Assert.Equal(hasClub ? 5 : 4, model.Breadcrumbs.Count);
+                Assert.Equal(team.TeamName, model.Breadcrumbs[^1].Name);
             }
         }
     }

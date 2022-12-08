@@ -22,6 +22,7 @@ namespace Stoolball.Web.Teams.Models
         public string? FilterDescription { get; set; }
         public bool IsInACurrentLeague { get; set; }
         public bool IsInACurrentKnockoutCompetition { get; set; }
+        public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new();
         public List<Player> Players { get; internal set; } = new();
     }
 }

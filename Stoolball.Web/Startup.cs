@@ -249,6 +249,7 @@ namespace Stoolball.Web
             services.AddTransient<CreateTeamController>();
             services.AddTransient<EditTeamController>();
             services.AddTransient<EditTransientTeamController>();
+            services.AddTransient<EditPlayersForTeamController>();
             services.AddTransient<DeleteTeamController>();
 
             services.AddTransient<CompetitionsController>();

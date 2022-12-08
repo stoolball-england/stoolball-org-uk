@@ -101,7 +101,7 @@ namespace Stoolball.Data.SqlServer
                 var (where, parameters) = BuildWhereClause(filter);
                 sql = sql.Replace("<<WHERE>>", $"WHERE 1=1 {where}");
 
-                return (await connection.QueryAsync<PlayerIdentity, Player, Team, PlayerIdentity>(sql,
+                var identities = (await connection.QueryAsync<PlayerIdentity, Player, Team, PlayerIdentity>(sql,
                     (identity, player, team) =>
                     {
                         identity.Team = team;
@@ -110,6 +110,14 @@ namespace Stoolball.Data.SqlServer
                     },
                     new DynamicParameters(parameters),
                     splitOn: "PlayerId, TeamId").ConfigureAwait(false)).ToList();
+
+                // Populate the PlayerIdentities collections of the players with the data that we have
+                foreach (var identity in identities)
+                {
+                    identity.Player!.PlayerIdentities = identities.Where(x => x.Player?.PlayerId == identity.Player.PlayerId).ToList();
+                }
+
+                return identities;
             }
         }
 
