@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Stoolball.Data.Abstractions;
-using Stoolball.Navigation;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics.Models;

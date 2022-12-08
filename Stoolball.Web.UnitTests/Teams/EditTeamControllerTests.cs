@@ -5,6 +5,7 @@ using Moq;
 using Stoolball.Data.Abstractions;
 using Stoolball.Security;
 using Stoolball.Teams;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
 using Xunit;
@@ -14,6 +15,8 @@ namespace Stoolball.Web.UnitTests.Teams
     public class EditTeamControllerTests : UmbracoBaseTest
     {
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
+        private Mock<IAuthorizationPolicy<Team>> _authorizationPolicy = new();
+        private readonly Mock<ITeamBreadcrumbBuilder> _breadcrumbBuilder = new();
 
         private EditTeamController CreateController()
         {
@@ -22,7 +25,8 @@ namespace Stoolball.Web.UnitTests.Teams
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _teamDataSource.Object,
-                Mock.Of<IAuthorizationPolicy<Team>>())
+                _authorizationPolicy.Object,
+                _breadcrumbBuilder.Object)
             {
                 ControllerContext = ControllerContext
             };

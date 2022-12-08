@@ -6,6 +6,7 @@ using Stoolball.Data.Abstractions;
 using Stoolball.Email;
 using Stoolball.Security;
 using Stoolball.Teams;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
 using Xunit;
@@ -15,6 +16,7 @@ namespace Stoolball.Web.UnitTests.Teams
     public class TeamControllerTests : UmbracoBaseTest
     {
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
+        private readonly Mock<ITeamBreadcrumbBuilder> _breadcrumbBuilder = new();
 
         private TeamController CreateController()
         {
@@ -24,7 +26,8 @@ namespace Stoolball.Web.UnitTests.Teams
                 UmbracoContextAccessor.Object,
                 _teamDataSource.Object,
                 Mock.Of<IAuthorizationPolicy<Team>>(),
-                Mock.Of<IEmailProtector>())
+                Mock.Of<IEmailProtector>(),
+                _breadcrumbBuilder.Object)
             {
                 ControllerContext = ControllerContext
             };

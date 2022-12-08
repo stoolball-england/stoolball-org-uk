@@ -8,6 +8,7 @@ using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Statistics.Models;
 using Stoolball.Web.Teams;
 using Xunit;
@@ -21,6 +22,8 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<IInningsStatisticsDataSource> _inningsStatisticsDataSource = new();
         private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new();
+        private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumanizer = new();
+        private readonly Mock<ITeamBreadcrumbBuilder> _breadcrumbBuilder = new();
 
         private TeamStatisticsController CreateController()
         {
@@ -33,8 +36,8 @@ namespace Stoolball.Web.UnitTests.Teams
                 _inningsStatisticsDataSource.Object,
                 _bestTotalDataSource.Object,
                 _statisticsFilterQueryStringParser.Object,
-                Mock.Of<IStatisticsFilterHumanizer>()
-                )
+                _statisticsFilterHumanizer.Object,
+                _breadcrumbBuilder.Object)
             {
                 ControllerContext = ControllerContext
             };

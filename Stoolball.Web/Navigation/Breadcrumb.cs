@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Stoolball.Navigation
+namespace Stoolball.Web.Navigation
 {
     [ExcludeFromCodeCoverage]
     public class Breadcrumb

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Stoolball.Navigation;
+using Stoolball.Statistics;
 
-namespace Stoolball.Statistics
+namespace Stoolball.Web.Navigation
 {
     public class StatisticsBreadcrumbBuilder : IStatisticsBreadcrumbBuilder
     {

@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Stoolball.Data.Abstractions;
-using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics.Models;
@@ -24,6 +24,7 @@ namespace Stoolball.Web.Teams
         private readonly IBestPlayerTotalStatisticsDataSource _bestPlayerTotalDataSource;
         private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
+        private readonly ITeamBreadcrumbBuilder _breadcrumbBuilder;
 
         public TeamStatisticsController(ILogger<TeamStatisticsController> logger,
             ICompositeViewEngine compositeViewEngine,
@@ -33,7 +34,8 @@ namespace Stoolball.Web.Teams
             IInningsStatisticsDataSource inningsStatisticsDataSource,
             IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource,
             IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
-            IStatisticsFilterHumanizer statisticsFilterHumanizer)
+            IStatisticsFilterHumanizer statisticsFilterHumanizer,
+            ITeamBreadcrumbBuilder breadcrumbBuilder)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
@@ -42,6 +44,7 @@ namespace Stoolball.Web.Teams
             _bestPlayerTotalDataSource = bestPlayerTotalDataSource ?? throw new ArgumentNullException(nameof(bestPlayerTotalDataSource));
             _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
             _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
+            _breadcrumbBuilder = breadcrumbBuilder ?? throw new ArgumentNullException(nameof(breadcrumbBuilder));
         }
 
         [HttpGet]
@@ -71,11 +74,7 @@ namespace Stoolball.Web.Teams
                 model.MostWickets = (await _bestPlayerTotalDataSource.ReadMostWickets(model.AppliedFilter)).ToList();
                 model.MostCatches = (await _bestPlayerTotalDataSource.ReadMostCatches(model.AppliedFilter)).ToList();
 
-                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
-                if (model.Context.Club != null)
-                {
-                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Context.Club.ClubName, Url = new Uri(model.Context.Club.ClubRoute!, UriKind.Relative) });
-                }
+                _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.Context, false);
 
                 var appliedFilterWithoutDefaultFilter = model.AppliedFilter.Clone();
                 appliedFilterWithoutDefaultFilter.Team = null;

@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Stoolball.Clubs;
 using Stoolball.Data.Abstractions;
 using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
 using Xunit;
@@ -20,6 +20,7 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<ITeamDataSource> _teamDataSource = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
         private readonly Mock<IAuthorizationPolicy<Team>> _authorizationPolicy = new();
+        private readonly Mock<ITeamBreadcrumbBuilder> _breadcrumbBuilder = new();
 
         private PlayersForTeamController CreateController()
         {
@@ -29,7 +30,8 @@ namespace Stoolball.Web.UnitTests.Teams
                 UmbracoContextAccessor.Object,
                 _teamDataSource.Object,
                 _authorizationPolicy.Object,
-                _playerDataSource.Object)
+                _playerDataSource.Object,
+                _breadcrumbBuilder.Object)
             {
                 ControllerContext = ControllerContext
             };
@@ -115,10 +117,8 @@ namespace Stoolball.Web.UnitTests.Teams
             }
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task Route_matching_team_sets_breadcrumbs_including_club(bool hasClub)
+        [Fact]
+        public async Task Route_matching_team_sets_breadcrumbs()
         {
             var team = new Team
             {
@@ -126,16 +126,6 @@ namespace Stoolball.Web.UnitTests.Teams
                 TeamName = "Example team",
                 TeamRoute = "/teams/example-team"
             };
-
-            if (hasClub)
-            {
-                team.Club = new Club
-                {
-                    ClubId = Guid.NewGuid(),
-                    ClubName = "Example club",
-                    ClubRoute = "/clubs/example-club"
-                };
-            }
             SetupMocks(team);
 
             using (var controller = CreateController())
@@ -144,7 +134,7 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (TeamViewModel)((ViewResult)result).Model;
 
-                Assert.Equal(hasClub ? 4 : 3, model.Breadcrumbs.Count);
+                _breadcrumbBuilder.Verify(x => x.BuildBreadcrumbs(model.Breadcrumbs, model.Team!, false), Times.Once());
             }
         }
     }

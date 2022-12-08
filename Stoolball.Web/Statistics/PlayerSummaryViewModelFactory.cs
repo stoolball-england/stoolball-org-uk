@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Humanizer;
 using Stoolball.Data.Abstractions;
 using Stoolball.Statistics;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Statistics.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Services;

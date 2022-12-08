@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using Stoolball.Data.Abstractions;
-using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Stoolball.Web.Teams.Models;
@@ -23,18 +23,21 @@ namespace Stoolball.Web.Teams
         private readonly ITeamDataSource _teamDataSource;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
         private readonly IPlayerDataSource _playerDataSource;
+        private readonly ITeamBreadcrumbBuilder _breadcrumbBuilder;
 
         public PlayersForTeamController(ILogger<PlayersForTeamController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
             ITeamDataSource teamDataSource,
             IAuthorizationPolicy<Team> authorizationPolicy,
-            IPlayerDataSource playerDataSource)
+            IPlayerDataSource playerDataSource,
+            ITeamBreadcrumbBuilder breadcrumbBuilder)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
+            _breadcrumbBuilder = breadcrumbBuilder ?? throw new ArgumentNullException(nameof(breadcrumbBuilder));
         }
 
         [HttpGet]
@@ -60,11 +63,7 @@ namespace Stoolball.Web.Teams
                 model.Metadata.PageTitle = "Players for " + model.Team.TeamName + " stoolball team";
                 model.Metadata.Description = model.Team.Description();
 
-                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
-                if (model.Team.Club != null)
-                {
-                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.Club.ClubName, Url = new Uri(model.Team.Club.ClubRoute!, UriKind.Relative) });
-                }
+                _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.Team, false);
 
                 return CurrentTemplate(model);
             }

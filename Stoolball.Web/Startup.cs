@@ -33,6 +33,7 @@ using Stoolball.Web.Logging;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.MatchLocations.Models;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Schools;
 using Stoolball.Web.Security;
@@ -121,7 +122,6 @@ namespace Stoolball.Web
             services.AddTransient<IPlayerTypeSelector, PlayerTypeSelector>();
             services.AddTransient<ISeasonEstimator, SeasonEstimator>();
             services.AddTransient<ISocialMediaAccountFormatter, SocialMediaAccountFormatter>();
-            services.AddTransient<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             services.AddTransient<IStatisticsFilterFactory, StatisticsFilterFactory>();
             services.AddTransient<IStoolballEntityCopier, StoolballEntityCopier>();
             services.AddTransient<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
@@ -129,6 +129,8 @@ namespace Stoolball.Web
             services.AddTransient<IUrlFormatter, UrlFormatter>();
             services.AddTransient<IVerificationToken, VerificationToken>();
             services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
+
+            services.AddBreadcrumbBuilders();
 
             // Data filters
             services.AddTransient<ICompetitionFilterSerializer, CompetitionFilterQueryStringSerializer>();

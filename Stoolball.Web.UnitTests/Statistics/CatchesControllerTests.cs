@@ -7,6 +7,7 @@ using Moq;
 using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.Statistics;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Statistics;
 using Stoolball.Web.Statistics.Models;
 using Xunit;

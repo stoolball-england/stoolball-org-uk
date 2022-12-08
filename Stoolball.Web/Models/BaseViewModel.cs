@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Stoolball.Metadata;
-using Stoolball.Navigation;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Services;

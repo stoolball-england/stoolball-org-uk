@@ -11,6 +11,7 @@ using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Matches;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
 using Xunit;
@@ -23,6 +24,7 @@ namespace Stoolball.Web.UnitTests.Teams
         private readonly Mock<IMatchListingDataSource> _matchListingDataSource = new();
         private readonly Mock<ICreateMatchSeasonSelector> _createMatchSeasonSelector = new();
         private readonly Mock<IMatchFilterQueryStringParser> _matchFilterQueryStringParser = new();
+        private readonly Mock<ITeamBreadcrumbBuilder> _breadcrumbBuilder = new();
 
         private MatchesForTeamController CreateController()
         {
@@ -38,7 +40,8 @@ namespace Stoolball.Web.UnitTests.Teams
                 Mock.Of<IAuthorizationPolicy<Team>>(),
                 _matchFilterQueryStringParser.Object,
                 Mock.Of<IMatchFilterHumanizer>(),
-                Mock.Of<IAddMatchMenuViewModelFactory>())
+                Mock.Of<IAddMatchMenuViewModelFactory>(),
+                _breadcrumbBuilder.Object)
             {
                 ControllerContext = ControllerContext
             };

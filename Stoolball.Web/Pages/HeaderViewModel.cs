@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Stoolball.Metadata;
-using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Web.Models;
+using Stoolball.Web.Navigation;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
 namespace Stoolball.Web.Pages

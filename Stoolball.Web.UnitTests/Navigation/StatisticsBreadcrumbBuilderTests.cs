@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.MatchLocations;
-using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Web.Navigation;
 using Xunit;
 
-namespace Stoolball.UnitTests.Statistics
+namespace Stoolball.Web.UnitTests.Navigation
 {
     public class StatisticsBreadcrumbBuilderTests
     {

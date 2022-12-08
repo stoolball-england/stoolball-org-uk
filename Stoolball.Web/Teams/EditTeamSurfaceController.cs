@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Data.Abstractions;
 using Stoolball.MatchLocations;
-using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
+using Stoolball.Web.Navigation;
 using Stoolball.Web.Security;
 using Stoolball.Web.Teams.Models;
 using Umbraco.Cms.Core.Cache;
@@ -29,11 +29,13 @@ namespace Stoolball.Web.Teams
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
         private readonly IListingCacheInvalidator<Team> _teamListingCacheClearer;
         private readonly IListingCacheInvalidator<MatchLocation> _matchLocationCacheClearer;
+        private readonly ITeamBreadcrumbBuilder _breadcrumbBuilder;
 
         public EditTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
             ITeamDataSource teamDataSource, ITeamRepository teamRepository, IAuthorizationPolicy<Team> authorizationPolicy,
-            IListingCacheInvalidator<Team> teamListingCacheClearer, IListingCacheInvalidator<MatchLocation> matchLocationCacheClearer)
+            IListingCacheInvalidator<Team> teamListingCacheClearer, IListingCacheInvalidator<MatchLocation> matchLocationCacheClearer,
+            ITeamBreadcrumbBuilder breadcrumbBuilder)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
@@ -42,6 +44,7 @@ namespace Stoolball.Web.Teams
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _teamListingCacheClearer = teamListingCacheClearer ?? throw new ArgumentNullException(nameof(teamListingCacheClearer));
             _matchLocationCacheClearer = matchLocationCacheClearer ?? throw new ArgumentNullException(nameof(matchLocationCacheClearer));
+            _breadcrumbBuilder = breadcrumbBuilder ?? throw new ArgumentNullException(nameof(breadcrumbBuilder));
         }
 
         [HttpPost]
@@ -103,12 +106,7 @@ namespace Stoolball.Web.Teams
             model.Authorization.CurrentMemberIsAuthorized = isAuthorized;
             model.Metadata.PageTitle = $"Edit {team.TeamName}";
 
-            model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
-            if (model.Team.Club != null)
-            {
-                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.Club.ClubName, Url = new Uri(model.Team.Club.ClubRoute, UriKind.Relative) });
-            }
-            model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.TeamName, Url = new Uri(model.Team.TeamRoute, UriKind.Relative) });
+            _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.Team, true);
 
             return View("EditTeam", model);
         }

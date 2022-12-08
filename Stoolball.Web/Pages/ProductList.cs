@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Stoolball.Metadata;
-using Stoolball.Navigation;
+using Stoolball.Web.Navigation;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Extensions;
 
