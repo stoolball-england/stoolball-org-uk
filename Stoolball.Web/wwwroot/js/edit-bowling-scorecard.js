@@ -370,34 +370,29 @@ function createBowlingScorecardEditor() {
       let newRow = rows[rows.length - 1].nextElementSibling;
       const fields = newRow.querySelectorAll("input,select,label,th");
       const attributes = ["name", "for", "id", "aria-labelledby"];
-      for (let i = 0; i < fields.length; i++) {
-        let ordinal,
-          rowNumber = rows.length + 1;
-        switch (rowNumber % 10) {
-          case 1:
-            ordinal = rowNumber === 11 ? rowNumber + "th" : rowNumber + "st";
-            break;
-          case 2:
-            ordinal = rowNumber === 12 ? rowNumber + "th" : rowNumber + "nd";
-            break;
-          case 3:
-            ordinal = rowNumber === 13 ? rowNumber + "th" : rowNumber + "rd";
-            break;
-          default:
-            ordinal = rowNumber + "th";
-        }
+      let ordinal,
+        rowNumber = rows.length + 1;
+      switch (rowNumber % 10) {
+        case 1:
+          ordinal = rowNumber === 11 ? rowNumber + "th" : rowNumber + "st";
+          break;
+        case 2:
+          ordinal = rowNumber === 12 ? rowNumber + "th" : rowNumber + "nd";
+          break;
+        case 3:
+          ordinal = rowNumber === 13 ? rowNumber + "th" : rowNumber + "rd";
+          break;
+        default:
+          ordinal = rowNumber + "th";
+      }
 
+      for (let i = 0; i < fields.length; i++) {
         for (let j = 0; j < attributes.length; j++) {
           let value = fields[i].getAttribute(attributes[j]);
+          value = value.replace(/\[[0-9]+\]/, "[" + (rowNumber - 1) + "]");
+          value = value.replace(/--[0-9]+--/, "--" + (rowNumber - 1) + "--");
           if (value) {
-            fields[i].setAttribute(
-              attributes[j],
-              value.replace(/\[[0-9]+\]/, "[" + (rowNumber - 1) + "]")
-            );
-            fields[i].setAttribute(
-              attributes[j],
-              value.replace(/--[0-9]+--/, "--" + (rowNumber - 1) + "--")
-            );
+            fields[i].setAttribute(attributes[j], value);
           }
         }
 
