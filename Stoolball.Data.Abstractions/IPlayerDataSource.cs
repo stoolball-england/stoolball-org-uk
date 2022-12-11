@@ -41,6 +41,13 @@ namespace Stoolball.Data.Abstractions
         /// Read a single player by the GUID of the member it is linked to
         /// </summary>
         /// <returns>A matching player, or <c>null</c> if no player is linked</returns>
-        Task<Player> ReadPlayerByMemberKey(Guid key);
+        Task<Player?> ReadPlayerByMemberKey(Guid key);
+
+        /// <summary>
+        /// Read a single player identity by a route including the team and the route segment of the identity
+        /// </summary>
+        /// <param name="route"></param>
+        /// <returns></returns>
+        Task<PlayerIdentity?> ReadPlayerIdentityByRoute(string route);
     }
 }

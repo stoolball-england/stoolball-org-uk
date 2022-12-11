@@ -29,7 +29,7 @@
 <div class="container-xl">
     <h1>Edit players for @Model.Team!.TeamNameLocationAndPlayerType()</h1>
 
-    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam])
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
     {
         <p class="alert alert-info alert-tip">You can't add or delete players here. Players come from scorecards added to this website – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a></p>
 

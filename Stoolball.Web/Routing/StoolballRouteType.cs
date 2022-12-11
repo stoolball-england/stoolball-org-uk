@@ -81,6 +81,7 @@
         PlayerFielding,
         LinkPlayerToMember,
         LinkedPlayersForMember,
+        RenamePlayerIdentity,
         PlayersForTeam,
         EditPlayersForTeam,
         ClubStatistics,

@@ -91,6 +91,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.PlayerFielding, typeof(PlayerFieldingController) },
             { StoolballRouteType.LinkPlayerToMember, typeof(LinkPlayerToMemberController) },
             { StoolballRouteType.LinkedPlayersForMember, typeof(LinkedPlayersForMemberController) },
+            { StoolballRouteType.RenamePlayerIdentity, typeof(RenamePlayerIdentityController) },
             { StoolballRouteType.PlayersForTeam, typeof(PlayersForTeamController) },
             { StoolballRouteType.EditPlayersForTeam, typeof(EditPlayersForTeamController) },
             { StoolballRouteType.ClubStatistics, typeof(ClubStatisticsController) },

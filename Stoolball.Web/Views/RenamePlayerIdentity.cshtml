@@ -1,0 +1,41 @@
+﻿@inherits UmbracoViewPage<PlayerIdentityViewModel>
+@using Stoolball.Security
+@using Stoolball.Web.Teams
+@using Stoolball.Web.Teams.Models
+@using Umbraco.Cms.Web.Website.Controllers
+@{
+    var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam];
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@await Html.PartialAsync("_JQueryValidate")
+<div class="container-xl">
+    <h1>Rename @Model.PlayerIdentity?.PlayerIdentityName</h1>
+
+
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
+    {
+        <p>You should rename @Model.PlayerIdentity?.PlayerIdentityName if:</p>
+        <ul>
+            <li>the name is incomplete or incorrect</li>
+            <li>the correct name is not also listed</li>
+        </ul>
+        <p>If the correct name is already listed ask the player to create an account on this website and add both names to their 'My statistics' page.</p>
+
+        @await Html.PartialAsync("_StatisticsCacheWarning")
+        @using (Html.BeginUmbracoForm<RenamePlayerIdentitySurfaceController>(nameof(RenamePlayerIdentitySurfaceController.RenamePlayerIdentity), null, new { id = "calling-it-search-disables-contact-managers" }))
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => Model.FormData.PlayerSearch)
+                @Html.TextBoxFor(m => Model.FormData.PlayerSearch, new { @class = "form-control", required = "required", aria_describedby = "player-identity-name" })
+                @Html.ValidationMessageFor(m => Model.FormData.PlayerSearch, null, new { id = "player-identity-name" })
+            </div>
+            <button class="btn btn-primary" type="submit">Rename player</button>
+        }
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

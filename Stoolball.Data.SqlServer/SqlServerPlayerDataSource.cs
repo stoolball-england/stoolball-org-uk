@@ -233,7 +233,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc />
-        public async Task<Player> ReadPlayerByMemberKey(Guid key)
+        public async Task<Player?> ReadPlayerByMemberKey(Guid key)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -243,6 +243,56 @@ namespace Stoolball.Data.SqlServer
                         WHERE MemberKey = @MemberKey",
                         new { MemberKey = key });
             }
+        }
+
+        /// <inheritdoc />
+        public async Task<PlayerIdentity?> ReadPlayerIdentityByRoute(string route)
+        {
+            var normalisedRouteForTeam = _routeNormaliser.NormaliseRouteToEntity(route, "/teams");
+
+            var playerIdentitySegmentParsed = false;
+            var playerIdentitySegment = route.Substring(route.IndexOf(normalisedRouteForTeam) + normalisedRouteForTeam.Length);
+            if (playerIdentitySegment.StartsWith("/edit/players/"))
+            {
+                playerIdentitySegment = playerIdentitySegment.Substring(14);
+                var pos = playerIdentitySegment.IndexOf("/");
+                if (pos > -1)
+                {
+                    playerIdentitySegment = playerIdentitySegment.Substring(0, pos);
+                    playerIdentitySegmentParsed = true;
+                }
+            }
+            if (!playerIdentitySegmentParsed)
+            {
+                throw new ArgumentException($"{nameof(route)} was not in the expected format");
+            }
+
+            var parameters = new Dictionary<string, object> {
+                { "RouteSegment", playerIdentitySegment },
+                { "TeamRoute", normalisedRouteForTeam }
+            };
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                var results = await connection.QueryAsync<PlayerIdentity, Team, PlayerIdentity>(
+                    $@"SELECT pi.PlayerIdentityId, pi.PlayerIdentityName,
+                              t.TeamId, tv.TeamName, t.TeamRoute 
+                       FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Team} t ON pi.TeamId = t.TeamId 
+                       INNER JOIN {Tables.TeamVersion} tv ON t.TeamId = tv.TeamId
+                       WHERE LOWER(pi.RouteSegment) = @RouteSegment AND LOWER(t.TeamRoute) = @TeamRoute
+                       AND tv.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
+                    (identity, team) =>
+                    {
+                        identity.Team = team;
+                        return identity;
+                    },
+                    parameters,
+                    splitOn: "TeamId"
+                    ).ConfigureAwait(false);
+
+                return results.SingleOrDefault();
+            }
+
         }
     }
 }
