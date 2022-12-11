@@ -564,16 +564,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public void CreatePlayerIdentity(PlayerIdentity playerIdentity)
         {
             _connection.Execute($@"INSERT INTO {Tables.PlayerIdentity} 
-                    (PlayerIdentityId, PlayerId, TeamId, PlayerIdentityName, ComparableName)
+                    (PlayerIdentityId, PlayerId, TeamId, PlayerIdentityName, ComparableName, RouteSegment)
                     VALUES
-                    (@PlayerIdentityId, @PlayerId, @TeamId, @PlayerIdentityName, @ComparableName)",
+                    (@PlayerIdentityId, @PlayerId, @TeamId, @PlayerIdentityName, @ComparableName, @RouteSegment)",
                    new
                    {
                        playerIdentity.PlayerIdentityId,
                        playerIdentity.Player.PlayerId,
                        playerIdentity.Team.TeamId,
                        playerIdentity.PlayerIdentityName,
-                       ComparableName = playerIdentity.ComparableName()
+                       ComparableName = playerIdentity.ComparableName(),
+                       playerIdentity.RouteSegment
                    });
         }
 

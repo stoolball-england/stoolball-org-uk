@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Humanizer;
 using Newtonsoft.Json;
 using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
@@ -29,7 +30,7 @@ namespace Stoolball.Data.SqlServer
         private readonly IPlayerNameFormatter _playerNameFormatter;
         private readonly IBestRouteSelector _bestRouteSelector;
         private readonly IPlayerCacheInvalidator _playerCacheClearer;
-        internal const string PROCESS_ASYNC_STORED_PROCEDURE = "usp_Link_Player_To_Member_Async_Update";
+        internal const string PROCESS_ASYNC_STORED_PROCEDURE = "usp_Player_Async_Update";
         internal const string LOG_TEMPLATE_WARN_SQL_TIMEOUT = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " running. Caught SQL Timeout. {allowedRetries} retries remaining";
         internal const string LOG_TEMPLATE_INFO_PLAYERS_AFFECTED = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " running. Players affected: {affectedRoutes}";
         internal const string LOG_TEMPLATE_ERROR_SQL_EXCEPTION = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " threw SqlException: {message}";
@@ -119,13 +120,16 @@ namespace Stoolball.Data.SqlServer
 
             auditablePlayerIdentity.PlayerIdentityId = Guid.NewGuid();
             auditablePlayerIdentity.PlayerIdentityName = _playerNameFormatter.CapitaliseName(auditablePlayerIdentity.PlayerIdentityName);
+            auditablePlayerIdentity.RouteSegment = (await _routeGenerator.GenerateUniqueRoute(string.Empty, auditablePlayerIdentity.PlayerIdentityName.Kebaberize(), NoiseWords.PlayerRoute,
+                async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.PlayerIdentity} WHERE RouteSegment = @RouteSegment AND TeamId = @TeamId", new { RouteSegment = route, auditablePlayerIdentity.Team.TeamId }, transaction)
+            ).ConfigureAwait(false))?.TrimStart('/');
 
             var player = new Player { PlayerId = Guid.NewGuid() };
             player.PlayerIdentities.Add(auditablePlayerIdentity);
 
             player.PlayerRoute = await _routeGenerator.GenerateUniqueRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute,
                async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { PlayerRoute = route }, transaction)
-            );
+            ).ConfigureAwait(false);
 
             await transaction.Connection.ExecuteAsync(
                   $@"INSERT INTO {Tables.Player} 
@@ -139,14 +143,15 @@ namespace Stoolball.Data.SqlServer
                   }, transaction);
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity} 
-                                (PlayerIdentityId, PlayerId, PlayerIdentityName, ComparableName, TeamId) 
-                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerIdentityName, @ComparableName, @TeamId)",
+                                (PlayerIdentityId, PlayerId, PlayerIdentityName, ComparableName, RouteSegment, TeamId) 
+                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerIdentityName, @ComparableName, @RouteSegment, @TeamId)",
                    new
                    {
                        auditablePlayerIdentity.PlayerIdentityId,
                        player.PlayerId,
                        auditablePlayerIdentity.PlayerIdentityName,
                        ComparableName = auditablePlayerIdentity.ComparableName(),
+                       auditablePlayerIdentity.RouteSegment,
                        auditablePlayerIdentity.Team.TeamId
                    }, transaction);
 
@@ -387,7 +392,7 @@ namespace Stoolball.Data.SqlServer
                     try
                     {
                         retry = false;
-                        affectedRoutes = await _dapperWrapper.QueryAsync<string>("usp_Link_Player_To_Member_Async_Update", commandType: CommandType.StoredProcedure, connection: connection).ConfigureAwait(false);
+                        affectedRoutes = await _dapperWrapper.QueryAsync<string>(PROCESS_ASYNC_STORED_PROCEDURE, commandType: CommandType.StoredProcedure, connection: connection).ConfigureAwait(false);
                         foreach (var route in affectedRoutes)
                         {
                             _playerCacheClearer.InvalidateCacheForPlayer(new Player { PlayerRoute = route });

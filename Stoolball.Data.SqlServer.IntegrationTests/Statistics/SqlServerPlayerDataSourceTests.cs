@@ -236,6 +236,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Assert.NotNull(result);
 
                 Assert.Equal(identity.PlayerIdentityName, result!.PlayerIdentityName);
+                Assert.Equal(identity.RouteSegment, result!.RouteSegment);
                 Assert.Equal(identity.TotalMatches, result.TotalMatches);
                 Assert.Equal(identity.FirstPlayed!.Value.AccurateToTheMinute(), result.FirstPlayed!.Value.AccurateToTheMinute());
                 Assert.Equal(identity.LastPlayed!.Value.AccurateToTheMinute(), result.LastPlayed!.Value.AccurateToTheMinute());

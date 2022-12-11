@@ -163,6 +163,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             public Guid? PlayerId { get; set; }
             public string? PlayerIdentityName { get; set; }
             public string? ComparableName { get; set; }
+            public string? RouteSegment { get; set; }
             public Guid? TeamId { get; set; }
         }
 
@@ -183,6 +184,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     _copier.Setup(x => x.CreateAuditableCopy(playerIdentity)).Returns(playerIdentity);
                     _playerNameFormatter.Setup(x => x.CapitaliseName(playerIdentity.PlayerIdentityName)).Returns(playerIdentity.PlayerIdentityName);
                     _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(playerRoute));
+                    _routeGenerator.Setup(x => x.GenerateUniqueRoute(string.Empty, playerIdentity.PlayerIdentityName.Kebaberize(), NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(playerIdentity.PlayerIdentityName.Kebaberize()));
 
                     var repo = CreateRepository();
 
@@ -194,13 +196,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     _routeGenerator.Verify(x => x.GenerateUniqueRoute("/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>()));
 
                     var identityResult = await transaction.Connection.QuerySingleAsync<PlayerIdentityResult>(
-                        $"SELECT PlayerId, PlayerIdentityName, ComparableName, TeamId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityName = @PlayerIdentityName",
+                        $"SELECT PlayerId, PlayerIdentityName, ComparableName, RouteSegment, TeamId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityName = @PlayerIdentityName",
                         new { playerIdentity.PlayerIdentityName },
                         transaction);
 
                     Assert.NotNull(identityResult);
                     Assert.Equal(playerIdentity.PlayerIdentityName, identityResult.PlayerIdentityName);
                     Assert.Equal(playerIdentity.ComparableName(), identityResult.ComparableName);
+                    Assert.Equal(playerIdentity.PlayerIdentityName.Kebaberize(), identityResult.RouteSegment);
                     Assert.Equal(playerIdentity.Team.TeamId, identityResult.TeamId);
 
                     var playerResult = await transaction.Connection.QuerySingleAsync<Player>(
@@ -228,6 +231,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _copier.Setup(x => x.CreateAuditableCopy(playerIdentity)).Returns(playerIdentity);
             _playerNameFormatter.Setup(x => x.CapitaliseName(playerIdentity.PlayerIdentityName)).Returns(playerIdentity.PlayerIdentityName);
             _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult($"/players/{Guid.NewGuid()}"));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(string.Empty, playerIdentity.PlayerIdentityName.Kebaberize(), NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(playerIdentity.PlayerIdentityName.Kebaberize()));
             var memberName = "Member name";
             var memberKey = Guid.NewGuid();
 

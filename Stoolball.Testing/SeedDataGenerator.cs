@@ -328,6 +328,7 @@ namespace Stoolball.Testing
                     },
                     PlayerIdentityId = Guid.NewGuid(),
                     PlayerIdentityName = "Home player identity " + (i + 1),
+                    RouteSegment = "home-player-identity-" + (i + 1),
                     Team = homeTeam.Team
                 };
             };
@@ -344,6 +345,7 @@ namespace Stoolball.Testing
                     },
                     PlayerIdentityId = Guid.NewGuid(),
                     PlayerIdentityName = "Away player identity " + (i + 12),
+                    RouteSegment = "away-player-identity-" + (i + 1),
                     Team = awayTeam.Team
                 };
             };
@@ -692,6 +694,7 @@ namespace Stoolball.Testing
                     {
                         PlayerIdentityId = Guid.NewGuid(),
                         PlayerIdentityName = playerName,
+                        RouteSegment = playerName.Kebaberize(),
                         Team = team
                     }
                 }

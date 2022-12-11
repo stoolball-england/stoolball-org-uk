@@ -15,8 +15,8 @@
         <ul class="list-columns-wide">
             @foreach (var identity in identities.OrderBy(x => x.PlayerIdentityName))
             {
-                var otherIdentities = identity.Player.PlayerIdentities.Where(x => x.PlayerIdentityId != identity.PlayerIdentityId).ToList();
-                <li><div><a href="@Model.Team!.TeamRoute/edit/players">@identity.PlayerIdentityName</a> <span class="text-nowrap">(@identity.TotalMatches @(identity.TotalMatches > 1 ? "matches" : "match"))</span></div>
+                var otherIdentities = identity.Player!.PlayerIdentities.Where(x => x.PlayerIdentityId != identity.PlayerIdentityId).ToList();
+                <li><div><a href="@Model.Team!.TeamRoute/edit/players/@identity.RouteSegment/rename">@identity.PlayerIdentityName</a> <span class="text-nowrap">(@identity.TotalMatches @(identity.TotalMatches > 1 ? "matches" : "match"))</span></div>
                     @if (otherIdentities.Count > 0)
                     {
                         <small class="linked">linked to @otherIdentities.Humanize(x => x.PlayerIdentityName)</small>

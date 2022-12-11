@@ -89,14 +89,18 @@ namespace Stoolball.Data.SqlServer
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
+                // Get PlayerIdentity data from the original tables rather than PlayerInMatchStatistics because the original tables
+                // will be updated when a player identity is renamed, and we need to see the change immediately.
+                // Updates to PlayerInMatchStatistics are done asynchronously and the data will not be updated by the time this is called again.
+
                 const string PROBABILITY_CALCULATION = "COUNT(DISTINCT MatchId)*10-DATEDIFF(DAY,MAX(MatchStartTime),GETDATE())";
-                var sql = $@"SELECT stats.PlayerIdentityId, stats.PlayerIdentityName, {PROBABILITY_CALCULATION} AS Probability, 
+                var sql = $@"SELECT stats.PlayerIdentityId, pi.PlayerIdentityName, pi.RouteSegment, {PROBABILITY_CALCULATION} AS Probability, 
                             COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed,
                             stats.PlayerId, stats.PlayerRoute, stats.TeamId, stats.TeamName
-                            FROM {Tables.PlayerInMatchStatistics} AS stats 
+                            FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.PlayerInMatchStatistics} AS stats ON pi.PlayerIdentityId = stats.PlayerIdentityId
                             <<WHERE>>
-                            GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName 
-                            ORDER BY stats.TeamId ASC, {PROBABILITY_CALCULATION} DESC, stats.PlayerIdentityName ASC";
+                            GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, pi.PlayerIdentityName, pi.RouteSegment, stats.TeamId, stats.TeamName 
+                            ORDER BY stats.TeamId ASC, {PROBABILITY_CALCULATION} DESC, pi.PlayerIdentityName ASC";
 
                 var (where, parameters) = BuildWhereClause(filter);
                 sql = sql.Replace("<<WHERE>>", $"WHERE 1=1 {where}");

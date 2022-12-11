@@ -52,7 +52,8 @@ namespace Stoolball.Data.UmbracoMigrations
                 .To<StatisticsRemoveProbability>(typeof(StatisticsRemoveProbability).ToString())
                 .To<LinkPlayerToMember>(typeof(LinkPlayerToMember).ToString())
                 .To<LinkPlayerToMemberAsyncUpdate>(typeof(LinkPlayerToMemberAsyncUpdate).ToString())
-                .To<IndexTeamRouteAndOppositionTeamRoute>(typeof(IndexTeamRouteAndOppositionTeamRoute).ToString());
+                .To<IndexTeamRouteAndOppositionTeamRoute>(typeof(IndexTeamRouteAndOppositionTeamRoute).ToString())
+                .To<AddRouteSegmentToPlayerIdentity>(typeof(AddRouteSegmentToPlayerIdentity).ToString());
         }
     }
 }

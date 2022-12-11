@@ -11,6 +11,8 @@
     <None Remove="040_LinkPlayerToMember_Async_Update\usp_Link_Player_To_Member_Async_Update.sql" />
     <None Remove="041_Index_TeamRoute_OppositionTeamRoute\IX_StoolballPlayerInMatchStatistics_OppositionTeamRoute.sql" />
     <None Remove="041_Index_TeamRoute_OppositionTeamRoute\IX_StoolballPlayerInMatchStatistics_TeamRoute.sql" />
+    <None Remove="042_Add_PlayerIdentity_RouteSegment\StoolballPlayerIdentity_PopulateRouteSegment.sql" />
+    <None Remove="042_Add_PlayerIdentity_RouteSegment\usp_Player_Async_Update.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +21,8 @@
     <EmbeddedResource Include="041_Index_TeamRoute_OppositionTeamRoute\IX_StoolballPlayerInMatchStatistics_TeamRoute.sql" />
     <EmbeddedResource Include="040_LinkPlayerToMember_Async_Update\IX_StoolballPlayerInMatchStatistics_PlayerRoute.sql" />
     <EmbeddedResource Include="040_LinkPlayerToMember_Async_Update\usp_Link_Player_To_Member_Async_Update.sql" />
+    <EmbeddedResource Include="042_Add_PlayerIdentity_RouteSegment\StoolballPlayerIdentity_PopulateRouteSegment.sql" />
+    <EmbeddedResource Include="042_Add_PlayerIdentity_RouteSegment\usp_Player_Async_Update.sql" />
   </ItemGroup>
 
   <ItemGroup>

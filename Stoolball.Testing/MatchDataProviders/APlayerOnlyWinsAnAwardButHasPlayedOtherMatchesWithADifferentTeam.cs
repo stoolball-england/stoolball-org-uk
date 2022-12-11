@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Humanizer;
 using Stoolball.Awards;
 using Stoolball.Matches;
 using Stoolball.Statistics;
@@ -50,19 +51,25 @@ namespace Stoolball.Testing.MatchDataProviders
             var someOtherTeamThePlayerBelongsTo = testData.Teams.First(x =>
                                                             x.TeamId != testData.TeamWithFullDetails.TeamId &&
                                                             x.TeamId != anyOppositionTeam?.TeamId);
+
+            var identityOnSomeOtherTeamName = $"Identity A from {nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam)}";
             var identityOnSomeOtherTeam = new PlayerIdentity
             {
                 PlayerIdentityId = Guid.NewGuid(),
                 Player = playerUnderTest,
-                PlayerIdentityName = $"Identity A from {nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam)}",
+                PlayerIdentityName = identityOnSomeOtherTeamName,
+                RouteSegment = identityOnSomeOtherTeamName.Kebaberize(),
                 Team = someOtherTeamThePlayerBelongsTo,
             };
             playerUnderTest.PlayerIdentities.Add(identityOnSomeOtherTeam);
+
+            var identityOnTeamWithFullDetailsName = $"Identity B from {nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam)}";
             var identityOnTeamWithFullDetails = new PlayerIdentity
             {
                 PlayerIdentityId = Guid.NewGuid(),
                 Player = playerUnderTest,
-                PlayerIdentityName = $"Identity B from {nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam)}",
+                PlayerIdentityName = identityOnTeamWithFullDetailsName,
+                RouteSegment = identityOnTeamWithFullDetailsName.Kebaberize(),
                 Team = testData.TeamWithFullDetails
             };
             playerUnderTest.PlayerIdentities.Add(identityOnTeamWithFullDetails);
