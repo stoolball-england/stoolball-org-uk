@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Data.Abstractions;
 using Stoolball.Security;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Navigation;
 using Stoolball.Web.Security;
@@ -23,16 +24,18 @@ namespace Stoolball.Web.Teams
     {
         private readonly IMemberManager _memberManager;
         private readonly IPlayerDataSource _playerDataSource;
+        private readonly IPlayerRepository _playerRepository;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
         private readonly ITeamBreadcrumbBuilder _breadcrumbBuilder;
 
         public RenamePlayerIdentitySurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
-            IPlayerDataSource playerDataSource, IAuthorizationPolicy<Team> authorizationPolicy, ITeamBreadcrumbBuilder breadcrumbBuilder)
+            IPlayerDataSource playerDataSource, IPlayerRepository playerRepository, IAuthorizationPolicy<Team> authorizationPolicy, ITeamBreadcrumbBuilder breadcrumbBuilder)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
+            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _breadcrumbBuilder = breadcrumbBuilder ?? throw new ArgumentNullException(nameof(breadcrumbBuilder));
         }
@@ -59,13 +62,35 @@ namespace Stoolball.Web.Teams
                 return NotFound();
             }
 
+            var redirectToUrl = model.PlayerIdentity.Team.TeamRoute + "/edit/players";
+            if (model.PlayerIdentity.PlayerIdentityName == formData.PlayerSearch)
+            {
+                return Redirect(redirectToUrl); // unchanged
+            }
+
             model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.PlayerIdentity.Team);
 
             if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
 
-                return Redirect(model.PlayerIdentity.Team.TeamRoute + "/edit/players");
+                var playerIdentity = new PlayerIdentity
+                {
+                    PlayerIdentityId = model.PlayerIdentity.PlayerIdentityId,
+                    PlayerIdentityName = formData.PlayerSearch,
+                    Team = model.PlayerIdentity.Team
+                };
+
+                var result = await _playerRepository.UpdatePlayerIdentity(playerIdentity, currentMember.Key, currentMember.UserName).ConfigureAwait(false);
+
+                if (result.Status == PlayerIdentityUpdateResult.NotUnique)
+                {
+                    ModelState.AddModelError(string.Join(".", nameof(model.FormData), nameof(formData.PlayerSearch)), $"There is already a player called '{formData.PlayerSearch}'");
+                }
+                else
+                {
+                    return Redirect(redirectToUrl);
+                }
             }
 
             model.Metadata.PageTitle = "Rename " + model.PlayerIdentity.PlayerIdentityName;

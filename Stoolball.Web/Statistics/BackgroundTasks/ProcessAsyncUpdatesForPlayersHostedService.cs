@@ -8,7 +8,7 @@ using Umbraco.Cms.Infrastructure.HostedServices;
 
 namespace Stoolball.Web.Statistics.BackgroundTasks
 {
-    public class LinkPlayerToMemberHostedService : RecurringHostedServiceBase
+    public class ProcessAsyncUpdatesForPlayersHostedService : RecurringHostedServiceBase
     {
         private readonly IRuntimeState _runtimeState;
         private readonly IPlayerRepository _playerRepository;
@@ -16,9 +16,9 @@ namespace Stoolball.Web.Statistics.BackgroundTasks
         private static TimeSpan HowOftenWeRepeat => TimeSpan.FromMinutes(5);
         private static TimeSpan DelayBeforeWeStart => TimeSpan.FromMinutes(1);
 
-        public LinkPlayerToMemberHostedService(
+        public ProcessAsyncUpdatesForPlayersHostedService(
             IRuntimeState runtimeState,
-            ILogger<LinkPlayerToMemberHostedService> logger,
+            ILogger<ProcessAsyncUpdatesForPlayersHostedService> logger,
             IPlayerRepository playerRepository
             )
             : base(logger, HowOftenWeRepeat, DelayBeforeWeStart)
@@ -35,7 +35,7 @@ namespace Stoolball.Web.Statistics.BackgroundTasks
                 return;
             }
 
-            await _playerRepository.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts().ConfigureAwait(false);
+            await _playerRepository.ProcessAsyncUpdatesForPlayers().ConfigureAwait(false);
         }
 
     }

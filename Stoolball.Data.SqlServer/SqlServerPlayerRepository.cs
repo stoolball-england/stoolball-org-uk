@@ -31,9 +31,9 @@ namespace Stoolball.Data.SqlServer
         private readonly IBestRouteSelector _bestRouteSelector;
         private readonly IPlayerCacheInvalidator _playerCacheClearer;
         internal const string PROCESS_ASYNC_STORED_PROCEDURE = "usp_Player_Async_Update";
-        internal const string LOG_TEMPLATE_WARN_SQL_TIMEOUT = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " running. Caught SQL Timeout. {allowedRetries} retries remaining";
-        internal const string LOG_TEMPLATE_INFO_PLAYERS_AFFECTED = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " running. Players affected: {affectedRoutes}";
-        internal const string LOG_TEMPLATE_ERROR_SQL_EXCEPTION = nameof(ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts) + " threw SqlException: {message}";
+        internal const string LOG_TEMPLATE_WARN_SQL_TIMEOUT = nameof(ProcessAsyncUpdatesForPlayers) + " running. Caught SQL Timeout. {allowedRetries} retries remaining";
+        internal const string LOG_TEMPLATE_INFO_PLAYERS_AFFECTED = nameof(ProcessAsyncUpdatesForPlayers) + " running. Players affected: {affectedRoutes}";
+        internal const string LOG_TEMPLATE_ERROR_SQL_EXCEPTION = nameof(ProcessAsyncUpdatesForPlayers) + " threw SqlException: {message}";
 
         public SqlServerPlayerRepository(
             IDatabaseConnectionFactory databaseConnectionFactory,
@@ -65,56 +65,8 @@ namespace Stoolball.Data.SqlServer
         /// <returns>The <see cref="PlayerIdentity.PlayerIdentityId"/> of the created or matched player identity</returns>
         public async Task<PlayerIdentity> CreateOrMatchPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName, IDbTransaction transaction)
         {
-            if (playerIdentity is null)
-            {
-                throw new ArgumentNullException(nameof(playerIdentity));
-            }
-
-            if (playerIdentity.PlayerIdentityId.HasValue && playerIdentity.Player.PlayerId.HasValue)
-            {
-                return playerIdentity;
-            }
-
-            if (string.IsNullOrWhiteSpace(playerIdentity.PlayerIdentityName))
-            {
-                throw new ArgumentException($"'{nameof(playerIdentity)}.PlayerIdentityName' cannot be null or whitespace", nameof(playerIdentity));
-            }
-
-            if (playerIdentity.Team?.TeamId == null)
-            {
-                throw new ArgumentException($"'{nameof(playerIdentity)}.Team.TeamId' cannot be null", nameof(playerIdentity));
-            }
-
-            if (string.IsNullOrWhiteSpace(memberName))
-            {
-                throw new ArgumentNullException(nameof(memberName));
-            }
-
-            if (transaction is null)
-            {
-                throw new ArgumentNullException(nameof(transaction));
-            }
-
-            var matchedPlayerIdentity = (await transaction.Connection.QueryAsync<PlayerIdentity, Player, PlayerIdentity>(
-                    $"SELECT PlayerIdentityId, PlayerIdentityName, PlayerId FROM {Tables.PlayerIdentity} WHERE ComparableName = @ComparableName AND TeamId = @TeamId",
-                    (pi, p) =>
-                    {
-                        pi.Player = p;
-                        return pi;
-                    },
-                    new
-                    {
-                        ComparableName = playerIdentity.ComparableName(),
-                        playerIdentity.Team.TeamId
-                    },
-                    transaction,
-                    splitOn: "PlayerId")).FirstOrDefault();
-
-            if (matchedPlayerIdentity != null && matchedPlayerIdentity.PlayerIdentityId.HasValue && matchedPlayerIdentity.Player.PlayerId.HasValue)
-            {
-                matchedPlayerIdentity.Team = playerIdentity.Team;
-                return matchedPlayerIdentity;
-            }
+            var matchedPlayerIdentity = await MatchPlayerIdentity(playerIdentity, true, memberName, transaction);
+            if (matchedPlayerIdentity != null) { return matchedPlayerIdentity; }
 
             var auditablePlayerIdentity = _copier.CreateAuditableCopy(playerIdentity);
 
@@ -172,6 +124,61 @@ namespace Stoolball.Data.SqlServer
             player.PlayerIdentities.Clear();
             auditablePlayerIdentity.Player = player;
             return auditablePlayerIdentity;
+        }
+
+        private static async Task<PlayerIdentity?> MatchPlayerIdentity(PlayerIdentity playerIdentity, bool allowMatchByPlayerIdentityIdOrPlayerId, string memberName, IDbTransaction transaction)
+        {
+            if (playerIdentity is null)
+            {
+                throw new ArgumentNullException(nameof(playerIdentity));
+            }
+
+            if (allowMatchByPlayerIdentityIdOrPlayerId && playerIdentity.PlayerIdentityId.HasValue && playerIdentity.Player != null && playerIdentity.Player.PlayerId.HasValue)
+            {
+                return playerIdentity;
+            }
+
+            if (string.IsNullOrWhiteSpace(playerIdentity.PlayerIdentityName))
+            {
+                throw new ArgumentException($"'{nameof(playerIdentity)}.PlayerIdentityName' cannot be null or whitespace", nameof(playerIdentity));
+            }
+
+            if (playerIdentity.Team?.TeamId == null)
+            {
+                throw new ArgumentException($"'{nameof(playerIdentity)}.Team.TeamId' cannot be null", nameof(playerIdentity));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            var matchedPlayerIdentity = (await transaction.Connection.QueryAsync<PlayerIdentity, Player, PlayerIdentity>(
+                    $"SELECT PlayerIdentityId, PlayerIdentityName, PlayerId FROM {Tables.PlayerIdentity} WHERE ComparableName = @ComparableName AND TeamId = @TeamId",
+                    (pi, p) =>
+                    {
+                        pi.Player = p;
+                        return pi;
+                    },
+                    new
+                    {
+                        ComparableName = playerIdentity.ComparableName(),
+                        playerIdentity.Team.TeamId
+                    },
+                    transaction,
+                    splitOn: "PlayerId")).FirstOrDefault();
+
+            if (matchedPlayerIdentity != null && matchedPlayerIdentity.PlayerIdentityId.HasValue && matchedPlayerIdentity.Player != null && matchedPlayerIdentity.Player.PlayerId.HasValue)
+            {
+                matchedPlayerIdentity.Team = playerIdentity.Team;
+                return matchedPlayerIdentity;
+            }
+            return null;
         }
 
         /// <inheritdoc />
@@ -379,7 +386,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc />
-        public async Task ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts()
+        public async Task ProcessAsyncUpdatesForPlayers()
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -424,5 +431,51 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
+        /// <inheritdoc />
+        public async Task<RepositoryResult<PlayerIdentityUpdateResult, PlayerIdentity>> UpdatePlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName)
+        {
+            if (playerIdentity is null)
+            {
+                throw new ArgumentNullException(nameof(playerIdentity));
+            }
+
+            if (!playerIdentity.PlayerIdentityId.HasValue)
+            {
+                throw new ArgumentException($"{ nameof(playerIdentity.PlayerIdentityId)} must have a value");
+            }
+
+            if (string.IsNullOrEmpty(playerIdentity.PlayerIdentityName))
+            {
+                throw new ArgumentException($"{ nameof(playerIdentity.PlayerIdentityName)} cannot be null or empty");
+            }
+
+            if (playerIdentity.Team?.TeamId == null)
+            {
+                throw new ArgumentException("TeamId must have a value");
+            }
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var matchedPlayerIdentity = await MatchPlayerIdentity(playerIdentity, false, memberName, transaction).ConfigureAwait(false);
+                    if (matchedPlayerIdentity != null && matchedPlayerIdentity.PlayerIdentityId != playerIdentity.PlayerIdentityId)
+                    {
+                        return new RepositoryResult<PlayerIdentityUpdateResult, PlayerIdentity>
+                        {
+                            Status = PlayerIdentityUpdateResult.NotUnique, Result = playerIdentity
+                        };
+                    }
+                    else
+                    {
+                        _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerIdentityName = @PlayerIdentityName WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentity, transaction).ConfigureAwait(false);
+                        transaction.Commit();
+
+                        return new RepositoryResult<PlayerIdentityUpdateResult, PlayerIdentity> { Status = PlayerIdentityUpdateResult.Success, Result = playerIdentity };
+                    }
+                }
+            }
+        }
     }
 }

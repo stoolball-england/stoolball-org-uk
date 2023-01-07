@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Stoolball.Data.Abstractions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
+using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Statistics;
 using Stoolball.Teams;
@@ -318,7 +319,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var repo = CreateRepository();
             var returnedPlayer = await repo.LinkPlayerToMemberAccount(playerNotLinkedToMember, memberWithExistingPlayer.memberKey, memberWithExistingPlayer.memberName);
-            await repo.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
+            await repo.ProcessAsyncUpdatesForPlayers();
 
             // The returned player should have the result of merging both players
             Assert.Equal(playerAlreadyLinked.PlayerId, returnedPlayer.PlayerId);
@@ -471,12 +472,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var member = _databaseFixture.TestData.Members.Single(x => x.memberKey == player.MemberKey);
 
             var generatedPlayerRoute = "/players/" + Guid.NewGuid().ToString();
-            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(generatedPlayerRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", playerIdentity.PlayerIdentityName!, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(generatedPlayerRoute));
 
             var repo = CreateRepository();
 
             await repo.UnlinkPlayerIdentityFromMemberAccount(playerIdentity, member.memberKey, member.memberName);
-            await repo.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
+            await repo.ProcessAsyncUpdatesForPlayers();
 
             using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -553,6 +554,161 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.UnlinkPlayerIdentityFromMemberAccount)));
+        }
+
+#nullable disable
+        [Fact]
+        public async Task UpdatePlayerIdentity_throws_ArgumentNullException_if_playerIdentity_is_null()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdatePlayerIdentity(null, Guid.NewGuid(), "Member name"));
+        }
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerIdentityId_is_null()
+        {
+            var repo = CreateRepository();
+            var playerIdentity = new PlayerIdentity { PlayerIdentityName = "Example name", Team = new Team { TeamId = Guid.NewGuid() } };
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
+        }
+
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerIdentityName_is_missing(string? playerIdentityName)
+        {
+            var repo = CreateRepository();
+            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = playerIdentityName, Team = new Team { TeamId = Guid.NewGuid() } };
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
+        }
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_TeamId_is_null()
+        {
+            var repo = CreateRepository();
+            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Example name", Team = new Team() };
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
+        }
+#nullable enable
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_where_name_matches_another_player_identity_not_updated_and_returns_NotUnique()
+        {
+            var repo = CreateRepository();
+            var identities = AnyTwoIdentitiesFromTheSameTeam();
+
+            var updatedPlayerIdentity = new PlayerIdentity
+            {
+                PlayerIdentityId = identities.firstIdentity.PlayerIdentityId,
+                PlayerIdentityName = identities.secondIdentity.PlayerIdentityName,
+                Team = identities.firstIdentity.Team,
+                Player = identities.firstIdentity.Player
+            };
+
+            var result = await repo.UpdatePlayerIdentity(updatedPlayerIdentity, Guid.NewGuid(), "Member name");
+
+            Assert.Equal(PlayerIdentityUpdateResult.NotUnique, result.Status);
+
+            using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connectionForAssert.Open();
+                var playerToUpdateNameAfter = await connectionForAssert.ExecuteScalarAsync<string>($"SELECT PlayerIdentityName FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId", identities.firstIdentity).ConfigureAwait(false);
+                Assert.Equal(identities.firstIdentity.PlayerIdentityName, playerToUpdateNameAfter);
+            }
+        }
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_where_name_matches_same_player_identity_returns_Success()
+        {
+            var repo = CreateRepository();
+
+            var playerIdentityToUpdate = _databaseFixture.TestData.PlayerIdentities[0];
+
+            var result = await repo.UpdatePlayerIdentity(playerIdentityToUpdate, Guid.NewGuid(), "Member name");
+
+            Assert.Equal(PlayerIdentityUpdateResult.Success, result.Status);
+        }
+
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_where_name_does_not_match_existing_player_identity_updates_name_including_statistics_and_returns_Success()
+        {
+            var repo = CreateRepository();
+
+            var playerIdentityToUpdate = _databaseFixture.TestData.PlayerIdentities.First(x =>
+                                                _databaseFixture.TestData.PlayerInnings.Any(pi => pi.Batter?.PlayerIdentityId == x.PlayerIdentityId) &&
+                                                _databaseFixture.TestData.PlayerInnings.Any(pi => pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId) &&
+                                                _databaseFixture.TestData.PlayerInnings.Any(pi => (pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.Caught) ||
+                                                                                                  (pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.CaughtAndBowled)) &&
+                                                _databaseFixture.TestData.PlayerInnings.Any(pi => pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.RunOut));
+            var updatedPlayerIdentity = new PlayerIdentity
+            {
+                PlayerIdentityId = playerIdentityToUpdate.PlayerIdentityId,
+                PlayerIdentityName = Guid.NewGuid().ToString(),
+                Team = playerIdentityToUpdate.Team,
+                Player = playerIdentityToUpdate.Player
+            };
+
+            var result = await repo.UpdatePlayerIdentity(updatedPlayerIdentity, Guid.NewGuid(), "Member name");
+            await repo.ProcessAsyncUpdatesForPlayers();
+
+            Assert.Equal(PlayerIdentityUpdateResult.Success, result.Status);
+
+            using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connectionForAssert.Open();
+                var playerToUpdateNameAfter = await connectionForAssert.ExecuteScalarAsync<string>($"SELECT PlayerIdentityName FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentityToUpdate).ConfigureAwait(false);
+                Assert.Equal(updatedPlayerIdentity.PlayerIdentityName, playerToUpdateNameAfter);
+
+                var playerToUpdateNameInStatistics = await connectionForAssert.QueryAsync<string>($"SELECT PlayerIdentityName FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentityToUpdate).ConfigureAwait(false);
+                foreach (var nameInStatistics in playerToUpdateNameInStatistics)
+                {
+                    Assert.Equal(updatedPlayerIdentity.PlayerIdentityName, nameInStatistics);
+                }
+
+                playerToUpdateNameInStatistics = await connectionForAssert.QueryAsync<string>($"SELECT BowledByPlayerIdentityName FROM {Tables.PlayerInMatchStatistics} WHERE BowledByPlayerIdentityId = @PlayerIdentityId", playerIdentityToUpdate).ConfigureAwait(false);
+                foreach (var nameInStatistics in playerToUpdateNameInStatistics)
+                {
+                    Assert.Equal(updatedPlayerIdentity.PlayerIdentityName, nameInStatistics);
+                }
+
+                playerToUpdateNameInStatistics = await connectionForAssert.QueryAsync<string>($"SELECT CaughtByPlayerIdentityName FROM {Tables.PlayerInMatchStatistics} WHERE CaughtByPlayerIdentityId = @PlayerIdentityId", playerIdentityToUpdate).ConfigureAwait(false);
+                foreach (var nameInStatistics in playerToUpdateNameInStatistics)
+                {
+                    Assert.Equal(updatedPlayerIdentity.PlayerIdentityName, nameInStatistics);
+                }
+
+                playerToUpdateNameInStatistics = await connectionForAssert.QueryAsync<string>($"SELECT RunOutByPlayerIdentityName FROM {Tables.PlayerInMatchStatistics} WHERE RunOutByPlayerIdentityId = @PlayerIdentityId", playerIdentityToUpdate).ConfigureAwait(false);
+                foreach (var nameInStatistics in playerToUpdateNameInStatistics)
+                {
+                    Assert.Equal(updatedPlayerIdentity.PlayerIdentityName, nameInStatistics);
+                }
+            }
+        }
+
+
+        private (PlayerIdentity firstIdentity, PlayerIdentity secondIdentity) AnyTwoIdentitiesFromTheSameTeam()
+        {
+            PlayerIdentity? firstIdentity = null;
+            PlayerIdentity? secondIdentity = null;
+
+            foreach (var identity in _databaseFixture.TestData.PlayerIdentities)
+            {
+                firstIdentity = identity;
+                secondIdentity = _databaseFixture.TestData.PlayerIdentities.FirstOrDefault(x => x.PlayerIdentityId != firstIdentity.PlayerIdentityId && x.Team?.TeamId == firstIdentity.Team?.TeamId);
+
+                if (secondIdentity != null)
+                {
+                    break;
+                }
+            }
+
+            return (firstIdentity!, secondIdentity!);
         }
 
         private Player AnyPlayerNotLinkedToMember()

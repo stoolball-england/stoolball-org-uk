@@ -27,14 +27,23 @@ namespace Stoolball.Data.Abstractions
         /// </summary>
         /// <param name="playerIdentity">The player identity to unlink</param>
         /// <param name="memberKey">The member to unlink the player identity from</param>
-        /// <param name="membername">The name of the member making the update</param>
+        /// <param name="memberName">The name of the member making the update</param>
         /// <returns></returns>
         Task UnlinkPlayerIdentityFromMemberAccount(PlayerIdentity playerIdentity, Guid memberKey, string memberName);
 
         /// <summary>
-        /// <see cref="LinkPlayerToMemberAccount"/> and <see cref="UnlinkPlayerIdentityFromMemberAccount"/> both leave updates to statistics and cleaning up unused resources incomplete, to be done asynchronously. This completes the work.
+        /// <see cref="LinkPlayerToMemberAccount"/>, <see cref="UnlinkPlayerIdentityFromMemberAccount"/> and <see cref="UpdatePlayerIdentity"/>. All leave updates to statistics and cleaning up unused resources incomplete, to be done asynchronously. This completes the work.
         /// </summary>
         /// <returns></returns>
-        Task ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
+        Task ProcessAsyncUpdatesForPlayers();
+
+        /// <summary>
+        /// Updates the name of a player identity
+        /// </summary>
+        /// <param name="playerIdentity">The player identity to update</param>
+        /// <param name="memberKey">The key of the member making the update</param>
+        /// <param name="memberName">The name of the member making the update</param>
+        /// <returns></returns>
+        Task<RepositoryResult<PlayerIdentityUpdateResult, PlayerIdentity>> UpdatePlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName);
     }
 }

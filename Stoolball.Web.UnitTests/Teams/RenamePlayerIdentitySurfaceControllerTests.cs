@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using Stoolball.Data.Abstractions;
 using Stoolball.Security;
@@ -22,8 +23,27 @@ namespace Stoolball.Web.UnitTests.Teams
     public class RenamePlayerIdentitySurfaceControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
+        private readonly Mock<IPlayerRepository> _playerRepository = new();
         private readonly Mock<IAuthorizationPolicy<Team>> _authorizationPolicy = new();
         private readonly Mock<ITeamBreadcrumbBuilder> _breadcrumbBuilder = new();
+        private readonly Mock<IMemberManager> _memberManager = new();
+        private readonly MemberIdentityUser _currentMember = new MemberIdentityUser
+        {
+            Key = Guid.NewGuid(),
+            UserName = "jo.bloggs@example.org"
+        };
+        private readonly PlayerIdentity _identityToUpdate = new PlayerIdentity
+        {
+            PlayerIdentityId = Guid.NewGuid(),
+            PlayerIdentityName = "John Smith",
+            Team = new Team()
+        };
+        public RenamePlayerIdentitySurfaceControllerTests()
+        {
+            _playerDataSource.Setup(x => x.ReadPlayerIdentityByRoute(Request.Object.Path)).Returns(Task.FromResult<PlayerIdentity?>(_identityToUpdate));
+            _authorizationPolicy.Setup(x => x.IsAuthorized(_identityToUpdate.Team)).Returns(Task.FromResult(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditTeam, true } }));
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(_currentMember));
+        }
 
         private RenamePlayerIdentitySurfaceController CreateController()
         {
@@ -34,26 +54,14 @@ namespace Stoolball.Web.UnitTests.Teams
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 Mock.Of<IPublishedUrlProvider>(),
-                Mock.Of<IMemberManager>(),
+                _memberManager.Object,
                 _playerDataSource.Object,
+                _playerRepository.Object,
                 _authorizationPolicy.Object,
                 _breadcrumbBuilder.Object)
             {
                 ControllerContext = ControllerContext
             };
-        }
-
-        private PlayerIdentity SetupMocks()
-        {
-            var identity = new PlayerIdentity
-            {
-                PlayerIdentityId = Guid.NewGuid(),
-                PlayerIdentityName = "John Smith",
-                Team = new Team()
-            };
-            _playerDataSource.Setup(x => x.ReadPlayerIdentityByRoute(Request.Object.Path)).Returns(Task.FromResult<PlayerIdentity?>(identity));
-            _authorizationPolicy.Setup(x => x.IsAuthorized(identity.Team)).Returns(Task.FromResult(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditTeam, true } }));
-            return identity;
         }
 
         [Fact]
@@ -72,8 +80,6 @@ namespace Stoolball.Web.UnitTests.Teams
         [Fact]
         public async Task Route_matching_identity_with_ModelState_invalid_sets_authorization()
         {
-            _ = SetupMocks();
-
             using (var controller = CreateController())
             {
                 controller.ModelState.AddModelError(string.Empty, "Any error");
@@ -89,7 +95,6 @@ namespace Stoolball.Web.UnitTests.Teams
         [Fact]
         public async Task Route_matching_identity_with_ModelState_invalid_returns_identity()
         {
-            var identity = SetupMocks();
             var formData = new PlayerIdentityFormData { PlayerSearch = "ModifiedName" };
 
             using (var controller = CreateController())
@@ -100,8 +105,8 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (PlayerIdentityViewModel)((ViewResult)result).Model;
 
-                Assert.Equal(identity, model.PlayerIdentity);
-                Assert.Equal(identity.PlayerIdentityName, model.PlayerIdentity!.PlayerIdentityName);
+                Assert.Equal(_identityToUpdate, model.PlayerIdentity);
+                Assert.Equal(_identityToUpdate.PlayerIdentityName, model.PlayerIdentity!.PlayerIdentityName);
                 Assert.Equal(formData.PlayerSearch, model.FormData.PlayerSearch);
             }
         }
@@ -109,8 +114,6 @@ namespace Stoolball.Web.UnitTests.Teams
         [Fact]
         public async Task Route_matching_identity_with_ModelState_invalid_sets_page_title()
         {
-            var identity = SetupMocks();
-
             using (var controller = CreateController())
             {
                 controller.ModelState.AddModelError(string.Empty, "Any error");
@@ -119,15 +122,13 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (PlayerIdentityViewModel)((ViewResult)result).Model;
 
-                Assert.Equal($"Rename {identity.PlayerIdentityName}", model.Metadata.PageTitle);
+                Assert.Equal($"Rename {_identityToUpdate.PlayerIdentityName}", model.Metadata.PageTitle);
             }
         }
 
         [Fact]
         public async Task Route_matching_identity_with_ModelState_invalid_sets_breadcrumbs()
         {
-            var identity = SetupMocks();
-
             using (var controller = CreateController())
             {
                 controller.ModelState.AddModelError(string.Empty, "Any error");
@@ -136,7 +137,79 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (PlayerIdentityViewModel)((ViewResult)result).Model;
 
-                _breadcrumbBuilder.Verify(x => x.BuildBreadcrumbs(model.Breadcrumbs, identity.Team!, true), Times.Once());
+                _breadcrumbBuilder.Verify(x => x.BuildBreadcrumbs(model.Breadcrumbs, _identityToUpdate.Team!, true), Times.Once());
+            }
+        }
+
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Route_matching_identity_with_unchanged_name_redirects_even_if_ModelState_invalid(bool modelStateIsValid)
+        {
+            var formData = new PlayerIdentityFormData { PlayerSearch = _identityToUpdate.PlayerIdentityName };
+
+            using (var controller = CreateController())
+            {
+                if (!modelStateIsValid)
+                {
+                    controller.ModelState.AddModelError(string.Empty, "Any error");
+                }
+
+                var result = await controller.RenamePlayerIdentity(formData);
+
+                Assert.IsAssignableFrom<RedirectResult>(result);
+            }
+        }
+
+        [Fact]
+        public async Task Route_matching_identity_with_ModelState_valid_and_name_changed_attempts_update_and_redirects_on_success()
+        {
+            var formData = new PlayerIdentityFormData { PlayerSearch = Guid.NewGuid().ToString() };
+
+            _playerRepository.Setup(x => x.UpdatePlayerIdentity(
+                    It.Is<PlayerIdentity>(x => x.PlayerIdentityId == _identityToUpdate.PlayerIdentityId && x.PlayerIdentityName == formData.PlayerSearch),
+                    _currentMember.Key,
+                    _currentMember.UserName)).ReturnsAsync(new RepositoryResult<PlayerIdentityUpdateResult, PlayerIdentity> { Status = PlayerIdentityUpdateResult.Success, Result = _identityToUpdate });
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.RenamePlayerIdentity(formData);
+
+                _playerRepository.Verify(x => x.UpdatePlayerIdentity(
+                    It.Is<PlayerIdentity>(x => x.PlayerIdentityId == _identityToUpdate.PlayerIdentityId && x.PlayerIdentityName == formData.PlayerSearch),
+                    _currentMember.Key,
+                    _currentMember.UserName),
+                    Times.Once);
+
+                Assert.IsAssignableFrom<RedirectResult>(result);
+            }
+        }
+
+        [Fact]
+        public async Task Route_matching_identity_with_ModelState_valid_and_name_changed_attempts_update_and_sets_ModelState_if_name_not_unique()
+        {
+            var formData = new PlayerIdentityFormData { PlayerSearch = Guid.NewGuid().ToString() };
+
+            _playerRepository.Setup(x => x.UpdatePlayerIdentity(
+                    It.Is<PlayerIdentity>(x => x.PlayerIdentityId == _identityToUpdate.PlayerIdentityId && x.PlayerIdentityName == formData.PlayerSearch),
+                    _currentMember.Key,
+                    _currentMember.UserName)).ReturnsAsync(new RepositoryResult<PlayerIdentityUpdateResult, PlayerIdentity> { Status = PlayerIdentityUpdateResult.NotUnique, Result = _identityToUpdate });
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.RenamePlayerIdentity(formData);
+
+                _playerRepository.Verify(x => x.UpdatePlayerIdentity(
+                    It.Is<PlayerIdentity>(x => x.PlayerIdentityId == _identityToUpdate.PlayerIdentityId && x.PlayerIdentityName == formData.PlayerSearch),
+                    _currentMember.Key,
+                    _currentMember.UserName),
+                    Times.Once);
+
+                Assert.IsAssignableFrom<ViewResult>(result);
+
+                var playerIdentityFieldName = string.Join(".", nameof(PlayerIdentityViewModel.FormData), nameof(formData.PlayerSearch));
+                Assert.True(controller.ModelState.ContainsKey(playerIdentityFieldName) && controller.ModelState[playerIdentityFieldName].ValidationState == ModelValidationState.Invalid);
             }
         }
     }

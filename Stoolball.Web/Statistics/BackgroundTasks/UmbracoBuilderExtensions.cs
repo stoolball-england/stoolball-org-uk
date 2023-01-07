@@ -7,7 +7,7 @@ namespace Stoolball.Web.Statistics.BackgroundTasks
     {
         public static IUmbracoBuilder AddStatisticsBackgroundTasks(this IUmbracoBuilder builder)
         {
-            builder.Services.AddHostedService<LinkPlayerToMemberHostedService>();
+            builder.Services.AddHostedService<ProcessAsyncUpdatesForPlayersHostedService>();
             return builder;
         }
     }

@@ -51,7 +51,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
 
             var repo = CreateRepository();
 
-            await repo.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
+            await repo.ProcessAsyncUpdatesForPlayers();
 
             _dapperWrapper.Verify(x => x.QueryAsync<string>(SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure, _databaseConnection.Object), Times.Exactly(4));
             _logger.Verify(x => x.Warn(SqlServerPlayerRepository.LOG_TEMPLATE_WARN_SQL_TIMEOUT, It.IsAny<int>()), Times.Exactly(4));
@@ -70,7 +70,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
 
             var repo = CreateRepository();
 
-            await repo.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
+            await repo.ProcessAsyncUpdatesForPlayers();
 
             foreach (var route in affectedRoutesFirstIteration)
             {
@@ -94,7 +94,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
 
             var repo = CreateRepository();
 
-            await repo.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
+            await repo.ProcessAsyncUpdatesForPlayers();
 
             _logger.Verify(x => x.Info(SqlServerPlayerRepository.LOG_TEMPLATE_INFO_PLAYERS_AFFECTED, It.Is<string>(x => x == string.Join(", ", affectedRoutes))), Times.Once);
             _logger.Verify(x => x.Info(SqlServerPlayerRepository.LOG_TEMPLATE_INFO_PLAYERS_AFFECTED, It.Is<string>(x => x == "None")), Times.Once);
@@ -107,7 +107,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
 
             var repo = CreateRepository();
 
-            await repo.ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts();
+            await repo.ProcessAsyncUpdatesForPlayers();
 
             _dapperWrapper.Verify(x => x.QueryAsync<string>(SqlServerPlayerRepository.PROCESS_ASYNC_STORED_PROCEDURE, CommandType.StoredProcedure, _databaseConnection.Object), Times.Exactly(1));
             _logger.Verify(x => x.Error(

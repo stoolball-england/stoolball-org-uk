@@ -28,7 +28,7 @@ BEGIN
 	-- because the table is heavily indexed and updates can be slow.
 	-- SELECT into a temp table with a separate UPDATE, rather than an all in one UPDATE...FROM statement, is the only way to limit to 10.
 	SELECT TOP 10 PlayerInMatchStatisticsId, p.PlayerId, p.PlayerRoute, pi.PlayerIdentityName, s.PlayerRoute AS PlayerRouteToReplace
-	INTO #LinkPlayerToMemberAsyncUpdate
+	INTO #PlayerAsyncUpdate1
 	FROM StoolballPlayerInMatchStatistics s 
 	INNER JOIN StoolballPlayerIdentity pi ON s.PlayerIdentityId = pi.PlayerIdentityId
 	INNER JOIN StoolballPlayer p ON pi.PlayerId = p.PlayerId
@@ -43,19 +43,120 @@ BEGIN
 	BEGIN
 		UPDATE StoolballPlayerInMatchStatistics 
 		SET 
-		PlayerRoute = todo.PlayerRoute,
-		PlayerId = todo.PlayerId
+		PlayerRoute = #PlayerAsyncUpdate1.PlayerRoute,
+		PlayerIdentityName = #PlayerAsyncUpdate1.PlayerIdentityName,
+		PlayerId = #PlayerAsyncUpdate1.PlayerId
 		FROM StoolballPlayerInMatchStatistics s
-		INNER JOIN #LinkPlayerToMemberAsyncUpdate todo ON s.PlayerInMatchStatisticsId = todo.PlayerInMatchStatisticsId
+		INNER JOIN #PlayerAsyncUpdate1 ON s.PlayerInMatchStatisticsId = #PlayerAsyncUpdate1.PlayerInMatchStatisticsId
 
 		-- Return affected PlayerRoutes so that the calling code can clear the player cache, and so it knows that work was done
 		-- and it might need to call this procedure again to process further records.
-		SELECT PlayerRoute FROM #LinkPlayerToMemberAsyncUpdate
+		SELECT PlayerRoute FROM #PlayerAsyncUpdate1
 		UNION
-		SELECT PlayerRouteToReplace AS PlayerRoute FROM #LinkPlayerToMemberAsyncUpdate
+		SELECT PlayerRouteToReplace AS PlayerRoute FROM #PlayerAsyncUpdate1
 	END
 
-	DROP TABLE #LinkPlayerToMemberAsyncUpdate
+	DROP TABLE #PlayerAsyncUpdate1
+
+	-- Same again, but for PlayerIdentities that appear in the fielding columns of the StoolballPlayerInMatchStatistics table.
+	IF @DoStatisticsUpdate = 0
+	BEGIN
+		SELECT TOP 10 PlayerInMatchStatisticsId, p.PlayerId, p.PlayerRoute, pi.PlayerIdentityName, s.BowledByPlayerRoute AS PlayerRouteToReplace
+		INTO #PlayerAsyncUpdate2
+		FROM StoolballPlayerInMatchStatistics s 
+		INNER JOIN StoolballPlayerIdentity pi ON s.BowledByPlayerIdentityId = pi.PlayerIdentityId
+		INNER JOIN StoolballPlayer p ON pi.PlayerId = p.PlayerId
+		WHERE s.BowledByPlayerIdentityId IS NOT NULL AND s.BowledByPlayerRoute != p.PlayerRoute OR s.BowledByPlayerIdentityName != pi.PlayerIdentityName
+
+		IF @@ROWCOUNT > 0
+			SET @DoStatisticsUpdate = 1
+		ELSE
+			SET @DoStatisticsUpdate = 0
+	
+		IF @DoStatisticsUpdate = 1
+		BEGIN
+			UPDATE StoolballPlayerInMatchStatistics 
+			SET 
+			BowledByPlayerRoute = #PlayerAsyncUpdate2.PlayerRoute,
+			BowledByPlayerIdentityName = #PlayerAsyncUpdate2.PlayerIdentityName
+			FROM StoolballPlayerInMatchStatistics s
+			INNER JOIN #PlayerAsyncUpdate2 ON s.PlayerInMatchStatisticsId = #PlayerAsyncUpdate2.PlayerInMatchStatisticsId
+
+			-- Return affected PlayerRoutes so that the calling code can clear the player cache, and so it knows that work was done
+			-- and it might need to call this procedure again to process further records.
+			SELECT PlayerRoute FROM #PlayerAsyncUpdate2
+			UNION
+			SELECT PlayerRouteToReplace AS PlayerRoute FROM #PlayerAsyncUpdate2
+		END
+
+		DROP TABLE #PlayerAsyncUpdate2
+	END
+
+	IF @DoStatisticsUpdate = 0
+	BEGIN
+		SELECT TOP 10 PlayerInMatchStatisticsId, p.PlayerId, p.PlayerRoute, pi.PlayerIdentityName, s.CaughtByPlayerRoute AS PlayerRouteToReplace
+		INTO #PlayerAsyncUpdate3
+		FROM StoolballPlayerInMatchStatistics s 
+		INNER JOIN StoolballPlayerIdentity pi ON s.CaughtByPlayerIdentityId = pi.PlayerIdentityId
+		INNER JOIN StoolballPlayer p ON pi.PlayerId = p.PlayerId
+		WHERE s.CaughtByPlayerIdentityId IS NOT NULL AND s.CaughtByPlayerRoute != p.PlayerRoute OR s.CaughtByPlayerIdentityName != pi.PlayerIdentityName
+
+		IF @@ROWCOUNT > 0
+			SET @DoStatisticsUpdate = 1
+		ELSE
+			SET @DoStatisticsUpdate = 0
+	
+		IF @DoStatisticsUpdate = 1
+		BEGIN
+			UPDATE StoolballPlayerInMatchStatistics 
+			SET 
+			CaughtByPlayerRoute = #PlayerAsyncUpdate3.PlayerRoute,
+			CaughtByPlayerIdentityName = #PlayerAsyncUpdate3.PlayerIdentityName
+			FROM StoolballPlayerInMatchStatistics s
+			INNER JOIN #PlayerAsyncUpdate3 ON s.PlayerInMatchStatisticsId = #PlayerAsyncUpdate3.PlayerInMatchStatisticsId
+
+			-- Return affected PlayerRoutes so that the calling code can clear the player cache, and so it knows that work was done
+			-- and it might need to call this procedure again to process further records.
+			SELECT PlayerRoute FROM #PlayerAsyncUpdate3
+			UNION
+			SELECT PlayerRouteToReplace AS PlayerRoute FROM #PlayerAsyncUpdate3
+		END
+
+		DROP TABLE #PlayerAsyncUpdate3
+	END
+
+	IF @DoStatisticsUpdate = 0
+	BEGIN
+		SELECT TOP 10 PlayerInMatchStatisticsId, p.PlayerId, p.PlayerRoute, pi.PlayerIdentityName, s.RunOutByPlayerRoute AS PlayerRouteToReplace
+		INTO #PlayerAsyncUpdate4
+		FROM StoolballPlayerInMatchStatistics s 
+		INNER JOIN StoolballPlayerIdentity pi ON s.RunOutByPlayerIdentityId = pi.PlayerIdentityId
+		INNER JOIN StoolballPlayer p ON pi.PlayerId = p.PlayerId
+		WHERE s.RunOutByPlayerIdentityId IS NOT NULL AND s.RunOutByPlayerRoute != p.PlayerRoute OR s.RunOutByPlayerIdentityName != pi.PlayerIdentityName
+
+		IF @@ROWCOUNT > 0
+			SET @DoStatisticsUpdate = 1
+		ELSE
+			SET @DoStatisticsUpdate = 0
+	
+		IF @DoStatisticsUpdate = 1
+		BEGIN
+			UPDATE StoolballPlayerInMatchStatistics 
+			SET 
+			RunOutByPlayerRoute = #PlayerAsyncUpdate4.PlayerRoute,
+			RunOutByPlayerIdentityName = #PlayerAsyncUpdate4.PlayerIdentityName
+			FROM StoolballPlayerInMatchStatistics s
+			INNER JOIN #PlayerAsyncUpdate4 ON s.PlayerInMatchStatisticsId = #PlayerAsyncUpdate4.PlayerInMatchStatisticsId
+
+			-- Return affected PlayerRoutes so that the calling code can clear the player cache, and so it knows that work was done
+			-- and it might need to call this procedure again to process further records.
+			SELECT PlayerRoute FROM #PlayerAsyncUpdate4
+			UNION
+			SELECT PlayerRouteToReplace AS PlayerRoute FROM #PlayerAsyncUpdate4
+		END
+
+		DROP TABLE #PlayerAsyncUpdate4
+	END
 
 	-- When combining one player identity with another, there's a leftover player to delete that the identity used to belong to.
 	-- Once the SELECT above returns no rows we know it is safe to delete these players without a blocking foreign key in the 
@@ -63,21 +164,21 @@ BEGIN
 	IF @DoStatisticsUpdate = 0
 	BEGIN
 		SELECT p.PlayerId, p.PlayerRoute
-		INTO #LinkPlayerToMemberAsyncDelete
+		INTO #PlayerAsyncDelete
 		FROM StoolballPlayer p 
 		LEFT JOIN StoolballPlayerInMatchStatistics s ON p.PlayerId = s.PlayerId
 		WHERE ForAsyncDelete = 1 AND s.PlayerInMatchStatisticsId IS NULL
 
 		IF @@ROWCOUNT > 0
 		BEGIN
-			DELETE FROM StoolballPlayer WHERE PlayerId IN (SELECT PlayerId FROM #LinkPlayerToMemberAsyncDelete)
+			DELETE FROM StoolballPlayer WHERE PlayerId IN (SELECT PlayerId FROM #PlayerAsyncDelete)
 	
 			-- Return affected PlayerRoutes so that the calling code can clear the player cache, and so it knows that work was done
 			-- and it might need to call this procedure again to process further records.
-			SELECT PlayerRoute FROM #LinkPlayerToMemberAsyncDelete
+			SELECT PlayerRoute FROM #PlayerAsyncDelete
 		END
 	
-		DROP TABLE #LinkPlayerToMemberAsyncDelete
+		DROP TABLE #PlayerAsyncDelete
 	END
 
 	COMMIT TRAN
