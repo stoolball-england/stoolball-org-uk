@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
@@ -12,6 +13,12 @@ namespace Stoolball.Data.SqlServer
         public async Task<IEnumerable<T>> QueryAsync<T>(string sql, CommandType commandType, IDbConnection connection)
         {
             return await connection.QueryAsync<T>(sql, commandType);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TReturn>(string sql, Func<TFirst, TSecond, TReturn> map, object param, IDbTransaction transaction, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
+        {
+            return await transaction.Connection.QueryAsync<TFirst, TSecond, TReturn>(new CommandDefinition(sql, param, transaction, commandTimeout, commandType, buffered ? CommandFlags.Buffered : CommandFlags.None), map, splitOn);
         }
 
         /// <inheritdoc/>

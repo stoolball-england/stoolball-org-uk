@@ -569,7 +569,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerIdentityId_is_null()
         {
             var repo = CreateRepository();
-            var playerIdentity = new PlayerIdentity { PlayerIdentityName = "Example name", Team = new Team { TeamId = Guid.NewGuid() } };
+            var playerIdentity = new PlayerIdentity { PlayerIdentityName = "Example name", Team = new Team { TeamId = Guid.NewGuid() }, Player = new Player { PlayerId = Guid.NewGuid() } };
 
             await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
         }
@@ -581,7 +581,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerIdentityName_is_missing(string? playerIdentityName)
         {
             var repo = CreateRepository();
-            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = playerIdentityName, Team = new Team { TeamId = Guid.NewGuid() } };
+            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = playerIdentityName, Team = new Team { TeamId = Guid.NewGuid() }, Player = new Player { PlayerId = Guid.NewGuid() } };
 
             await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
         }
@@ -590,7 +590,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task UpdatePlayerIdentity_throws_ArgumentException_if_TeamId_is_null()
         {
             var repo = CreateRepository();
-            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Example name", Team = new Team() };
+            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Example name", Team = new Team(), Player = new Player { PlayerId = Guid.NewGuid() } };
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
+        }
+
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerId_is_null()
+        {
+            var repo = CreateRepository();
+            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Example name", Team = new Team { TeamId = Guid.NewGuid() }, Player = new Player() };
 
             await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
         }
@@ -628,6 +638,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var repo = CreateRepository();
 
             var playerIdentityToUpdate = _databaseFixture.TestData.PlayerIdentities[0];
+            _copier.Setup(x => x.CreateAuditableCopy(playerIdentityToUpdate.Player)).Returns(new Player());
 
             var result = await repo.UpdatePlayerIdentity(playerIdentityToUpdate, Guid.NewGuid(), "Member name");
 
@@ -653,6 +664,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Team = playerIdentityToUpdate.Team,
                 Player = playerIdentityToUpdate.Player
             };
+
+            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity.Player)).Returns(new Player());
 
             var result = await repo.UpdatePlayerIdentity(updatedPlayerIdentity, Guid.NewGuid(), "Member name");
             await repo.ProcessAsyncUpdatesForPlayers();

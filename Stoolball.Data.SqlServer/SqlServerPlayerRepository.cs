@@ -126,7 +126,7 @@ namespace Stoolball.Data.SqlServer
             return auditablePlayerIdentity;
         }
 
-        private static async Task<PlayerIdentity?> MatchPlayerIdentity(PlayerIdentity playerIdentity, bool allowMatchByPlayerIdentityIdOrPlayerId, string memberName, IDbTransaction transaction)
+        private async Task<PlayerIdentity?> MatchPlayerIdentity(PlayerIdentity playerIdentity, bool allowMatchByPlayerIdentityIdOrPlayerId, string memberName, IDbTransaction transaction)
         {
             if (playerIdentity is null)
             {
@@ -158,7 +158,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            var matchedPlayerIdentity = (await transaction.Connection.QueryAsync<PlayerIdentity, Player, PlayerIdentity>(
+            var matchedPlayerIdentity = (await _dapperWrapper.QueryAsync<PlayerIdentity, Player, PlayerIdentity>(
                     $"SELECT PlayerIdentityId, PlayerIdentityName, PlayerId FROM {Tables.PlayerIdentity} WHERE ComparableName = @ComparableName AND TeamId = @TeamId",
                     (pi, p) =>
                     {
@@ -255,7 +255,7 @@ namespace Stoolball.Data.SqlServer
                         await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @ExistingPlayerId WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction);
 
                         // We also need to update statistics, and delete the now-unused player that the identity has been moved away from. 
-                        // However this is done asynchronously by ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts, so we just need to mark the player as safe to delete.
+                        // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so we just need to mark the player as safe to delete.
                         await connection.ExecuteAsync($"UPDATE {Tables.Player} SET ForAsyncDelete = 1 WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
 
                         var serialisedDeletedPlayer = JsonConvert.SerializeObject(auditablePlayer);
@@ -363,7 +363,7 @@ namespace Stoolball.Data.SqlServer
                         await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", new { player.PlayerId, playerIdentity.PlayerIdentityId }, transaction);
 
                         // We also need to update statistics to point to new player and new player route.
-                        // However this is done asynchronously by ProcessAsyncUpdatesForLinkingAndUnlinkingPlayersToMemberAccounts, so there is nothing to do here.
+                        // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so there is nothing to do here.
 
                         var serialisedPlayer = JsonConvert.SerializeObject(_copier.CreateAuditableCopy(player));
                         await _auditRepository.CreateAudit(new AuditRecord
@@ -454,6 +454,11 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentException("TeamId must have a value");
             }
 
+            if (playerIdentity.Player?.PlayerId == null)
+            {
+                throw new ArgumentException("PlayerId must have a value");
+            }
+
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
@@ -469,7 +474,29 @@ namespace Stoolball.Data.SqlServer
                     }
                     else
                     {
-                        _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerIdentityName = @PlayerIdentityName WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentity, transaction).ConfigureAwait(false);
+                        _ = await _dapperWrapper.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerIdentityName = @PlayerIdentityName WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentity, transaction).ConfigureAwait(false);
+
+                        // We also need to update statistics to point to new player identity name and new player route.
+                        // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so there is nothing to do here.
+                        var auditablePlayer = _copier.CreateAuditableCopy(playerIdentity.Player)!;
+                        if (!auditablePlayer.PlayerIdentities.Any(x => x.PlayerIdentityId == playerIdentity.PlayerIdentityId))
+                        {
+                            auditablePlayer.PlayerIdentities.Add(_copier.CreateAuditableCopy(playerIdentity)!);
+                        }
+                        var serialisedPlayer = JsonConvert.SerializeObject(auditablePlayer);
+                        await _auditRepository.CreateAudit(new AuditRecord
+                        {
+                            Action = AuditAction.Update,
+                            MemberKey = memberKey,
+                            ActorName = memberName,
+                            EntityUri = playerIdentity.Player.EntityUri,
+                            State = serialisedPlayer,
+                            RedactedState = serialisedPlayer,
+                            AuditDate = DateTime.UtcNow
+                        }, transaction);
+
+                        _logger.Info(LoggingTemplates.Updated, serialisedPlayer, memberName, memberKey, GetType(), nameof(UpdatePlayerIdentity));
+
                         transaction.Commit();
 
                         return new RepositoryResult<PlayerIdentityUpdateResult, PlayerIdentity> { Status = PlayerIdentityUpdateResult.Success, Result = playerIdentity };

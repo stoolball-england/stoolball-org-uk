@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
@@ -28,6 +29,23 @@ namespace Stoolball.Data.SqlServer
         /// <param name="transaction"></param>
         /// <returns></returns>
         Task<IEnumerable<T>> QueryAsync<T>(string sql, object param, IDbTransaction transaction);
+
+        /// <summary>
+        /// Perform a asynchronous multi-mapping query with 2 input types. This returns a single type, combined from the raw types via map.
+        /// </summary>
+        /// <typeparam name="TFirst">The first type in the recordset.</typeparam>
+        /// <typeparam name="TSecond">The second type in the recordset.</typeparam>
+        /// <typeparam name="TReturn">The combined type to return.</typeparam>
+        /// <param name="sql">The SQL to execute for this query.</param>
+        /// <param name="map">The function to map row types to the return type.</param>
+        /// <param name="param">The parameters to use for this query.</param>
+        /// <param name="transaction">The transaction to use for this query.</param>
+        /// <param name="buffered">Whether to buffer the results in memory.</param>
+        /// <param name="splitOn">The field we should split and read the second object from (default: "Id").</param>
+        /// <param name="commandTimeout">Number of seconds before command execution timeout.</param>
+        /// <param name="commandType"> Is it a stored proc or a batch?</param>
+        /// <returns>An enumerable of TReturn.</returns>
+        Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TReturn>(string sql, Func<TFirst, TSecond, TReturn> map, object param, IDbTransaction transaction, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null);
 
         /// <summary>
         /// Execute a command asynchronously using Task

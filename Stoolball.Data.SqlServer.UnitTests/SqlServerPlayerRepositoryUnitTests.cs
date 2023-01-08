@@ -7,7 +7,9 @@ using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Statistics;
+using Stoolball.Teams;
 using Xunit;
+using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.UnitTests
 {
@@ -24,10 +26,12 @@ namespace Stoolball.Data.SqlServer.UnitTests
         private readonly Mock<IBestRouteSelector> _routeSelector = new();
         private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
         private readonly Mock<IPlayerCacheInvalidator> _playerCacheClearer = new();
+        private readonly Mock<IDbTransaction> _transaction = new();
 
         public SqlServerPlayerRepositoryUnitTests()
         {
             _connectionFactory.Setup(x => x.CreateDatabaseConnection()).Returns(_databaseConnection.Object);
+            _databaseConnection.Setup(x => x.BeginTransaction()).Returns(_transaction.Object);
         }
 
         private SqlServerPlayerRepository CreateRepository()
@@ -114,6 +118,35 @@ namespace Stoolball.Data.SqlServer.UnitTests
                 SqlServerPlayerRepository.LOG_TEMPLATE_ERROR_SQL_EXCEPTION,
                 SqlExceptionFactory.ERROR_ESTABLISHING_CONNECTION
             ), Times.Exactly(1));
+        }
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_where_name_does_not_match_existing_player_identity_audits_and_logs()
+        {
+            var repo = CreateRepository();
+
+            var playerIdentityToUpdate = new PlayerIdentity
+            {
+                PlayerIdentityId = Guid.NewGuid(),
+                PlayerIdentityName = "New name",
+                Player = new Player
+                {
+                    PlayerId = Guid.NewGuid(),
+                },
+                Team = new Team
+                {
+                    TeamId = Guid.NewGuid()
+                }
+            };
+            var memberKey = Guid.NewGuid();
+            var memberName = "Member name";
+
+            _copier.Setup(x => x.CreateAuditableCopy(playerIdentityToUpdate.Player)).Returns(new Player());
+
+            var result = await repo.UpdatePlayerIdentity(playerIdentityToUpdate, memberKey, memberName);
+
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _transaction.Object), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), memberName, memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.UpdatePlayerIdentity)), Times.Once);
         }
     }
 }
