@@ -895,7 +895,7 @@ namespace Stoolball.Testing
                 testData.Tournaments.Add(tournament2);
             }
 
-            testData.TournamentInThePastWithFullDetails.History.AddRange(new[] { new AuditRecord {
+            testData.TournamentInThePastWithFullDetails!.History.AddRange(new[] { new AuditRecord {
                     Action = AuditAction.Create,
                     ActorName = nameof(SeedDataGenerator),
                     AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(-2),
@@ -982,7 +982,7 @@ namespace Stoolball.Testing
             );
             if (testData.TeamWithFullDetails == null) { throw new InvalidOperationException($"{nameof(testData.TeamWithFullDetails)} not found"); }
 
-            testData.TournamentInThePastWithFullDetails!.Teams.Add(new TeamInTournament
+            testData.TournamentInThePastWithFullDetails.Teams.Add(new TeamInTournament
             {
                 TournamentTeamId = Guid.NewGuid(),
                 Team = testData.TeamWithFullDetails,
@@ -1016,14 +1016,6 @@ namespace Stoolball.Testing
                 .OfType<MatchLocation>()
                 .Distinct(new MatchLocationEqualityComparer())
                 .Where(x => !testData.MatchLocations.Select(ml => ml.MatchLocationId).Contains(x.MatchLocationId)).ToList());
-
-            // Data can be filtered by match location, so make sure there is at least one example of various kinds of data that has a match location
-            var matchesWithACatch = testData.Matches.Where(m => m.MatchInnings.SelectMany(mi => mi.PlayerInnings).Any(pi => pi.DismissalType == DismissalType.Caught || pi.DismissalType == DismissalType.CaughtAndBowled)).ToList();
-            if (!matchesWithACatch.Any()) { throw new InvalidOperationException("No catches were generated."); }
-            if (!matchesWithACatch.Any(m => m.MatchLocation != null))
-            {
-                matchesWithACatch[_randomiser.PositiveIntegerLessThan(matchesWithACatch.Count)].MatchLocation = testData.MatchLocations[_randomiser.PositiveIntegerLessThan(testData.MatchLocations.Count)];
-            }
 
             testData.MatchLocationWithFullDetails = testData.MatchLocations.First(x => x.Teams.Any());
             testData.MatchLocationWithMinimalDetails = testData.MatchLocations.First(x => !x.Teams.Any());

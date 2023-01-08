@@ -552,7 +552,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     {
                         PageSize = int.MaxValue
                     },
-                    MatchLocation = _databaseFixture.TestData.MatchLocations.First()
+                    MatchLocation = location
                 };
                 _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", filter.MatchLocation.MatchLocationId! } }));
 
@@ -562,10 +562,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                                             .Where(x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId)
                                                                             .SelectMany(m => m.MatchInnings)
                                                                             .SelectMany(mi => mi.PlayerInnings)
-                                                                            .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == x.PlayerId) ||
-                                                                                        (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == x.PlayerId))
-                                                                            .Any());
-
+                                                                            .Any(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == x.PlayerId) ||
+                                                                                        (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == x.PlayerId)));
                 foundAtLeastOne = foundAtLeastOne || expected.Any();
 
                 Assert.Equal(expected.Count(), results.Count());
