@@ -109,14 +109,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute!).ConfigureAwait(false);
 
             Assert.NotNull(result);
-            for (var season = 0; season < _databaseFixture.TestData.CompetitionWithFullDetails.Seasons.Count; season++)
+            foreach (var season in _databaseFixture.TestData.CompetitionWithFullDetails.Seasons)
             {
-                for (var set = 0; set < _databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].DefaultOverSets.Count; set++)
+                var resultSeason = result!.Seasons.SingleOrDefault(x => x.SeasonId == season.SeasonId);
+                Assert.NotNull(resultSeason);
+
+                Assert.Equal(season.DefaultOverSets.Count(), resultSeason!.DefaultOverSets.Count());
+                foreach (var overSet in season.DefaultOverSets)
                 {
-                    Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].DefaultOverSets[set].OverSetId, result!.Seasons[season].DefaultOverSets[set].OverSetId);
-                    Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].DefaultOverSets[set].OverSetNumber, result.Seasons[season].DefaultOverSets[set].OverSetNumber);
-                    Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].DefaultOverSets[set].Overs, result.Seasons[season].DefaultOverSets[set].Overs);
-                    Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].DefaultOverSets[set].BallsPerOver, result.Seasons[season].DefaultOverSets[set].BallsPerOver);
+                    var resultOverSet = resultSeason.DefaultOverSets.SingleOrDefault(x => x.OverSetId == overSet.OverSetId);
+                    Assert.NotNull(resultOverSet);
+
+                    Assert.Equal(overSet.OverSetNumber, resultOverSet!.OverSetNumber);
+                    Assert.Equal(overSet.Overs, resultOverSet.Overs);
+                    Assert.Equal(overSet.BallsPerOver, resultOverSet.BallsPerOver);
                 }
             }
         }
