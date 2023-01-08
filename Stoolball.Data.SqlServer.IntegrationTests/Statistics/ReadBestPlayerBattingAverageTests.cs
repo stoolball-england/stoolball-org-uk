@@ -800,8 +800,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var remaining = _databaseFixture.TestData.Matches
                 .SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.PlayerInnings)
-                .Where(x => StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(x.DismissalType))
-                .Select(x => x.Batter?.Player?.PlayerId)
+                .Where(x => x.Batter?.Player?.PlayerId != null && StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(x.DismissalType) && x.RunsScored.HasValue)
+                .Select(x => x.Batter!.Player!.PlayerId)
                 .Distinct()
                 .Count();
 
