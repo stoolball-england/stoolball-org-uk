@@ -131,6 +131,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             Assert.NotNull(result);
             Assert.Equal(_databaseFixture.TestData.TeamWithFullDetails.Seasons.Count, result!.Seasons.Count);
+
             foreach (var season in _databaseFixture.TestData.TeamWithFullDetails.Seasons)
             {
                 var seasonResult = result.Seasons.SingleOrDefault(x => x.Season?.SeasonId == season.Season?.SeasonId);

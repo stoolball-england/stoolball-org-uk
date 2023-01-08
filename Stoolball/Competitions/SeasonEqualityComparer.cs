@@ -6,7 +6,15 @@ namespace Stoolball.Competitions
     {
         public override bool Equals(Season? x, Season? y)
         {
-            return x?.SeasonRoute == y?.SeasonRoute;
+            if (x?.SeasonId != null && y?.SeasonId != null)
+            {
+                return x.SeasonId.Value == y.SeasonId.Value;
+            }
+            else if (!string.IsNullOrEmpty(x?.SeasonRoute) && !string.IsNullOrEmpty(y?.SeasonRoute))
+            {
+                return x.SeasonRoute.Equals(y.SeasonRoute);
+            }
+            return false;
         }
 
         public override int GetHashCode(Season obj)

@@ -67,18 +67,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 CreateMatchLocation(location);
             }
 
-            foreach (var team in data.Teams)
-            {
-                foreach (var location in team.MatchLocations)
-                {
-                    AddTeamToMatchLocation(team, location);
-                }
-            }
-
             foreach (var competition in data.Competitions)
             {
                 CreateCompetition(competition);
             }
+
             foreach (var season in data.Seasons)
             {
                 if (season.Competition?.CompetitionId == null) { throw new InvalidOperationException(nameof(season.Competition.CompetitionId) + " must not be null"); }
@@ -88,6 +81,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     AddTeamToSeason(teamInSeason);
                 }
             }
+
+            foreach (var team in data.Teams)
+            {
+                foreach (var teamInSeason in team.Seasons)
+                {
+                    AddTeamToSeason(teamInSeason);
+                }
+
+                foreach (var location in team.MatchLocations)
+                {
+                    AddTeamToMatchLocation(team, location);
+                }
+            }
+
             foreach (var tournament in data.Tournaments)
             {
                 CreateTournament(tournament);
@@ -500,6 +507,24 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
         public void AddTeamToSeason(TeamInSeason teamInSeason)
         {
+            if (teamInSeason is null)
+            {
+                throw new ArgumentNullException(nameof(teamInSeason));
+            }
+
+            if (teamInSeason.Team?.TeamId == null)
+            {
+                throw new ArgumentException($"{nameof(Team.TeamId)} cannot be null");
+            }
+
+            if (teamInSeason.Season?.SeasonId == null)
+            {
+                throw new ArgumentException($"{nameof(Season.SeasonId)} cannot be null");
+            }
+
+            var teamInSeasonId = _connection.QuerySingleOrDefault<Guid?>($"SELECT SeasonTeamId FROM {Tables.SeasonTeam} WHERE TeamId = @TeamId AND SeasonId = @SeasonId", new { teamInSeason.Team!.TeamId, teamInSeason.Season!.SeasonId });
+            if (teamInSeasonId.HasValue) { return; }
+
             _connection.Execute($@"INSERT INTO {Tables.SeasonTeam} 
                     (SeasonTeamId, SeasonId, TeamId, WithdrawnDate)
                     VALUES
@@ -507,8 +532,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             new
             {
                 SeasonTeamId = Guid.NewGuid(),
-                teamInSeason.Season.SeasonId,
-                teamInSeason.Team.TeamId,
+                teamInSeason.Season!.SeasonId,
+                teamInSeason.Team!.TeamId,
                 WithdrawnDate = teamInSeason.WithdrawnDate.HasValue ? TimeZoneInfo.ConvertTimeToUtc(teamInSeason.WithdrawnDate.Value.Date, TimeZoneInfo.FindSystemTimeZoneById(Constants.UkTimeZone())) : (DateTime?)null
             });
         }

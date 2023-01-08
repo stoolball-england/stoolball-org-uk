@@ -753,9 +753,9 @@ namespace Stoolball.Testing
             // Create a pool of competitions
             for (var i = 0; i < 10; i++)
             {
-                testData.Competitions.Add(IsEven(i) ? CreateCompetitionWithFullDetails() : CreateCompetitionWithMinimalDetails());
                 if (IsEven(i))
                 {
+                    testData.Competitions.Add(CreateCompetitionWithFullDetails());
                     var team1 = poolOfTeamsWithPlayers[_randomiser.PositiveIntegerLessThan(poolOfTeamsWithPlayers.Count)].team;
                     Team team2;
                     do
@@ -763,11 +763,20 @@ namespace Stoolball.Testing
                         team2 = poolOfTeamsWithPlayers[_randomiser.PositiveIntegerLessThan(poolOfTeamsWithPlayers.Count)].team;
                     }
                     while (team2.TeamId == team1.TeamId);
-                    var season = CreateSeasonWithFullDetails(testData.Competitions[testData.Competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i, team1, team2);
+
+                    var existingSummerSeasonsForCompetition = testData.Competitions[testData.Competitions.Count - 1].Seasons.Where(x => x.FromYear == x.UntilYear).Select(x => x.FromYear);
+                    var newSummerSeason = DateTime.Now.Year - i;
+                    while (existingSummerSeasonsForCompetition.Contains(newSummerSeason))
+                    {
+                        newSummerSeason--;
+                    }
+
+                    var season = CreateSeasonWithFullDetails(testData.Competitions[testData.Competitions.Count - 1], newSummerSeason, newSummerSeason, team1, team2);
                     testData.Competitions[testData.Competitions.Count - 1].Seasons.Add(season);
                 }
                 else
                 {
+                    testData.Competitions.Add(CreateCompetitionWithMinimalDetails());
                     testData.Competitions[testData.Competitions.Count - 1].Seasons.Add(CreateSeasonWithMinimalDetails(testData.Competitions[testData.Competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i));
                 }
             }
@@ -1040,7 +1049,9 @@ namespace Stoolball.Testing
             competitionForSeason.Seasons.Add(testData.SeasonWithMinimalDetails);
             testData.Competitions.Add(competitionForSeason);
 
-            testData.Seasons = testData.Competitions.SelectMany(x => x.Seasons).Distinct(new SeasonEqualityComparer()).ToList();
+            testData.Seasons = testData.Competitions.SelectMany(x => x.Seasons)
+                .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season).OfType<Season>())
+                .Distinct(new SeasonEqualityComparer()).ToList();
 
             testData.SeasonWithFullDetails = testData.Seasons.First(x => x.Teams.Any() && x.PointsRules.Any() && x.PointsAdjustments.Any());
 
