@@ -137,7 +137,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             }
             while (runsConcededDifference < 0)
             {
-                oversBowledBySixthBowler.First(x => x.RunsConceded.HasValue && x.RunsConceded > 0).RunsConceded--;
+                var overWithRunsConceded = oversBowledBySixthBowler.FirstOrDefault(x => x.RunsConceded.HasValue && x.RunsConceded > 0);
+                overWithRunsConceded.RunsConceded--;
                 runsConcededDifference++;
             }
 
