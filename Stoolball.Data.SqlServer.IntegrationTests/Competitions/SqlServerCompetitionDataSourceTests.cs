@@ -69,28 +69,33 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute!).ConfigureAwait(false);
 
+            // Are the correct seasons returned?
             Assert.NotNull(result);
             Assert.Equal(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons.Count, result!.Seasons.Count);
-            int? previousFromYear = int.MaxValue;
-            int? previousUntilYear = int.MaxValue;
             foreach (var season in _databaseFixture.TestData.CompetitionWithFullDetails.Seasons)
             {
                 var resultSeason = result.Seasons.SingleOrDefault(x => x.SeasonId == season.SeasonId);
                 Assert.NotNull(resultSeason);
 
                 Assert.Equal(season.FromYear, resultSeason!.FromYear);
-                Assert.True(resultSeason.FromYear <= previousFromYear);
-                previousFromYear = resultSeason.FromYear;
-
                 Assert.Equal(season.UntilYear, resultSeason.UntilYear);
-                Assert.True(resultSeason.UntilYear <= previousUntilYear);
-                previousUntilYear = resultSeason.UntilYear;
-
                 Assert.Equal(season.SeasonRoute, resultSeason.SeasonRoute);
                 Assert.Equal(season.PlayersPerTeam, resultSeason.PlayersPerTeam);
                 Assert.Equal(season.EnableTournaments, resultSeason.EnableTournaments);
                 Assert.Equal(season.EnableLastPlayerBatsOn, resultSeason.EnableLastPlayerBatsOn);
                 Assert.Equal(season.EnableBonusOrPenaltyRuns, resultSeason.EnableBonusOrPenaltyRuns);
+            }
+
+            // And are they in the right order?
+            int? previousFromYear = int.MaxValue;
+            int? previousUntilYear = int.MaxValue;
+
+            foreach (var season in result.Seasons)
+            {
+                Assert.True(season.FromYear <= previousFromYear);
+                previousFromYear = season.FromYear;
+                Assert.True(season.UntilYear <= previousUntilYear);
+                previousUntilYear = season.UntilYear;
             }
         }
 
