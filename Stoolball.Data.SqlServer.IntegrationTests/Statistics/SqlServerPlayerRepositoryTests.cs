@@ -638,7 +638,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var repo = CreateRepository();
 
             var playerIdentityToUpdate = _databaseFixture.TestData.PlayerIdentities[0];
-            _copier.Setup(x => x.CreateAuditableCopy(playerIdentityToUpdate.Player)).Returns(new Player());
+            var playerIdentityToUpdateCopy = new PlayerIdentity
+            {
+                PlayerIdentityId = playerIdentityToUpdate.PlayerIdentityId,
+                PlayerIdentityName = playerIdentityToUpdate.PlayerIdentityName,
+                Team = new Team { TeamId = playerIdentityToUpdate.Team?.TeamId },
+                Player = new Player { PlayerId = playerIdentityToUpdate.Player?.PlayerId }
+            };
+
+            _copier.Setup(x => x.CreateAuditableCopy(playerIdentityToUpdate.Player)).Returns(new Player { PlayerId = playerIdentityToUpdate.Player?.PlayerId });
+            _copier.Setup(x => x.CreateAuditableCopy(playerIdentityToUpdate)).Returns(playerIdentityToUpdateCopy);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(string.Empty, playerIdentityToUpdate.RouteSegment!, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).ReturnsAsync(playerIdentityToUpdate.RouteSegment!);
 
             var result = await repo.UpdatePlayerIdentity(playerIdentityToUpdate, Guid.NewGuid(), "Member name");
 
@@ -665,7 +675,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Player = playerIdentityToUpdate.Player
             };
 
-            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity.Player)).Returns(new Player());
+            var updatedPlayerIdentityCopy = new PlayerIdentity
+            {
+                PlayerIdentityId = updatedPlayerIdentity.PlayerIdentityId,
+                PlayerIdentityName = updatedPlayerIdentity.PlayerIdentityName,
+                Team = new Team { TeamId = updatedPlayerIdentity.Team?.TeamId },
+                Player = new Player { PlayerId = updatedPlayerIdentity.Player?.PlayerId }
+            };
+
+            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity.Player)).Returns(new Player { PlayerId = updatedPlayerIdentityCopy.Player.PlayerId });
+            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity)).Returns(updatedPlayerIdentityCopy);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(string.Empty, updatedPlayerIdentityCopy.PlayerIdentityName.Kebaberize(), NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).ReturnsAsync(updatedPlayerIdentityCopy.PlayerIdentityName.Kebaberize());
 
             var result = await repo.UpdatePlayerIdentity(updatedPlayerIdentity, Guid.NewGuid(), "Member name");
             await repo.ProcessAsyncUpdatesForPlayers();
@@ -675,8 +695,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
                 connectionForAssert.Open();
-                var playerToUpdateNameAfter = await connectionForAssert.ExecuteScalarAsync<string>($"SELECT PlayerIdentityName FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentityToUpdate).ConfigureAwait(false);
-                Assert.Equal(updatedPlayerIdentity.PlayerIdentityName, playerToUpdateNameAfter);
+                var playerToUpdateNameAfter = await connectionForAssert.QuerySingleAsync<(string playerIdentityName, string comparableName, string routeSegment)>(
+                    $"SELECT PlayerIdentityName, ComparableName, RouteSegment FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentityToUpdate).ConfigureAwait(false);
+                Assert.Equal(updatedPlayerIdentity.PlayerIdentityName, playerToUpdateNameAfter.playerIdentityName);
+                Assert.Equal(updatedPlayerIdentity.ComparableName(), playerToUpdateNameAfter.comparableName);
+                Assert.Equal(updatedPlayerIdentity.PlayerIdentityName.Kebaberize(), playerToUpdateNameAfter.routeSegment);
 
                 var playerToUpdateNameInStatistics = await connectionForAssert.QueryAsync<string>($"SELECT PlayerIdentityName FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentityToUpdate).ConfigureAwait(false);
                 foreach (var nameInStatistics in playerToUpdateNameInStatistics)

@@ -582,7 +582,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task ReadPlayerIdentityByRoute_returns_identity_and_team()
+        public async Task ReadPlayerIdentityByRoute_returns_identity_player_and_team()
         {
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
             var identity = _databaseFixture.TestData.PlayerIdentities.First();
@@ -594,6 +594,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.NotNull(result?.Team);
             Assert.Equal(identity.PlayerIdentityId, result!.PlayerIdentityId);
             Assert.Equal(identity.PlayerIdentityName, result.PlayerIdentityName);
+            Assert.Equal(identity.Player?.PlayerId, result.Player?.PlayerId);
             Assert.Equal(identity.Team.TeamId, result.Team!.TeamId);
             Assert.Equal(identity.Team.TeamName, result.Team!.TeamName);
             Assert.Equal(identity.Team.TeamRoute, result.Team!.TeamRoute);

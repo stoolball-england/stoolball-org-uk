@@ -78,7 +78,7 @@ namespace Stoolball.Web.Teams
                 {
                     PlayerIdentityId = model.PlayerIdentity.PlayerIdentityId,
                     PlayerIdentityName = formData.PlayerSearch,
-                    Player = model.Player,
+                    Player = model.PlayerIdentity.Player,
                     Team = model.PlayerIdentity.Team
                 };
 

@@ -274,20 +274,22 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var results = await connection.QueryAsync<PlayerIdentity, Team, PlayerIdentity>(
+                var results = await connection.QueryAsync<PlayerIdentity, Player, Team, PlayerIdentity>(
                     $@"SELECT pi.PlayerIdentityId, pi.PlayerIdentityName,
+                              pi.PlayerId,
                               t.TeamId, tv.TeamName, t.TeamRoute 
                        FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Team} t ON pi.TeamId = t.TeamId 
                        INNER JOIN {Tables.TeamVersion} tv ON t.TeamId = tv.TeamId
                        WHERE LOWER(pi.RouteSegment) = @RouteSegment AND LOWER(t.TeamRoute) = @TeamRoute
                        AND tv.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
-                    (identity, team) =>
+                    (identity, player, team) =>
                     {
+                        identity.Player = player;
                         identity.Team = team;
                         return identity;
                     },
                     parameters,
-                    splitOn: "TeamId"
+                    splitOn: "PlayerId, TeamId"
                     ).ConfigureAwait(false);
 
                 return results.SingleOrDefault();

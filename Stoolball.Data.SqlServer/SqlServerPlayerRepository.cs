@@ -474,14 +474,31 @@ namespace Stoolball.Data.SqlServer
                     }
                     else
                     {
-                        _ = await _dapperWrapper.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerIdentityName = @PlayerIdentityName WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentity, transaction).ConfigureAwait(false);
+                        var auditablePlayer = _copier.CreateAuditableCopy(playerIdentity.Player)!;
+                        var auditablePlayerIdentity = _copier.CreateAuditableCopy(playerIdentity)!;
+
+                        auditablePlayerIdentity.RouteSegment = (await _routeGenerator.GenerateUniqueRoute(string.Empty, auditablePlayerIdentity.PlayerIdentityName.Kebaberize(), NoiseWords.PlayerRoute,
+                            async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.PlayerIdentity} WHERE RouteSegment = @RouteSegment AND TeamId = @TeamId", new { RouteSegment = route, auditablePlayerIdentity.Team!.TeamId }, transaction)
+                        ).ConfigureAwait(false))?.TrimStart('/');
+
+                        _ = await _dapperWrapper.ExecuteAsync($@"UPDATE {Tables.PlayerIdentity} SET 
+                                    PlayerIdentityName = @PlayerIdentityName,
+                                    ComparableName = @ComparableName,
+                                    RouteSegment = @RouteSegment
+                                    WHERE PlayerIdentityId = @PlayerIdentityId",
+                                    new
+                                    {
+                                        auditablePlayerIdentity.PlayerIdentityId,
+                                        auditablePlayerIdentity.PlayerIdentityName,
+                                        ComparableName = auditablePlayerIdentity.ComparableName(),
+                                        auditablePlayerIdentity.RouteSegment
+                                    }, transaction).ConfigureAwait(false);
 
                         // We also need to update statistics to point to new player identity name and new player route.
                         // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so there is nothing to do here.
-                        var auditablePlayer = _copier.CreateAuditableCopy(playerIdentity.Player)!;
-                        if (!auditablePlayer.PlayerIdentities.Any(x => x.PlayerIdentityId == playerIdentity.PlayerIdentityId))
+                        if (!auditablePlayer.PlayerIdentities.Any(x => x.PlayerIdentityId == auditablePlayerIdentity.PlayerIdentityId))
                         {
-                            auditablePlayer.PlayerIdentities.Add(_copier.CreateAuditableCopy(playerIdentity)!);
+                            auditablePlayer.PlayerIdentities.Add(auditablePlayerIdentity);
                         }
                         var serialisedPlayer = JsonConvert.SerializeObject(auditablePlayer);
                         await _auditRepository.CreateAudit(new AuditRecord
@@ -489,7 +506,7 @@ namespace Stoolball.Data.SqlServer
                             Action = AuditAction.Update,
                             MemberKey = memberKey,
                             ActorName = memberName,
-                            EntityUri = playerIdentity.Player.EntityUri,
+                            EntityUri = auditablePlayer.EntityUri,
                             State = serialisedPlayer,
                             RedactedState = serialisedPlayer,
                             AuditDate = DateTime.UtcNow
@@ -499,7 +516,7 @@ namespace Stoolball.Data.SqlServer
 
                         transaction.Commit();
 
-                        return new RepositoryResult<PlayerIdentityUpdateResult, PlayerIdentity> { Status = PlayerIdentityUpdateResult.Success, Result = playerIdentity };
+                        return new RepositoryResult<PlayerIdentityUpdateResult, PlayerIdentity> { Status = PlayerIdentityUpdateResult.Success, Result = auditablePlayerIdentity };
                     }
                 }
             }
