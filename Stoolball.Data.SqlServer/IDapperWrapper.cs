@@ -56,5 +56,17 @@ namespace Stoolball.Data.SqlServer
         /// <param name="transaction"></param>
         /// <returns>The number of rows affected</returns>
         Task<int> ExecuteAsync(string sql, object param, IDbTransaction transaction);
+
+        /// <summary>
+        /// Execute parameterized SQL that selects a single value.
+        /// </summary>
+        /// <typeparam name="T">The type to return.</typeparam>
+        /// <param name="sql">The SQL to execute.</param>
+        /// <param name="param">The parameters to use for this command.</param>
+        /// <param name="transaction">The transaction to use for this command.</param>
+        /// <param name="commandTimeout">Number of seconds before command execution timeout.</param>
+        /// <param name="commandType">Is it a stored proc or a batch?</param>
+        /// <returns>The first cell returned, as <typeparamref name="T"/>.</returns>
+        Task<T> ExecuteScalarAsync<T>(string sql, object param, IDbTransaction transaction, int? commandTimeout = null, CommandType? commandType = null);
     }
 }

@@ -235,16 +235,9 @@ namespace Stoolball.Data.SqlServer
                     else
                     {
                         // Select the best route from the two players, and redirect
-                        var bestRoute = _bestRouteSelector.SelectBestRoute(existingPlayerForMember.PlayerRoute, auditablePlayer.PlayerRoute);
+                        var bestRoute = _bestRouteSelector.SelectBestRoute(existingPlayerForMember.PlayerRoute!, auditablePlayer.PlayerRoute!);
                         var obsoleteRoute = bestRoute == existingPlayerForMember.PlayerRoute ? auditablePlayer.PlayerRoute : existingPlayerForMember.PlayerRoute;
-                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, null, transaction);
-                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/batting", transaction);
-                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/bowling", transaction);
-                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/fielding", transaction);
-                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/individual-scores", transaction);
-                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/bowling-figures", transaction);
-                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/catches", transaction);
-                        await _redirectsRepository.InsertRedirect(obsoleteRoute, bestRoute, "/run-outs", transaction);
+                        await RedirectPlayerRoute(obsoleteRoute!, bestRoute, transaction);
 
                         // Move the player identities from this player id to the member's player id
                         var replaceWithExistingPlayer = new { ExistingPlayerId = existingPlayerForMember.PlayerId, PlayerRoute = bestRoute, PlayerId = auditablePlayer.PlayerId };
@@ -297,6 +290,18 @@ namespace Stoolball.Data.SqlServer
                     return auditablePlayer;
                 }
             }
+        }
+
+        private async Task RedirectPlayerRoute(string routeBefore, string routeAfter, IDbTransaction transaction)
+        {
+            await _redirectsRepository.InsertRedirect(routeBefore, routeAfter, null, transaction);
+            await _redirectsRepository.InsertRedirect(routeBefore, routeAfter, "/batting", transaction);
+            await _redirectsRepository.InsertRedirect(routeBefore, routeAfter, "/bowling", transaction);
+            await _redirectsRepository.InsertRedirect(routeBefore, routeAfter, "/fielding", transaction);
+            await _redirectsRepository.InsertRedirect(routeBefore, routeAfter, "/individual-scores", transaction);
+            await _redirectsRepository.InsertRedirect(routeBefore, routeAfter, "/bowling-figures", transaction);
+            await _redirectsRepository.InsertRedirect(routeBefore, routeAfter, "/catches", transaction);
+            await _redirectsRepository.InsertRedirect(routeBefore, routeAfter, "/run-outs", transaction);
         }
 
         /// <inheritdoc />
@@ -494,6 +499,8 @@ namespace Stoolball.Data.SqlServer
                                         auditablePlayerIdentity.RouteSegment
                                     }, transaction).ConfigureAwait(false);
 
+                        await UpdatePlayerRoute(auditablePlayer.PlayerId!.Value, transaction);
+
                         // We also need to update statistics to point to new player identity name and new player route.
                         // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so there is nothing to do here.
                         if (!auditablePlayer.PlayerIdentities.Any(x => x.PlayerIdentityId == auditablePlayerIdentity.PlayerIdentityId))
@@ -520,6 +527,40 @@ namespace Stoolball.Data.SqlServer
                     }
                 }
             }
+        }
+
+        private async Task UpdatePlayerRoute(Guid playerId, IDbTransaction transaction)
+        {
+            // Get Player and PlayerIdentity data from the original tables rather than PlayerInMatchStatistics because the original tables
+            // will be updated when a player identity is renamed, and we need to see the change immediately.
+            // Updates to PlayerInMatchStatistics are done asynchronously and the data will not be updated by the time this is called.
+
+            var sql = $@"SELECT p.PlayerRoute, pi.PlayerIdentityName, COUNT(DISTINCT MatchId) AS TotalMatches
+                         FROM {Tables.Player} p INNER JOIN {Tables.PlayerIdentity} pi ON p.PlayerId = pi.PlayerId
+                         INNER JOIN {Tables.PlayerInMatchStatistics} stats ON pi.PlayerIdentityId = stats.PlayerIdentityId
+                         WHERE p.PlayerId = @PlayerId
+                         GROUP BY p.PlayerRoute, pi.PlayerIdentityId, pi.PlayerIdentityName";
+
+            var identities = (await _dapperWrapper.QueryAsync<(string playerRoute, string playerIdentityName, int totalMatches)>(sql, new { PlayerId = playerId }, transaction).ConfigureAwait(false)).ToList();
+
+            var currentRoute = identities[0].playerRoute;
+            foreach (var playerIdentityName in identities.Select(x => x.playerIdentityName))
+            {
+                var suggestedRoute = _routeGenerator.GenerateRoute("/players", playerIdentityName!, NoiseWords.PlayerRoute);
+                if (_routeGenerator.IsMatchingRoute(currentRoute, suggestedRoute))
+                {
+                    // Current route still matches one of the identities
+                    return;
+                }
+            }
+
+            // Current route doesn't match any of its identities. Assign a new one based on the identity that's played the most.
+            var updatedRoute = (await _routeGenerator.GenerateUniqueRoute("/players", identities.First(x => x.totalMatches == identities.Max(pi => pi.totalMatches)).playerIdentityName, NoiseWords.PlayerRoute,
+                            async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { PlayerRoute = route }, transaction)
+                        ).ConfigureAwait(false));
+
+            await _dapperWrapper.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = updatedRoute, PlayerId = playerId }, transaction).ConfigureAwait(false);
+            await RedirectPlayerRoute(currentRoute, updatedRoute, transaction);
         }
     }
 }

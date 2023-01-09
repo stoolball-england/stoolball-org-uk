@@ -638,17 +638,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var repo = CreateRepository();
 
             var playerIdentityToUpdate = _databaseFixture.TestData.PlayerIdentities[0];
-            var playerIdentityToUpdateCopy = new PlayerIdentity
-            {
-                PlayerIdentityId = playerIdentityToUpdate.PlayerIdentityId,
-                PlayerIdentityName = playerIdentityToUpdate.PlayerIdentityName,
-                Team = new Team { TeamId = playerIdentityToUpdate.Team?.TeamId },
-                Player = new Player { PlayerId = playerIdentityToUpdate.Player?.PlayerId }
-            };
+            var playerIdentityToUpdateCopy = SetupCopyOfPlayerIdentity(playerIdentityToUpdate, playerIdentityToUpdate.PlayerIdentityName!);
 
             _copier.Setup(x => x.CreateAuditableCopy(playerIdentityToUpdate.Player)).Returns(new Player { PlayerId = playerIdentityToUpdate.Player?.PlayerId });
             _copier.Setup(x => x.CreateAuditableCopy(playerIdentityToUpdate)).Returns(playerIdentityToUpdateCopy);
-            _routeGenerator.Setup(x => x.GenerateUniqueRoute(string.Empty, playerIdentityToUpdate.RouteSegment!, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).ReturnsAsync(playerIdentityToUpdate.RouteSegment!);
+
+            SetupRouteGenerator(playerIdentityToUpdate, playerIdentityToUpdateCopy, playerIdentityToUpdate.RouteSegment!, "/players/new-route");
 
             var result = await repo.UpdatePlayerIdentity(playerIdentityToUpdate, Guid.NewGuid(), "Member name");
 
@@ -667,25 +662,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                 _databaseFixture.TestData.PlayerInnings.Any(pi => (pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.Caught) ||
                                                                                                   (pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.CaughtAndBowled)) &&
                                                 _databaseFixture.TestData.PlayerInnings.Any(pi => pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.RunOut));
-            var updatedPlayerIdentity = new PlayerIdentity
-            {
-                PlayerIdentityId = playerIdentityToUpdate.PlayerIdentityId,
-                PlayerIdentityName = Guid.NewGuid().ToString(),
-                Team = playerIdentityToUpdate.Team,
-                Player = playerIdentityToUpdate.Player
-            };
 
-            var updatedPlayerIdentityCopy = new PlayerIdentity
-            {
-                PlayerIdentityId = updatedPlayerIdentity.PlayerIdentityId,
-                PlayerIdentityName = updatedPlayerIdentity.PlayerIdentityName,
-                Team = new Team { TeamId = updatedPlayerIdentity.Team?.TeamId },
-                Player = new Player { PlayerId = updatedPlayerIdentity.Player?.PlayerId }
-            };
-
-            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity.Player)).Returns(new Player { PlayerId = updatedPlayerIdentityCopy.Player.PlayerId });
-            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity)).Returns(updatedPlayerIdentityCopy);
-            _routeGenerator.Setup(x => x.GenerateUniqueRoute(string.Empty, updatedPlayerIdentityCopy.PlayerIdentityName.Kebaberize(), NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).ReturnsAsync(updatedPlayerIdentityCopy.PlayerIdentityName.Kebaberize());
+            var updatedPlayerIdentity = SetupCopyOfPlayerIdentity(playerIdentityToUpdate, Guid.NewGuid().ToString());
+            SetupRouteGenerator(playerIdentityToUpdate, updatedPlayerIdentity, updatedPlayerIdentity.PlayerIdentityName.Kebaberize(), "/players/new-route");
 
             var result = await repo.UpdatePlayerIdentity(updatedPlayerIdentity, Guid.NewGuid(), "Member name");
             await repo.ProcessAsyncUpdatesForPlayers();
@@ -727,6 +706,94 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             }
         }
 
+        private PlayerIdentity SetupCopyOfPlayerIdentity(PlayerIdentity playerIdentityToUpdate, string updatedPlayerIdentityName)
+        {
+            var updatedPlayerIdentity = new PlayerIdentity
+            {
+                PlayerIdentityId = playerIdentityToUpdate.PlayerIdentityId,
+                PlayerIdentityName = updatedPlayerIdentityName,
+                Team = new Team { TeamId = playerIdentityToUpdate.Team?.TeamId },
+                Player = new Player
+                {
+                    PlayerId = playerIdentityToUpdate.Player!.PlayerId,
+                    PlayerIdentities = playerIdentityToUpdate.Player.PlayerIdentities.Select(x => new PlayerIdentity
+                    {
+                        PlayerIdentityId = x.PlayerIdentityId,
+                        PlayerIdentityName = x.PlayerIdentityName
+                    }).ToList()
+                }
+            };
+
+            var updatedPlayerIdentityCopy = new PlayerIdentity
+            {
+                PlayerIdentityId = updatedPlayerIdentity.PlayerIdentityId,
+                PlayerIdentityName = updatedPlayerIdentity.PlayerIdentityName,
+                Team = new Team { TeamId = updatedPlayerIdentity.Team?.TeamId },
+                Player = new Player { PlayerId = updatedPlayerIdentity.Player?.PlayerId }
+            };
+
+            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity.Player)).Returns(new Player { PlayerId = updatedPlayerIdentityCopy.Player.PlayerId });
+            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity)).Returns(updatedPlayerIdentityCopy);
+
+            return updatedPlayerIdentity;
+        }
+
+        private void SetupRouteGenerator(PlayerIdentity originalPlayerIdentity, PlayerIdentity updatedPlayerIdentity, string updatedPlayerIdentityRouteSegment, string updatedPlayerRoute)
+        {
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(string.Empty, updatedPlayerIdentityRouteSegment, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).ReturnsAsync(updatedPlayerIdentityRouteSegment);
+
+            var allPlayerIdentityNamesForPlayer = originalPlayerIdentity.Player!.PlayerIdentities.Select(pi => pi.PlayerIdentityName).Where(x => x != originalPlayerIdentity.PlayerIdentityName).ToList();
+            allPlayerIdentityNamesForPlayer.Add(updatedPlayerIdentity.PlayerIdentityName);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", It.Is<string>(x => allPlayerIdentityNamesForPlayer.Contains(x)), NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).ReturnsAsync(updatedPlayerRoute);
+        }
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_where_name_does_not_match_existing_player_identity_leaves_route_unchanged_if_still_appropriate()
+        {
+            var repo = CreateRepository();
+
+            var playerIdentityToUpdate = _databaseFixture.TestData.PlayerIdentities.First();
+            var updatedPlayerIdentity = SetupCopyOfPlayerIdentity(playerIdentityToUpdate, Guid.NewGuid().ToString());
+            var updatedPlayerRoute = "/players/new-route";
+            SetupRouteGenerator(playerIdentityToUpdate, updatedPlayerIdentity, updatedPlayerIdentity.PlayerIdentityName.Kebaberize(), updatedPlayerRoute);
+
+            var nameOfAnyPlayerIdentityFollowingTheUpdate = updatedPlayerIdentity.PlayerIdentityName!;
+            _routeGenerator.Setup(x => x.GenerateRoute("/players", nameOfAnyPlayerIdentityFollowingTheUpdate, NoiseWords.PlayerRoute)).Returns(playerIdentityToUpdate.Player!.PlayerRoute!);
+            _routeGenerator.Setup(x => x.IsMatchingRoute(playerIdentityToUpdate.Player!.PlayerRoute!, playerIdentityToUpdate.Player!.PlayerRoute!)).Returns(true);
+
+            _ = await repo.UpdatePlayerIdentity(updatedPlayerIdentity, Guid.NewGuid(), "Member name");
+
+            using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connectionForAssert.Open();
+                var playerRouteAfter = await connectionForAssert.QuerySingleAsync<string>($"SELECT PlayerRoute FROM {Tables.Player} WHERE PlayerId = @PlayerId", new { playerIdentityToUpdate.Player!.PlayerId }).ConfigureAwait(false);
+                Assert.Equal(playerIdentityToUpdate.Player.PlayerRoute, playerRouteAfter);
+
+                _redirectsRepository.Verify(x => x.InsertRedirect(playerIdentityToUpdate.Player.PlayerRoute!, updatedPlayerRoute, null, It.IsAny<IDbTransaction>()), Times.Never);
+            }
+        }
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_where_name_does_not_match_existing_player_identity_updates_route_and_redirects()
+        {
+            var repo = CreateRepository();
+
+            var playerIdentityToUpdate = _databaseFixture.TestData.PlayerIdentities.First();
+            var updatedPlayerIdentity = SetupCopyOfPlayerIdentity(playerIdentityToUpdate, Guid.NewGuid().ToString());
+            var updatedPlayerRoute = "/players/new-route";
+            SetupRouteGenerator(playerIdentityToUpdate, updatedPlayerIdentity, updatedPlayerIdentity.PlayerIdentityName.Kebaberize(), updatedPlayerRoute);
+
+            _ = await repo.UpdatePlayerIdentity(updatedPlayerIdentity, Guid.NewGuid(), "Member name");
+
+            using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connectionForAssert.Open();
+                var playerRouteAfter = await connectionForAssert.QuerySingleAsync<string>($"SELECT PlayerRoute FROM {Tables.Player} WHERE PlayerId = @PlayerId", new { playerIdentityToUpdate.Player!.PlayerId }).ConfigureAwait(false);
+                Assert.Equal(updatedPlayerRoute, playerRouteAfter);
+
+                _redirectsRepository.Verify(x => x.InsertRedirect(playerIdentityToUpdate.Player.PlayerRoute!, updatedPlayerRoute, null, It.IsAny<IDbTransaction>()), Times.Once);
+            }
+        }
 
         private (PlayerIdentity firstIdentity, PlayerIdentity secondIdentity) AnyTwoIdentitiesFromTheSameTeam()
         {

@@ -18,7 +18,7 @@ namespace Stoolball.Data.SqlServer
             await transaction.Connection.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}%'", null, transaction).ConfigureAwait(false);
         }
 
-        public async Task InsertRedirect(string originalRoute, string revisedRoute, string routeSuffix, IDbTransaction transaction)
+        public async Task InsertRedirect(string originalRoute, string revisedRoute, string? routeSuffix, IDbTransaction transaction)
         {
             if (string.IsNullOrEmpty(originalRoute))
             {
