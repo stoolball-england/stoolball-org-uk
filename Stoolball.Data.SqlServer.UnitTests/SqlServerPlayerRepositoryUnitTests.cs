@@ -141,7 +141,18 @@ namespace Stoolball.Data.SqlServer.UnitTests
             var memberKey = Guid.NewGuid();
             var memberName = "Member name";
 
-            _copier.Setup(x => x.CreateAuditableCopy(playerIdentityToUpdate.Player)).Returns(new Player());
+            _copier.Setup(x => x.CreateAuditableCopy(playerIdentityToUpdate.Player)).Returns(new Player
+            {
+                PlayerId = playerIdentityToUpdate.Player.PlayerId
+            });
+            _copier.Setup(x => x.CreateAuditableCopy(playerIdentityToUpdate)).Returns(new PlayerIdentity
+            {
+                PlayerIdentityId = playerIdentityToUpdate.PlayerIdentityId,
+                PlayerIdentityName = playerIdentityToUpdate.PlayerIdentityName,
+                Player = playerIdentityToUpdate.Player,
+                Team = playerIdentityToUpdate.Team
+            });
+            _dapperWrapper.Setup(x => x.QueryAsync<(string, string, int)>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).ReturnsAsync(new[] { ("/players/example-player", "Example player", 10) });
 
             var result = await repo.UpdatePlayerIdentity(playerIdentityToUpdate, memberKey, memberName);
 
