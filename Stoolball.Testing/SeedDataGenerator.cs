@@ -1059,14 +1059,6 @@ namespace Stoolball.Testing
                 }
             }
 
-            foreach (var identity in testData.PlayerIdentities)
-            {
-                var matchesPlayedByThisIdentity = _matchFinder.MatchesPlayedByPlayerIdentity(testData.Matches, identity.PlayerIdentityId!.Value);
-                identity.TotalMatches = matchesPlayedByThisIdentity.Select(x => x.MatchId).Distinct().Count();
-                identity.FirstPlayed = matchesPlayedByThisIdentity.Min(x => x.StartTime);
-                identity.LastPlayed = matchesPlayedByThisIdentity.Max(x => x.StartTime);
-            }
-
             // Find any player who has multiple identities and bowled, and associate them to a member
             testData.BowlerWithMultipleIdentities = testData.Matches
                 .SelectMany(x => x.MatchInnings)
@@ -1129,6 +1121,15 @@ namespace Stoolball.Testing
                                                            c.Teams.Count(x => !x.UntilYear.HasValue) > 1))
             {
                 testData.TeamListings.Add(club.ToTeamListing());
+            }
+
+            // This must happen after ALL scorecards and awards are finalised
+            foreach (var identity in testData.PlayerIdentities)
+            {
+                var matchesPlayedByThisIdentity = _matchFinder.MatchesPlayedByPlayerIdentity(testData.Matches, identity.PlayerIdentityId!.Value);
+                identity.TotalMatches = matchesPlayedByThisIdentity.Select(x => x.MatchId).Distinct().Count();
+                identity.FirstPlayed = matchesPlayedByThisIdentity.Min(x => x.StartTime);
+                identity.LastPlayed = matchesPlayedByThisIdentity.Max(x => x.StartTime);
             }
 
             return testData;
