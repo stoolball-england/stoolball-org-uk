@@ -23,6 +23,7 @@ namespace Stoolball.Web.UnitTests.Teams
     public class RenamePlayerIdentitySurfaceControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
+        private readonly Mock<IPlayerCacheInvalidator> _playerCacheInvalidator = new();
         private readonly Mock<IPlayerRepository> _playerRepository = new();
         private readonly Mock<IAuthorizationPolicy<Team>> _authorizationPolicy = new();
         private readonly Mock<ITeamBreadcrumbBuilder> _breadcrumbBuilder = new();
@@ -36,7 +37,7 @@ namespace Stoolball.Web.UnitTests.Teams
         {
             PlayerIdentityId = Guid.NewGuid(),
             PlayerIdentityName = "John Smith",
-            Team = new Team()
+            Team = new Team { TeamId = Guid.NewGuid() }
         };
         public RenamePlayerIdentitySurfaceControllerTests()
         {
@@ -57,6 +58,7 @@ namespace Stoolball.Web.UnitTests.Teams
                 _memberManager.Object,
                 _playerDataSource.Object,
                 _playerRepository.Object,
+                _playerCacheInvalidator.Object,
                 _authorizationPolicy.Object,
                 _breadcrumbBuilder.Object)
             {
@@ -159,11 +161,12 @@ namespace Stoolball.Web.UnitTests.Teams
                 var result = await controller.RenamePlayerIdentity(formData);
 
                 Assert.IsAssignableFrom<RedirectResult>(result);
+                _playerCacheInvalidator.Verify(x => x.InvalidateCacheForTeams(_identityToUpdate.Team!), Times.Never);
             }
         }
 
         [Fact]
-        public async Task Route_matching_identity_with_ModelState_valid_and_name_changed_attempts_update_and_redirects_on_success()
+        public async Task Route_matching_identity_with_ModelState_valid_and_name_changed_attempts_update_clears_cache_and_redirects_on_success()
         {
             var formData = new PlayerIdentityFormData { PlayerSearch = Guid.NewGuid().ToString() };
 
@@ -181,6 +184,8 @@ namespace Stoolball.Web.UnitTests.Teams
                     _currentMember.Key,
                     _currentMember.UserName),
                     Times.Once);
+
+                _playerCacheInvalidator.Verify(x => x.InvalidateCacheForTeams(_identityToUpdate.Team!), Times.Once);
 
                 Assert.IsAssignableFrom<RedirectResult>(result);
             }

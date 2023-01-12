@@ -25,17 +25,20 @@ namespace Stoolball.Web.Teams
         private readonly IMemberManager _memberManager;
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IPlayerRepository _playerRepository;
+        private readonly IPlayerCacheInvalidator _playerCacheInvalidator;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
         private readonly ITeamBreadcrumbBuilder _breadcrumbBuilder;
 
         public RenamePlayerIdentitySurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
-            IPlayerDataSource playerDataSource, IPlayerRepository playerRepository, IAuthorizationPolicy<Team> authorizationPolicy, ITeamBreadcrumbBuilder breadcrumbBuilder)
+            IPlayerDataSource playerDataSource, IPlayerRepository playerRepository, IPlayerCacheInvalidator playerCacheInvalidator,
+            IAuthorizationPolicy<Team> authorizationPolicy, ITeamBreadcrumbBuilder breadcrumbBuilder)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
+            _playerCacheInvalidator = playerCacheInvalidator ?? throw new ArgumentNullException(nameof(playerCacheInvalidator));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _breadcrumbBuilder = breadcrumbBuilder ?? throw new ArgumentNullException(nameof(breadcrumbBuilder));
         }
@@ -90,6 +93,8 @@ namespace Stoolball.Web.Teams
                 }
                 else
                 {
+                    _playerCacheInvalidator.InvalidateCacheForTeams(model.PlayerIdentity.Team);
+
                     return Redirect(redirectToUrl);
                 }
             }
