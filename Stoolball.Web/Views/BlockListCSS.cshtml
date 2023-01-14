@@ -1,0 +1,33 @@
+﻿@using Umbraco.Cms.Core.Models.Blocks
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+    Layout = null;
+    Context.Response.ContentType = "text/css";
+    var blockList = Umbraco.AssignedContentItem.Value<BlockListModel>("blockList");
+    var images = new List<IPublishedContent>();
+    if (blockList != null) 
+    {
+        foreach (var block in blockList)
+        {
+            if (block.Content.ContentType.Alias == ImageElementType.ModelTypeAlias)
+            {
+                var image = ((ImageElementType)block.Content).Image;
+                if (image != null) { images.Add(image); }
+            }
+            else if (block.Content.ContentType.Alias == FormattedTextWithImage.ModelTypeAlias)
+            {
+                var image = ((FormattedTextWithImage)block.Content).Image;
+                if (image != null) { images.Add(image); }
+            }
+        }
+    }
+    foreach (var image in images)
+    {
+        var width = image.Value<int>("umbracoWidth");
+        if (width > 0) 
+        {
+@:.img-@(image.Key) { max-width: @(width)px; }
+        }
+    }
+}

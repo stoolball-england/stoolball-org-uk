@@ -1,0 +1,16 @@
+{
+  "Name": "Block List CSS",
+  "Alias": "BlockListCSS",
+  "File": "umb://template-file/BlockListCSS.cshtml",
+  "Master": null,
+  "Udi": "umb://template/43e170d0aa0c41b5aede0bab0c8f2575",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/BlockListCSS.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.4.2"
+}

@@ -6,7 +6,7 @@
 @if (content != null && content.Image != null)
 {
     var orientation = content.Image.Value<int>("umbracoWidth") >= content.Image.Value<int>("umbracoHeight") ? "landscape" : "portrait";
-<figure class="block__images @orientation">
+<figure class="block__images @orientation img-@(content.Image.Key)">
     <img srcset="@content.Image.MediaUrl()?width=150&height=150&rmode=max&upscale=false 576w,
                 @content.Image.MediaUrl()?width=300&height=300&rmode=max&upscale=false 768w,
                 @content.Image.MediaUrl()?width=400&height=400&rmode=max&upscale=false 992w,

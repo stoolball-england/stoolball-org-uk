@@ -21,7 +21,7 @@
 {
     <div class="block__text-with-image block__text-with-image__@imagePosition block__text-with-image__@widthClass">
         <div class="block__text">@Html.Raw(html)</div>
-        <figure class="block__image">
+        <figure class="block__image@(content.Image != null ? " img-" + content.Image?.Key : string.Empty)">
             @if (content.Image != null)
             {
                 <img srcset="@content.Image.MediaUrl()?width=150&height=150&rmode=max&upscale=false 576w,

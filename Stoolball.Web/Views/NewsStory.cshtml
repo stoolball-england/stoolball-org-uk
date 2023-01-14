@@ -5,6 +5,7 @@
 @inject IDateTimeFormatter formatter
 @{
     SmidgeHelper.RequiresCss(new CssFile("~/css/news.min.css") { Order = 100 });
+    SmidgeHelper.RequiresCss(new CssFile("https://" + Context.Request.Host + Context.Request.Path + "?alttemplate=blocklistcss") { Order = 150 });
     if (Model.BlockList?.Any(x => x.Content is FormElementType) ?? false)
     {
         @await Html.PartialAsync("_JQueryValidate")
