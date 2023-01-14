@@ -250,7 +250,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => true,
+            await ActAndAssertStatistics(filter, dataSource, x => x.Teams.Select(x => x.Team?.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId),
                 i => i.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId,
                 i => i.BattingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId,
                 pi => pi.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
@@ -271,7 +271,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => true,
+            await ActAndAssertStatistics(filter, dataSource, x => x.Teams.Select(x => x.Team?.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId),
                 i => i.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId,
                 i => i.BattingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId,
                 pi => pi.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
@@ -292,7 +292,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            await ActAndAssertStatistics(filter, dataSource, x => true,
+            await ActAndAssertStatistics(filter, dataSource, x => x.Teams.Select(x => x.Team?.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId),
                 i => i.BowlingTeam?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute,
                 i => i.BattingTeam?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute,
                 pi => pi.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
@@ -443,15 +443,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
+            var results = (await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false)).ToList();
 
             var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
                                 .SelectMany(x => x.Awards.Where(x => !string.IsNullOrEmpty(x.Award?.AwardName) && x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
                                 .Where(x => x.PlayerIdentity.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
                                 .Select(x => x.PlayerIdentity.Player)
-                                .Distinct(new PlayerEqualityComparer());
+                                .Distinct(new PlayerEqualityComparer())
+                                .ToList();
 
-            Assert.Equal(expected.Count(), results.Count());
+            Assert.Equal(expected.Count, results.Count);
             foreach (var player in expected)
             {
                 Assert.NotNull(results.SingleOrDefault(x => x.Result.Player.PlayerId == player!.PlayerId));
@@ -473,15 +474,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
+            var results = (await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false)).ToList();
 
             var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
                                 .SelectMany(x => x.Awards.Where(x => !string.IsNullOrEmpty(x.Award?.AwardName) && x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
                                 .Where(x => x.PlayerIdentity.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
                                 .Select(x => x.PlayerIdentity.Player)
-                                .Distinct(new PlayerEqualityComparer());
+                                .Distinct(new PlayerEqualityComparer())
+                                .ToList();
 
-            Assert.Equal(expected.Count(), results.Count());
+            Assert.Equal(expected.Count, results.Count);
             foreach (var player in expected)
             {
                 Assert.NotNull(results.SingleOrDefault(x => x.Result.Player.PlayerId == player!.PlayerId));
@@ -504,15 +506,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
-            var results = await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false);
+            var results = (await dataSource.ReadMostPlayerOfTheMatchAwards(filter).ConfigureAwait(false)).ToList();
 
             var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamRoute).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamRoute))
                                 .SelectMany(x => x.Awards.Where(x => !string.IsNullOrEmpty(x.Award?.AwardName) && x.Award.AwardName.Equals(StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD, StringComparison.OrdinalIgnoreCase)))
                                 .Where(x => x.PlayerIdentity.Team.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute)
                                 .Select(x => x.PlayerIdentity.Player)
-                                .Distinct(new PlayerEqualityComparer());
+                                .Distinct(new PlayerEqualityComparer())
+                                .ToList();
 
-            Assert.Equal(expected.Count(), results.Count());
+            Assert.Equal(expected.Count, results.Count);
             foreach (var player in expected)
             {
                 Assert.NotNull(results.SingleOrDefault(x => x.Result.Player.PlayerId == player!.PlayerId));
