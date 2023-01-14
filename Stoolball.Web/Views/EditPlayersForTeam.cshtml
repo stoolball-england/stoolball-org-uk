@@ -31,7 +31,7 @@
 
     @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
     {
-        <p class="alert alert-info alert-tip">You can rename players here, but you can't add or delete them. Players come from scorecards added to this website – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a>.</p>
+        <p class="alert alert-info alert-tip">You can rename players here, but you can't add or delete them. Players come from scorecards added to this website – see <a href="/organise/website/manage-player-names-and-statistics/">Manage player names and statistics</a>.</p>
 
         @if (Model.PlayerIdentities.Any())
         {
