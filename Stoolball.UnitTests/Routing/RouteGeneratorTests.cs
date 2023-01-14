@@ -35,6 +35,18 @@ namespace Stoolball.UnitTests.Routing
         }
 
         [Fact]
+        public void Route_with_only_punctuation_is_not_blank()
+        {
+            var original = "?";
+            _tokeniser.Setup(x => x.TokeniseRoute(original)).Returns((original, null));
+            var generator = new RouteGenerator(_tokeniser.Object);
+
+            var result = generator.GenerateRoute(string.Empty, original, Array.Empty<string>());
+
+            Assert.True(result.Trim('/').Length > 0);
+        }
+
+        [Fact]
         public void Noise_word_removed_from_start()
         {
             var original = "stoolball-ladies";

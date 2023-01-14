@@ -62,6 +62,7 @@ namespace Stoolball.Routing
             }
 
             var route = Regex.Replace(name.ToLower(CultureInfo.CurrentCulture).Kebaberize(), "[^a-z0-9-]", string.Empty);
+            if (string.IsNullOrWhiteSpace(route)) { route = Guid.NewGuid().ToString(); }
             foreach (var noiseWord in noiseWords)
             {
                 route = Regex.Replace(route, $@"\b{noiseWord}\b", string.Empty);
