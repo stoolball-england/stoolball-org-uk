@@ -481,6 +481,7 @@ namespace Stoolball.Data.SqlServer
                     {
                         var auditablePlayer = _copier.CreateAuditableCopy(playerIdentity.Player)!;
                         var auditablePlayerIdentity = _copier.CreateAuditableCopy(playerIdentity)!;
+                        auditablePlayerIdentity.PlayerIdentityName = _playerNameFormatter.CapitaliseName(auditablePlayerIdentity.PlayerIdentityName!);
 
                         auditablePlayerIdentity.RouteSegment = (await _routeGenerator.GenerateUniqueRoute(string.Empty, auditablePlayerIdentity.PlayerIdentityName.Kebaberize(), NoiseWords.PlayerRoute,
                             async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.PlayerIdentity} WHERE RouteSegment = @RouteSegment AND TeamId = @TeamId", new { RouteSegment = route, auditablePlayerIdentity.Team!.TeamId }, transaction)

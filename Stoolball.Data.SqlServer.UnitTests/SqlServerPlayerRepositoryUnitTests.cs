@@ -152,6 +152,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
                 Player = playerIdentityToUpdate.Player,
                 Team = playerIdentityToUpdate.Team
             });
+            _playerNameFormatter.Setup(x => x.CapitaliseName(playerIdentityToUpdate.PlayerIdentityName)).Returns(playerIdentityToUpdate.PlayerIdentityName);
             _dapperWrapper.Setup(x => x.QueryAsync<(string, string, int)>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).ReturnsAsync(new[] { ("/players/example-player", "Example player", 10) });
 
             var result = await repo.UpdatePlayerIdentity(playerIdentityToUpdate, memberKey, memberName);

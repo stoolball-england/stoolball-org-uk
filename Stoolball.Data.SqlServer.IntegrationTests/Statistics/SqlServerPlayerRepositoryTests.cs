@@ -704,6 +704,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     Assert.Equal(updatedPlayerIdentity.PlayerIdentityName, nameInStatistics);
                 }
             }
+
+            _playerNameFormatter.Verify(x => x.CapitaliseName(updatedPlayerIdentity.PlayerIdentityName!), Times.Once);
         }
 
         private PlayerIdentity SetupCopyOfPlayerIdentity(PlayerIdentity playerIdentityToUpdate, string updatedPlayerIdentityName)
@@ -734,6 +736,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity.Player)).Returns(new Player { PlayerId = updatedPlayerIdentityCopy.Player.PlayerId });
             _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity)).Returns(updatedPlayerIdentityCopy);
+            _playerNameFormatter.Setup(x => x.CapitaliseName(updatedPlayerIdentityName)).Returns(updatedPlayerIdentityName);
 
             return updatedPlayerIdentity;
         }
