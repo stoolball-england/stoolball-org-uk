@@ -32,6 +32,8 @@ Copy-Item $projectRoot\.umbraco $cloudRoot
 foreach ($folder in $foldersToCopy) {
     $folderPath = Resolve-Path (Join-Path $projectRoot -ChildPath $folder)
 
+    Get-ChildItem -Recurse $cloudRoot\src\$folder\*.cs | Remove-Item
+
     robocopy $folderPath $cloudRoot\src\$folder `
         /IF *.cs *.csproj *.cshtml *.uda *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 *.lic *.sql appsettings.json appsettings.Production.json compilerconfig.json umbraco-cloud.json web.release.config `
         /XF member-group__*.uda *.test.js `
