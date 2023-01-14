@@ -30,6 +30,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <PackageReference Include="Umbraco.Cms.Core" Version="9.5.4" />
     <PackageReference Include="Umbraco.Cms.Infrastructure" Version="9.5.3" />
   </ItemGroup>
