@@ -9,8 +9,6 @@ namespace Stoolball.Matches
     {
         public Guid? PlayerInningsId { get; set; }
 
-        public Match? Match { get; set; }
-
         public PlayerIdentity? Batter { get; set; }
 
         public int BattingPosition { get; set; }

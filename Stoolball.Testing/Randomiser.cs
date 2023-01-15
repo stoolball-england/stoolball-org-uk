@@ -29,5 +29,9 @@ namespace Stoolball.Testing
         {
             return _random.Next(minValue, maxValue + 1);
         }
+        internal bool IsEven(int i)
+        {
+            return i % 2 == 0;
+        }
     }
 }

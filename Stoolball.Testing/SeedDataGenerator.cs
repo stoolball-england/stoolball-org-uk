@@ -727,9 +727,9 @@ namespace Stoolball.Testing
             var poolOfTeams = new List<(Team team, List<PlayerIdentity> identities)>();
             for (var i = 0; i < 5; i++)
             {
-                var team = IsEven(i) ? CreateTeamWithFullDetails($"Team {i + 1}") : CreateTeamWithMinimalDetails($"Team {i + 1}");
+                var team = _randomiser.IsEven(i) ? CreateTeamWithFullDetails($"Team {i + 1}") : CreateTeamWithMinimalDetails($"Team {i + 1}");
                 poolOfTeams.Add((team, CreatePlayerIdentitiesForTeam(team, $"{team.TeamName} pool player")));
-                if (IsEven(i))
+                if (_randomiser.IsEven(i))
                 {
                     poolOfTeams[poolOfTeams.Count - 1].team.Club = CreateClubWithMinimalDetails();
                 }
@@ -753,7 +753,7 @@ namespace Stoolball.Testing
             // Create a pool of competitions
             for (var i = 0; i < 10; i++)
             {
-                if (IsEven(i))
+                if (_randomiser.IsEven(i))
                 {
                     testData.Competitions.Add(CreateCompetitionWithFullDetails());
                     var team1 = poolOfTeamsWithPlayers[_randomiser.PositiveIntegerLessThan(poolOfTeamsWithPlayers.Count)].team;
@@ -784,7 +784,7 @@ namespace Stoolball.Testing
             // Create a pool of match locations 
             for (var i = 0; i < 10; i++)
             {
-                testData.MatchLocations.Add(IsEven(i) ? CreateMatchLocationWithFullDetails() : CreateMatchLocationWithMinimalDetails());
+                testData.MatchLocations.Add(_randomiser.IsEven(i) ? CreateMatchLocationWithFullDetails() : CreateMatchLocationWithMinimalDetails());
             }
             testData.MatchLocations.AddRange(poolOfTeamsWithPlayers.SelectMany(x => x.team.MatchLocations).OfType<MatchLocation>());
 
@@ -1071,7 +1071,8 @@ namespace Stoolball.Testing
             testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberKey;
 
             var matchProviders = new BaseMatchDataProvider[]{
-                new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward)
+                new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward),
+                new APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(_randomiser, _matchFactory, _bowlingFiguresCalculator)
             };
             foreach (var provider in matchProviders)
             {
@@ -1445,11 +1446,6 @@ namespace Stoolball.Testing
             return matches;
         }
 
-
-        private static bool IsEven(int i)
-        {
-            return i % 2 == 0;
-        }
 
         private Match CreateMatchWithTeamScoresButNoPlayerData(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
         {

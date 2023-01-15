@@ -137,13 +137,13 @@ namespace Stoolball.Testing
             {
                 var fielderOrMissingData = _randomiser.PositiveIntegerLessThan(2) == 0 ? bowlingPlayers[_randomiser.PositiveIntegerLessThan(bowlingPlayers.Count)] : null;
                 var bowlerOrMissingData = _randomiser.PositiveIntegerLessThan(2) == 0 ? bowlingPlayers[_randomiser.PositiveIntegerLessThan(bowlingPlayers.Count)] : null;
-                innings.PlayerInnings.Add(CreateRandomPlayerInnings(match, p + 1, battingPlayers[p], fielderOrMissingData, bowlerOrMissingData));
+                innings.PlayerInnings.Add(CreateRandomPlayerInnings(p + 1, battingPlayers[p], fielderOrMissingData, bowlerOrMissingData));
             }
 
             // sometimes pick a random player to bat twice in the innings
             if (_randomiser.FiftyFiftyChance() && battingPlayers.Any() && bowlingPlayers.Any())
             {
-                innings.PlayerInnings.Add(CreateRandomPlayerInnings(match, battingPlayers.Count, battingPlayers[_randomiser.PositiveIntegerLessThan(battingPlayers.Count)], bowlingPlayers[_randomiser.PositiveIntegerLessThan(bowlingPlayers.Count)], bowlingPlayers[_randomiser.PositiveIntegerLessThan(bowlingPlayers.Count)]));
+                innings.PlayerInnings.Add(CreateRandomPlayerInnings(battingPlayers.Count, battingPlayers[_randomiser.PositiveIntegerLessThan(battingPlayers.Count)], bowlingPlayers[_randomiser.PositiveIntegerLessThan(bowlingPlayers.Count)], bowlingPlayers[_randomiser.PositiveIntegerLessThan(bowlingPlayers.Count)]));
             }
 
             // pick 4 players to bowl - note there may be other bowlers recorded as taking wickets on the batting card above
@@ -218,7 +218,7 @@ namespace Stoolball.Testing
             };
         }
 
-        private PlayerInnings CreateRandomPlayerInnings(Match match, int battingPosition, PlayerIdentity batter, PlayerIdentity? fielderOrMissingData, PlayerIdentity? bowlerOrMissingData)
+        private PlayerInnings CreateRandomPlayerInnings(int battingPosition, PlayerIdentity batter, PlayerIdentity? fielderOrMissingData, PlayerIdentity? bowlerOrMissingData)
         {
             var dismissalTypes = Enum.GetValues(typeof(DismissalType));
             var dismissal = (DismissalType)dismissalTypes.GetValue(_randomiser.PositiveIntegerLessThan(dismissalTypes.Length))!;
@@ -241,7 +241,6 @@ namespace Stoolball.Testing
             return new PlayerInnings
             {
                 PlayerInningsId = Guid.NewGuid(),
-                Match = match,
                 BattingPosition = battingPosition,
                 Batter = batter,
                 DismissalType = dismissal,
