@@ -185,7 +185,7 @@ function createRelatedItemsEditor() {
           }
 
           /* Set a class on the selected item container element so that CSS can transition it, then delete it after the transition */
-          selectedItem.classList.add("related-item__deleted");
+          selectedItem.classList.add("related-item__selected--deleting");
           selectedItem.addEventListener("transitionend", function () {
             selectedItem.parentNode &&
               selectedItem.parentNode.removeChild(selectedItem);

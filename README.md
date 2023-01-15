@@ -19,3 +19,5 @@ This is a rebuild of the Stoolball England website at www.stoolball.org.uk using
 - [Deployment](Documentation/Deployment.md)
 - [Caching](Documentation/Caching.md)
 - [Logging](Documentation/Logging.md)
+- [Select a related item](Documentation/RelatedItem.md)
+- [Select multiple related items](Documentation/RelatedItems.md)

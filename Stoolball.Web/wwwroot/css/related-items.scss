@@ -8,7 +8,7 @@
 
    <table class="table related-items">
         <tbody>
-        <tr class="(|related-item__deleted)">
+        <tr class="(|related-item__selected--deleting)">
             <td class="related-item__selected__section">
                 <div class="related-item__animate">value</div>
             </td>
@@ -114,7 +114,7 @@
     width: 100%;
 }
 
-.single-related-item__selected {
+.related-item__selected--only-item {
     display: flex;
     align-items: center;
 }
@@ -138,7 +138,7 @@
 }
 
 
-.related-item__deleted > .related-item__selected__section {
+.related-item__selected--deleting > .related-item__selected__section {
     padding: 0;
 }
 
@@ -151,7 +151,7 @@
     margin: -3px;
 }
 
-.related-item__deleted .related-item__animate {
+.related-item__selected--deleting .related-item__animate {
     height: 0;
 }
 
@@ -202,16 +202,16 @@
         transition: none;
     }
 
-    .related-item__deleted > .related-item__selected__section {
+    .related-item__selected--deleting > .related-item__selected__section {
         padding: ($spacer/4)*3;
     }
 
-    .related-item__deleted .related-item__animate {
+    .related-item__selected--deleting .related-item__animate {
         height: auto;
         text-decoration: line-through;
     }
 
-    .related-item__deleted > .related-item__delete > * {
+    .related-item__selected--deleting > .related-item__delete > * {
         visibility: hidden;
     }
 }

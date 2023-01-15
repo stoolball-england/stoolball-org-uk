@@ -28,7 +28,7 @@
     @Html.LabelFor(m => Model.TournamentLocationName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @if (Model.TournamentLocationId.HasValue)
     {
-        <div class="single-related-item__selected">
+        <div class="related-item__selected--only-item">
             <div class="related-item__selected__section">
                 @Html.TextBoxFor(m => Model.TournamentLocationName, new { @class = "form-control", @readonly = "readonly" })
             </div>
@@ -65,7 +65,7 @@
     }
 </div>
 <script type="text/x-template" id="location-template">
-    <div class="single-related-item__selected">
+    <div class="related-item__selected--only-item">
         <div class="related-item__selected__section">
             <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="TournamentLocationName" name="TournamentLocationName" />
         </div>

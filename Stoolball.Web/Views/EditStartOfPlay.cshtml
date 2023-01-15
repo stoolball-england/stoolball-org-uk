@@ -65,7 +65,7 @@
                     @Html.LabelFor(m => Model.HomeTeamName)
                     @if (Model.HomeTeamId.HasValue)
                     {
-                        <div class="single-related-item__selected">
+                        <div class="related-item__selected--only-item">
                             <div class="related-item__selected__section">
                                 @Html.TextBoxFor(m => Model.HomeTeamName, new { @class = "form-control", @readonly = "readonly", aria_describedby= "home-team" })
                             </div>
@@ -107,7 +107,7 @@
                     @Html.ValidationMessageFor(m => Model.HomeTeamName, null, new { id = "home-team" })
                 </div>
                 <script type="text/x-template" id="home-team-template">
-                <div class="single-related-item__selected">
+                <div class="related-item__selected--only-item">
                     <div class="related-item__selected__section">
                         <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="HomeTeamName" name="HomeTeamName" aria-describedby="home-team" />
                     </div>
@@ -125,7 +125,7 @@
                     @Html.LabelFor(m => Model.AwayTeamName)
                     @if (Model.AwayTeamId.HasValue)
                     {
-                        <div class="single-related-item__selected">
+                        <div class="related-item__selected--only-item">
                             <div class="related-item__selected__section">
                                 @Html.TextBoxFor(m => Model.AwayTeamName, new { @class = "form-control", @readonly = "readonly", aria_describedby = "away-team" })
                             </div>
@@ -167,7 +167,7 @@
                     @Html.ValidationMessageFor(m => Model.AwayTeamName, null, new { id = "away-team" })
                 </div>
                 <script type="text/x-template" id="away-team-template">
-                <div class="single-related-item__selected">
+                <div class="related-item__selected--only-item">
                     <div class="related-item__selected__section">
                         <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="AwayTeamName" name="AwayTeamName" aria-describedby="away-team" />
                     </div>
@@ -198,7 +198,7 @@
                     @Html.LabelFor(m => Model.MatchLocationName)
                     @if (Model.MatchLocationId.HasValue)
                     {
-                        <div class="single-related-item__selected">
+                        <div class="related-item__selected--only-item">
                             <div class="related-item__selected__section">
                                 @Html.TextBoxFor(m => Model.MatchLocationName, new { @class = "form-control", @readonly = "readonly" })
                             </div>
@@ -235,7 +235,7 @@
                     }
                 </div>
                 <script type="text/x-template" id="location-template">
-                    <div class="single-related-item__selected">
+                    <div class="related-item__selected--only-item">
                         <div class="related-item__selected__section">
                             <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="MatchLocationName" name="MatchLocationName" />
                         </div>

@@ -53,7 +53,7 @@
                     <div class="filter__edit-control">
                         @if (!string.IsNullOrEmpty(Model.TeamName))
                         {
-                             <div class="single-related-item__selected">
+                             <div class="related-item__selected--only-item">
                                 <div class="related-item__selected__section">
                                     @Html.TextBoxFor(m => Model.TeamName, new { @class = "form-control filter__never-submit", @readonly = "readonly" })
                                 </div>
@@ -92,7 +92,7 @@
                     </div>
                 </div>
                 <script type="text/x-template" id="team-template">
-                    <div class="single-related-item__selected">
+                    <div class="related-item__selected--only-item">
                         <div class="related-item__selected__section">
                             <input type="text" readonly="readonly" value="{{value}}" class="form-control filter__never-submit" id="teamName" name="teamName" />
                         </div>
