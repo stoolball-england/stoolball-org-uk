@@ -245,6 +245,11 @@ or
 
 ## Extensibility
 
-A `.relatedItems` property is added on the `.related-items` table which provides access to some of the internal methods used by the related items editor.
+The related items editor is highly customisable. A `.relatedItems` property is added on the `.related-items` table which provides access to some of the internal methods used by the editor.
 
-This allows for significant flexibility. For example, see `edit-tournament-matches.js` where it is used to support sorting items using drag and drop.
+For example, see `edit-tournament-matches.js` where support is added for:
+
+- custom fields in place of `.related-item__search`
+- custom validation
+- adding new items using an 'add another' button in place of `.related-items__create`
+- sorting items using drag and drop or the keyboard
