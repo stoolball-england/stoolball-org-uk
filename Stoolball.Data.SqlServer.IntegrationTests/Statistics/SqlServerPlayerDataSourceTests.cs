@@ -582,22 +582,32 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task ReadPlayerIdentityByRoute_returns_identity_player_and_team()
+        public async Task ReadPlayerIdentityByRoute_returns_identity_player_team_and_club()
         {
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
-            var identity = _databaseFixture.TestData.PlayerIdentities.First();
-            var route = $"{identity.Team!.TeamRoute}/edit/players/{identity.RouteSegment}/rename";
-            _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(route, "/teams")).Returns(identity.Team!.TeamRoute!);
 
-            var result = await playerDataSource.ReadPlayerIdentityByRoute(route).ConfigureAwait(false);
+            var foundAtLeastOneClub = false;
+            foreach (var identity in _databaseFixture.TestData.PlayerIdentities)
+            {
+                var route = $"{identity.Team!.TeamRoute}/edit/players/{identity.RouteSegment}/rename";
+                _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(route, "/teams")).Returns(identity.Team!.TeamRoute!);
 
-            Assert.NotNull(result?.Team);
-            Assert.Equal(identity.PlayerIdentityId, result!.PlayerIdentityId);
-            Assert.Equal(identity.PlayerIdentityName, result.PlayerIdentityName);
-            Assert.Equal(identity.Player?.PlayerId, result.Player?.PlayerId);
-            Assert.Equal(identity.Team.TeamId, result.Team!.TeamId);
-            Assert.Equal(identity.Team.TeamName, result.Team!.TeamName);
-            Assert.Equal(identity.Team.TeamRoute, result.Team!.TeamRoute);
+                var result = await playerDataSource.ReadPlayerIdentityByRoute(route).ConfigureAwait(false);
+
+                Assert.NotNull(result?.Team);
+                Assert.Equal(identity.PlayerIdentityId, result!.PlayerIdentityId);
+                Assert.Equal(identity.PlayerIdentityName, result.PlayerIdentityName);
+                Assert.Equal(identity.Player?.PlayerId, result.Player?.PlayerId);
+                Assert.Equal(identity.Team.TeamId, result.Team!.TeamId);
+                Assert.Equal(identity.Team.TeamName, result.Team!.TeamName);
+                Assert.Equal(identity.Team.TeamRoute, result.Team!.TeamRoute);
+                Assert.Equal(identity.Team.Club?.ClubId, result.Team.Club?.ClubId);
+                Assert.Equal(identity.Team.Club?.ClubName, result.Team.Club?.ClubName);
+                Assert.Equal(identity.Team.Club?.ClubRoute, result.Team.Club?.ClubRoute);
+
+                foundAtLeastOneClub = foundAtLeastOneClub || identity.Team.Club != null;
+            }
+            Assert.True(foundAtLeastOneClub);
         }
 
         [Fact]
