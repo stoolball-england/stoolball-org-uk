@@ -60,11 +60,6 @@ namespace Stoolball.Data.SqlServer
 
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
 
-            // A player can have multiple sets of bowling figures per innings if they have multiple identities in that innings,
-            // which could happen if 'John Smith' was also entered as 'John', for example.
-            // 
-            // This query groups sets of bowling figures by MatchId and counts how many MatchInningsPairs there are, ie how many innings per match with bowling figures.
-            // Because MatchInningsPair is not a unique value they have to be grouped by MatchId, which means one result per team per match, so SUM them to get a single total.
             var totalInningsSql = $@"SELECT SUM(BowlingFiguresPerInnings) FROM (
                                          SELECT COUNT(DISTINCT MatchInningsPair) AS BowlingFiguresPerInnings 
                                          FROM {Tables.PlayerInMatchStatistics} 
@@ -86,9 +81,15 @@ namespace Stoolball.Data.SqlServer
                                                 GROUP BY MatchTeamId
                                         ) AS BowlingFiguresWithOvers";
 
+            // A player can have multiple sets of bowling figures per innings if they have multiple identities in that innings,
+            // which could happen if 'John Smith' was also entered as 'John', for example. These must be counted separately. 
+            // Although a combined set of bowling figures might make sense for the same player, combined batting innings for that player
+            // would not (there's no way to combine the dismissals) and figures within a match must be treated consistently.
+            // 
+            // This query groups sets of bowling figures by MatchTeamId, MatchInningsPair and PlayerIdentityId, which means one result per identity, per match innings.
             var bestFiguresSql = $@"FROM {Tables.PlayerInMatchStatistics} 
 								WHERE Wickets IS NOT NULL {where}
-								GROUP BY MatchTeamId, MatchInningsPair 
+								GROUP BY MatchTeamId, MatchInningsPair, PlayerIdentityId
 								ORDER BY SUM(Wickets) DESC, CASE WHEN SUM(RunsConceded) IS NULL THEN 0 ELSE 1 END DESC, SUM(RunsConceded) ASC";
 
 
@@ -103,7 +104,7 @@ namespace Stoolball.Data.SqlServer
                                 (SELECT SUM(Maidens) FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where}) AS TotalMaidens,
                                 (SELECT SUM(RunsConceded) FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where}) AS TotalRunsConceded,
                                 (SELECT SUM(Wickets) FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where}) AS TotalWickets,
-                                (SELECT COUNT(MatchTeamId) FROM (SELECT MatchTeamId FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where} GROUP BY MatchTeamId, MatchInningsPair HAVING SUM(Wickets) >= 5) AS FiveWicketInnings) AS FiveWicketInnings,
+                                (SELECT COUNT(MatchTeamId) FROM (SELECT MatchTeamId FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where} GROUP BY MatchTeamId, MatchInningsPair, PlayerIdentityId HAVING SUM(Wickets) >= 5) AS FiveWicketInnings) AS FiveWicketInnings,
                                 (SELECT TOP 1 SUM(Wickets) {bestFiguresSql}) AS BestInningsWickets,
                                 (SELECT TOP 1 SUM(RunsConceded) {bestFiguresSql}) AS BestInningsRunsConceded,
                                 (SELECT CASE WHEN SUM(BallsBowled) > 0 THEN SUM(RunsConceded)/(CAST(SUM(BallsBowled) AS DECIMAL)/{StatisticsConstants.BALLS_PER_OVER}) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE RunsConceded IS NOT NULL {where}) AS Economy,
@@ -113,8 +114,7 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.QuerySingleAsync<BowlingStatistics>(sql, parameters)
-                .ConfigureAwait(false);
+                return await connection.QuerySingleAsync<BowlingStatistics>(sql, parameters).ConfigureAwait(false);
             }
         }
 
@@ -136,8 +136,7 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.QuerySingleAsync<FieldingStatistics>(sql, parameters)
-                .ConfigureAwait(false);
+                return await connection.QuerySingleAsync<FieldingStatistics>(sql, parameters).ConfigureAwait(false);
             }
         }
     }
