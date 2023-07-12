@@ -75,7 +75,7 @@ namespace Stoolball.Web.Account
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<IActionResult> CreateMember([Bind(Prefix = "createMemberModel")] RegisterModel? model)
+        public async Task<IActionResult> CreateMember([Bind(Prefix = "createMemberModel")] CreateMemberFormData? model)
         {
             if (ModelState.ContainsKey("createMemberModel.ConfirmPassword"))
             {
