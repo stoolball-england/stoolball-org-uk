@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Css.Dom;
 using Ganss.XSS;
@@ -92,6 +93,18 @@ namespace Stoolball.Data.SqlServer.UnitTests
                         BowlingTeam = new TeamInMatch
                         {
                             Team = new Team { TeamId = Guid.NewGuid() }
+                        },
+                        OverSets = new List<OverSet>
+                        {
+                            new OverSet()
+                        },
+                        OversBowled = new List<Over>
+                        {
+                            new Over { Bowler = new PlayerIdentity() }
+                        },
+                        PlayerInnings = new List<PlayerInnings>
+                        {
+                            new PlayerInnings{ Batter = new PlayerIdentity() }
                         }
                     }
                 }
@@ -203,7 +216,11 @@ namespace Stoolball.Data.SqlServer.UnitTests
             var match = CreateValidMatch();
 
             _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _transaction.Object, null, null)).ReturnsAsync(match);
-            _battingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<PlayerInnings>>(), It.IsAny<IEnumerable<PlayerInnings>>())).Returns(new BattingScorecardComparison());
+            var comparison = new BattingScorecardComparison();
+            comparison.PlayerInningsUnchanged.AddRange(match.MatchInnings[0].PlayerInnings);
+            comparison.PlayerInningsChanged.Add((comparison.PlayerInningsUnchanged.Last(), comparison.PlayerInningsUnchanged.Last()));
+            comparison.PlayerInningsUnchanged.Remove(comparison.PlayerInningsUnchanged[^1]);
+            _battingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<PlayerInnings>>(), It.IsAny<IEnumerable<PlayerInnings>>())).Returns(comparison);
 
             await repository.UpdateBattingScorecard(match, match.MatchInnings[0].MatchInningsId!.Value, memberKey, memberName).ConfigureAwait(false);
 
@@ -299,7 +316,12 @@ namespace Stoolball.Data.SqlServer.UnitTests
             var match = CreateValidMatch();
 
             _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _transaction.Object, null, null)).ReturnsAsync(match);
-            _bowlingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<Over>>(), It.IsAny<IEnumerable<Over>>())).Returns(new BowlingScorecardComparison());
+            _dapperWrapper.Setup(x => x.QueryAsync<OverSet>(It.IsAny<string>(), It.IsAny<object>(), _transaction.Object)).ReturnsAsync(match.MatchInnings[0].OverSets);
+            var comparison = new BowlingScorecardComparison();
+            comparison.OversUnchanged.AddRange(match.MatchInnings[0].OversBowled);
+            comparison.OversChanged.Add((comparison.OversUnchanged.Last(), comparison.OversUnchanged.Last()));
+            comparison.OversUnchanged.Remove(comparison.OversUnchanged[^1]);
+            _bowlingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<Over>>(), It.IsAny<IEnumerable<Over>>())).Returns(comparison);
 
             await repository.UpdateBowlingScorecard(match, match.MatchInnings[0].MatchInningsId!.Value, memberKey, memberName).ConfigureAwait(false);
 

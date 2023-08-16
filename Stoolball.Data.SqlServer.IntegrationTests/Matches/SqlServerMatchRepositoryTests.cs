@@ -33,13 +33,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
         private readonly Mock<IMatchNameBuilder> _matchNameBuilder = new();
         private readonly Mock<IPlayerTypeSelector> _playerTypeSelector = new();
-        private readonly Mock<IBowlingScorecardComparer> _bowlingScorecardComparer = new();
-        private readonly Mock<IBattingScorecardComparer> _battingScorecardComparer = new();
-        private readonly Mock<IPlayerRepository> _playerRepository = new();
         private readonly Mock<IDataRedactor> _dataRedactor = new();
         private readonly Mock<IStatisticsRepository> _statisticsRepository = new();
-        private readonly Mock<IOversHelper> _oversHelper = new();
-        private readonly Mock<IPlayerInMatchStatisticsBuilder> _statisticsBuilder = new();
         private readonly Mock<IMatchInningsFactory> _matchInningsFactory = new();
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
         private readonly Guid _memberKey;
@@ -58,16 +53,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             _memberKey = _databaseFixture.TestData.Members[0].memberKey;
             _memberName = _databaseFixture.TestData.Members[0].memberName;
 
-            _battingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<PlayerInnings>>(), It.IsAny<IEnumerable<PlayerInnings>>())).Returns(new BattingScorecardComparison());
-
-            _playerRepository.Setup(x => x.CreateOrMatchPlayerIdentity(It.IsAny<PlayerIdentity>(), _memberKey, _memberName, It.IsAny<IDbTransaction>())).Returns(new CreateOrMatchPlayerIdentityReturns((PlayerIdentity pi, Guid _, string _, IDbTransaction _) => Task.FromResult(pi)));
 
         }
-        private SqlServerMatchRepository CreateRepository()
+        private SqlServerMatchRepository CreateRepository(IStatisticsRepository statisticsRepository = null)
         {
+            var dapperWrapper = new DapperWrapper();
+            var copier = new StoolballEntityCopier(_dataRedactor.Object);
+            var oversHelper = new OversHelper();
+            var playerRepository = new SqlServerPlayerRepository(
+                _databaseFixture.ConnectionFactory,
+                dapperWrapper,
+                _auditRepository.Object,
+                Mock.Of<ILogger<SqlServerPlayerRepository>>(),
+                _redirectsRepository.Object,
+                _routeGenerator.Object,
+                copier,
+                new PlayerNameFormatter(),
+                new BestRouteSelector(new RouteTokeniser()),
+                Mock.Of<IPlayerCacheInvalidator>()
+                );
+
             return new SqlServerMatchRepository(
                             _databaseFixture.ConnectionFactory,
-                            new DapperWrapper(),
+                            dapperWrapper,
                             _auditRepository.Object,
                             _logger.Object,
                             _routeGenerator.Object,
@@ -75,16 +83,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                             _sanitizer.Object,
                             _matchNameBuilder.Object,
                             _playerTypeSelector.Object,
-                            _bowlingScorecardComparer.Object,
-                            _battingScorecardComparer.Object,
-                            _playerRepository.Object,
+                            new BowlingScorecardComparer(),
+                            new BattingScorecardComparer(),
+                            playerRepository,
                             _dataRedactor.Object,
-                            _statisticsRepository.Object,
-                            _oversHelper.Object,
-                            _statisticsBuilder.Object,
+                            statisticsRepository ?? new SqlServerStatisticsRepository(playerRepository),
+                            oversHelper,
+                            new PlayerInMatchStatisticsBuilder(new PlayerIdentityFinder(), oversHelper),
                             _matchInningsFactory.Object,
                             _seasonDataSource.Object,
-                            new StoolballEntityCopier(_dataRedactor.Object));
+                            copier);
         }
 
         // TODO: Test repository.CreateMatch();
@@ -92,18 +100,24 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         // TODO: Test repository.UpdateMatchFormat();
         // TODO: Test repository.UpdateStartOfPlay();
 
-        private Stoolball.Matches.Match CloneValidMatch()
+        private Stoolball.Matches.Match CloneValidMatch(Stoolball.Matches.Match matchToCopy)
         {
-            var matchToCopy = _databaseFixture.TestData.MatchInThePastWithFullDetails!;
-            var inningsToCopy = matchToCopy.MatchInnings.First(x => x.PlayerInnings.Count > 1 && x.OversBowled.Count > 1);
             var match = new Stoolball.Matches.Match
             {
                 MatchId = matchToCopy.MatchId,
-                MatchInnings = new List<MatchInnings>
+                Teams = matchToCopy.Teams,
+                PlayersPerTeam = matchToCopy.PlayersPerTeam,
+                MatchResultType = matchToCopy.MatchResultType
+            };
+
+            foreach (var inningsToCopy in matchToCopy.MatchInnings)
                 {
-                    new MatchInnings
+                match.MatchInnings.Add(new MatchInnings
                     {
-                        MatchInningsId  = inningsToCopy.MatchInningsId,
+                    MatchInningsId = inningsToCopy.MatchInningsId,
+                    InningsOrderInMatch = inningsToCopy.InningsOrderInMatch,
+                    BattingMatchTeamId = inningsToCopy.BattingMatchTeamId,
+                    BowlingMatchTeamId = inningsToCopy.BowlingMatchTeamId,
                         BattingTeam = new TeamInMatch
                         {
                             Team = new Team
@@ -125,13 +139,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                         BonusOrPenaltyRuns = inningsToCopy.BonusOrPenaltyRuns,
                         Runs = inningsToCopy.Runs,
                         Wickets = inningsToCopy.Wickets
-                    }
-                },
-                PlayersPerTeam = matchToCopy.PlayersPerTeam
-            };
+                });
+
             foreach (var playerInnings in inningsToCopy.PlayerInnings)
             {
-                match.MatchInnings[0].PlayerInnings.Add(new PlayerInnings
+                    match.MatchInnings[^1].PlayerInnings.Add(new PlayerInnings
                 {
                     PlayerInningsId = playerInnings.PlayerInningsId,
                     BattingPosition = playerInnings.BattingPosition,
@@ -145,7 +157,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             }
             foreach (var over in inningsToCopy.OversBowled)
             {
-                match.MatchInnings[0].OversBowled.Add(new Over
+                    match.MatchInnings[^1].OversBowled.Add(new Over
                 {
                     OverId = over.OverId,
                     OverSet = over.OverSet,
@@ -155,6 +167,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                     Wides = over.Wides,
                     NoBalls = over.NoBalls,
                     RunsConceded = over.RunsConceded
+                });
+            }
+            }
+
+            foreach (var award in matchToCopy.Awards)
+            {
+                match.Awards.Add(new MatchAward
+                {
+                    AwardedToId = award.AwardedToId,
+                    Award = award.Award,
+                    PlayerIdentity = award.PlayerIdentity,
+                    Reason = award.Reason
                 });
             }
 
@@ -174,7 +198,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var repository = CreateRepository();
 
-            var match = CloneValidMatch();
+            var match = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
             var possibleBatters = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team!.TeamId == match.MatchInnings[0].BattingTeam!.Team!.TeamId);
             var possibleFielders = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team!.TeamId == match.MatchInnings[0].BowlingTeam!.Team!.TeamId);
 
@@ -230,7 +254,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             };
             innings.Add(playerInnings);
 
-            _battingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<PlayerInnings>>(), It.IsAny<IEnumerable<PlayerInnings>>())).Returns(new BattingScorecardComparison { PlayerInningsAdded = new List<PlayerInnings> { playerInnings } });
             return playerInnings;
         }
 
@@ -245,7 +268,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         public async Task UpdateBattingScorecard_updates_player_innings_previously_added(bool batterHasChanged, bool dismissalTypeHasChanged, bool fielderHasChanged, bool bowlerHasChanged, bool runsScoredHasChanged, bool ballsFacedHasChanged)
         {
             var repository = CreateRepository();
-            var modifiedMatch = CloneValidMatch();
+            var modifiedMatch = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
             var modifiedPlayerInnings = modifiedInnings.PlayerInnings.Last();
             var originalPlayerInnings = new PlayerInnings
@@ -275,10 +298,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             }
             if (runsScoredHasChanged) { modifiedPlayerInnings.RunsScored = modifiedPlayerInnings.RunsScored.HasValue ? modifiedPlayerInnings.RunsScored + 1 : 60; }
             if (ballsFacedHasChanged) { modifiedPlayerInnings.BallsFaced = modifiedPlayerInnings.BallsFaced.HasValue ? modifiedPlayerInnings.BallsFaced + 1 : 70; }
-
-            var comparison = SetupUnchangedBattingComparison(modifiedInnings);
-            comparison.PlayerInningsUnchanged.Remove(modifiedPlayerInnings);
-            comparison.PlayerInningsChanged.Add((originalPlayerInnings, modifiedPlayerInnings));
 
             var result = await repository.UpdateBattingScorecard(
                     modifiedMatch,
@@ -313,14 +332,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var repository = CreateRepository();
 
-            var modifiedMatch = CloneValidMatch();
+            var modifiedMatch = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
 
             var playerInningsToRemove = modifiedInnings.PlayerInnings.Last();
             modifiedInnings.PlayerInnings.Remove(playerInningsToRemove);
-
-            var comparison = SetupUnchangedBattingComparison(modifiedInnings);
-            comparison.PlayerInningsRemoved.Add(playerInningsToRemove);
 
             var result = await repository.UpdateBattingScorecard(
                     modifiedMatch,
@@ -347,9 +363,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var match = _databaseFixture.TestData.MatchInThePastWithFullDetails!;
             var innings = match.MatchInnings.First(x => x.PlayerInnings.Count > 0);
-
-            var comparison = new BattingScorecardComparison { PlayerInningsUnchanged = innings.PlayerInnings };
-            _battingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<PlayerInnings>>(), It.IsAny<IEnumerable<PlayerInnings>>())).Returns(comparison);
 
             var result = await repository.UpdateBattingScorecard(
                     match,
@@ -389,29 +402,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             Func<MatchInnings, bool> inningsSelector = mi => mi.Byes != byes && mi.Wides != wides && mi.NoBalls != noBalls && mi.BonusOrPenaltyRuns != bonus && mi.Runs != runs && mi.Wickets != wickets;
             var match = _databaseFixture.TestData.Matches.First(m => m.MatchInnings.Any(inningsSelector));
-            var innings = match.MatchInnings.First(inningsSelector);
 
-            var updatedMatch = new Stoolball.Matches.Match
-            {
-                MatchId = match.MatchId,
-                MatchInnings = new List<MatchInnings>
-                {
-                    new MatchInnings
-                    {
-                        MatchInningsId = innings.MatchInningsId,
-                        Byes = byes,
-                        Wides = wides,
-                        NoBalls = noBalls,
-                        BonusOrPenaltyRuns = bonus,
-                        Runs = runs,
-                        Wickets = wickets,
-                        BattingTeam = innings.BattingTeam,
-                        BowlingTeam = innings.BowlingTeam
-                    }
-                }
-            };
+            var updatedMatch = CloneValidMatch(match);
+            var innings = updatedMatch.MatchInnings.First(inningsSelector);
 
-            var returnedInnings = await repository.UpdateBattingScorecard(updatedMatch, updatedMatch.MatchInnings[0].MatchInningsId!.Value, _memberKey, _memberName).ConfigureAwait(false);
+            innings.Byes = byes;
+            innings.Wides = wides;
+            innings.NoBalls = noBalls;
+            innings.BonusOrPenaltyRuns = bonus;
+            innings.Runs = runs;
+            innings.Wickets = wickets;
+
+            var returnedInnings = await repository.UpdateBattingScorecard(updatedMatch, innings.MatchInningsId!.Value, _memberKey, _memberName).ConfigureAwait(false);
 
             Assert.NotNull(returnedInnings);
             Assert.Equal(innings.MatchInningsId, returnedInnings.MatchInningsId);
@@ -451,7 +453,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var repository = CreateRepository();
 
-            var match = CloneValidMatch();
+            var match = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
             var possibleBatters = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team!.TeamId == match.MatchInnings[0].BattingTeam!.Team!.TeamId);
             var possibleFielders = _databaseFixture.TestData.PlayerIdentities.Where(x => x.Team!.TeamId == match.MatchInnings[0].BowlingTeam!.Team!.TeamId);
 
@@ -506,8 +508,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             bool byesHasChanged, bool widesHasChanged, bool noBallsHasChanged, bool bonusHasChanged, bool teamRunsHasChanged, bool teamWicketsHasChanged
             )
         {
-            var repository = CreateRepository();
-            var modifiedMatch = CloneValidMatch();
+            var repository = CreateRepository(_statisticsRepository.Object);
+            var modifiedMatch = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedMatchInnings = modifiedMatch.MatchInnings[0];
             var modifiedPlayerInnings = modifiedMatchInnings.PlayerInnings.Last();
             var originalPlayerInnings = new PlayerInnings
@@ -538,9 +540,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                     if (bowlerHasChanged) { modifiedPlayerInnings.Bowler = possibleFielders.First(x => x.PlayerIdentityId != modifiedPlayerInnings.Bowler?.PlayerIdentityId); }
                     if (runsScoredHasChanged) { modifiedPlayerInnings.RunsScored = modifiedPlayerInnings.RunsScored.HasValue ? modifiedPlayerInnings.RunsScored + 1 : 60; }
                     if (ballsFacedHasChanged) { modifiedPlayerInnings.BallsFaced = modifiedPlayerInnings.BallsFaced.HasValue ? modifiedPlayerInnings.BallsFaced + 1 : 70; }
-
-                    var comparison = new BattingScorecardComparison { PlayerInningsChanged = new List<(PlayerInnings, PlayerInnings)> { (originalPlayerInnings, modifiedPlayerInnings) } };
-                    _battingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<PlayerInnings>>(), It.IsAny<IEnumerable<PlayerInnings>>())).Returns(comparison);
                 }
 
                 if (byesHasChanged) { modifiedMatchInnings.Byes = modifiedMatchInnings.Byes.HasValue ? modifiedMatchInnings.Byes + 1 : 10; }
@@ -561,18 +560,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var repository = CreateRepository();
 
-            var modifiedMatch = CloneValidMatch();
+            var modifiedMatch = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
-
-            var comparison = SetupUnchangedBowlingComparison(modifiedInnings);
 
             var totalOversInOversets = modifiedInnings.OverSets.Sum(o => o.Overs);
             var finalOverSet = modifiedInnings.OverSets.Last();
             var totalOvers = modifiedInnings.OversBowled.Count;
+            var oversAdded = new List<Over>();
 
             do
             {
-                AddOneNewBowlingOver(modifiedInnings, comparison);
+                AddOneNewBowlingOver(modifiedInnings);
+                oversAdded.Add(modifiedInnings.OversBowled.Last());
                 totalOvers++;
             }
             while (totalOvers <= totalOversInOversets);
@@ -587,14 +586,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                Assert.True(comparison.OversAdded.Any());
-                foreach (var over in comparison.OversAdded)
+                Assert.True(oversAdded.Any());
+                foreach (var over in oversAdded)
                 {
-                    var savedOver = await connection.QuerySingleOrDefaultAsync<(int? OverNumber, Guid? OverSetId, Guid? BowlerId, int? BallsBowled, int? Wides, int? NoBalls, int? RunsConceded)>(
-                       $"SELECT OverNumber, OverSetId, BowlerPlayerIdentityId, BallsBowled, Wides, NoBalls, RunsConceded FROM {Tables.Over} WHERE OverId = @OverId",
-                       new { over.OverId }).ConfigureAwait(false);
+                    var savedOver = await connection.QuerySingleOrDefaultAsync<(Guid? OverSetId, Guid? BowlerId, int? BallsBowled, int? Wides, int? NoBalls, int? RunsConceded)>(
+                       $@"SELECT OverSetId, BowlerPlayerIdentityId, BallsBowled, Wides, NoBalls, RunsConceded 
+                          FROM {Tables.Over} 
+                          WHERE MatchInningsId = @MatchInningsId AND OverNumber = @OverNumber",
+                       new { modifiedInnings.MatchInningsId, over.OverNumber }).ConfigureAwait(false);
 
-                    Assert.Equal(over.OverNumber, savedOver.OverNumber);
                     Assert.Equal(over.OverSet!.OverSetId, savedOver.OverSetId);
                     Assert.Equal(over.Bowler!.PlayerIdentityId, savedOver.BowlerId);
                     Assert.Equal(over.BallsBowled, savedOver.BallsBowled);
@@ -616,7 +616,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var repository = CreateRepository();
 
-            var modifiedMatch = CloneValidMatch();
+            var modifiedMatch = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
             var modifiedOver = modifiedInnings.OversBowled.Last();
             if (bowlerHasChanged)
@@ -627,13 +627,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             if (widesHasChanged) { modifiedOver.Wides = modifiedOver.Wides.HasValue ? modifiedOver.Wides + 1 : 4; }
             if (noBallsHasChanged) { modifiedOver.NoBalls = modifiedOver.NoBalls.HasValue ? modifiedOver.NoBalls + 1 : 5; }
             if (runsConcededHasChanged) { modifiedOver.RunsConceded = modifiedOver.RunsConceded.HasValue ? modifiedOver.RunsConceded + 1 : 12; }
-
-            var comparison = SetupUnchangedBowlingComparison(modifiedInnings);
-            if (bowlerHasChanged || ballsBowledHasChanged || widesHasChanged || noBallsHasChanged || runsConcededHasChanged)
-            {
-                comparison.OversUnchanged.Remove(modifiedOver);
-                comparison.OversChanged.Add((modifiedOver, modifiedOver));
-            }
 
             var result = await repository.UpdateBowlingScorecard(
                     modifiedMatch,
@@ -664,14 +657,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var repository = CreateRepository();
 
-            var modifiedMatch = CloneValidMatch();
+            var modifiedMatch = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
 
             var overToRemove = modifiedInnings.OversBowled.Last();
             modifiedInnings.OversBowled.Remove(overToRemove);
-
-            var comparison = SetupUnchangedBowlingComparison(modifiedInnings);
-            comparison.OversRemoved.Add(overToRemove);
 
             var result = await repository.UpdateBowlingScorecard(
                     modifiedMatch,
@@ -698,9 +688,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var match = _databaseFixture.TestData.MatchInThePastWithFullDetails!;
             var innings = match.MatchInnings.First(x => x.OversBowled.Count > 0);
-
-            var comparison = new BowlingScorecardComparison { OversUnchanged = innings.OversBowled };
-            _bowlingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<Over>>(), It.IsAny<IEnumerable<Over>>())).Returns(comparison);
 
             var result = await repository.UpdateBowlingScorecard(
                     match,
@@ -745,16 +732,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [InlineData(false)]
         public async Task UpdateBowlingScorecard_updates_bowling_figures_and_player_statistics_if_bowling_has_changed(bool bowlingHasChanged)
         {
-            var repository = CreateRepository();
+            var repository = CreateRepository(_statisticsRepository.Object);
 
-            var modifiedMatch = CloneValidMatch();
+            var modifiedMatch = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
-
-            var comparison = SetupUnchangedBowlingComparison(modifiedInnings);
 
             if (bowlingHasChanged)
             {
-                AddOneNewBowlingOver(modifiedInnings, comparison);
+                AddOneNewBowlingOver(modifiedInnings);
             }
 
             _ = await repository.UpdateBowlingScorecard(
@@ -767,11 +752,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             _statisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbTransaction>()), bowlingHasChanged ? Times.Once() : Times.Never());
         }
 
-        private static void AddOneNewBowlingOver(MatchInnings innings, BowlingScorecardComparison comparison)
+        private static void AddOneNewBowlingOver(MatchInnings innings)
         {
             var overToAdd = new Over
             {
-                OverId = Guid.NewGuid(),
+                OverNumber = innings.OversBowled.Count + 1,
                 Bowler = innings.OversBowled[innings.OversBowled.Count - 2].Bowler,
                 BallsBowled = 8,
                 NoBalls = 2,
@@ -780,28 +765,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 OverSet = innings.OverSets.FirstOrDefault()
             };
             innings.OversBowled.Add(overToAdd);
-
-            comparison.OversAdded.Add(overToAdd);
-        }
-
-        private BattingScorecardComparison SetupUnchangedBattingComparison(MatchInnings innings)
-        {
-            var comparison = new BattingScorecardComparison
-            {
-                PlayerInningsUnchanged = new List<PlayerInnings>(innings.PlayerInnings)
-            };
-            _battingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<PlayerInnings>>(), It.IsAny<IEnumerable<PlayerInnings>>())).Returns(comparison);
-            return comparison;
-        }
-
-        private BowlingScorecardComparison SetupUnchangedBowlingComparison(MatchInnings innings)
-        {
-            var comparison = new BowlingScorecardComparison
-            {
-                OversUnchanged = new List<Over>(innings.OversBowled)
-            };
-            _bowlingScorecardComparer.Setup(x => x.CompareScorecards(It.IsAny<IEnumerable<Over>>(), It.IsAny<IEnumerable<Over>>())).Returns(comparison);
-            return comparison;
         }
 
         [Fact]
@@ -882,15 +845,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         {
             var repository = CreateRepository();
 
-            var matchToUpdate = _databaseFixture.TestData.Matches.First(x => x.UpdateMatchNameAutomatically == false);
-            var matchResultBefore = matchToUpdate.MatchResultType;
+            var modifiedMatch = CloneValidMatch(_databaseFixture.TestData.Matches.First(x => x.UpdateMatchNameAutomatically == false));
+            var matchResultBefore = modifiedMatch.MatchResultType;
             var matchResultAfter = matchResultBefore == MatchResultType.HomeWin ? MatchResultType.AwayWin : MatchResultType.HomeWin;
-            var modifiedMatch = new Stoolball.Matches.Match
-            {
-                MatchId = matchToUpdate.MatchId,
-                MatchName = matchToUpdate.MatchName,
-                MatchResultType = matchResultAfter
-            };
+            modifiedMatch.MatchResultType = matchResultAfter;
 
             var result = await repository.UpdateCloseOfPlay(modifiedMatch, _memberKey, _memberName).ConfigureAwait(false);
 
@@ -902,7 +860,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                     $"SELECT MatchResultType FROM {Tables.Match} WHERE MatchId = @MatchId",
                     new
                     {
-                        matchToUpdate.MatchId
+                        modifiedMatch.MatchId
                     }).ConfigureAwait(false);
 
                 Assert.Equal(matchResultAfter, Enum.Parse(typeof(MatchResultType), savedMatchResult));
@@ -915,27 +873,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             var repository = CreateRepository();
 
             // If you change the award or the player identity, that's probably a different award. Only changing the reason is definitely the same award.
-            var matchToUpdate = _databaseFixture.TestData.Matches.First(x => x.Awards.Count > 0);
-            var awardBefore = matchToUpdate.Awards[0];
-            var awardAfter = new MatchAward
-            {
-                AwardedToId = matchToUpdate.Awards[0].AwardedToId,
-                Award = matchToUpdate.Awards[0].Award,
-                PlayerIdentity = matchToUpdate.Awards[0].PlayerIdentity,
-                Reason = matchToUpdate.Awards[0].Reason + Guid.NewGuid().ToString()
-            };
-            var modifiedMatch = new Stoolball.Matches.Match
-            {
-                MatchId = matchToUpdate.MatchId,
-                MatchName = matchToUpdate.MatchName,
-                Awards = new List<MatchAward> { awardAfter }
-            };
+            var modifiedMatch = CloneValidMatch(_databaseFixture.TestData.Matches.First(x => x.Awards.Count > 0));
+            var modifiedAward = modifiedMatch.Awards[0];
+            modifiedAward.Reason += Guid.NewGuid().ToString();
 
             var result = await repository.UpdateCloseOfPlay(modifiedMatch, _memberKey, _memberName).ConfigureAwait(false);
 
             Assert.Equal(modifiedMatch.Awards.Count, result.Awards.Count);
-            Assert.Equal(modifiedMatch.Awards[0].AwardedToId, result.Awards[0].AwardedToId);
-            Assert.Equal(modifiedMatch.Awards[0].Reason, result.Awards[0].Reason);
+            Assert.Equal(modifiedAward.AwardedToId, result.Awards[0].AwardedToId);
+            Assert.Equal(modifiedAward.Reason, result.Awards[0].Reason);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -948,11 +894,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                        AND Reason = @Reason",
                     new
                     {
-                        awardAfter.AwardedToId,
-                        matchToUpdate.MatchId,
-                        awardAfter.Award!.AwardId,
-                        awardAfter.PlayerIdentity!.PlayerIdentityId,
-                        awardAfter.Reason
+                        modifiedAward.AwardedToId,
+                        modifiedMatch.MatchId,
+                        modifiedAward.Award!.AwardId,
+                        modifiedAward.PlayerIdentity!.PlayerIdentityId,
+                        modifiedAward.Reason
                     }).ConfigureAwait(false);
 
                 Assert.NotNull(savedMatchAward);
@@ -964,13 +910,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         public async Task UpdateCloseOfPlay_adds_new_award()
         {
             var repository = CreateRepository();
-            var reason = "A good reason";
 
-            var matchToUpdate = SetupMatchWithNewAward(reason);
+            var matchToUpdate = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
+            AddOneNewAward(matchToUpdate);
+            var newAward = matchToUpdate.Awards.Last();
 
             var result = await repository.UpdateCloseOfPlay(matchToUpdate, _memberKey, _memberName).ConfigureAwait(false);
 
-            Assert.Single(result.Awards.Select(aw => aw.PlayerIdentity?.PlayerIdentityId == matchToUpdate.Awards[0].PlayerIdentity!.PlayerIdentityId && aw.Reason == reason));
+            foreach (var award in matchToUpdate.Awards)
+            {
+                Assert.Single(result.Awards.Where(aw => aw.PlayerIdentity?.PlayerIdentityId == award.PlayerIdentity!.PlayerIdentityId && aw.Reason == award.Reason));
+            }
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -981,30 +931,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                         new
                         {
                             matchToUpdate.MatchId,
-                            matchToUpdate.Awards[0].PlayerIdentity!.PlayerIdentityId,
-                            reason
+                            newAward.PlayerIdentity!.PlayerIdentityId,
+                            newAward.Reason
                         }).ConfigureAwait(false);
 
                 Assert.NotNull(savedAwardId);
             }
         }
 
-        private Stoolball.Matches.Match SetupMatchWithNewAward(string reason)
-        {
-            return new Stoolball.Matches.Match
+        private void AddOneNewAward(Stoolball.Matches.Match match)
             {
-                MatchId = _databaseFixture.TestData.MatchInThePastWithFullDetails!.MatchId,
-                Awards = new List<MatchAward> {
+            match.Awards.Add(
                     new MatchAward
                     {
-                        PlayerIdentity = _databaseFixture.TestData.PlayerIdentities.First(pi => _databaseFixture.TestData.MatchInThePastWithFullDetails.Teams
+                        PlayerIdentity = _databaseFixture.TestData.PlayerIdentities.First(pi => match.Teams
                                                 .Where(t => t.Team != null).Select(t => t.Team!.TeamId)
-                                                .Contains( pi.Team?.TeamId) ),
-                        Award = _databaseFixture.TestData.MatchInThePastWithFullDetails.Awards[0].Award,
-                        Reason = reason
-                    }
+                                                .Contains(pi.Team?.TeamId)),
+                        Award = match.Awards[0].Award,
+                        Reason = "A good reason " + Guid.NewGuid()
                 }
-            };
+                );
         }
 
         [Fact]
@@ -1013,15 +959,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             var repository = CreateRepository();
 
             var matchToUpdate = _databaseFixture.TestData.Matches.First(m => m.Awards.Count > 1);
-            var copyOfMatch = new Stoolball.Matches.Match
-            {
-                MatchId = matchToUpdate.MatchId
-            };
-            var awardToRemove = matchToUpdate.Awards[0];
-            for (var i = 1; i < matchToUpdate.Awards.Count; i++)
-            {
-                copyOfMatch.Awards.Add(matchToUpdate.Awards[i]);
-            }
+            var copyOfMatch = CloneValidMatch(matchToUpdate);
+            var awardToRemove = copyOfMatch.Awards[0];
+            copyOfMatch.Awards.Remove(awardToRemove);
 
             var result = await repository.UpdateCloseOfPlay(copyOfMatch, _memberKey, _memberName).ConfigureAwait(false);
 
@@ -1053,9 +993,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         [Fact]
         public async Task UpdateCloseOfPlay_updates_player_statistics()
         {
-            var repository = CreateRepository();
+            var repository = CreateRepository(_statisticsRepository.Object);
 
-            var matchToUpdate = SetupMatchWithNewAward(string.Empty);
+            var matchToUpdate = CloneValidMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails!);
+            AddOneNewAward(matchToUpdate);
 
             _ = await repository.UpdateCloseOfPlay(matchToUpdate, _memberKey, _memberName).ConfigureAwait(false);
 

@@ -1079,9 +1079,22 @@ namespace Stoolball.Data.SqlServer
 
                     if (comparison.OversAdded.Any() || comparison.OversChanged.Any() || comparison.OversRemoved.Any())
                     {
+                        // Get existing oversets and, if there were more overs than expected, extend the last overset to fit
+                        var overSets = (await _dapperWrapper.QueryAsync<OverSet>(
+                            $"SELECT OverSetId, OverSetNumber, Overs FROM {Tables.OverSet} WHERE MatchInningsId = @MatchInningsId ORDER BY OverSetNumber ASC",
+                            new { auditableInnings.MatchInningsId }, transaction).ConfigureAwait(false)).ToList();
 
-                        var previousOverSetIds = (await _dapperWrapper.QueryAsync<Guid>($"SELECT OverSetId FROM {Tables.OverSet} WHERE MatchInningsId = @MatchInningsId", new { auditableInnings.MatchInningsId }, transaction).ConfigureAwait(false)).ToList();
-                    await InsertOverSets(auditableInnings, transaction).ConfigureAwait(false);
+                        var expectedOvers = overSets.Sum(x => x.Overs);
+                        if (auditableInnings.OversBowled.Count > expectedOvers)
+                        {
+                            var lastOverSet = overSets.Last();
+                            lastOverSet.Overs = lastOverSet.Overs + (auditableInnings.OversBowled.Count - expectedOvers);
+                            await _dapperWrapper.ExecuteAsync($"UPDATE {Tables.OverSet} SET Overs = @Overs WHERE OverSetId = @OverSetId", new
+                            {
+                                lastOverSet.OverSetId,
+                                lastOverSet.Overs
+                            }, transaction).ConfigureAwait(false);
+                        }
 
                     foreach (var over in comparison.OversAdded)
                     {
@@ -1095,7 +1108,7 @@ namespace Stoolball.Data.SqlServer
                                 over.OverNumber,
                                 auditableInnings.MatchInningsId,
                                 BowlerPlayerIdentityId = over.Bowler.PlayerIdentityId,
-                                _oversHelper.OverSetForOver(auditableInnings.OverSets, over.OverNumber)?.OverSetId,
+                                    _oversHelper.OverSetForOver(overSets, over.OverNumber)?.OverSetId,
                                 over.BallsBowled,
                                 over.NoBalls,
                                 over.Wides,
@@ -1120,7 +1133,7 @@ namespace Stoolball.Data.SqlServer
                             {
                                 after.OverNumber,
                                 BowlerPlayerIdentityId = after.Bowler.PlayerIdentityId,
-                                _oversHelper.OverSetForOver(auditableInnings.OverSets, after.OverNumber)?.OverSetId,
+                                    _oversHelper.OverSetForOver(overSets, after.OverNumber)?.OverSetId,
                                 after.BallsBowled,
                                 after.NoBalls,
                                 after.Wides,
@@ -1131,18 +1144,6 @@ namespace Stoolball.Data.SqlServer
                     }
 
                         await _dapperWrapper.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE OverId IN @OverIds", new { OverIds = comparison.OversRemoved.Select(x => x.OverId) }, transaction).ConfigureAwait(false);
-
-                    // What about unchanged overs? They may have an OverSetId but we've just recreated the OverSets, so it needs to be updated
-                    foreach (var over in comparison.OversUnchanged)
-                    {
-                            await _dapperWrapper.ExecuteAsync($"UPDATE {Tables.Over} SET OverSetId = @OverSetId WHERE OverId = @OverId", new { _oversHelper.OverSetForOver(auditableInnings.OverSets, over.OverNumber)?.OverSetId, over.OverId }, transaction).ConfigureAwait(false);
-                    }
-
-                    // Now the previous over sets can be removed, because the references from Tables.Over should be gone
-                    if (previousOverSetIds.Count > 0)
-                    {
-                            await _dapperWrapper.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE OverSetId IN @previousOverSetIds", new { previousOverSetIds }, transaction).ConfigureAwait(false);
-                    }
 
                     var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
 
@@ -1174,7 +1175,7 @@ namespace Stoolball.Data.SqlServer
             return auditableInnings;
             }
 
-            return auditableInnings;
+
         }
 
         /// <summary>
