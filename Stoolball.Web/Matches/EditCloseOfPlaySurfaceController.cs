@@ -100,7 +100,7 @@ namespace Stoolball.Web.Matches
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var updatedMatch = await _matchRepository.UpdateCloseOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 await _matchListingCacheClearer.InvalidateCacheForMatch(beforeUpdate, updatedMatch).ConfigureAwait(false);
-                _playerCacheClearer.InvalidateCacheForTeams(model.Match.Teams.Select(x => x.Team).ToArray());
+                _playerCacheClearer.InvalidateCacheForTeams(model.Match.Teams.Select(x => x.Team).OfType<Team>().ToArray());
 
                 return Redirect(updatedMatch.MatchRoute);
             }

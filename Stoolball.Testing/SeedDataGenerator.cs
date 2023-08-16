@@ -830,6 +830,7 @@ namespace Stoolball.Testing
             testData.MatchInThePastWithFullDetails = testData.Matches.First(x =>
                     x.StartTime < DateTime.UtcNow &&
                     x.Teams.Any() &&
+                    x.PlayersPerTeam != null &&
                     x.Season != null && x.Season.Competition != null &&
                     x.MatchLocation != null &&
                     x.Tournament == null &&
