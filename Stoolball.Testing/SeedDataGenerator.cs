@@ -15,7 +15,6 @@ using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing.Fakers;
 using Stoolball.Testing.MatchDataProviders;
-using static Stoolball.Constants;
 
 namespace Stoolball.Testing
 {
@@ -891,7 +890,7 @@ namespace Stoolball.Testing
                 {
                     tournament2.TournamentLocation = testData.MatchLocations[_randomiser.PositiveIntegerLessThan(testData.MatchLocations.Count)];
                 }
-                tournament2.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(i - 20).AddDays(5), UkTimeZone());
+                tournament2.StartTime = DateTimeOffset.UtcNow.AddMonths(i - 20).AddDays(5).UtcToUkTime();
                 tournament2.Comments = CreateComments(i, testData.Members);
                 testData.Tournaments.Add(tournament2);
             }
@@ -912,7 +911,7 @@ namespace Stoolball.Testing
             testData.Tournaments.Add(testData.TournamentInThePastWithMinimalDetails);
 
             testData.TournamentInTheFutureWithMinimalDetails = CreateTournamentInThePastWithMinimalDetails();
-            testData.TournamentInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(1), Constants.UkTimeZone());
+            testData.TournamentInTheFutureWithMinimalDetails.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
             testData.Tournaments.Add(testData.TournamentInTheFutureWithMinimalDetails);
 
             testData.ClubWithMinimalDetails = CreateClubWithMinimalDetails();
@@ -1428,7 +1427,7 @@ namespace Stoolball.Testing
 
             // Aim to make these obsolete by recreating everything offered by CreateMatchInThePastWithFullDetails in the generated match data above
             var matchInTheFutureWithMinimalDetails = _matchFactory.CreateMatchInThePastWithMinimalDetails();
-            matchInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(1), UkTimeZone());
+            matchInTheFutureWithMinimalDetails.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
             matches.Add(matchInTheFutureWithMinimalDetails);
             matches.Add(_matchFactory.CreateMatchInThePastWithMinimalDetails());
             matches.Add(CreateMatchInThePastWithFullDetails(members));

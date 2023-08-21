@@ -50,7 +50,7 @@ namespace Stoolball.Testing.MatchDataProviders
             var playerIdentitiesWhoseWicketsWillBeTaken = readOnlyTestData.PlayerIdentities.Where(x => x.Team?.TeamId == differentTeamWithAtLeast5PlayerIdentities.TeamId).Take(5).ToList();
 
             var match = _matchFactory.CreateMatchBetween(teamWhereThatPlayerHasMultipleIdentities, new List<PlayerIdentity>(), differentTeamWithAtLeast5PlayerIdentities, new List<PlayerIdentity>(), _randomiser.FiftyFiftyChance(), readOnlyTestData);
-            match.StartTime = DateTimeOffset.UtcNow.AccurateToTheMinute().AddDays(-10);
+            match.StartTime = DateTimeOffset.UtcNow.AccurateToTheMinute().AddDays(-10).UtcToUkTime();
 
             var firstBowlingInningsForPlayerWithMultipleIdentities = match.MatchInnings.First(x => x.BowlingTeam?.Team?.TeamId == teamWhereThatPlayerHasMultipleIdentities.TeamId);
 
