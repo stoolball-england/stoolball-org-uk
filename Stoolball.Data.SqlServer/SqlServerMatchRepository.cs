@@ -803,9 +803,9 @@ namespace Stoolball.Data.SqlServer
                                field.PlayerIdentityId, field.PlayerIdentityName,
                                bowl.PlayerIdentityId, bowl.PlayerIdentityName
                                FROM {Tables.PlayerInnings} i 
-                               INNER JOIN {Tables.PlayerIdentity} bat ON i.BatterPlayerIdentityId = bat.PlayerIdentityId
-                               LEFT JOIN {Tables.PlayerIdentity} field ON i.DismissedByPlayerIdentityId = field.PlayerIdentityId
-                               LEFT JOIN {Tables.PlayerIdentity} bowl ON i.BowlerPlayerIdentityId = bowl.PlayerIdentityId
+                               INNER JOIN {Views.PlayerIdentity} bat ON i.BatterPlayerIdentityId = bat.PlayerIdentityId
+                               LEFT JOIN {Views.PlayerIdentity} field ON i.DismissedByPlayerIdentityId = field.PlayerIdentityId
+                               LEFT JOIN {Views.PlayerIdentity} bowl ON i.BowlerPlayerIdentityId = bowl.PlayerIdentityId
                                WHERE i.MatchInningsId = @MatchInningsId",
                         (playerInnings, batter, fielder, bowler) =>
                         {
@@ -1070,7 +1070,7 @@ namespace Stoolball.Data.SqlServer
                         $@"SELECT o.OverId, o.OverNumber, o.BallsBowled, o.NoBalls, o.Wides, o.RunsConceded,
                                o.OverSetId,
                                p.PlayerIdentityId, p.PlayerIdentityName
-                               FROM {Tables.Over} o INNER JOIN {Tables.PlayerIdentity} p ON o.BowlerPlayerIdentityId = p.PlayerIdentityId
+                               FROM {Tables.Over} o INNER JOIN {Views.PlayerIdentity} p ON o.BowlerPlayerIdentityId = p.PlayerIdentityId
                                WHERE o.MatchInningsId = @MatchInningsId",
                         (over, overSet, playerIdentity) =>
                         {
@@ -1346,7 +1346,7 @@ namespace Stoolball.Data.SqlServer
 
                     var awardsBefore = await _dapperWrapper.QueryAsync<(Guid playerIdentityId, string playerIdentityName, Guid teamId)>(
                             $@"SELECT pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TeamId 
-                                FROM {Tables.AwardedTo} a INNER JOIN {Tables.PlayerIdentity} pi ON a.PlayerIdentityId = pi.PlayerIdentityId 
+                                FROM {Tables.AwardedTo} a INNER JOIN {Views.PlayerIdentity} pi ON a.PlayerIdentityId = pi.PlayerIdentityId 
                                 WHERE a.MatchId = @MatchId",
                             new { auditableMatch.MatchId },
                             transaction).ConfigureAwait(false);

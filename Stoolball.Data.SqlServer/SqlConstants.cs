@@ -44,4 +44,14 @@
         public const string UmbracoNode = "umbracoNode";
         public const string UmbracoMember = "cmsMember";
     }
+
+    public static class Views
+    {
+        internal const string _viewPrefix = "vw_Stoolball_";
+
+        /// <summary>
+        /// Player identities with player information, excluding those which have been soft deleted.
+        /// </summary>
+        public const string PlayerIdentity = _viewPrefix + "PlayerIdentity";
+    }
 }
