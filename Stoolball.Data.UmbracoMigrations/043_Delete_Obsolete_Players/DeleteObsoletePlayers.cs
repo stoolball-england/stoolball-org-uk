@@ -22,6 +22,7 @@ namespace Stoolball.Data.UmbracoMigrations
             {
                 Create.Column("Deleted").OnTable(Tables.PlayerIdentity).AsBoolean().WithDefaultValue(0).Do();
                 Execute.SqlFromFile("043_Delete_Obsolete_Players.usp_Player_Async_Update.sql").Do();
+                Execute.SqlFromFile("043_Delete_Obsolete_Players.Clean_Existing_Data.sql").Do();
             }
             else
             {
