@@ -20,6 +20,7 @@ namespace Stoolball.Data.UmbracoMigrations
             if (!ColumnExists(Tables.PlayerIdentity, "LinkedBy"))
             {
                 Create.Column("LinkedBy").OnTable(Tables.PlayerIdentity).AsString(255).WithDefaultValue("DefaultIdentity").Do();
+                Execute.SqlFromFile("044_Add_PlayerIdentity_LinkedBy.vw_Stoolball_PlayerIdentity.sql").Do();
                 Execute.SqlFromFile("044_Add_PlayerIdentity_LinkedBy.StoolballPlayerIdentity_PopulateLinkedBy.sql").Do();
             }
             else

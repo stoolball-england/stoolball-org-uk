@@ -18,6 +18,7 @@
     <None Remove="043_Delete_Obsolete_Players\usp_Player_Async_Update.sql" />
     <None Remove="043_Delete_Obsolete_Players\vw_Stoolball_PlayerIdentity.sql" />
     <None Remove="044_Add_PlayerIdentity_LinkedBy\StoolballPlayerIdentity_PopulateLinkedBy.sql" />
+    <None Remove="044_Add_PlayerIdentity_LinkedBy\vw_Stoolball_PlayerIdentity.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,7 @@
     <EmbeddedResource Include="043_Delete_Obsolete_Players\vw_Stoolball_PlayerIdentity.sql" />
     <EmbeddedResource Include="043_Delete_Obsolete_Players\usp_Player_Async_Update.sql" />
     <EmbeddedResource Include="044_Add_PlayerIdentity_LinkedBy\StoolballPlayerIdentity_PopulateLinkedBy.sql" />
+    <EmbeddedResource Include="044_Add_PlayerIdentity_LinkedBy\vw_Stoolball_PlayerIdentity.sql" />
   </ItemGroup>
 
   <ItemGroup>

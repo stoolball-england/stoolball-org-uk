@@ -7,7 +7,7 @@ GO
 
 CREATE VIEW [dbo].[vw_Stoolball_PlayerIdentity]
 AS
-SELECT pi.PlayerIdentityId, pi.TeamId, pi.PlayerIdentityName, pi.ComparableName, pi.RouteSegment, pi.LinkedBy, p.PlayerId, p.PlayerRoute, p.MemberKey
+SELECT pi.PlayerIdentityId, pi.TeamId, pi.PlayerIdentityName, pi.ComparableName, pi.RouteSegment, p.PlayerId, p.PlayerRoute, p.MemberKey
 FROM StoolballPlayerIdentity pi INNER JOIN StoolballPlayer p ON pi.PlayerId = p.PlayerId
 WHERE pi.Deleted = 0 AND p.Deleted = 0
 GO
