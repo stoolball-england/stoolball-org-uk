@@ -73,14 +73,14 @@ namespace Stoolball.Data.SqlServer
             auditablePlayerIdentity.PlayerIdentityId = Guid.NewGuid();
             auditablePlayerIdentity.PlayerIdentityName = _playerNameFormatter.CapitaliseName(auditablePlayerIdentity.PlayerIdentityName);
             auditablePlayerIdentity.RouteSegment = (await _routeGenerator.GenerateUniqueRoute(string.Empty, auditablePlayerIdentity.PlayerIdentityName.Kebaberize(), NoiseWords.PlayerRoute,
-                async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.PlayerIdentity} WHERE RouteSegment = @RouteSegment AND TeamId = @TeamId", new { RouteSegment = route, auditablePlayerIdentity.Team.TeamId }, transaction)
+                async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Views.PlayerIdentity} WHERE RouteSegment = @RouteSegment AND TeamId = @TeamId", new { RouteSegment = route, auditablePlayerIdentity.Team.TeamId }, transaction)
             ).ConfigureAwait(false))?.TrimStart('/');
 
             var player = new Player { PlayerId = Guid.NewGuid() };
             player.PlayerIdentities.Add(auditablePlayerIdentity);
 
             player.PlayerRoute = await _routeGenerator.GenerateUniqueRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute,
-               async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { PlayerRoute = route }, transaction)
+               async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute AND Deleted = 0", new { PlayerRoute = route }, transaction)
             ).ConfigureAwait(false);
 
             await transaction.Connection.ExecuteAsync(
@@ -159,7 +159,7 @@ namespace Stoolball.Data.SqlServer
             }
 
             var matchedPlayerIdentity = (await _dapperWrapper.QueryAsync<PlayerIdentity, Player, PlayerIdentity>(
-                    $"SELECT PlayerIdentityId, PlayerIdentityName, PlayerId FROM {Tables.PlayerIdentity} WHERE ComparableName = @ComparableName AND TeamId = @TeamId",
+                    $"SELECT PlayerIdentityId, PlayerIdentityName, PlayerId FROM {Views.PlayerIdentity} WHERE ComparableName = @ComparableName AND TeamId = @TeamId",
                     (pi, p) =>
                     {
                         pi.Player = p;
@@ -202,7 +202,7 @@ namespace Stoolball.Data.SqlServer
                     var auditablePlayer = _copier.CreateAuditableCopy(player);
 
                     // Is the player already linked, either to this member or someone else?
-                    var existingMemberForPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
+                    var existingMemberForPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId AND Deleted = 0", auditablePlayer, transaction);
                     if (existingMemberForPlayer.HasValue)
                     {
                         transaction.Rollback();
@@ -210,7 +210,7 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     // Is this member already linked to a player?
-                    var existingPlayerForMember = await connection.QuerySingleOrDefaultAsync<Player>($"SELECT TOP 1 PlayerId, PlayerRoute, MemberKey FROM {Tables.Player} WHERE MemberKey = @memberKey", new { memberKey }, transaction);
+                    var existingPlayerForMember = await connection.QuerySingleOrDefaultAsync<Player>($"SELECT TOP 1 PlayerId, PlayerRoute, MemberKey FROM {Tables.Player} WHERE MemberKey = @memberKey AND Deleted = 0", new { memberKey }, transaction);
                     if (existingPlayerForMember == null)
                     {
                         // Link member to player record
@@ -249,7 +249,7 @@ namespace Stoolball.Data.SqlServer
 
                         // We also need to update statistics, and delete the now-unused player that the identity has been moved away from. 
                         // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so we just need to mark the player as safe to delete.
-                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET ForAsyncDelete = 1 WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
+                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET Deleted = 1 WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
 
                         var serialisedDeletedPlayer = JsonConvert.SerializeObject(auditablePlayer);
                         await _auditRepository.CreateAudit(new AuditRecord
@@ -322,7 +322,10 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var result = await connection.QuerySingleAsync<(int totalIdentitiesLinkedToMember, Guid playerId)>($"SELECT COUNT(*), PlayerId FROM {Tables.PlayerIdentity} WHERE PlayerId = (SELECT PlayerId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId) GROUP BY PlayerId", playerIdentity, transaction).ConfigureAwait(false);
+                    var result = await connection.QuerySingleAsync<(int totalIdentitiesLinkedToMember, Guid playerId)>(
+                        $@"SELECT COUNT(*), PlayerId FROM {Views.PlayerIdentity} 
+                           WHERE PlayerId = (SELECT PlayerId FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId) 
+                           GROUP BY PlayerId", playerIdentity, transaction).ConfigureAwait(false);
 
                     if (result.totalIdentitiesLinkedToMember == 1)
                     {
@@ -350,7 +353,7 @@ namespace Stoolball.Data.SqlServer
                         player.PlayerIdentities.Add(playerIdentity);
 
                         player.PlayerRoute = await _routeGenerator.GenerateUniqueRoute($"/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute,
-                           async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { PlayerRoute = route }, transaction)
+                           async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute AND Deleted = 0", new { PlayerRoute = route }, transaction)
                         );
 
                         await transaction.Connection.ExecuteAsync(
@@ -446,12 +449,12 @@ namespace Stoolball.Data.SqlServer
 
             if (!playerIdentity.PlayerIdentityId.HasValue)
             {
-                throw new ArgumentException($"{ nameof(playerIdentity.PlayerIdentityId)} must have a value");
+                throw new ArgumentException($"{nameof(playerIdentity.PlayerIdentityId)} must have a value");
             }
 
             if (string.IsNullOrEmpty(playerIdentity.PlayerIdentityName))
             {
-                throw new ArgumentException($"{ nameof(playerIdentity.PlayerIdentityName)} cannot be null or empty");
+                throw new ArgumentException($"{nameof(playerIdentity.PlayerIdentityName)} cannot be null or empty");
             }
 
             if (playerIdentity.Team?.TeamId == null)
@@ -484,7 +487,9 @@ namespace Stoolball.Data.SqlServer
                         auditablePlayerIdentity.PlayerIdentityName = _playerNameFormatter.CapitaliseName(auditablePlayerIdentity.PlayerIdentityName!);
 
                         auditablePlayerIdentity.RouteSegment = (await _routeGenerator.GenerateUniqueRoute(string.Empty, auditablePlayerIdentity.PlayerIdentityName.Kebaberize(), NoiseWords.PlayerRoute,
-                            async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.PlayerIdentity} WHERE RouteSegment = @RouteSegment AND TeamId = @TeamId", new { RouteSegment = route, auditablePlayerIdentity.Team!.TeamId }, transaction)
+                            async route => await transaction.Connection.ExecuteScalarAsync<int>(
+                            $"SELECT COUNT(*) FROM {Views.PlayerIdentity} WHERE RouteSegment = @RouteSegment AND TeamId = @TeamId",
+                            new { RouteSegment = route, auditablePlayerIdentity.Team!.TeamId }, transaction)
                         ).ConfigureAwait(false))?.TrimStart('/');
 
                         _ = await _dapperWrapper.ExecuteAsync($@"UPDATE {Tables.PlayerIdentity} SET 
@@ -536,11 +541,11 @@ namespace Stoolball.Data.SqlServer
             // will be updated when a player identity is renamed, and we need to see the change immediately.
             // Updates to PlayerInMatchStatistics are done asynchronously and the data will not be updated by the time this is called.
 
-            var sql = $@"SELECT p.PlayerRoute, pi.PlayerIdentityName, COUNT(DISTINCT MatchId) AS TotalMatches
-                         FROM {Tables.Player} p INNER JOIN {Tables.PlayerIdentity} pi ON p.PlayerId = pi.PlayerId
+            var sql = $@"SELECT pi.PlayerRoute, pi.PlayerIdentityName, COUNT(DISTINCT MatchId) AS TotalMatches
+                         FROM {Views.PlayerIdentity} pi 
                          INNER JOIN {Tables.PlayerInMatchStatistics} stats ON pi.PlayerIdentityId = stats.PlayerIdentityId
-                         WHERE p.PlayerId = @PlayerId
-                         GROUP BY p.PlayerRoute, pi.PlayerIdentityId, pi.PlayerIdentityName";
+                         WHERE pi.PlayerId = @PlayerId
+                         GROUP BY pi.PlayerRoute, pi.PlayerIdentityId, pi.PlayerIdentityName";
 
             var identities = (await _dapperWrapper.QueryAsync<(string playerRoute, string playerIdentityName, int totalMatches)>(sql, new { PlayerId = playerId }, transaction).ConfigureAwait(false)).ToList();
 
@@ -557,7 +562,7 @@ namespace Stoolball.Data.SqlServer
 
             // Current route doesn't match any of its identities. Assign a new one based on the identity that's played the most.
             var updatedRoute = (await _routeGenerator.GenerateUniqueRoute("/players", identities.First(x => x.totalMatches == identities.Max(pi => pi.totalMatches)).playerIdentityName, NoiseWords.PlayerRoute,
-                            async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { PlayerRoute = route }, transaction)
+                            async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute AND Deleted = 0", new { PlayerRoute = route }, transaction)
                         ).ConfigureAwait(false));
 
             await _dapperWrapper.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = updatedRoute, PlayerId = playerId }, transaction).ConfigureAwait(false);

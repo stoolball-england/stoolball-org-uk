@@ -40,7 +40,7 @@ namespace Stoolball.Data.SqlServer
                          ) AS BestTotal
                          ORDER BY Total DESC, TotalInnings ASC, TotalMatches ASC";
 
-            var extraSelectFields = $", (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics } WHERE PlayerId = s.PlayerId AND PlayerWasDismissed = 1 AND RunsScored IS NOT NULL <<WHERE>>) AS TotalDismissals";
+            var extraSelectFields = $", (SELECT COUNT(PlayerInMatchStatisticsId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND PlayerWasDismissed = 1 AND RunsScored IS NOT NULL <<WHERE>>) AS TotalDismissals";
 
             return await ReadBestPlayerSum("RunsScored", true, false, extraSelectFields, outerQuery, $"AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
         }
@@ -185,12 +185,12 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
             }
 
-            var totalInningsQuery = !string.IsNullOrEmpty(totalInningsFilter) ? $"SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {totalInningsFilter} {where}" : "NULL";
+            var totalInningsQuery = !string.IsNullOrEmpty(totalInningsFilter) ? $"SELECT COUNT(PlayerInMatchStatisticsId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {totalInningsFilter} {where}" : "NULL";
 
             var sql = $@"SELECT PlayerId, 
-		                    (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
+		                    (SELECT COUNT(DISTINCT MatchId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
 		                    ({totalInningsQuery}) AS TotalInnings,
-		                    (SELECT SUM({ fieldName}) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS Total
+		                    (SELECT SUM({fieldName}) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS Total
                             <<SELECT>>
                         FROM {Tables.PlayerInMatchStatistics} AS s 
                         WHERE {fieldName} IS NOT NULL {minimumValue} {where} 
@@ -228,8 +228,8 @@ namespace Stoolball.Data.SqlServer
             var (whereWithoutMinimumPerformance, _) = _statisticsQueryBuilder.BuildWhereClause(filterWithoutMinimumPerformance);
 
             var sql = @$"SELECT PlayerId, 
-                            (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics } WHERE PlayerId = s.PlayerId {whereWithoutMinimumPerformance}) AS TotalMatches,
-                            (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {totalInningsFilter} {whereWithoutMinimumPerformance}) AS TotalInnings,
+                            (SELECT COUNT(DISTINCT MatchId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {whereWithoutMinimumPerformance}) AS TotalMatches,
+                            (SELECT COUNT(PlayerInMatchStatisticsId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {totalInningsFilter} {whereWithoutMinimumPerformance}) AS TotalInnings,
                             COUNT({fieldName}) AS Total
                          FROM {Tables.PlayerInMatchStatistics} s
                          WHERE {fieldName} IS NOT NULL {where}
@@ -270,11 +270,6 @@ namespace Stoolball.Data.SqlServer
 
                 return results;
             }
-        }
-
-        public Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostBowlingFigures(StatisticsFilter filter)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Stoolball.UnitTests.Testing
         public void Over_exists_with_only_a_bowler_name()
         {
             var generator = new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
-                Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>(), _playerOfTheMatchAward);
+                Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>(), Mock.Of<PlayerIdentityFakerFactory>(), _playerOfTheMatchAward);
 
             for (var i = 0; i < _iterations; i++)
             {
@@ -35,7 +35,7 @@ namespace Stoolball.UnitTests.Testing
         public void Five_wicket_haul_exists()
         {
             var generator = new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
-                Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>(), _playerOfTheMatchAward);
+                Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>(), Mock.Of<PlayerIdentityFakerFactory>(), _playerOfTheMatchAward);
 
             for (var i = 0; i < _iterations; i++)
             {

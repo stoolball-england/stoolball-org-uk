@@ -48,12 +48,22 @@ namespace Stoolball
         public PlayerIdentity? CreateAuditableCopy(PlayerIdentity? playerIdentity)
         {
             if (playerIdentity == null) { return null; }
-            return new PlayerIdentity
+            var copy = new PlayerIdentity
             {
                 PlayerIdentityId = playerIdentity.PlayerIdentityId,
                 PlayerIdentityName = playerIdentity.PlayerIdentityName,
                 Team = CreateAuditableCopy(playerIdentity.Team)
             };
+
+            if (playerIdentity.Player != null)
+            {
+                copy.Player = new Player
+                {
+                    PlayerId = playerIdentity.Player.PlayerId,
+                    PlayerRoute = playerIdentity.Player.PlayerRoute
+                };
+            }
+            return copy;
         }
 
         public Team? CreateAuditableCopy(Team? team)
@@ -90,7 +100,7 @@ namespace Stoolball
         {
             if (team == null) { return null; }
             var redacted = CreateAuditableCopy(team);
-            if (redacted != null)
+            if (redacted is not null)
             {
                 redacted.Introduction = _dataRedactor.RedactPersonalData(team.Introduction);
                 redacted.PlayingTimes = _dataRedactor.RedactPersonalData(team.PlayingTimes);
@@ -99,6 +109,24 @@ namespace Stoolball
                 redacted.PrivateContactDetails = _dataRedactor.RedactAll(team.PrivateContactDetails);
             }
             return redacted;
+        }
+
+        public TeamInMatch? CreateAuditableCopy(TeamInMatch? teamInMatch)
+        {
+            if (teamInMatch == null) { return null; }
+            return new TeamInMatch
+            {
+                MatchTeamId = teamInMatch.MatchTeamId,
+                Team = new Team
+                {
+                    TeamId = teamInMatch.Team?.TeamId,
+                    TeamName = teamInMatch.Team?.TeamName,
+                    TeamRoute = teamInMatch.Team?.TeamRoute
+                },
+                TeamRole = teamInMatch.TeamRole,
+                WonToss = teamInMatch.WonToss,
+                BattedFirst = teamInMatch.BattedFirst
+            };
         }
 
         public MatchLocation? CreateAuditableCopy(MatchLocation? matchLocation)
@@ -126,11 +154,111 @@ namespace Stoolball
         public MatchLocation? CreateRedactedCopy(MatchLocation? matchLocation)
         {
             var redacted = CreateAuditableCopy(matchLocation);
-            if (redacted != null)
+            if (redacted is not null)
             {
                 redacted.MatchLocationNotes = _dataRedactor.RedactPersonalData(redacted.MatchLocationNotes);
             }
             return redacted;
+        }
+
+        public Match? CreateAuditableCopy(Match? match)
+        {
+            if (match == null) { return null; }
+            return new Match
+            {
+                MatchId = match.MatchId,
+                MatchName = match.MatchName,
+                UpdateMatchNameAutomatically = match.UpdateMatchNameAutomatically,
+                MatchType = match.MatchType,
+                PlayerType = match.PlayerType,
+                Tournament = match.Tournament != null ? new Tournament { TournamentId = match.Tournament.TournamentId } : null,
+                MatchResultType = match.MatchResultType,
+                Teams = match.Teams.Select(x => CreateAuditableCopy(x)).OfType<TeamInMatch>().ToList(),
+                MatchLocation = match.MatchLocation != null ? new MatchLocation { MatchLocationId = match.MatchLocation.MatchLocationId } : null,
+                StartTime = match.StartTime,
+                StartTimeIsKnown = match.StartTimeIsKnown,
+                Season = match.Season != null ? new Season { SeasonId = match.Season.SeasonId } : null,
+                PlayersPerTeam = match.PlayersPerTeam,
+                InningsOrderIsKnown = match.InningsOrderIsKnown,
+                LastPlayerBatsOn = match.LastPlayerBatsOn,
+                EnableBonusOrPenaltyRuns = match.EnableBonusOrPenaltyRuns,
+                MatchInnings = match.MatchInnings.Select(x => CreateAuditableCopy(x)).OfType<MatchInnings>().ToList(),
+                Awards = match.Awards.Select(x => CreateAuditableCopy(x)).ToList(),
+                MatchNotes = match.MatchNotes,
+                MatchRoute = match.MatchRoute
+            };
+        }
+
+        public Match? CreateRedactedCopy(Match? match)
+        {
+            var redacted = CreateAuditableCopy(match);
+            if (redacted is not null)
+            {
+                redacted.MatchNotes = _dataRedactor.RedactPersonalData(match!.MatchNotes);
+            }
+            return redacted;
+        }
+
+        public MatchInnings? CreateAuditableCopy(MatchInnings? innings)
+        {
+            if (innings == null) { return null; }
+            return new MatchInnings
+            {
+                MatchInningsId = innings.MatchInningsId,
+                InningsOrderInMatch = innings.InningsOrderInMatch,
+                BattingMatchTeamId = innings.BattingMatchTeamId,
+                BowlingMatchTeamId = innings.BowlingMatchTeamId,
+                PlayerInnings = innings.PlayerInnings.Select(x => new PlayerInnings
+                {
+                    PlayerInningsId = x.PlayerInningsId,
+                    Batter = CreateAuditableCopy(x.Batter),
+                    DismissedBy = x.DismissedBy != null ? CreateAuditableCopy(x.DismissedBy) : null,
+                    Bowler = x.Bowler != null ? CreateAuditableCopy(x.Bowler) : null,
+                    DismissalType = x.DismissalType,
+                    RunsScored = x.RunsScored,
+                    BallsFaced = x.BallsFaced
+                }).ToList(),
+                OversBowled = innings.OversBowled.Select(x => new Over
+                {
+                    OverId = x.OverId,
+                    OverNumber = x.OverNumber,
+                    Bowler = CreateAuditableCopy(x.Bowler),
+                    BallsBowled = x.BallsBowled,
+                    NoBalls = x.NoBalls,
+                    Wides = x.Wides,
+                    RunsConceded = x.RunsConceded
+                }).ToList(),
+                BowlingFigures = innings.BowlingFigures.Select(x => new BowlingFigures
+                {
+                    BowlingFiguresId = x.BowlingFiguresId,
+                    Bowler = CreateAuditableCopy(x.Bowler),
+                    Overs = x.Overs,
+                    Maidens = x.Maidens,
+                    RunsConceded = x.RunsConceded,
+                    Wickets = x.Wickets
+                }).ToList(),
+                BattingTeam = innings.BattingTeam != null ? CreateAuditableCopy(innings.BattingTeam) : null,
+                BowlingTeam = innings.BowlingTeam != null ? CreateAuditableCopy(innings.BowlingTeam) : null,
+                OverSets = innings.OverSets,
+                Byes = innings.Byes,
+                NoBalls = innings.NoBalls,
+                Wides = innings.Wides,
+                BonusOrPenaltyRuns = innings.BonusOrPenaltyRuns,
+                Runs = innings.Runs,
+                Wickets = innings.Wickets
+            };
+        }
+
+        public MatchAward? CreateAuditableCopy(MatchAward? award)
+        {
+            if (award == null) { return null; }
+            return new MatchAward
+            {
+                AwardedToId = award.AwardedToId,
+                Award = award.Award,
+                PlayerIdentity = CreateAuditableCopy(award.PlayerIdentity),
+                Reason = award.Reason
+            };
         }
 
         public Season? CreateAuditableCopy(Season? season)
@@ -166,7 +294,7 @@ namespace Stoolball
         public Season? CreateRedactedCopy(Season? season)
         {
             var redacted = CreateAuditableCopy(season);
-            if (redacted != null)
+            if (redacted is not null)
             {
                 redacted.Introduction = _dataRedactor.RedactPersonalData(redacted.Introduction);
                 redacted.Results = _dataRedactor.RedactPersonalData(redacted.Results);
@@ -236,7 +364,7 @@ namespace Stoolball
         public Competition? CreateRedactedCopy(Competition? competition)
         {
             var redacted = CreateAuditableCopy(competition);
-            if (redacted != null)
+            if (redacted is not null)
             {
                 redacted.Introduction = _dataRedactor.RedactPersonalData(redacted.Introduction);
                 redacted.PrivateContactDetails = _dataRedactor.RedactAll(redacted.PrivateContactDetails);
@@ -248,7 +376,7 @@ namespace Stoolball
         public Tournament? CreateRedactedCopy(Tournament? tournament)
         {
             var redacted = CreateAuditableCopy(tournament);
-            if (redacted != null)
+            if (redacted is not null)
             {
                 redacted.TournamentNotes = _dataRedactor.RedactPersonalData(redacted.TournamentNotes);
             }

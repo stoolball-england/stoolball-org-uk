@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Matches;
@@ -13,10 +14,17 @@ namespace Stoolball
         Club? CreateAuditableCopy(Club? club);
         Team? CreateAuditableCopy(Team? team);
         Team? CreateRedactedCopy(Team? team);
+        TeamInMatch? CreateAuditableCopy(TeamInMatch? teamInMatch);
         Player? CreateAuditableCopy(Player? player);
         PlayerIdentity? CreateAuditableCopy(PlayerIdentity? playerIdentity);
         MatchLocation? CreateAuditableCopy(MatchLocation? matchLocation);
         MatchLocation? CreateRedactedCopy(MatchLocation? matchLocation);
+
+        [return: NotNullIfNotNull("match")]
+        Match? CreateAuditableCopy(Match? match);
+        Match? CreateRedactedCopy(Match? match);
+        MatchInnings? CreateAuditableCopy(MatchInnings? innings);
+        MatchAward? CreateAuditableCopy(MatchAward? award);
         Season? CreateAuditableCopy(Season? season);
         Season? CreateRedactedCopy(Season? season);
         Competition? CreateAuditableCopy(Competition? competition);

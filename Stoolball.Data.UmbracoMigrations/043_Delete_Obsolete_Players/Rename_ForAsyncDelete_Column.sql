@@ -1,0 +1,1 @@
+EXEC sp_rename 'dbo.StoolballPlayer.ForAsyncDelete', 'Deleted', 'COLUMN'

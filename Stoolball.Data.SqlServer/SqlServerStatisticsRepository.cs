@@ -129,8 +129,8 @@ namespace Stoolball.Data.SqlServer
                      RunsScored, BallsFaced, Catches, RunOuts, WonMatch, PlayerOfTheMatch)
                     VALUES
                     (@PlayerInMatchStatisticsId, @PlayerId, @PlayerIdentityId, 
-                        (SELECT PlayerIdentityName FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId), 
-                        (SELECT PlayerRoute FROM {Tables.Player} WHERE PlayerId = @PlayerId), 
+                        (SELECT PlayerIdentityName FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId), 
+                        (SELECT PlayerRoute FROM {Tables.Player} WHERE PlayerId = @PlayerId AND Deleted = 0), 
                      @MatchId, 
                         (SELECT StartTime FROM {Tables.Match} WHERE MatchId = @MatchId),
                         (SELECT MatchType FROM {Tables.Match} WHERE MatchId = @MatchId),
@@ -152,14 +152,14 @@ namespace Stoolball.Data.SqlServer
                      @MatchInningsPair, @TeamRunsScored, @TeamWicketsLost, @TeamBonusOrPenaltyRunsAwarded, @TeamRunsConceded, @TeamNoBallsConceded, @TeamWidesConceded, @TeamByesConceded, @TeamWicketsTaken, 
                      @BowlingFiguresId, @OverNumberOfFirstOverBowled, @BallsBowled, @Overs, @Maidens, @NoBalls, @Wides, @RunsConceded, @HasRunsConceded, @Wickets, @WicketsWithBowling,
                      @WonToss, @BattedFirst, @PlayerInningsNumber, @PlayerInningsId, @BattingPosition, @DismissalType, @PlayerWasDismissed, @BowledByPlayerIdentityId, 
-                        (SELECT CASE WHEN @BowledByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerIdentityName FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @BowledByPlayerIdentityId) END),
-                        (SELECT CASE WHEN @BowledByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerRoute FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId WHERE PlayerIdentityId = @BowledByPlayerIdentityId) END),
+                        (SELECT CASE WHEN @BowledByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerIdentityName FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @BowledByPlayerIdentityId) END),
+                        (SELECT CASE WHEN @BowledByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerRoute FROM {Views.PlayerIdentity} pi WHERE PlayerIdentityId = @BowledByPlayerIdentityId) END),
                      @CaughtByPlayerIdentityId, 
-                        (SELECT CASE WHEN @CaughtByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerIdentityName FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @CaughtByPlayerIdentityId) END),
-                        (SELECT CASE WHEN @CaughtByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerRoute FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId WHERE PlayerIdentityId = @CaughtByPlayerIdentityId) END),
+                        (SELECT CASE WHEN @CaughtByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerIdentityName FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @CaughtByPlayerIdentityId) END),
+                        (SELECT CASE WHEN @CaughtByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerRoute FROM {Views.PlayerIdentity} pi WHERE PlayerIdentityId = @CaughtByPlayerIdentityId) END),
                      @RunOutByPlayerIdentityId, 
-                        (SELECT CASE WHEN @RunOutByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerIdentityName FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @RunOutByPlayerIdentityId) END),
-                        (SELECT CASE WHEN @RunOutByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerRoute FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId WHERE PlayerIdentityId = @RunOutByPlayerIdentityId) END),
+                        (SELECT CASE WHEN @RunOutByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerIdentityName FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @RunOutByPlayerIdentityId) END),
+                        (SELECT CASE WHEN @RunOutByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerRoute FROM {Views.PlayerIdentity} pi WHERE PlayerIdentityId = @RunOutByPlayerIdentityId) END),
                      @RunsScored, @BallsFaced, @Catches, @RunOuts, @WonMatch, @PlayerOfTheMatch)",
                         new
                         {

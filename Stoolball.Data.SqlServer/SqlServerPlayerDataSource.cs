@@ -98,7 +98,7 @@ namespace Stoolball.Data.SqlServer
                 var sql = $@"SELECT stats.PlayerIdentityId, pi.PlayerIdentityName, pi.RouteSegment, {PROBABILITY_CALCULATION} AS Probability, 
                             COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed,
                             stats.PlayerId, stats.PlayerRoute, stats.TeamId, stats.TeamName
-                            FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.PlayerInMatchStatistics} AS stats ON pi.PlayerIdentityId = stats.PlayerIdentityId
+                            FROM {Views.PlayerIdentity} pi INNER JOIN {Tables.PlayerInMatchStatistics} AS stats ON pi.PlayerIdentityId = stats.PlayerIdentityId
                             <<WHERE>>
                             GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, pi.PlayerIdentityName, pi.RouteSegment, stats.TeamId, stats.TeamName 
                             ORDER BY stats.TeamId ASC, {PROBABILITY_CALCULATION} DESC, pi.PlayerIdentityName ASC";
@@ -201,13 +201,13 @@ namespace Stoolball.Data.SqlServer
                 // Updates to PlayerInMatchStatistics are done asynchronously and the data will not be updated by the time this is called again.
 
                 var playerData = await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(
-                    $@"SELECT p.PlayerId, p.PlayerRoute, p.MemberKey,
+                    $@"SELECT pi.PlayerId, pi.PlayerRoute, pi.MemberKey,
                         pi.PlayerIdentityId, pi.PlayerIdentityName,
                         (SELECT COUNT(DISTINCT MatchId) AS TotalMatches FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS TotalMatches,
                         (SELECT MIN(MatchStartTime) AS FirstPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS FirstPlayed,
                         (SELECT MAX(MatchStartTime) AS LastPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS LastPlayed,
                         t.TeamId, tv.TeamName, t.TeamRoute
-                        FROM {Tables.Player} p INNER JOIN {Tables.PlayerIdentity} pi ON p.PlayerId = pi.PlayerId
+                        FROM {Views.PlayerIdentity} pi 
                         INNER JOIN {Tables.Team} t ON pi.TeamId = t.TeamId
                         INNER JOIN {Tables.TeamVersion} tv ON t.TeamId = tv.TeamId
                         WHERE LOWER(PlayerRoute) = @Route
@@ -241,7 +241,8 @@ namespace Stoolball.Data.SqlServer
                 return await connection.QuerySingleOrDefaultAsync<Player>(
                     $@"SELECT TOP 1 PlayerRoute
                         FROM {Tables.Player}
-                        WHERE MemberKey = @MemberKey",
+                        WHERE MemberKey = @MemberKey
+                        AND Deleted = 0",
                         new { MemberKey = key });
             }
         }
@@ -280,12 +281,12 @@ namespace Stoolball.Data.SqlServer
                               pi.PlayerId,
                               t.TeamId, tv.TeamName, t.TeamRoute,
                               c.ClubId, cv.ClubName, c.ClubRoute
-                       FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Team} t ON pi.TeamId = t.TeamId 
+                       FROM {Views.PlayerIdentity} pi INNER JOIN {Tables.Team} t ON pi.TeamId = t.TeamId 
                        INNER JOIN {Tables.TeamVersion} tv ON t.TeamId = tv.TeamId
                        LEFT JOIN {Tables.Club} c ON t.ClubId = c.ClubId
                        LEFT JOIN {Tables.ClubVersion} cv ON c.ClubId = cv.ClubId
                        WHERE LOWER(pi.RouteSegment) = @RouteSegment AND LOWER(t.TeamRoute) = @TeamRoute
-                       AND tv.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM { Tables.TeamVersion } WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                       AND tv.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                        AND (cv.ClubVersionId = (SELECT TOP 1 ClubVersionId FROM {Tables.ClubVersion} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR cv.ClubVersionId IS NULL)",
                     (identity, player, team, club) =>
                     {

@@ -25,7 +25,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
             var seedDataGenerator = new SeedDataGenerator(randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                teamFakerFactory: new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory(), playerOfTheMatchAward);
+                teamFakerFactory: new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory(), new PlayerIdentityFakerFactory(), playerOfTheMatchAward);
             TestData = seedDataGenerator.GenerateTestData();
             PlayerWithFifthAndSixthBowlingFiguresTheSame = ForceFifthAndSixthBowlingFiguresToBeTheSame(TestData);
             PlayerWithFifthAndSixthInningsTheSame = ForceFifthAndSixthPlayerInningsToBeTheSame(TestData, bowlingFiguresCalculator);

@@ -60,9 +60,7 @@ namespace Stoolball.Testing
             match.Teams.Add(teamAInMatch);
             match.Teams.Add(teamBInMatch);
 
-            // create a date accurate to the minute, otherwise integration tests can fail due to fractions of a second which are never seen in real data
-            var randomStartTime = DateTimeOffset.UtcNow.AddMonths(_randomiser.PositiveIntegerLessThan(30) * -1 - 1);
-            match.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(new DateTimeOffset(randomStartTime.Year, randomStartTime.Month, randomStartTime.Day, randomStartTime.Hour, randomStartTime.Minute, 0, TimeSpan.Zero), Constants.UkTimeZone());
+            match.StartTime = DateTimeOffset.UtcNow.AddMonths(_randomiser.PositiveIntegerLessThan(30) * -1 - 1).UtcToUkTime();
 
             // Some matches should have multiple innings
             if (_randomiser.PositiveIntegerLessThan(4) == 0)
