@@ -173,7 +173,7 @@ BEGIN
 		INTO #PlayerAsyncDelete
 		FROM StoolballPlayer p 
 		LEFT JOIN StoolballPlayerInMatchStatistics s ON p.PlayerId = s.PlayerId
-		WHERE ForAsyncDelete = 1 AND s.PlayerInMatchStatisticsId IS NULL
+		WHERE Deleted = 1 AND s.PlayerInMatchStatisticsId IS NULL
 
 		IF @@ROWCOUNT > 0
 			SET @DoStatisticsUpdate = 1

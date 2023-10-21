@@ -249,7 +249,7 @@ namespace Stoolball.Data.SqlServer
 
                         // We also need to update statistics, and delete the now-unused player that the identity has been moved away from. 
                         // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so we just need to mark the player as safe to delete.
-                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET ForAsyncDelete = 1 WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
+                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET Deleted = 1 WHERE PlayerId = @PlayerId", auditablePlayer, transaction);
 
                         var serialisedDeletedPlayer = JsonConvert.SerializeObject(auditablePlayer);
                         await _auditRepository.CreateAudit(new AuditRecord
@@ -446,12 +446,12 @@ namespace Stoolball.Data.SqlServer
 
             if (!playerIdentity.PlayerIdentityId.HasValue)
             {
-                throw new ArgumentException($"{ nameof(playerIdentity.PlayerIdentityId)} must have a value");
+                throw new ArgumentException($"{nameof(playerIdentity.PlayerIdentityId)} must have a value");
             }
 
             if (string.IsNullOrEmpty(playerIdentity.PlayerIdentityName))
             {
-                throw new ArgumentException($"{ nameof(playerIdentity.PlayerIdentityName)} cannot be null or empty");
+                throw new ArgumentException($"{nameof(playerIdentity.PlayerIdentityName)} cannot be null or empty");
             }
 
             if (playerIdentity.Team?.TeamId == null)
