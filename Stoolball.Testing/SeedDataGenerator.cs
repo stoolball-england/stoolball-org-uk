@@ -28,12 +28,13 @@ namespace Stoolball.Testing
         private readonly IFakerFactory<Team> _teamFakerFactory;
         private readonly IFakerFactory<MatchLocation> _matchLocationFakerFactory;
         private readonly IFakerFactory<School> _schoolFakerFactory;
+        private readonly IFakerFactory<PlayerIdentity> _playerIdentityFakerFactory;
         private readonly Award _playerOfTheMatchAward;
         private readonly IOversHelper _oversHelper;
 
         internal SeedDataGenerator(Randomiser randomiser, IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder,
             IMatchFinder matchFinder, IFakerFactory<Team> teamFakerFactory, IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory,
-            Award playerOfTheMatchAward)
+            IFakerFactory<PlayerIdentity> playerIdentityFakerFactory, Award playerOfTheMatchAward)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
@@ -43,6 +44,7 @@ namespace Stoolball.Testing
             _teamFakerFactory = teamFakerFactory ?? throw new ArgumentNullException(nameof(teamFakerFactory));
             _matchLocationFakerFactory = matchLocationFakerFactory ?? throw new ArgumentNullException(nameof(matchLocationFakerFactory));
             _schoolFakerFactory = schoolFakerFactory ?? throw new ArgumentNullException(nameof(schoolFakerFactory));
+            _playerIdentityFakerFactory = playerIdentityFakerFactory;
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
             _matchFactory = new MatchFactory(_randomiser, _playerOfTheMatchAward);
         }
@@ -1072,7 +1074,8 @@ namespace Stoolball.Testing
 
             var matchProviders = new BaseMatchDataProvider[]{
                 new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward),
-                new APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(_randomiser, _matchFactory, _bowlingFiguresCalculator)
+                new APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(_randomiser, _matchFactory, _bowlingFiguresCalculator),
+                new PlayersOnlyRecordedInOnePlace(_matchFactory, _teamFakerFactory, _playerIdentityFakerFactory, _playerOfTheMatchAward)
             };
             foreach (var provider in matchProviders)
             {
@@ -1080,6 +1083,14 @@ namespace Stoolball.Testing
                 foreach (var match in matchesFromProvider)
                 {
                     testData.Matches.Add(match);
+
+                    foreach (var matchInnings in match.MatchInnings)
+                    {
+                        matchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(matchInnings);
+                    }
+
+                    var newTeams = match.Teams.Select(x => x.Team).OfType<Team>().Where(x => !testData.Teams.Any(t => t.TeamId == x.TeamId));
+                    testData.Teams.AddRange(newTeams);
 
                     var newPlayerIdentities = _playerIdentityFinder.PlayerIdentitiesInMatch(match).Where(x => !testData.PlayerIdentities.Select(pi => pi.PlayerIdentityId).Contains(x.PlayerIdentityId)).ToList();
                     if (newPlayerIdentities.Any()) { testData.PlayerIdentities.AddRange(newPlayerIdentities); }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -34,6 +34,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         private readonly Mock<IMatchNameBuilder> _matchNameBuilder = new();
         private readonly Mock<IPlayerTypeSelector> _playerTypeSelector = new();
         private readonly Mock<IDataRedactor> _dataRedactor = new();
+        private readonly DapperWrapper _dapperWrapper = new();
+        private readonly StoolballEntityCopier _copier;
+        private readonly SqlServerPlayerRepository _playerRepository;
         private readonly Mock<IStatisticsRepository> _statisticsRepository = new();
         private readonly Mock<IMatchInningsFactory> _matchInningsFactory = new();
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
@@ -53,29 +56,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             _memberKey = _databaseFixture.TestData.Members[0].memberKey;
             _memberName = _databaseFixture.TestData.Members[0].memberName;
 
+            _copier = new StoolballEntityCopier(_dataRedactor.Object);
 
-        }
-        private SqlServerMatchRepository CreateRepository(IStatisticsRepository statisticsRepository = null)
-        {
-            var dapperWrapper = new DapperWrapper();
-            var copier = new StoolballEntityCopier(_dataRedactor.Object);
-            var oversHelper = new OversHelper();
-            var playerRepository = new SqlServerPlayerRepository(
+            _playerRepository = new SqlServerPlayerRepository(
                 _databaseFixture.ConnectionFactory,
-                dapperWrapper,
+                _dapperWrapper,
                 _auditRepository.Object,
                 Mock.Of<ILogger<SqlServerPlayerRepository>>(),
                 _redirectsRepository.Object,
                 _routeGenerator.Object,
-                copier,
+                _copier,
                 new PlayerNameFormatter(),
                 new BestRouteSelector(new RouteTokeniser()),
                 Mock.Of<IPlayerCacheInvalidator>()
                 );
 
+        }
+        private SqlServerMatchRepository CreateRepository(IStatisticsRepository statisticsRepository = null)
+        {
+            var oversHelper = new OversHelper();
+
             return new SqlServerMatchRepository(
                             _databaseFixture.ConnectionFactory,
-                            dapperWrapper,
+                            _dapperWrapper,
                             _auditRepository.Object,
                             _logger.Object,
                             _routeGenerator.Object,
@@ -85,14 +88,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                             _playerTypeSelector.Object,
                             new BowlingScorecardComparer(),
                             new BattingScorecardComparer(),
-                            playerRepository,
+                            _playerRepository,
                             _dataRedactor.Object,
-                            statisticsRepository ?? new SqlServerStatisticsRepository(playerRepository),
+                            statisticsRepository ?? new SqlServerStatisticsRepository(_playerRepository),
                             oversHelper,
                             new PlayerInMatchStatisticsBuilder(new PlayerIdentityFinder(), oversHelper),
                             _matchInningsFactory.Object,
                             _seasonDataSource.Object,
-                            copier);
+                            _copier);
         }
 
         // TODO: Test repository.CreateMatch();
@@ -111,64 +114,64 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             };
 
             foreach (var inningsToCopy in matchToCopy.MatchInnings)
-                {
+            {
                 match.MatchInnings.Add(new MatchInnings
-                    {
+                {
                     MatchInningsId = inningsToCopy.MatchInningsId,
                     InningsOrderInMatch = inningsToCopy.InningsOrderInMatch,
                     BattingMatchTeamId = inningsToCopy.BattingMatchTeamId,
                     BowlingMatchTeamId = inningsToCopy.BowlingMatchTeamId,
-                        BattingTeam = new TeamInMatch
+                    BattingTeam = new TeamInMatch
+                    {
+                        Team = new Team
                         {
-                            Team = new Team
-                            {
-                                TeamId = inningsToCopy.BattingTeam!.Team!.TeamId
-                            }
-                        },
-                        BowlingTeam = new TeamInMatch
+                            TeamId = inningsToCopy.BattingTeam!.Team!.TeamId
+                        }
+                    },
+                    BowlingTeam = new TeamInMatch
+                    {
+                        Team = new Team
                         {
-                            Team = new Team
-                            {
-                                TeamId = inningsToCopy.BowlingTeam!.Team!.TeamId
-                            }
-                        },
-                        OverSets = inningsToCopy.OverSets,
-                        Byes = inningsToCopy.Byes,
-                        Wides = inningsToCopy.Wides,
-                        NoBalls = inningsToCopy.NoBalls,
-                        BonusOrPenaltyRuns = inningsToCopy.BonusOrPenaltyRuns,
-                        Runs = inningsToCopy.Runs,
-                        Wickets = inningsToCopy.Wickets
+                            TeamId = inningsToCopy.BowlingTeam!.Team!.TeamId
+                        }
+                    },
+                    OverSets = inningsToCopy.OverSets,
+                    Byes = inningsToCopy.Byes,
+                    Wides = inningsToCopy.Wides,
+                    NoBalls = inningsToCopy.NoBalls,
+                    BonusOrPenaltyRuns = inningsToCopy.BonusOrPenaltyRuns,
+                    Runs = inningsToCopy.Runs,
+                    Wickets = inningsToCopy.Wickets
                 });
 
-            foreach (var playerInnings in inningsToCopy.PlayerInnings)
-            {
+                foreach (var playerInnings in inningsToCopy.PlayerInnings)
+                {
                     match.MatchInnings[^1].PlayerInnings.Add(new PlayerInnings
+                    {
+                        PlayerInningsId = playerInnings.PlayerInningsId,
+                        BattingPosition = playerInnings.BattingPosition,
+                        Batter = playerInnings.Batter,
+                        DismissalType = playerInnings.DismissalType,
+                        DismissedBy = playerInnings.DismissedBy,
+                        Bowler = playerInnings.Bowler,
+                        RunsScored = playerInnings.RunsScored,
+                        BallsFaced = playerInnings.BallsFaced,
+                    });
+                }
+                foreach (var over in inningsToCopy.OversBowled)
                 {
-                    PlayerInningsId = playerInnings.PlayerInningsId,
-                    BattingPosition = playerInnings.BattingPosition,
-                    Batter = playerInnings.Batter,
-                    DismissalType = playerInnings.DismissalType,
-                    DismissedBy = playerInnings.DismissedBy,
-                    Bowler = playerInnings.Bowler,
-                    RunsScored = playerInnings.RunsScored,
-                    BallsFaced = playerInnings.BallsFaced,
-                });
-            }
-            foreach (var over in inningsToCopy.OversBowled)
-            {
                     match.MatchInnings[^1].OversBowled.Add(new Over
-                {
-                    OverId = over.OverId,
-                    OverSet = over.OverSet,
-                    OverNumber = over.OverNumber,
-                    Bowler = over.Bowler,
-                    BallsBowled = over.BallsBowled,
-                    Wides = over.Wides,
-                    NoBalls = over.NoBalls,
-                    RunsConceded = over.RunsConceded
-                });
-            }
+                    {
+                        OverId = over.OverId,
+                        OverSet = over.OverSet,
+                        OverNumber = over.OverNumber,
+                        Bowler = over.Bowler,
+                        BallsBowled = over.BallsBowled,
+                        Wides = over.Wides,
+                        NoBalls = over.NoBalls,
+                        RunsConceded = over.RunsConceded
+                    });
+                }
             }
 
             foreach (var award in matchToCopy.Awards)
@@ -555,6 +558,154 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             _statisticsRepository.Verify(x => x.UpdateBowlingFigures(It.Is<MatchInnings>(mi => mi.MatchInningsId == modifiedMatchInnings.MatchInningsId), _memberKey, _memberName, It.IsAny<IDbTransaction>()), bowlerHasChanged ? Times.Once() : Times.Never());
             _statisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbTransaction>()), anythingHasChanged ? Times.Once() : Times.Never());
         }
+
+        [Fact]
+        public async Task UpdateBattingScorecard_deletes_obsolete_player_removed_as_a_batter()
+        {
+            // This should take place async to avoid timeouts updating the match. Consider what would happen if the player were used again before the async update.
+            var repository = CreateRepository();
+
+            // Find a player identity who we only record as having batted once
+            var matchInnings = _databaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings);
+            var identityOnlyRecordedAsBattingOnce = _databaseFixture.TestData.PlayerIdentities.First(
+                    x => matchInnings.SelectMany(mi => mi.PlayerInnings.Where(pi => pi.Batter?.PlayerIdentityId == x.PlayerIdentityId)).Count() == 1 &&
+                                                       !matchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId ||
+                                                                                                          pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId)) &&
+                                                       !matchInnings.Any(mi => mi.OversBowled.Any(pi => pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId)) &&
+                                                       !_databaseFixture.TestData.Matches.SelectMany(x => x.Awards).Any(aw => aw.PlayerIdentity?.PlayerIdentityId == x.PlayerIdentityId)
+                                                    );
+
+            // Copy the match where that identity batted
+            var match = CloneValidMatch(_databaseFixture.TestData.Matches.Single(m => m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Batter?.PlayerIdentityId == identityOnlyRecordedAsBattingOnce.PlayerIdentityId))));
+
+            // Remove the innings from the copy
+            var innings = match.MatchInnings.Single(mi => mi.PlayerInnings.Any(o => o.Batter?.PlayerIdentityId == identityOnlyRecordedAsBattingOnce.PlayerIdentityId));
+            var playerInnings = innings.PlayerInnings.Single(o => o.Batter?.PlayerIdentityId == identityOnlyRecordedAsBattingOnce.PlayerIdentityId);
+            innings.PlayerInnings.Remove(playerInnings);
+
+            // Act
+            var result = await repository.UpdateBattingScorecard(
+                    match,
+                    innings.MatchInningsId!.Value,
+                    _memberKey,
+                    _memberName);
+            await _playerRepository.ProcessAsyncUpdatesForPlayers();
+
+            // Assert
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var savedPlayerIdentity = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                   $@"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId",
+                   new { identityOnlyRecordedAsBattingOnce.PlayerIdentityId }).ConfigureAwait(false);
+
+                Assert.Null(savedPlayerIdentity);
+
+                var savedPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                   $@"SELECT PlayerId FROM {Tables.Player} WHERE PlayerId = @PlayerId",
+                   new { identityOnlyRecordedAsBattingOnce.Player!.PlayerId }).ConfigureAwait(false);
+
+                Assert.Null(savedPlayer);
+            }
+        }
+
+        [Fact]
+        public async Task UpdateBattingScorecard_deletes_obsolete_player_removed_as_a_fielder()
+        {
+            // This should take place async to avoid timeouts updating the match. Consider what would happen if the player were used again before the async update.
+            var repository = CreateRepository();
+
+            // Find a player identity who we only record as having fielded once
+            var matchInnings = _databaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings);
+            var identityOnlyRecordedAsFieldingOnce = _databaseFixture.TestData.PlayerIdentities.First(
+                    x => matchInnings.SelectMany(mi => mi.PlayerInnings.Where(pi => pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId)).Count() == 1 &&
+                                                       !matchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Batter?.PlayerIdentityId == x.PlayerIdentityId ||
+                                                                                                          pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId)) &&
+                                                       !matchInnings.Any(mi => mi.OversBowled.Any(pi => pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId)) &&
+                                                       !_databaseFixture.TestData.Matches.SelectMany(x => x.Awards).Any(aw => aw.PlayerIdentity?.PlayerIdentityId == x.PlayerIdentityId)
+                                                    );
+
+            // Copy the match where that identity fielded
+            var match = CloneValidMatch(_databaseFixture.TestData.Matches.Single(m => m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.DismissedBy?.PlayerIdentityId == identityOnlyRecordedAsFieldingOnce.PlayerIdentityId))));
+
+            // Remove the innings from the copy
+            var innings = match.MatchInnings.Single(mi => mi.PlayerInnings.Any(o => o.DismissedBy?.PlayerIdentityId == identityOnlyRecordedAsFieldingOnce.PlayerIdentityId));
+            var playerInnings = innings.PlayerInnings.Single(o => o.DismissedBy?.PlayerIdentityId == identityOnlyRecordedAsFieldingOnce.PlayerIdentityId);
+            innings.PlayerInnings.Remove(playerInnings);
+
+            // Act
+            var result = await repository.UpdateBattingScorecard(
+                    match,
+                    innings.MatchInningsId!.Value,
+                    _memberKey,
+                    _memberName);
+            await _playerRepository.ProcessAsyncUpdatesForPlayers();
+
+            // Assert
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var savedPlayerIdentity = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                   $@"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId",
+                   new { identityOnlyRecordedAsFieldingOnce.PlayerIdentityId }).ConfigureAwait(false);
+
+                Assert.Null(savedPlayerIdentity);
+
+                var savedPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                   $@"SELECT PlayerId FROM {Tables.Player} WHERE PlayerId = @PlayerId",
+                   new { identityOnlyRecordedAsFieldingOnce.Player!.PlayerId }).ConfigureAwait(false);
+
+                Assert.Null(savedPlayer);
+            }
+        }
+
+        [Fact]
+        public async Task UpdateBattingScorecard_deletes_obsolete_player_removed_as_a_bowler()
+        {
+            // This should take place async to avoid timeouts updating the match. Consider what would happen if the player were used again before the async update.
+            var repository = CreateRepository();
+
+            // Find a player identity who we only record as having taken a wicket once
+            var matchInnings = _databaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings);
+            var identityOnlyRecordedAsTakingAWicketOnce = _databaseFixture.TestData.PlayerIdentities.First(
+                    x => matchInnings.SelectMany(mi => mi.PlayerInnings.Where(pi => pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId)).Count() == 1 &&
+                                                       !matchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Batter?.PlayerIdentityId == x.PlayerIdentityId ||
+                                                                                                          pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId)) &&
+                                                       !matchInnings.Any(mi => mi.OversBowled.Any(pi => pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId)) &&
+                                                       !_databaseFixture.TestData.Matches.SelectMany(x => x.Awards).Any(aw => aw.PlayerIdentity?.PlayerIdentityId == x.PlayerIdentityId)
+                                                    );
+
+            // Copy the match where that identity took a wicket
+            var match = CloneValidMatch(_databaseFixture.TestData.Matches.Single(m => m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId))));
+
+            // Remove the innings from the copy
+            var innings = match.MatchInnings.Single(mi => mi.PlayerInnings.Any(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId));
+            var playerInnings = innings.PlayerInnings.Single(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId);
+            innings.PlayerInnings.Remove(playerInnings);
+
+            // Act
+            var result = await repository.UpdateBattingScorecard(
+                    match,
+                    innings.MatchInningsId!.Value,
+                    _memberKey,
+                    _memberName);
+            await _playerRepository.ProcessAsyncUpdatesForPlayers();
+
+            // Assert
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var savedPlayerIdentity = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                   $@"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId",
+                   new { identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId }).ConfigureAwait(false);
+
+                Assert.Null(savedPlayerIdentity);
+
+                var savedPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                   $@"SELECT PlayerId FROM {Tables.Player} WHERE PlayerId = @PlayerId",
+                   new { identityOnlyRecordedAsTakingAWicketOnce.Player!.PlayerId }).ConfigureAwait(false);
+
+                Assert.Null(savedPlayer);
+            }
+        }
+
         [Fact]
         public async Task UpdateBowlingScorecard_inserts_new_overs_and_extends_the_final_overset()
         {
@@ -752,6 +903,56 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             _statisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbTransaction>()), bowlingHasChanged ? Times.Once() : Times.Never());
         }
 
+        [Fact]
+        public async Task UpdateBowlingScorecard_deletes_obsolete_players()
+        {
+            // This should take place async to avoid timeouts updating the match. Consider what would happen if the player were used again before the async update.
+            var repository = CreateRepository();
+
+            // Find a player identity who we only record as having bowled one over
+            var matchInnings = _databaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings);
+            var identityOnlyRecordedAsBowlingOneOver = _databaseFixture.TestData.PlayerIdentities.First(
+                    x => matchInnings.SelectMany(mi => mi.OversBowled.Where(o => o.Bowler?.PlayerIdentityId == x.PlayerIdentityId)).Count() == 1 &&
+                                                       !matchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Batter?.PlayerIdentityId == x.PlayerIdentityId ||
+                                                                                                          pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId ||
+                                                                                                          pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId)) &&
+                                                       !_databaseFixture.TestData.Matches.SelectMany(x => x.Awards).Any(aw => aw.PlayerIdentity?.PlayerIdentityId == x.PlayerIdentityId)
+                                                    );
+
+            // Copy the match where that over was bowled
+            var match = CloneValidMatch(_databaseFixture.TestData.Matches.Single(m => m.MatchInnings.Any(mi => mi.OversBowled.Any(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsBowlingOneOver.PlayerIdentityId))));
+
+            // Remove the over from the copy
+            var innings = match.MatchInnings.Single(mi => mi.OversBowled.Any(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsBowlingOneOver.PlayerIdentityId));
+            var over = innings.OversBowled.Single(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsBowlingOneOver.PlayerIdentityId);
+            innings.OversBowled.Remove(over);
+
+            // Act
+            var result = await repository.UpdateBowlingScorecard(
+                    match,
+                    innings.MatchInningsId!.Value,
+                    _memberKey,
+                    _memberName);
+            await _playerRepository.ProcessAsyncUpdatesForPlayers();
+
+            // Assert
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var savedPlayerIdentity = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                   $@"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId",
+                   new { identityOnlyRecordedAsBowlingOneOver.PlayerIdentityId }).ConfigureAwait(false);
+
+                Assert.Null(savedPlayerIdentity);
+
+                var savedPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                   $@"SELECT PlayerId FROM {Tables.Player} WHERE PlayerId = @PlayerId",
+                   new { identityOnlyRecordedAsBowlingOneOver.Player!.PlayerId }).ConfigureAwait(false);
+
+                Assert.Null(savedPlayer);
+
+            }
+        }
+
         private static void AddOneNewBowlingOver(MatchInnings innings)
         {
             var overToAdd = new Over
@@ -940,7 +1141,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         }
 
         private void AddOneNewAward(Stoolball.Matches.Match match)
-            {
+        {
             match.Awards.Add(
                     new MatchAward
                     {
@@ -949,7 +1150,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                                                 .Contains(pi.Team?.TeamId)),
                         Award = match.Awards[0].Award,
                         Reason = "A good reason " + Guid.NewGuid()
-                }
+                    }
                 );
         }
 
@@ -1003,8 +1204,54 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             _statisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbTransaction>()), Times.Once());
         }
 
-            var memberKey = Guid.NewGuid();
-            var memberName = "Dee Leeter";
+        [Fact]
+        public async Task UpdateCloseOfPlay_deletes_obsolete_players()
+        {
+            // This should take place async to avoid timeouts updating the match. Consider what would happen if the player were used again before the async update.
+            var repository = CreateRepository();
+
+            // Find a player identity who we only record that player (with any identity) as having won an award once
+            var awardWinners = _databaseFixture.TestData.Matches.SelectMany(m => m.Awards.Select(aw => aw.PlayerIdentity).OfType<PlayerIdentity>()).ToList();
+            awardWinners = awardWinners.Where(pi => awardWinners.Count(pi2 => pi2.PlayerIdentityId == pi.PlayerIdentityId) == 1).ToList();
+
+            var matchInnings = _databaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings);
+            var playerInnings = matchInnings.SelectMany(x => x.PlayerInnings);
+            var identityOnlyRecordedAsWinningOneAward = _databaseFixture.TestData.PlayerIdentities.First(
+                    x => awardWinners.Any(aw => aw.PlayerIdentityId == x.PlayerIdentityId) &&
+                        !playerInnings.Any(pi => pi.Batter?.Player?.PlayerId == x.Player?.PlayerId ||
+                                                 pi.DismissedBy?.Player?.PlayerId == x.Player?.PlayerId ||
+                                                 pi.Bowler?.Player?.PlayerId == x.Player?.PlayerId) &&
+                        !matchInnings.Any(mi => mi.OversBowled.Any(pi => pi.Bowler?.Player?.PlayerId == x.Player?.PlayerId)));
+
+            // Copy the match where that identity won its award
+            var match = CloneValidMatch(_databaseFixture.TestData.Matches.Single(m => m.Awards.Any(aw => aw.PlayerIdentity?.PlayerIdentityId == identityOnlyRecordedAsWinningOneAward.PlayerIdentityId)));
+
+            // Remove the award from the copy
+            match.Awards.Clear();
+
+            // Act
+            var result = await repository.UpdateCloseOfPlay(
+                    match,
+                    _memberKey,
+                    _memberName);
+            await _playerRepository.ProcessAsyncUpdatesForPlayers();
+
+            // Assert
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var savedPlayerIdentity = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                   $@"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId",
+                   new { identityOnlyRecordedAsWinningOneAward.PlayerIdentityId }).ConfigureAwait(false);
+
+                Assert.Null(savedPlayerIdentity);
+
+                var savedPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                   $@"SELECT PlayerId FROM {Tables.Player} WHERE PlayerId = @PlayerId",
+                   new { identityOnlyRecordedAsWinningOneAward.Player!.PlayerId }).ConfigureAwait(false);
+
+                Assert.Null(savedPlayer);
+            }
+        }
 
         [Fact]
         public async Task Delete_match_succeeds()

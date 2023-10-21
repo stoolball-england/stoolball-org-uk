@@ -162,10 +162,5 @@ namespace Stoolball.MatchLocations
             }
             return description.ToString();
         }
-
-        internal bool Any(Func<object, object> p)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

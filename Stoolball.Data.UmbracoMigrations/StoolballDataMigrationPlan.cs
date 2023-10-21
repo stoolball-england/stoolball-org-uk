@@ -1,4 +1,4 @@
-using Umbraco.Cms.Infrastructure.Migrations;
+﻿using Umbraco.Cms.Infrastructure.Migrations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
@@ -53,6 +53,8 @@ namespace Stoolball.Data.UmbracoMigrations
                 .To<LinkPlayerToMember>(typeof(LinkPlayerToMember).ToString())
                 .To<LinkPlayerToMemberAsyncUpdate>(typeof(LinkPlayerToMemberAsyncUpdate).ToString())
                 .To<IndexTeamRouteAndOppositionTeamRoute>(typeof(IndexTeamRouteAndOppositionTeamRoute).ToString())
+                .To<AddRouteSegmentToPlayerIdentity>(typeof(AddRouteSegmentToPlayerIdentity).ToString())
+                .To<DeleteObsoletePlayers>(typeof(DeleteObsoletePlayers).ToString())
                 .To<AddLinkedByToPlayerIdentity>(typeof(AddLinkedByToPlayerIdentity).ToString());
         }
     }
