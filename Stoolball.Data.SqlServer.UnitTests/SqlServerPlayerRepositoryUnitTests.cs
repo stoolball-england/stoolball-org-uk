@@ -48,6 +48,169 @@ namespace Stoolball.Data.SqlServer.UnitTests
                 _playerCacheClearer.Object);
         }
 
+#nullable disable
+        [Fact]
+        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_playerIdentity_is_null()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(null, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+        }
+
+        [Fact]
+        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentException_if_PlayerIdentityName_is_null()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = null, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+        }
+        [Fact]
+        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentException_if_PlayerIdentityName_is_empty_string()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = string.Empty, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+        }
+
+        [Fact]
+        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_memberName_is_null()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), null, Mock.Of<IDbTransaction>()));
+        }
+
+        [Fact]
+        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_memberName_is_empty_string()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), string.Empty, Mock.Of<IDbTransaction>()));
+        }
+
+        [Fact]
+        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentException_if_TeamId_is_null()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1" }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+        }
+
+        [Fact]
+        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_transaction_is_null()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", null));
+        }
+#nullable enable
+
+        [Fact]
+        public async Task LinkPlayerToMemberAccount_throws_ArgumentException_if_PlayerId_is_null()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerToMemberAccount(new Player { PlayerRoute = "/example" }, Guid.NewGuid(), "Member name"));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task LinkPlayerToMemberAccount_throws_ArgumentException_if_PlayerRoute_is_missing(string playerRoute)
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerToMemberAccount(new Player { PlayerId = Guid.NewGuid(), PlayerRoute = playerRoute }, Guid.NewGuid(), "Member name"));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task LinkPlayerToMemberAccount_throws_ArgumentNullException_if_memberName_is_missing(string memberName)
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.LinkPlayerToMemberAccount(new Player { PlayerId = Guid.NewGuid(), PlayerRoute = "/example" }, Guid.NewGuid(), memberName));
+        }
+
+        [Fact]
+        public async Task UnlinkPlayerIdentityFromMemberAccount_throws_ArgumentException_if_PlayerIdentityId_is_null()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UnlinkPlayerIdentityFromMemberAccount(new PlayerIdentity { PlayerIdentityName = "player" }, Guid.NewGuid(), "Member name"));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task UnlinkPlayerIdentityFromMemberAccount_throws_ArgumentException_if_PlayerIdentityName_is_missing(string playerIdentityName)
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UnlinkPlayerIdentityFromMemberAccount(new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = playerIdentityName }, Guid.NewGuid(), "Member name"));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task UnlinkPlayerIdentityFromMemberAccount_throws_ArgumentNullException_if_memberName_is_missing(string memberName)
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UnlinkPlayerIdentityFromMemberAccount(new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "player" }, Guid.NewGuid(), memberName));
+        }
+
+#nullable disable
+        [Fact]
+        public async Task UpdatePlayerIdentity_throws_ArgumentNullException_if_playerIdentity_is_null()
+        {
+            var repo = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdatePlayerIdentity(null, Guid.NewGuid(), "Member name"));
+        }
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerIdentityId_is_null()
+        {
+            var repo = CreateRepository();
+            var playerIdentity = new PlayerIdentity { PlayerIdentityName = "Example name", Team = new Team { TeamId = Guid.NewGuid() }, Player = new Player { PlayerId = Guid.NewGuid() } };
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
+        }
+
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerIdentityName_is_missing(string? playerIdentityName)
+        {
+            var repo = CreateRepository();
+            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = playerIdentityName, Team = new Team { TeamId = Guid.NewGuid() }, Player = new Player { PlayerId = Guid.NewGuid() } };
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
+        }
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_TeamId_is_null()
+        {
+            var repo = CreateRepository();
+            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Example name", Team = new Team(), Player = new Player { PlayerId = Guid.NewGuid() } };
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
+        }
+
+
+        [Fact]
+        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerId_is_null()
+        {
+            var repo = CreateRepository();
+            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Example name", Team = new Team { TeamId = Guid.NewGuid() }, Player = new Player() };
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
+        }
+#nullable enable
+
         [Fact]
         public async Task ProcessAsyncUpdates_allows_3_retries_for_SQL_timeouts_and_logs_warnings()
         {

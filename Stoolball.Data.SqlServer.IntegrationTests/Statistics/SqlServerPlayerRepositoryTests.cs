@@ -15,6 +15,7 @@ using Stoolball.Routing;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Xunit;
+using static Dapper.SqlMapper;
 using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
@@ -22,6 +23,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
     [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class SqlServerPlayerRepositoryTests : IDisposable
     {
+        #region Setup and dispose
         private readonly SqlServerTestDataFixture _databaseFixture;
         private readonly TransactionScope _scope;
         private readonly Mock<IAuditRepository> _auditRepository = new();
@@ -38,6 +40,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
             _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
+        public void Dispose() => _scope.Dispose();
 
         private SqlServerPlayerRepository CreateRepository()
         {
@@ -52,63 +55,95 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 _routeSelector.Object,
                 _playerCacheClearer.Object);
         }
-#nullable disable
-        [Fact]
-        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_playerIdentity_is_null()
-        {
-            var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(null, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+        private PlayerIdentity SetupCopyOfPlayerIdentity(PlayerIdentity playerIdentityToUpdate, string updatedPlayerIdentityName)
+        {
+            var updatedPlayerIdentity = new PlayerIdentity
+            {
+                PlayerIdentityId = playerIdentityToUpdate.PlayerIdentityId,
+                PlayerIdentityName = updatedPlayerIdentityName,
+                Team = new Team { TeamId = playerIdentityToUpdate.Team?.TeamId },
+                Player = new Player
+                {
+                    PlayerId = playerIdentityToUpdate.Player!.PlayerId,
+                    PlayerIdentities = playerIdentityToUpdate.Player.PlayerIdentities.Select(x => new PlayerIdentity
+                    {
+                        PlayerIdentityId = x.PlayerIdentityId,
+                        PlayerIdentityName = x.PlayerIdentityName
+                    }).ToList()
+                }
+            };
+
+            var updatedPlayerIdentityCopy = new PlayerIdentity
+            {
+                PlayerIdentityId = updatedPlayerIdentity.PlayerIdentityId,
+                PlayerIdentityName = updatedPlayerIdentity.PlayerIdentityName,
+                Team = new Team { TeamId = updatedPlayerIdentity.Team?.TeamId },
+                Player = new Player { PlayerId = updatedPlayerIdentity.Player?.PlayerId }
+            };
+
+            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity.Player)).Returns(new Player { PlayerId = updatedPlayerIdentityCopy.Player.PlayerId });
+            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity)).Returns(updatedPlayerIdentityCopy);
+            _playerNameFormatter.Setup(x => x.CapitaliseName(updatedPlayerIdentityName)).Returns(updatedPlayerIdentityName);
+
+            return updatedPlayerIdentity;
         }
 
-        [Fact]
-        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentException_if_PlayerIdentityName_is_null()
+        private void SetupRouteGenerator(PlayerIdentity originalPlayerIdentity, PlayerIdentity updatedPlayerIdentity, string updatedPlayerIdentityRouteSegment, string updatedPlayerRoute)
         {
-            var repo = CreateRepository();
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute(string.Empty, updatedPlayerIdentityRouteSegment, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).ReturnsAsync(updatedPlayerIdentityRouteSegment);
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = null, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
-        }
-        [Fact]
-        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentException_if_PlayerIdentityName_is_empty_string()
-        {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = string.Empty, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+            var allPlayerIdentityNamesForPlayer = originalPlayerIdentity.Player!.PlayerIdentities.Select(pi => pi.PlayerIdentityName).Where(x => x != originalPlayerIdentity.PlayerIdentityName).ToList();
+            allPlayerIdentityNamesForPlayer.Add(updatedPlayerIdentity.PlayerIdentityName);
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", It.Is<string>(x => allPlayerIdentityNamesForPlayer.Contains(x)), NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).ReturnsAsync(updatedPlayerRoute);
         }
 
-        [Fact]
-        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_memberName_is_null()
+        private (PlayerIdentity firstIdentity, PlayerIdentity secondIdentity) AnyTwoIdentitiesFromTheSameTeam()
         {
-            var repo = CreateRepository();
+            PlayerIdentity? firstIdentity = null;
+            PlayerIdentity? secondIdentity = null;
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), null, Mock.Of<IDbTransaction>()));
+            foreach (var identity in _databaseFixture.TestData.PlayerIdentities)
+            {
+                firstIdentity = identity;
+                secondIdentity = _databaseFixture.TestData.PlayerIdentities.FirstOrDefault(x => x.PlayerIdentityId != firstIdentity.PlayerIdentityId && x.Team?.TeamId == firstIdentity.Team?.TeamId);
+
+                if (secondIdentity != null)
+                {
+                    break;
+                }
+            }
+
+            return (firstIdentity!, secondIdentity!);
         }
 
-        [Fact]
-        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_memberName_is_empty_string()
+        private Player AnyPlayerNotLinkedToMember()
         {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), string.Empty, Mock.Of<IDbTransaction>()));
+            return _databaseFixture.TestData.Players.First(x => !x.MemberKey.HasValue);
         }
 
-        [Fact]
-        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentException_if_TeamId_is_null()
+        private Player AnyPlayerLinkedToMemberWithMultipleIdentities()
         {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1" }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+            return _databaseFixture.TestData.Players.First(x => x.MemberKey.HasValue && x.PlayerIdentities.Count() > 1);
         }
 
-        [Fact]
-        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_transaction_is_null()
+        private Player AnyPlayerLinkedToMemberWithOnlyOneIdentity()
         {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", null));
+            return _databaseFixture.TestData.Players.First(x => x.MemberKey.HasValue && x.PlayerIdentities.Count() == 1);
         }
-#nullable enable
 
+        private (Guid memberKey, string memberName) AnyMemberLinkedToPlayer()
+        {
+            return _databaseFixture.TestData.Members.First(x => _databaseFixture.TestData.Players.Any(p => p.MemberKey == x.memberKey));
+        }
+
+        private (Guid memberKey, string memberName) AnyMemberNotLinkedToPlayer()
+        {
+            return _databaseFixture.TestData.Members.First(x => !_databaseFixture.TestData.Players.Any(p => p.MemberKey == x.memberKey));
+        }
+        #endregion
+
+        #region CreateOrMatchPlayerIdentity
         [Fact]
         public async Task CreateOrMatchPlayerIdentity_returns_playerIdentity_if_playerIdentityId_and_playerId_are_present()
         {
@@ -132,7 +167,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Matched_PlayerIdentity_is_returned()
+        public async Task CreateOrMatchPlayerIdentity_returns_matched_PlayerIdentity()
         {
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -166,6 +201,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             public string? ComparableName { get; set; }
             public string? RouteSegment { get; set; }
             public Guid? TeamId { get; set; }
+            public PlayerIdentityLinkedBy? LinkedBy { get; set; }
         }
 
         [Fact]
@@ -197,7 +233,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     _routeGenerator.Verify(x => x.GenerateUniqueRoute("/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>()));
 
                     var identityResult = await transaction.Connection.QuerySingleAsync<PlayerIdentityResult>(
-                        $"SELECT PlayerId, PlayerIdentityName, ComparableName, RouteSegment, TeamId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityName = @PlayerIdentityName",
+                        $"SELECT PlayerId, PlayerIdentityName, ComparableName, RouteSegment, TeamId, LinkedBy FROM {Tables.PlayerIdentity} WHERE PlayerIdentityName = @PlayerIdentityName",
                         new { playerIdentity.PlayerIdentityName },
                         transaction);
 
@@ -206,6 +242,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     Assert.Equal(playerIdentity.ComparableName(), identityResult.ComparableName);
                     Assert.Equal(playerIdentity.PlayerIdentityName.Kebaberize(), identityResult.RouteSegment);
                     Assert.Equal(playerIdentity.Team.TeamId, identityResult.TeamId);
+                    Assert.Equal(PlayerIdentityLinkedBy.DefaultIdentity, identityResult.LinkedBy);
 
                     var playerResult = await transaction.Connection.QuerySingleAsync<Player>(
                         $"SELECT PlayerRoute FROM {Tables.Player} WHERE PlayerId = @PlayerId",
@@ -251,37 +288,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<Player>(), memberName, memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.CreateOrMatchPlayerIdentity)));
         }
+        #endregion
 
+        #region LinkPlayerToMemberAccount
         [Fact]
-        public async Task LinkPlayerToMemberAccount_throws_ArgumentException_if_PlayerId_is_null()
-        {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerToMemberAccount(new Player { PlayerRoute = "/example" }, Guid.NewGuid(), "Member name"));
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(null)]
-        public async Task LinkPlayerToMemberAccount_throws_ArgumentException_if_PlayerRoute_is_missing(string playerRoute)
-        {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerToMemberAccount(new Player { PlayerId = Guid.NewGuid(), PlayerRoute = playerRoute }, Guid.NewGuid(), "Member name"));
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(null)]
-        public async Task LinkPlayerToMemberAccount_throws_ArgumentNullException_if_memberName_is_missing(string memberName)
-        {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.LinkPlayerToMemberAccount(new Player { PlayerId = Guid.NewGuid(), PlayerRoute = "/example" }, Guid.NewGuid(), memberName));
-        }
-
-        [Fact]
-        public async Task LinkPlayerToMemberAccount_where_member_has_no_previous_player_updates_player()
+        public async Task LinkPlayerToMemberAccount_where_member_has_no_previous_player_updates_player_and_identity()
         {
             var memberWithNoExistingPlayer = AnyMemberNotLinkedToPlayer();
             var playerNotLinkedToMember = AnyPlayerNotLinkedToMember();
@@ -296,12 +307,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
                 connectionForAssert.Open();
-                var result = await connectionForAssert.QuerySingleAsync<Guid>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", playerCopy);
 
-                Assert.Equal(memberWithNoExistingPlayer.memberKey, result);
+                var assignedMemberKey = await connectionForAssert.QuerySingleAsync<Guid>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", playerCopy);
+                Assert.Equal(memberWithNoExistingPlayer.memberKey, assignedMemberKey);
+
+                var identitiesLinkedBy = await connectionForAssert.QueryAsync<string>($"SELECT LinkedBy FROM {Tables.PlayerIdentity} WHERE PlayerId = @PlayerId", playerCopy);
+                foreach (var linkedBy in identitiesLinkedBy)
+                {
+                    Assert.Equal(PlayerIdentityLinkedBy.Member.ToString(), linkedBy);
+                }
             }
         }
-
 
         [Fact]
         public async Task LinkPlayerToMemberAccount_where_member_has_linked_player_merges_players()
@@ -315,7 +331,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var playerNotLinkedToMemberCopy = new Player { PlayerId = playerNotLinkedToMember.PlayerId, PlayerRoute = playerNotLinkedToMember.PlayerRoute };
             _copier.Setup(x => x.CreateAuditableCopy(playerNotLinkedToMember)).Returns(playerNotLinkedToMemberCopy);
 
-            _routeSelector.Setup(x => x.SelectBestRoute(playerAlreadyLinked.PlayerRoute, playerNotLinkedToMember.PlayerRoute)).Returns(playerNotLinkedToMember.PlayerRoute);
+            _routeSelector.Setup(x => x.SelectBestRoute(playerAlreadyLinked.PlayerRoute!, playerNotLinkedToMember.PlayerRoute!)).Returns(playerNotLinkedToMember.PlayerRoute!);
 
             var repo = CreateRepository();
             var returnedPlayer = await repo.LinkPlayerToMemberAccount(playerNotLinkedToMember, memberWithExistingPlayer.memberKey, memberWithExistingPlayer.memberName);
@@ -350,6 +366,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     {
                         Assert.Equal(playerNotLinkedToMember.PlayerRoute, route);
                     }
+                }
+
+                var identitiesLinkedBy = await connectionForAssert.QueryAsync<string>($"SELECT LinkedBy FROM {Tables.PlayerIdentity} WHERE PlayerId = @PlayerId", playerAlreadyLinked);
+                foreach (var linkedBy in identitiesLinkedBy)
+                {
+                    Assert.Equal(PlayerIdentityLinkedBy.Member.ToString(), linkedBy);
                 }
 
                 var obsoletePlayerShouldBeRemoved = await connectionForAssert.QuerySingleOrDefaultAsync<int>($"SELECT COUNT(PlayerId) FROM {Tables.Player} WHERE PlayerId = @PlayerId", playerNotLinkedToMember);
@@ -433,50 +455,24 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri.ToString().EndsWith(playerAlreadyLinked.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.Is<string>(x => x.Contains(playerAlreadyLinked.PlayerId.ToString()!)), memberWithExistingPlayer.memberName, memberWithExistingPlayer.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
         }
+        #endregion
 
-        [Fact]
-        public async Task UnlinkPlayerIdentityFromMemberAccount_throws_ArgumentException_if_PlayerIdentityId_is_null()
-        {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UnlinkPlayerIdentityFromMemberAccount(new PlayerIdentity { PlayerIdentityName = "player" }, Guid.NewGuid(), "Member name"));
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(null)]
-        public async Task UnlinkPlayerIdentityFromMemberAccount_throws_ArgumentException_if_PlayerIdentityName_is_missing(string playerIdentityName)
-        {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UnlinkPlayerIdentityFromMemberAccount(new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = playerIdentityName }, Guid.NewGuid(), "Member name"));
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(null)]
-        public async Task UnlinkPlayerIdentityFromMemberAccount_throws_ArgumentNullException_if_memberName_is_missing(string memberName)
-        {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UnlinkPlayerIdentityFromMemberAccount(new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "player" }, Guid.NewGuid(), memberName));
-        }
-
+        #region UnlinkPlayerIdentityFromMemberAccount
         [Fact]
         public async Task UnlinkPlayerIdentityFromMemberAccount_for_penultimate_identity_moves_identity_to_new_player_including_statistics()
         {
             var player = AnyPlayerLinkedToMemberWithMultipleIdentities();
             var playerCopy = new Player { PlayerId = player.PlayerId };
             _copier.Setup(x => x.CreateAuditableCopy(player)).Returns(playerCopy);
-            var playerIdentity = player.PlayerIdentities.First();
+            var playerIdentityToUnlink = player.PlayerIdentities.First();
             var member = _databaseFixture.TestData.Members.Single(x => x.memberKey == player.MemberKey);
 
             var generatedPlayerRoute = "/players/" + Guid.NewGuid().ToString();
-            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", playerIdentity.PlayerIdentityName!, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(generatedPlayerRoute));
+            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", playerIdentityToUnlink.PlayerIdentityName!, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(generatedPlayerRoute));
 
             var repo = CreateRepository();
 
-            await repo.UnlinkPlayerIdentityFromMemberAccount(playerIdentity, member.memberKey, member.memberName);
+            await repo.UnlinkPlayerIdentityFromMemberAccount(playerIdentityToUnlink, member.memberKey, member.memberName);
             await repo.ProcessAsyncUpdatesForPlayers();
 
             using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
@@ -486,15 +482,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var originalPlayerStillLinkedToMember = await connectionForAssert.QuerySingleAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", player);
                 Assert.Equal(member.memberKey, originalPlayerStillLinkedToMember);
 
-                var newPlayerLinkedToIdentity = await connectionForAssert.QuerySingleAsync<(Guid? playerId, string route, Guid? memberKey)>(
-                    $@"SELECT p.PlayerId, p.PlayerRoute, p.MemberKey 
-                       FROM {Tables.Player} p INNER JOIN {Tables.PlayerIdentity} pi ON p.PlayerId = pi.PlayerId 
-                       WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentity);
+                var newPlayerLinkedToIdentity = await connectionForAssert.QuerySingleAsync<(Guid? playerId, string route, Guid? memberKey, PlayerIdentityLinkedBy linkedBy)>(
+                    $@"SELECT p.PlayerId, p.PlayerRoute, p.MemberKey, p.LinkedBy
+                       FROM {Views.PlayerIdentity} p 
+                       WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentityToUnlink);
                 Assert.NotEqual(player.PlayerId, newPlayerLinkedToIdentity.playerId);
                 Assert.Equal(generatedPlayerRoute, newPlayerLinkedToIdentity.route);
                 Assert.Null(newPlayerLinkedToIdentity.memberKey);
+                Assert.Equal(PlayerIdentityLinkedBy.DefaultIdentity, newPlayerLinkedToIdentity.linkedBy);
 
-                var statisticsForIdentity = await connectionForAssert.QueryAsync<(Guid? playerId, string route)>($"SELECT PlayerId, PlayerRoute FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentity);
+                var statisticsForIdentity = await connectionForAssert.QueryAsync<(Guid? playerId, string route)>($"SELECT PlayerId, PlayerRoute FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = @PlayerIdentityId", playerIdentityToUnlink);
                 foreach (var row in statisticsForIdentity)
                 {
                     Assert.Equal(newPlayerLinkedToIdentity.playerId, row.playerId);
@@ -536,9 +533,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             using (var connectionForAssert = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
                 connectionForAssert.Open();
-                var result = await connectionForAssert.QuerySingleAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", player);
+                var result = await connectionForAssert.QuerySingleAsync<(Guid? MemberKey, PlayerIdentityLinkedBy LinkedBy)>($"SELECT MemberKey, LinkedBy FROM {Views.PlayerIdentity} WHERE PlayerId = @PlayerId", player);
 
-                Assert.Null(result);
+                Assert.Null(result.MemberKey);
+                Assert.Equal(PlayerIdentityLinkedBy.DefaultIdentity, result.LinkedBy);
             }
         }
 
@@ -555,56 +553,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.UnlinkPlayerIdentityFromMemberAccount)));
         }
+        #endregion
 
-#nullable disable
-        [Fact]
-        public async Task UpdatePlayerIdentity_throws_ArgumentNullException_if_playerIdentity_is_null()
-        {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdatePlayerIdentity(null, Guid.NewGuid(), "Member name"));
-        }
-
-        [Fact]
-        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerIdentityId_is_null()
-        {
-            var repo = CreateRepository();
-            var playerIdentity = new PlayerIdentity { PlayerIdentityName = "Example name", Team = new Team { TeamId = Guid.NewGuid() }, Player = new Player { PlayerId = Guid.NewGuid() } };
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
-        }
-
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerIdentityName_is_missing(string? playerIdentityName)
-        {
-            var repo = CreateRepository();
-            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = playerIdentityName, Team = new Team { TeamId = Guid.NewGuid() }, Player = new Player { PlayerId = Guid.NewGuid() } };
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
-        }
-
-        [Fact]
-        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_TeamId_is_null()
-        {
-            var repo = CreateRepository();
-            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Example name", Team = new Team(), Player = new Player { PlayerId = Guid.NewGuid() } };
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
-        }
-
-
-        [Fact]
-        public async Task UpdatePlayerIdentity_throws_ArgumentException_if_PlayerId_is_null()
-        {
-            var repo = CreateRepository();
-            var playerIdentity = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Example name", Team = new Team { TeamId = Guid.NewGuid() }, Player = new Player() };
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdatePlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name"));
-        }
-#nullable enable
+        #region UpdatePlayerIdentity
 
         [Fact]
         public async Task UpdatePlayerIdentity_where_name_matches_another_player_identity_not_updated_and_returns_NotUnique()
@@ -708,48 +659,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             _playerNameFormatter.Verify(x => x.CapitaliseName(updatedPlayerIdentity.PlayerIdentityName!), Times.Once);
         }
 
-        private PlayerIdentity SetupCopyOfPlayerIdentity(PlayerIdentity playerIdentityToUpdate, string updatedPlayerIdentityName)
-        {
-            var updatedPlayerIdentity = new PlayerIdentity
-            {
-                PlayerIdentityId = playerIdentityToUpdate.PlayerIdentityId,
-                PlayerIdentityName = updatedPlayerIdentityName,
-                Team = new Team { TeamId = playerIdentityToUpdate.Team?.TeamId },
-                Player = new Player
-                {
-                    PlayerId = playerIdentityToUpdate.Player!.PlayerId,
-                    PlayerIdentities = playerIdentityToUpdate.Player.PlayerIdentities.Select(x => new PlayerIdentity
-                    {
-                        PlayerIdentityId = x.PlayerIdentityId,
-                        PlayerIdentityName = x.PlayerIdentityName
-                    }).ToList()
-                }
-            };
-
-            var updatedPlayerIdentityCopy = new PlayerIdentity
-            {
-                PlayerIdentityId = updatedPlayerIdentity.PlayerIdentityId,
-                PlayerIdentityName = updatedPlayerIdentity.PlayerIdentityName,
-                Team = new Team { TeamId = updatedPlayerIdentity.Team?.TeamId },
-                Player = new Player { PlayerId = updatedPlayerIdentity.Player?.PlayerId }
-            };
-
-            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity.Player)).Returns(new Player { PlayerId = updatedPlayerIdentityCopy.Player.PlayerId });
-            _copier.Setup(x => x.CreateAuditableCopy(updatedPlayerIdentity)).Returns(updatedPlayerIdentityCopy);
-            _playerNameFormatter.Setup(x => x.CapitaliseName(updatedPlayerIdentityName)).Returns(updatedPlayerIdentityName);
-
-            return updatedPlayerIdentity;
-        }
-
-        private void SetupRouteGenerator(PlayerIdentity originalPlayerIdentity, PlayerIdentity updatedPlayerIdentity, string updatedPlayerIdentityRouteSegment, string updatedPlayerRoute)
-        {
-            _routeGenerator.Setup(x => x.GenerateUniqueRoute(string.Empty, updatedPlayerIdentityRouteSegment, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).ReturnsAsync(updatedPlayerIdentityRouteSegment);
-
-            var allPlayerIdentityNamesForPlayer = originalPlayerIdentity.Player!.PlayerIdentities.Select(pi => pi.PlayerIdentityName).Where(x => x != originalPlayerIdentity.PlayerIdentityName).ToList();
-            allPlayerIdentityNamesForPlayer.Add(updatedPlayerIdentity.PlayerIdentityName);
-            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", It.Is<string>(x => allPlayerIdentityNamesForPlayer.Contains(x)), NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).ReturnsAsync(updatedPlayerRoute);
-        }
-
         [Fact]
         public async Task UpdatePlayerIdentity_where_name_does_not_match_existing_player_identity_leaves_route_unchanged_if_still_appropriate()
         {
@@ -797,51 +706,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 _redirectsRepository.Verify(x => x.InsertRedirect(playerIdentityToUpdate.Player.PlayerRoute!, updatedPlayerRoute, null, It.IsAny<IDbTransaction>()), Times.Once);
             }
         }
-
-        private (PlayerIdentity firstIdentity, PlayerIdentity secondIdentity) AnyTwoIdentitiesFromTheSameTeam()
-        {
-            PlayerIdentity? firstIdentity = null;
-            PlayerIdentity? secondIdentity = null;
-
-            foreach (var identity in _databaseFixture.TestData.PlayerIdentities)
-            {
-                firstIdentity = identity;
-                secondIdentity = _databaseFixture.TestData.PlayerIdentities.FirstOrDefault(x => x.PlayerIdentityId != firstIdentity.PlayerIdentityId && x.Team?.TeamId == firstIdentity.Team?.TeamId);
-
-                if (secondIdentity != null)
-                {
-                    break;
-                }
-            }
-
-            return (firstIdentity!, secondIdentity!);
-        }
-
-        private Player AnyPlayerNotLinkedToMember()
-        {
-            return _databaseFixture.TestData.Players.First(x => !x.MemberKey.HasValue);
-        }
-
-        private Player AnyPlayerLinkedToMemberWithMultipleIdentities()
-        {
-            return _databaseFixture.TestData.Players.First(x => x.MemberKey.HasValue && x.PlayerIdentities.Count() > 1);
-        }
-
-        private Player AnyPlayerLinkedToMemberWithOnlyOneIdentity()
-        {
-            return _databaseFixture.TestData.Players.First(x => x.MemberKey.HasValue && x.PlayerIdentities.Count() == 1);
-        }
-
-        private (Guid memberKey, string memberName) AnyMemberLinkedToPlayer()
-        {
-            return _databaseFixture.TestData.Members.First(x => _databaseFixture.TestData.Players.Any(p => p.MemberKey == x.memberKey));
-        }
-
-        private (Guid memberKey, string memberName) AnyMemberNotLinkedToPlayer()
-        {
-            return _databaseFixture.TestData.Members.First(x => !_databaseFixture.TestData.Players.Any(p => p.MemberKey == x.memberKey));
-        }
-
-        public void Dispose() => _scope.Dispose();
+        #endregion
     }
 }

@@ -589,17 +589,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public void CreatePlayerIdentity(PlayerIdentity playerIdentity)
         {
             _connection.Execute($@"INSERT INTO {Tables.PlayerIdentity} 
-                    (PlayerIdentityId, PlayerId, TeamId, PlayerIdentityName, ComparableName, RouteSegment)
+                    (PlayerIdentityId, PlayerId, TeamId, PlayerIdentityName, ComparableName, RouteSegment, LinkedBy)
                     VALUES
-                    (@PlayerIdentityId, @PlayerId, @TeamId, @PlayerIdentityName, @ComparableName, @RouteSegment)",
+                    (@PlayerIdentityId, @PlayerId, @TeamId, @PlayerIdentityName, @ComparableName, @RouteSegment, @LinkedBy)",
                    new
                    {
                        playerIdentity.PlayerIdentityId,
-                       playerIdentity.Player.PlayerId,
-                       playerIdentity.Team.TeamId,
+                       playerIdentity.Player!.PlayerId,
+                       playerIdentity.Team!.TeamId,
                        playerIdentity.PlayerIdentityName,
                        ComparableName = playerIdentity.ComparableName(),
-                       playerIdentity.RouteSegment
+                       playerIdentity.RouteSegment,
+                       LinkedBy = (playerIdentity.Player.MemberKey.HasValue ? PlayerIdentityLinkedBy.Member : PlayerIdentityLinkedBy.DefaultIdentity).ToString()
                    });
         }
 
