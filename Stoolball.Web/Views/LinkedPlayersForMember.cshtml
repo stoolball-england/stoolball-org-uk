@@ -1,4 +1,5 @@
-﻿@using Stoolball.Web.Statistics
+﻿@using Stoolball.Statistics;
+@using Stoolball.Web.Statistics
 @using Stoolball.Web.Statistics.Models
 @inherits UmbracoViewPage<LinkedPlayersForMemberViewModel>
 @section head {
@@ -6,6 +7,21 @@
 }
 @{
     SmidgeHelper.RequiresCss(new CssFile("~/css/account.min.css") { Order = 100 });
+}
+@functions {
+        string DisplayLinkedBy(PlayerIdentityLinkedBy linkedBy)
+        {
+            switch (linkedBy)
+            {
+                case PlayerIdentityLinkedBy.Member:
+                    return "You";
+                case PlayerIdentityLinkedBy.ClubOrTeam:
+                    return "Your team";
+                case PlayerIdentityLinkedBy.StoolballEngland:
+                    return "Admins";
+            }
+            return "Not linked";
+        }
 }
 @await Html.PartialAsync("_RelatedItems")
 <div class="container-xl">
@@ -31,7 +47,13 @@
                 @Html.HiddenFor(m => Model.PreferredNextRoute)
                 <table class="table table-hover related-items linked-players" data-related-item="player">
                     <thead class="thead-dark">
-                        <tr><th scope="col" class="linked-players__player">Player name</th><th scope="col" class="linked-players__team"><span class="related-items__if-not-empty">Team</span></th><th scope="col" class="d-none d-sm-table-cell"><span class="related-items__if-not-empty">When</span></th><th scope="col"></th></tr>
+                        <tr>
+                            <th scope="col" class="linked-players__player">Player name</th>
+                            <th scope="col" class="linked-players__team"><span class="related-items__if-not-empty">Team</span></th>
+                            <th scope="col" class="d-none d-sm-table-cell"><span class="related-items__if-not-empty">When</span></th>
+                            <th scope="col"><span class="related-items__if-not-empty">Added by</span></th>
+                            <th scope="col"></th>
+                        </tr>
                     </thead>
                     <tbody>
                         @for (var i = 0; i < Model.Player.PlayerIdentities.Count; i++)
@@ -43,13 +65,17 @@
 
                             <tr class="related-item__selected">
                                 <td class="related-item__selected__section"><div class="related-item__animate">@Model.Player.PlayerIdentities[i].PlayerIdentityName</div></td>
-                                <td class="related-item__selected__section"><div class="related-item__animate">@Model.Player.PlayerIdentities[i].Team.TeamName</div></td>
+                                <td class="related-item__selected__section"><div class="related-item__animate">@Model.Player.PlayerIdentities[i].Team?.TeamName</div></td>
                                 <td class="related-item__selected__section d-none d-sm-table-cell"><div class="related-item__animate">@when</div></td>
+                                <td class="related-item__selected__section"><div class="related-item__animate">@DisplayLinkedBy(Model.Player.PlayerIdentities[i].LinkedBy)</div></td>
                                 <td class="related-item__delete related-item__selected__section">
-                                    <div class="related-item__animate">
-                                        @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", Model.Player.PlayerIdentities[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = Model.Player.PlayerIdentities[i].PlayerIdentityId })
-                                        <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Unlink {Model.Player.PlayerIdentities[i].PlayerIdentityName} from your account")</button>
-                                    </div>
+                                    @if (Model.Player.PlayerIdentities[i].LinkedBy == PlayerIdentityLinkedBy.Member)
+                                    {
+                                        <div class="related-item__animate">
+                                            @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", Model.Player.PlayerIdentities[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = Model.Player.PlayerIdentities[i].PlayerIdentityId })
+                                            <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Unlink {Model.Player.PlayerIdentities[i].PlayerIdentityName} from your account")</button>
+                                        </div>
+                                    }
                                 </td>
                             </tr>
                         }

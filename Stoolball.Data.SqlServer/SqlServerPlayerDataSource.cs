@@ -202,7 +202,7 @@ namespace Stoolball.Data.SqlServer
 
                 var playerData = await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(
                     $@"SELECT pi.PlayerId, pi.PlayerRoute, pi.MemberKey,
-                        pi.PlayerIdentityId, pi.PlayerIdentityName,
+                        pi.PlayerIdentityId, pi.PlayerIdentityName, pi.LinkedBy,
                         (SELECT COUNT(DISTINCT MatchId) AS TotalMatches FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS TotalMatches,
                         (SELECT MIN(MatchStartTime) AS FirstPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS FirstPlayed,
                         (SELECT MAX(MatchStartTime) AS LastPlayed FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = pi.PlayerIdentityId {where}) AS LastPlayed,

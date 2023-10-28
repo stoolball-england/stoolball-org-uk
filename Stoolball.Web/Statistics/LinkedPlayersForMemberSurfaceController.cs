@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Data.Abstractions;
+using Stoolball.Statistics;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics.Models;
 using Umbraco.Cms.Core.Cache;
@@ -54,10 +55,12 @@ namespace Stoolball.Web.Statistics
             var player = await _playerDataSource.ReadPlayerByMemberKey(currentMember.Key);
             if (player != null)
             {
-                player = await _playerDataSource.ReadPlayerByRoute(player.PlayerRoute);
+                player = await _playerDataSource.ReadPlayerByRoute(player.PlayerRoute!);
+
+                if (player == null) { return NotFound(); }
 
                 var identitiesToKeep = formData.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList();
-                var identitiesToUnlink = player.PlayerIdentities.Where(x => !identitiesToKeep.Contains(x.PlayerIdentityId!.Value));
+                var identitiesToUnlink = player.PlayerIdentities.Where(x => x.LinkedBy == PlayerIdentityLinkedBy.Member && !identitiesToKeep.Contains(x.PlayerIdentityId!.Value));
 
                 foreach (var identity in identitiesToUnlink)
                 {

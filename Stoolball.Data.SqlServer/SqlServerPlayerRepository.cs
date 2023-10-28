@@ -380,7 +380,7 @@ namespace Stoolball.Data.SqlServer
                             {
                                 player.PlayerId,
                                 playerIdentity.PlayerIdentityId,
-                                LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity
+                                LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity.ToString()
                             }, transaction);
 
                         // We also need to update statistics to point to new player and new player route.

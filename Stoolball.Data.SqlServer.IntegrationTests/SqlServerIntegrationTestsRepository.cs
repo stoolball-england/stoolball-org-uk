@@ -600,7 +600,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                        playerIdentity.PlayerIdentityName,
                        ComparableName = playerIdentity.ComparableName(),
                        playerIdentity.RouteSegment,
-                       LinkedBy = (playerIdentity.Player.MemberKey.HasValue ? PlayerIdentityLinkedBy.Member : PlayerIdentityLinkedBy.DefaultIdentity).ToString()
+                       LinkedBy = playerIdentity.LinkedBy.ToString()
                    });
         }
 

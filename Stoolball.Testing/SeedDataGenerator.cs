@@ -1065,12 +1065,16 @@ namespace Stoolball.Testing
             testData.BowlerWithMultipleIdentities = testData.Matches
                 .SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.BowlingFigures)
-                .Where(x => testData.PlayersWithMultipleIdentities.Contains(x.Bowler.Player, playerComparer))
-                .Select(x => x.Bowler.Player)
+                .Where(x => testData.PlayersWithMultipleIdentities.Contains(x.Bowler?.Player, playerComparer))
+                .Select(x => x.Bowler?.Player)
                 .First();
             testData.BowlerWithMultipleIdentities!.PlayerIdentities.Clear();
             testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player?.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
             testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberKey;
+            foreach (var identity in testData.BowlerWithMultipleIdentities.PlayerIdentities)
+            {
+                identity.LinkedBy = PlayerIdentityLinkedBy.Member;
+            }
 
             var matchProviders = new BaseMatchDataProvider[]{
                 new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward),
@@ -1104,7 +1108,9 @@ namespace Stoolball.Testing
             testData.TournamentMatchListings.AddRange(testData.Matches.Where(x => x.Tournament != null).Select(x => x.ToMatchListing()));
 
             // Find any player who has a single identity, and associate them to a different member
-            testData.Players.First(x => x.PlayerIdentities.Count == 1).MemberKey = testData.Members[1].memberKey;
+            var playerWithSingleIdentity = testData.Players.First(x => x.PlayerIdentities.Count == 1);
+            playerWithSingleIdentity.MemberKey = testData.Members[1].memberKey;
+            playerWithSingleIdentity.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.Member;
 
             // Get all batting records
             testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();

@@ -50,10 +50,10 @@ namespace Stoolball.Web.UnitTests.Statistics
                 PlayerRoute = "/example-player",
                 PlayerIdentities = new List<PlayerIdentity>
                 {
-                    new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid() },
-                    new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid() },
-                    new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid() },
-                    new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid() }
+                    new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid(), LinkedBy = PlayerIdentityLinkedBy.Member },
+                    new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid(), LinkedBy = PlayerIdentityLinkedBy.Member },
+                    new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid(), LinkedBy = PlayerIdentityLinkedBy.Member },
+                    new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid(), LinkedBy = PlayerIdentityLinkedBy.Member }
                 }
             };
         }
@@ -75,6 +75,43 @@ namespace Stoolball.Web.UnitTests.Statistics
             }
         }
 
+        [Fact]
+        public async Task Player_not_found_by_route_returns_NotFound()
+        {
+            var player = CreatePlayerWith4PlayerIdentities();
+            var memberKey = Guid.NewGuid();
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = memberKey, Name = "Member name" }));
+            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).ReturnsAsync(player);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.UpdateLinkedPlayers(new LinkedPlayersFormData());
+
+                Assert.IsType<NotFoundResult>(result);
+            }
+        }
+
+        [Fact]
+        public async Task UnlinkPlayerIdentityFromMemberAccount_not_called_for_identity_not_linked_by_member()
+        {
+            var player = CreatePlayerWith4PlayerIdentities();
+            player.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.ClubOrTeam;
+            var memberKey = Guid.NewGuid();
+            var memberName = "Member name";
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = memberKey, Name = memberName }));
+            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).ReturnsAsync(player);
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute!, null)).ReturnsAsync(player);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.UpdateLinkedPlayers(new LinkedPlayersFormData());
+
+                _playerRepository.Verify(x => x.UnlinkPlayerIdentityFromMemberAccount(player.PlayerIdentities[0], memberKey, memberName), Times.Never);
+                _playerRepository.Verify(x => x.UnlinkPlayerIdentityFromMemberAccount(player.PlayerIdentities[1], memberKey, memberName), Times.Once);
+                _playerRepository.Verify(x => x.UnlinkPlayerIdentityFromMemberAccount(player.PlayerIdentities[2], memberKey, memberName), Times.Once);
+                _playerRepository.Verify(x => x.UnlinkPlayerIdentityFromMemberAccount(player.PlayerIdentities[3], memberKey, memberName), Times.Once);
+            }
+        }
 
         [Fact]
         public async Task Member_without_linked_player_does_not_unlink_player()
@@ -103,8 +140,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             var player = CreatePlayerWith4PlayerIdentities();
             var formData = new LinkedPlayersFormData { PlayerIdentities = player.PlayerIdentities.Take(2).ToList() };
 
-            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).Returns(Task.FromResult(player));
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute, null)).Returns(Task.FromResult(player));
+            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).ReturnsAsync(player);
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute!, null)).ReturnsAsync(player);
 
             using (var controller = CreateController())
             {
@@ -127,8 +164,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             var player = CreatePlayerWith4PlayerIdentities();
             var formData = new LinkedPlayersFormData { PlayerIdentities = player.PlayerIdentities };
 
-            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).Returns(Task.FromResult(player));
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute, null)).Returns(Task.FromResult(player));
+            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).ReturnsAsync(player);
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute!, null)).ReturnsAsync(player);
 
             using (var controller = CreateController())
             {
@@ -148,8 +185,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             var player = CreatePlayerWith4PlayerIdentities();
             var formData = new LinkedPlayersFormData { PlayerIdentities = player.PlayerIdentities.Take(2).ToList() };
 
-            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).Returns(Task.FromResult(player));
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute, null)).Returns(Task.FromResult(player));
+            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).ReturnsAsync(player);
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute!, null)).ReturnsAsync(player);
 
             using (var controller = CreateController())
             {
@@ -169,8 +206,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             var player = CreatePlayerWith4PlayerIdentities();
             var formData = new LinkedPlayersFormData { PlayerIdentities = player.PlayerIdentities, PreferredNextRoute = "/players/valid-next-route" };
 
-            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).Returns(Task.FromResult(player));
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute, null)).Returns(Task.FromResult(player));
+            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).ReturnsAsync(player);
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute!, null)).ReturnsAsync(player);
 
             using (var controller = CreateController())
             {
@@ -195,8 +232,8 @@ namespace Stoolball.Web.UnitTests.Statistics
             var player = CreatePlayerWith4PlayerIdentities();
             var formData = new LinkedPlayersFormData { PlayerIdentities = player.PlayerIdentities, PreferredNextRoute = invalidNextRoute };
 
-            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).Returns(Task.FromResult(player));
-            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute, null)).Returns(Task.FromResult(player));
+            _playerDataSource.Setup(x => x.ReadPlayerByMemberKey(memberKey)).ReturnsAsync(player);
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(player.PlayerRoute!, null)).ReturnsAsync(player);
 
             using (var controller = CreateController())
             {

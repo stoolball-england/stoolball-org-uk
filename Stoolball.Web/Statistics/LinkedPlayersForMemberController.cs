@@ -43,7 +43,7 @@ namespace Stoolball.Web.Statistics
                 model.Player = await _playerDataSource.ReadPlayerByMemberKey(member.Key);
                 if (model.Player != null)
                 {
-                    model.Player = await _playerDataSource.ReadPlayerByRoute(model.Player.PlayerRoute);
+                    model.Player = await _playerDataSource.ReadPlayerByRoute(model.Player.PlayerRoute!);
                 }
             }
 

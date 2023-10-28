@@ -30,5 +30,6 @@ namespace Stoolball.Statistics
 
         public int? Probability { get; set; }
         public string? RouteSegment { get; set; }
+        public PlayerIdentityLinkedBy LinkedBy { get; set; } = PlayerIdentityLinkedBy.DefaultIdentity;
     }
 }
