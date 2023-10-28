@@ -122,7 +122,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Invalid_ModelState_returns_UmbracoPageResult_and_does_not_attempt_to_create_member()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
             using (var controller = CreateController(model, createMemberSucceeds: true))
             {
                 controller.ModelState.AddModelError(string.Empty, "Any error");
@@ -138,7 +138,7 @@ namespace Stoolball.Web.UnitTests.Account
         public async Task Null_model_returns_UmbracoPageResult_and_does_not_attempt_to_create_member()
         {
 #nullable disable
-            RegisterModel model = null;
+            CreateMemberFormData model = null;
             using (var controller = CreateController(model, createMemberSucceeds: true))
             {
                 var result = await controller.CreateMember(model);
@@ -152,7 +152,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task New_member_returns_RedirectToUmbracoPageResult()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
             model.Email = "test@example.org";
             MemberService.Setup(x => x.GetByEmail(model.Email)).Returns(Mock.Of<IMember>());
 
@@ -170,7 +170,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task New_member_saves_email_and_token()
         {
-            var model = new RegisterModel { Email = "test@example.org" };
+            var model = new CreateMemberFormData { Email = "test@example.org" };
             var token = Guid.NewGuid().ToString();
             var tokenExpiry = DateTime.UtcNow.AddDays(1);
             var member = new Mock<IMember>();
@@ -195,7 +195,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task New_member_is_assigned_to_All_Members()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
             model.Email = "test@example.org";
             var member = new Mock<IMember>();
             member.SetupGet(x => x.Id).Returns(123);
@@ -216,7 +216,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task New_member_is_not_logged_in_automatically()
         {
-            var model = new RegisterModel { Email = "test@example.org" };
+            var model = new CreateMemberFormData { Email = "test@example.org" };
             var member = new Mock<IMember>();
             member.SetupGet(x => x.Id).Returns(123);
             MemberService.Setup(x => x.GetByEmail(model.Email)).Returns(member.Object);
@@ -236,7 +236,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task New_member_sends_Approve_Member_email()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
             model.Name = "Member name";
             model.Email = "test@example.org";
 
@@ -276,7 +276,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Creating_a_new_member_is_logged()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
             model.Email = "test@example.org";
             var member = new Mock<IMember>();
             member.SetupGet(x => x.Id).Returns(123);
@@ -299,7 +299,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Fail_to_create_member_does_not_save_additional_properties()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
             model.Email = "test@example.org";
 
             var member = new Mock<IMember>();
@@ -317,7 +317,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Duplicate_email_sends_Member_Exists_email()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
             model.Name = "Member name";
             model.Email = "test@example.org";
 
@@ -350,7 +350,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Duplicate_email_returns_RedirectToUmbracoPageResult()
         {
-            var model = new RegisterModel { Email = "test@example.org" };
+            var model = new CreateMemberFormData { Email = "test@example.org" };
 
             _emailFormatter.Setup(x => x.FormatEmailContent(MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY, It.IsAny<Dictionary<string, string>>()))
                 .Returns((MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY));
@@ -366,7 +366,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Duplicate_email_sets_ViewData_FormSuccess_to_true()
         {
-            var model = new RegisterModel { Email = "test@example.org" };
+            var model = new CreateMemberFormData { Email = "test@example.org" };
 
             _emailFormatter.Setup(x => x.FormatEmailContent(MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY, It.IsAny<Dictionary<string, string>>()))
                 .Returns((MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY));
@@ -382,7 +382,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Email_matching_requested_email_within_expiry_period_sends_Member_Exists_email()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
             model.Name = "Member name";
             model.Email = "test@example.org";
 
@@ -420,7 +420,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Email_matching_requested_email_within_expiry_period_returns_RedirectToUmbracoPageResult()
         {
-            var model = new RegisterModel { Email = "test@example.org" };
+            var model = new CreateMemberFormData { Email = "test@example.org" };
 
             var otherMember = new Mock<IMember>();
             var expiryDate = DateTime.Now.AddHours(12);
@@ -442,7 +442,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Email_matching_requested_email_within_expiry_period_sets_ViewData_FormSuccess_to_true()
         {
-            var model = new RegisterModel { Email = "test@example.org" };
+            var model = new CreateMemberFormData { Email = "test@example.org" };
 
             var otherMember = new Mock<IMember>();
             var expiryDate = DateTime.Now.AddHours(12);
@@ -464,7 +464,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Email_matching_requested_email_within_expiry_period_does_not_attempt_to_create_member()
         {
-            var model = new RegisterModel { Email = "test@example.org" };
+            var model = new CreateMemberFormData { Email = "test@example.org" };
 
             var otherMember = new Mock<IMember>();
             var expiryDate = DateTime.Now.AddHours(12);
@@ -487,7 +487,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Email_matching_requested_email_past_expiry_period_attempts_to_create_member()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
 
             var otherMember = new Mock<IMember>();
             var expiryDate = DateTime.Now.AddHours(-12);
@@ -508,7 +508,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Other_error_is_added_to_ModelState_and_returns_baseResult()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
             using (var controller = CreateController(model, createMemberSucceeds: false, emailFieldError: "Some other error."))
             {
                 var result = await controller.CreateMember(model);
@@ -522,7 +522,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Email_in_TempData_for_view()
         {
-            var model = new RegisterModel();
+            var model = new CreateMemberFormData();
             model.Email = "test@example.org";
             using (var controller = CreateController(model))
             {
