@@ -600,6 +600,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Assert.Equal(identity.PlayerIdentityName, result.PlayerIdentityName);
                 Assert.Equal(identity.RouteSegment, result.RouteSegment);
                 Assert.Equal(identity.Player?.PlayerId, result.Player?.PlayerId);
+                Assert.Equal(identity.Player?.PlayerRoute, result.Player?.PlayerRoute);
                 Assert.Equal(identity.Team.TeamId, result.Team!.TeamId);
                 Assert.Equal(identity.Team.TeamName, result.Team!.TeamName);
                 Assert.Equal(identity.Team.TeamRoute, result.Team!.TeamRoute);

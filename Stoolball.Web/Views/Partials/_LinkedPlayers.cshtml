@@ -1,0 +1,62 @@
+﻿@model LinkedPlayersViewModel
+@using Stoolball.Statistics;
+@using Stoolball.Web.Statistics.Models;
+@functions {
+    string DisplayLinkedBy(PlayerIdentityLinkedBy linkedBy)
+    {
+        switch (linkedBy)
+        {
+            case PlayerIdentityLinkedBy.Member:
+                return Model.LinkedByMemberLabel;
+            case PlayerIdentityLinkedBy.ClubOrTeam:
+                return Model.LinkedByClubOrTeamLabel;
+            case PlayerIdentityLinkedBy.StoolballEngland:
+                return Model.LinkedByStoolballEnglandLabel;
+        }
+        return "Default";
+    }
+}
+@{
+    if (Model.Player is null) { return; }
+}
+<table class="table table-hover related-items linked-players" data-related-item="player">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col" class="linked-players__player">Player name</th>
+            <th scope="col" class="linked-players__team"><span class="related-items__if-not-empty">Team</span></th>
+            <th scope="col" class="d-none d-sm-table-cell"><span class="related-items__if-not-empty">When</span></th>
+            <th scope="col"><span class="related-items__if-not-empty">@Model.LinkedByHeading</span></th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Model.Player.PlayerIdentities.Count; i++)
+        {
+            var firstMatch = Model.Player.PlayerIdentities[i].FirstPlayed;
+            var lastMatch = Model.Player.PlayerIdentities[i].LastPlayed;
+            var matchYears = firstMatch != null && lastMatch != null ? (firstMatch.Value.Year == lastMatch.Value.Year) ? $"in {firstMatch.Value.Year}" : $"from {firstMatch.Value.Year} to {lastMatch.Value.Year}" : string.Empty;
+            var when = $"{Model.Player.PlayerIdentities[i].TotalMatches} {(Model.Player.PlayerIdentities[i].TotalMatches == 1 ? "match" : "matches")} {matchYears}";
+
+            <tr class="related-item__selected">
+                <td class="related-item__selected__section"><div class="related-item__animate">@Model.Player.PlayerIdentities[i].PlayerIdentityName</div></td>
+                <td class="related-item__selected__section"><div class="related-item__animate">@Model.Player.PlayerIdentities[i].Team?.TeamName</div></td>
+                <td class="related-item__selected__section d-none d-sm-table-cell"><div class="related-item__animate">@when</div></td>
+                <td class="related-item__selected__section"><div class="related-item__animate">@DisplayLinkedBy(Model.Player.PlayerIdentities[i].LinkedBy)</div></td>
+                <td class="related-item__delete related-item__selected__section">
+                    @if (Model.Player.PlayerIdentities[i].LinkedBy == PlayerIdentityLinkedBy.Member && Model.CanUnlinkIdentitiesLinkedByMember)
+                    {
+                        <div class="related-item__animate">
+                            @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", Model.Player.PlayerIdentities[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = Model.Player.PlayerIdentities[i].PlayerIdentityId })
+                            <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Unlink {Model.Player.PlayerIdentities[i].PlayerIdentityName} from your account")</button>
+                        </div>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tbody>
+        <tr class="related-items__if-empty"><td colspan="3">All players will be unlinked from your account.</td></tr>
+    </tbody>
+</table>
+
+@await Html.PartialAsync("_StatisticsCacheWarning")

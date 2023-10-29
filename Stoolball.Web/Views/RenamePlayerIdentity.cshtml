@@ -21,7 +21,7 @@
             <li>the name is incomplete or incorrect</li>
             <li>the correct name is not also listed</li>
         </ul>
-        <p>If the correct name is already listed ask the player to create an account on this website and add both names to their 'My statistics' page.</p>
+        <p>If the correct name is already listed you should <a href="@Model.PlayerIdentity?.Team?.TeamRoute/edit/players/@Model.PlayerIdentity?.RouteSegment/statistics">link it to the statistics for @Model.PlayerIdentity?.PlayerIdentityName</a>.</p>
 
         @await Html.PartialAsync("_StatisticsCacheWarning")
         @using (Html.BeginUmbracoForm<RenamePlayerIdentitySurfaceController>(nameof(RenamePlayerIdentitySurfaceController.RenamePlayerIdentity), null, new { id = "calling-it-search-disables-contact-managers" }))

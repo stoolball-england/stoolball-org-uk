@@ -1,0 +1,31 @@
+﻿@inherits UmbracoViewPage<LinkedPlayersViewModel>
+@using Stoolball.Security
+@using Stoolball.Web.Statistics.Models;
+@using Stoolball.Web.Teams
+@using Stoolball.Web.Teams.Models
+@using Umbraco.Cms.Web.Website.Controllers
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Model.LinkedByMemberLabel = "Player";
+    Model.LinkedByClubOrTeamLabel = "Team or club";
+    Model.LinkedByStoolballEnglandLabel = "Stoolball England";
+}
+@await Html.PartialAsync("_RelatedItems")
+<div class="container-xl">
+    <h1>Players linked to the statistics for @Model.ContextIdentity?.PlayerIdentityName</h1>
+
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
+    {
+        <p>If a player changed their name or played for multiple teams in your club (for example, your mixed and ladies teams),
+           their statistics may be spread over multiple players.</p>
+            
+        <p>You should combine all the player pages into one, to tidy up the list of players in your team and to see their true statistics. </p>
+        <partial name="_LinkedPlayers" model="Model" />
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

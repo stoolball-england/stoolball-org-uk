@@ -35,7 +35,7 @@ namespace Stoolball.Web.Statistics
         [ContentSecurityPolicy]
         public async new Task<IActionResult> Index()
         {
-            var model = new LinkedPlayersForMemberViewModel(CurrentPage);
+            var model = new LinkedPlayersViewModel(CurrentPage);
 
             var member = await _memberManager.GetCurrentMemberAsync();
             if (member != null)

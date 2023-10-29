@@ -16,6 +16,7 @@ namespace Stoolball.Web.UnitTests.Routing
         [InlineData("https://example.org/teams/example123/edit/players", StoolballRouteType.EditPlayersForTeam)]
         [InlineData("https://example.org/teams/example123/edit/players/some-player", StoolballRouteType.PlayerIdentityActions)]
         [InlineData("https://example.org/teams/example123/edit/players/some-player/rename", StoolballRouteType.RenamePlayerIdentity)]
+        [InlineData("https://example.org/teams/example123/edit/players/some-player/statistics", StoolballRouteType.LinkedPlayersForIdentity)]
         [InlineData("https://example.org/teams/example123/delete", StoolballRouteType.DeleteTeam)]
         [InlineData("https://example.org/teams/example123/players", StoolballRouteType.PlayersForTeam)]
         [InlineData("https://example.org/teams/example123/matches", StoolballRouteType.MatchesForTeam)]

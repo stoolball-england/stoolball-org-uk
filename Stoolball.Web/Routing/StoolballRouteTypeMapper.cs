@@ -90,6 +90,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.PlayerBowling, typeof(PlayerBowlingController) },
             { StoolballRouteType.PlayerFielding, typeof(PlayerFieldingController) },
             { StoolballRouteType.LinkPlayerToMember, typeof(LinkPlayerToMemberController) },
+            { StoolballRouteType.LinkedPlayersForIdentity, typeof(LinkedPlayersForIdentityController) },
             { StoolballRouteType.LinkedPlayersForMember, typeof(LinkedPlayersForMemberController) },
             { StoolballRouteType.RenamePlayerIdentity, typeof(RenamePlayerIdentityController) },
             { StoolballRouteType.PlayerIdentityActions, typeof(PlayerIdentityActionsController) },

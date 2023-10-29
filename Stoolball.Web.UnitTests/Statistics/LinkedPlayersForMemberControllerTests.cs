@@ -38,7 +38,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.Null(((LinkedPlayersForMemberViewModel)((ViewResult)result).Model).Player);
+                Assert.Null(((LinkedPlayersViewModel)((ViewResult)result).Model).Player);
             }
         }
 
@@ -54,7 +54,7 @@ namespace Stoolball.Web.UnitTests.Statistics
 
                 _playerDataSource.Verify(x => x.ReadPlayerByMemberKey(memberKey), Times.Once);
                 _playerDataSource.Verify(x => x.ReadPlayerByRoute(It.IsAny<string>(), null), Times.Never);
-                Assert.Null(((LinkedPlayersForMemberViewModel)((ViewResult)result).Model).Player);
+                Assert.Null(((LinkedPlayersViewModel)((ViewResult)result).Model).Player);
             }
         }
 
@@ -72,7 +72,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.Equal(player2, ((LinkedPlayersForMemberViewModel)((ViewResult)result).Model).Player);
+                Assert.Equal(player2, ((LinkedPlayersViewModel)((ViewResult)result).Model).Player);
             }
         }
 
@@ -83,7 +83,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                var breadcrumbs = ((LinkedPlayersForMemberViewModel)((ViewResult)result).Model).Breadcrumbs;
+                var breadcrumbs = ((LinkedPlayersViewModel)((ViewResult)result).Model).Breadcrumbs;
                 Assert.Equal(2, breadcrumbs.Count);
                 Assert.Equal("Home", breadcrumbs[0].Name);
                 Assert.Equal("My account", breadcrumbs[1].Name);
@@ -97,7 +97,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.False(string.IsNullOrWhiteSpace(((LinkedPlayersForMemberViewModel)((ViewResult)result).Model).Metadata.PageTitle));
+                Assert.False(string.IsNullOrWhiteSpace(((LinkedPlayersViewModel)((ViewResult)result).Model).Metadata.PageTitle));
             }
         }
 
@@ -110,7 +110,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.Equal("/from-referer", ((LinkedPlayersForMemberViewModel)((ViewResult)result).Model).PreferredNextRoute);
+                Assert.Equal("/from-referer", ((LinkedPlayersViewModel)((ViewResult)result).Model).PreferredNextRoute);
             }
         }
 
@@ -121,7 +121,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.Equal(Constants.Pages.AccountUrl, ((LinkedPlayersForMemberViewModel)((ViewResult)result).Model).PreferredNextRoute);
+                Assert.Equal(Constants.Pages.AccountUrl, ((LinkedPlayersViewModel)((ViewResult)result).Model).PreferredNextRoute);
             }
         }
     }

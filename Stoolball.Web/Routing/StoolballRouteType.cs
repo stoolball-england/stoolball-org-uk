@@ -80,6 +80,7 @@
         PlayerBowling,
         PlayerFielding,
         LinkPlayerToMember,
+        LinkedPlayersForIdentity,
         LinkedPlayersForMember,
         RenamePlayerIdentity,
         PlayersForTeam,

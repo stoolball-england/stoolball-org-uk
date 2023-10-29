@@ -162,6 +162,7 @@ namespace Stoolball.Web.Routing
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}players{OPTIONAL_SLASH}", StoolballRouteType.EditPlayersForTeam },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}players{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.PlayerIdentityActions },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}players{SLASH}{ANY_VALID_ROUTE}{SLASH}rename{OPTIONAL_SLASH}", StoolballRouteType.RenamePlayerIdentity },
+                { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}players{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.LinkedPlayersForIdentity },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteTeam },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForMatchLocation },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },

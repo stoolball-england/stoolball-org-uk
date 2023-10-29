@@ -1,0 +1,16 @@
+{
+  "Name": "Linked Players For Identity",
+  "Alias": "LinkedPlayersForIdentity",
+  "File": "umb://template-file/LinkedPlayersForIdentity.cshtml",
+  "Master": null,
+  "Udi": "umb://template/88ad298b8eea4cca9f74308d5379de69",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/LinkedPlayersForIdentity.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.4.2"
+}
