@@ -32,6 +32,7 @@
                 @Html.ValidationMessageFor(m => Model.FormData.PlayerSearch, null, new { id = "player-identity-name" })
             </div>
             <button class="btn btn-primary" type="submit">Rename player</button>
+            <p><a href="@Model.PlayerIdentity?.Team?.TeamRoute/edit/players/@Model.PlayerIdentity?.RouteSegment">Cancel</a></p>
         }
     }
     else

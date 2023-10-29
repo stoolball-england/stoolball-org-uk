@@ -261,8 +261,8 @@ namespace Stoolball.Data.SqlServer
                 if (pos > -1)
                 {
                     playerIdentitySegment = playerIdentitySegment.Substring(0, pos);
-                    playerIdentitySegmentParsed = true;
                 }
+                playerIdentitySegmentParsed = true;
             }
             if (!playerIdentitySegmentParsed)
             {
@@ -277,7 +277,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var results = await connection.QueryAsync<PlayerIdentity, Player, Team, Club, PlayerIdentity>(
-                    $@"SELECT pi.PlayerIdentityId, pi.PlayerIdentityName,
+                    $@"SELECT pi.PlayerIdentityId, pi.PlayerIdentityName, pi.RouteSegment,
                               pi.PlayerId,
                               t.TeamId, tv.TeamName, t.TeamRoute,
                               c.ClubId, cv.ClubName, c.ClubRoute

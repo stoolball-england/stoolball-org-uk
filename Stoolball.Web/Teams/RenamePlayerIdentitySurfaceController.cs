@@ -101,7 +101,7 @@ namespace Stoolball.Web.Teams
 
             model.Metadata.PageTitle = "Rename " + model.PlayerIdentity.PlayerIdentityName;
 
-            _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.PlayerIdentity.Team, true);
+            _breadcrumbBuilder.BuildBreadcrumbsForEditPlayers(model.Breadcrumbs, model.PlayerIdentity.Team);
 
             return View("RenamePlayerIdentity", model);
         }

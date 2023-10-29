@@ -6,7 +6,13 @@ namespace Stoolball.Web.Navigation
 {
     public class TeamBreadcrumbBuilder : ITeamBreadcrumbBuilder
     {
-        public void BuildBreadcrumbs(List<Breadcrumb> breadcrumbs, Team team, bool includeTeam)
+        public void BuildBreadcrumbsForEditPlayers(List<Breadcrumb> breadcrumbs, Team team)
+        {
+            BuildBreadcrumbsForTeam(breadcrumbs, team, true);
+            breadcrumbs.Add(new Breadcrumb { Name = "Players", Url = new Uri(team.TeamRoute + "/edit/players", UriKind.Relative) });
+        }
+
+        public void BuildBreadcrumbsForTeam(List<Breadcrumb> breadcrumbs, Team team, bool includeTeam)
         {
             if (breadcrumbs is null)
             {

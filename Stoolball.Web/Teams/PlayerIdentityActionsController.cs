@@ -15,46 +15,46 @@ using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.Teams
 {
-    public class EditTeamController : RenderController, IRenderControllerAsync
+    public class PlayerIdentityActionsController : RenderController, IRenderControllerAsync
     {
-        private readonly ITeamDataSource _teamDataSource;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
+        private readonly IPlayerDataSource _playerDataSource;
         private readonly ITeamBreadcrumbBuilder _breadcrumbBuilder;
 
-        public EditTeamController(ILogger<EditTeamController> logger,
+        public PlayerIdentityActionsController(ILogger<PlayerIdentityActionsController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
-            ITeamDataSource teamDataSource,
             IAuthorizationPolicy<Team> authorizationPolicy,
+            IPlayerDataSource playerDataSource,
             ITeamBreadcrumbBuilder breadcrumbBuilder)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
-            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _breadcrumbBuilder = breadcrumbBuilder ?? throw new ArgumentNullException(nameof(breadcrumbBuilder));
         }
 
         [HttpGet]
-        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
+        [ContentSecurityPolicy]
         public async new Task<IActionResult> Index()
         {
-            var model = new TeamViewModel(CurrentPage)
+            var model = new PlayerIdentityViewModel(CurrentPage)
             {
-                Team = await _teamDataSource.ReadTeamByRoute(Request.Path, true)
+                PlayerIdentity = await _playerDataSource.ReadPlayerIdentityByRoute(Request.Path)
             };
 
-
-            if (model.Team == null)
+            if (model.PlayerIdentity?.Team == null)
             {
                 return NotFound();
             }
             else
             {
-                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Team);
 
-                model.Metadata.PageTitle = "Edit " + model.Team.TeamName;
+                model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.PlayerIdentity.Team);
 
-                _breadcrumbBuilder.BuildBreadcrumbsForTeam(model.Breadcrumbs, model.Team, true);
+                model.Metadata.PageTitle = "Edit " + model.PlayerIdentity.PlayerIdentityName;
+
+                _breadcrumbBuilder.BuildBreadcrumbsForEditPlayers(model.Breadcrumbs, model.PlayerIdentity.Team);
 
                 return CurrentTemplate(model);
             }

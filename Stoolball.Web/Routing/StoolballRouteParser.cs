@@ -160,6 +160,7 @@ namespace Stoolball.Web.Routing
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.TeamActions },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}team{OPTIONAL_SLASH}", StoolballRouteType.EditTeam },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}players{OPTIONAL_SLASH}", StoolballRouteType.EditPlayersForTeam },
+                { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}players{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.PlayerIdentityActions },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}players{SLASH}{ANY_VALID_ROUTE}{SLASH}rename{OPTIONAL_SLASH}", StoolballRouteType.RenamePlayerIdentity },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteTeam },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForMatchLocation },

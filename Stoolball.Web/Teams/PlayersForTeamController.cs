@@ -63,7 +63,7 @@ namespace Stoolball.Web.Teams
                 model.Metadata.PageTitle = "Players for " + model.Team.TeamName + " stoolball team";
                 model.Metadata.Description = model.Team.Description();
 
-                _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.Team, false);
+                _breadcrumbBuilder.BuildBreadcrumbsForTeam(model.Breadcrumbs, model.Team, false);
 
                 return CurrentTemplate(model);
             }

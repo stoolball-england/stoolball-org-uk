@@ -83,6 +83,7 @@
         LinkedPlayersForMember,
         RenamePlayerIdentity,
         PlayersForTeam,
+        PlayerIdentityActions,
         EditPlayersForTeam,
         ClubStatistics,
         TeamStatistics,

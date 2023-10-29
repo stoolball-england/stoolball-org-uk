@@ -15,7 +15,7 @@ namespace Stoolball.Web.UnitTests.Navigation
         {
             var builder = new TeamBreadcrumbBuilder();
 
-            Assert.Throws<ArgumentNullException>(() => builder.BuildBreadcrumbs(null, new Team(), true));
+            Assert.Throws<ArgumentNullException>(() => builder.BuildBreadcrumbsForTeam(null, new Team(), true));
         }
 
         [Fact]
@@ -23,7 +23,7 @@ namespace Stoolball.Web.UnitTests.Navigation
         {
             var builder = new TeamBreadcrumbBuilder();
 
-            Assert.Throws<ArgumentNullException>(() => builder.BuildBreadcrumbs(new List<Breadcrumb>(), null, true));
+            Assert.Throws<ArgumentNullException>(() => builder.BuildBreadcrumbsForTeam(new List<Breadcrumb>(), null, true));
         }
 #nullable enable
 
@@ -34,7 +34,7 @@ namespace Stoolball.Web.UnitTests.Navigation
             var breadcrumbs = new List<Breadcrumb>();
             var team = new Team { Club = new Club { ClubName = "Example club", ClubRoute = "/clubs/example-club" } };
 
-            builder.BuildBreadcrumbs(breadcrumbs, team, false);
+            builder.BuildBreadcrumbsForTeam(breadcrumbs, team, false);
 
             Assert.Equal(2, breadcrumbs.Count);
             Assert.Equal(Constants.Pages.Teams, breadcrumbs[0].Name);
@@ -50,7 +50,7 @@ namespace Stoolball.Web.UnitTests.Navigation
             var breadcrumbs = new List<Breadcrumb>();
             var team = new Team { TeamName = "Example team", TeamRoute = "/teams/example-team" };
 
-            builder.BuildBreadcrumbs(breadcrumbs, team, true);
+            builder.BuildBreadcrumbsForTeam(breadcrumbs, team, true);
 
             Assert.Equal(2, breadcrumbs.Count);
             Assert.Equal(Constants.Pages.Teams, breadcrumbs[0].Name);

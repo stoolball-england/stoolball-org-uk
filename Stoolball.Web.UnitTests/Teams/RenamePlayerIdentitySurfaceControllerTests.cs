@@ -139,7 +139,7 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (PlayerIdentityViewModel)((ViewResult)result).Model;
 
-                _breadcrumbBuilder.Verify(x => x.BuildBreadcrumbs(model.Breadcrumbs, _identityToUpdate.Team!, true), Times.Once());
+                _breadcrumbBuilder.Verify(x => x.BuildBreadcrumbsForEditPlayers(model.Breadcrumbs, _identityToUpdate.Team!), Times.Once());
             }
         }
 

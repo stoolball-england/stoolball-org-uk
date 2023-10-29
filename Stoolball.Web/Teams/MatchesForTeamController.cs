@@ -97,7 +97,7 @@ namespace Stoolball.Web.Teams
                 }
                 model.Metadata.PageTitle = $"{_matchFilterHumanizer.MatchesAndTournaments(model.AppliedMatchFilter)} for {model.Team.TeamName} stoolball team{userFilter}";
 
-                _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.Team, false);
+                _breadcrumbBuilder.BuildBreadcrumbsForTeam(model.Breadcrumbs, model.Team, false);
 
                 return CurrentTemplate(model);
             }

@@ -100,7 +100,7 @@ namespace Stoolball.Web.Teams
 
             model.Metadata.PageTitle = $"Delete {model.Team.TeamName}";
 
-            _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.Team, !model.Deleted);
+            _breadcrumbBuilder.BuildBreadcrumbsForTeam(model.Breadcrumbs, model.Team, !model.Deleted);
 
             return View("DeleteTeam", model);
         }

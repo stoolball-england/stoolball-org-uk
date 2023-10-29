@@ -5,6 +5,7 @@ namespace Stoolball.Web.Navigation
 {
     public interface ITeamBreadcrumbBuilder
     {
-        void BuildBreadcrumbs(List<Breadcrumb> breadcrumbs, Team team, bool includeTeam);
+        void BuildBreadcrumbsForEditPlayers(List<Breadcrumb> breadcrumbs, Team team);
+        void BuildBreadcrumbsForTeam(List<Breadcrumb> breadcrumbs, Team team, bool includeTeam);
     }
 }

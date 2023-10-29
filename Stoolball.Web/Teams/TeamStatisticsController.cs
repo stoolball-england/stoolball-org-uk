@@ -74,7 +74,7 @@ namespace Stoolball.Web.Teams
                 model.MostWickets = (await _bestPlayerTotalDataSource.ReadMostWickets(model.AppliedFilter)).ToList();
                 model.MostCatches = (await _bestPlayerTotalDataSource.ReadMostCatches(model.AppliedFilter)).ToList();
 
-                _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.Context, false);
+                _breadcrumbBuilder.BuildBreadcrumbsForTeam(model.Breadcrumbs, model.Context, false);
 
                 var appliedFilterWithoutDefaultFilter = model.AppliedFilter.Clone();
                 appliedFilterWithoutDefaultFilter.Team = null;

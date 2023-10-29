@@ -1,0 +1,23 @@
+﻿@inherits UmbracoViewPage<PlayerIdentityViewModel>
+@using Stoolball.Security
+@using Stoolball.Web.Teams
+@using Stoolball.Web.Teams.Models
+@using Umbraco.Cms.Web.Website.Controllers
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+<div class="container-xl">
+    <h1>Edit @Model.PlayerIdentity?.PlayerIdentityName</h1>
+
+    @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
+    {
+        <dl>
+            <dt><a href="@Model.PlayerIdentity?.Team?.TeamRoute/edit/players/@Model.PlayerIdentity?.RouteSegment/rename">Rename @Model.PlayerIdentity?.PlayerIdentityName</a></dt>
+            <dd>Rename @Model.PlayerIdentity?.PlayerIdentityName if the name is incomplete or incorrect and the correct name is not also listed.</dd>
+        </dl>
+    }
+    else
+    {
+        @await Html.PartialAsync("_Login")
+    }
+</div>

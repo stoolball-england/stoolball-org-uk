@@ -15,16 +15,16 @@ using Xunit;
 
 namespace Stoolball.Web.UnitTests.Teams
 {
-    public class RenamePlayerIdentityControllerTests : UmbracoBaseTest
+    public class PlayerIdentityActionsControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
         private readonly Mock<IAuthorizationPolicy<Team>> _authorizationPolicy = new();
         private readonly Mock<ITeamBreadcrumbBuilder> _breadcrumbBuilder = new();
 
-        private RenamePlayerIdentityController CreateController()
+        private PlayerIdentityActionsController CreateController()
         {
-            return new RenamePlayerIdentityController(
-                Mock.Of<ILogger<RenamePlayerIdentityController>>(),
+            return new PlayerIdentityActionsController(
+                Mock.Of<ILogger<PlayerIdentityActionsController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _authorizationPolicy.Object,
@@ -88,7 +88,6 @@ namespace Stoolball.Web.UnitTests.Teams
                 var model = (PlayerIdentityViewModel)((ViewResult)result).Model;
 
                 Assert.Equal(identity, model.PlayerIdentity);
-                Assert.Equal(identity.PlayerIdentityName, model.FormData.PlayerSearch);
             }
         }
 
@@ -103,7 +102,7 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (PlayerIdentityViewModel)((ViewResult)result).Model;
 
-                Assert.Equal($"Rename {identity.PlayerIdentityName}", model.Metadata.PageTitle);
+                Assert.Equal($"Edit {identity.PlayerIdentityName}", model.Metadata.PageTitle);
             }
         }
 

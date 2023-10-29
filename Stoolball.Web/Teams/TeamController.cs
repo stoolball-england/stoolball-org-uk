@@ -63,7 +63,7 @@ namespace Stoolball.Web.Teams
                 model.Team.PlayingTimes = _emailProtector.ProtectEmailAddresses(model.Team.PlayingTimes, User.Identity?.IsAuthenticated ?? false);
                 model.Team.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Team.PublicContactDetails, User.Identity?.IsAuthenticated ?? false);
 
-                _breadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.Team, false);
+                _breadcrumbBuilder.BuildBreadcrumbsForTeam(model.Breadcrumbs, model.Team, false);
 
                 return CurrentTemplate(model);
             }

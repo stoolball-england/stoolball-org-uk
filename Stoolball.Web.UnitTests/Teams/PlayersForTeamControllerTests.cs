@@ -134,7 +134,7 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (TeamViewModel)((ViewResult)result).Model;
 
-                _breadcrumbBuilder.Verify(x => x.BuildBreadcrumbs(model.Breadcrumbs, model.Team!, false), Times.Once());
+                _breadcrumbBuilder.Verify(x => x.BuildBreadcrumbsForTeam(model.Breadcrumbs, model.Team!, false), Times.Once());
             }
         }
     }
