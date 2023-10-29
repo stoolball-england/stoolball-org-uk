@@ -40,7 +40,7 @@ namespace Stoolball.Data.MemoryCache
         }
 
         /// <inheritdoc />
-        public async Task<Competition> ReadCompetitionByRoute(string route)
+        public async Task<Competition?> ReadCompetitionByRoute(string route)
         {
             return await _competitionDataSource.ReadCompetitionByRoute(route).ConfigureAwait(false);
         }

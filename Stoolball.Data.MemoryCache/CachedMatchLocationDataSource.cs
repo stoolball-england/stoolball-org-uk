@@ -39,7 +39,7 @@ namespace Stoolball.Data.MemoryCache
             return await _readThroughCache.ReadThroughCacheAsync(async () => await _matchLocationDataSource.ReadMatchLocations(filter).ConfigureAwait(false), CachePolicy.MatchLocationsExpiration(), cacheKey, dependentCacheKey);
         }
 
-        public async Task<MatchLocation> ReadMatchLocationByRoute(string route, bool includeRelated = false)
+        public async Task<MatchLocation?> ReadMatchLocationByRoute(string route, bool includeRelated = false)
         {
             return await _matchLocationDataSource.ReadMatchLocationByRoute(route, includeRelated).ConfigureAwait(false);
         }
