@@ -1,4 +1,5 @@
-﻿using Stoolball.Statistics;
+﻿using System;
+using Stoolball.Statistics;
 using Stoolball.Web.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Services;
@@ -23,5 +24,8 @@ namespace Stoolball.Web.Statistics.Models
         public string LinkedByStoolballEnglandLabel { get; set; } = PlayerIdentityLinkedBy.StoolballEngland.ToString();
 
         public bool CanUnlinkIdentitiesLinkedByMember { get; set; }
+        public bool CanUnlinkIdentitiesLinkedByClubOrTeam { get; set; }
+        public Guid? AddIdentitiesFromTeamId { get; set; }
+        public bool CanRemoveFinalIdentity { get; set; }
     }
 }

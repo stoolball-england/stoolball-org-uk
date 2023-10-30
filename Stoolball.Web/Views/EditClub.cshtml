@@ -13,8 +13,7 @@
 
     @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditClub])
     {
-        using (Html.BeginUmbracoForm<EditClubSurfaceController>
-            ("UpdateClub"))
+        using (Html.BeginUmbracoForm<EditClubSurfaceController>(nameof(EditClubSurfaceController.UpdateClub)))
         {
             @await Html.PartialAsync("_CreateOrEditClub")
         }

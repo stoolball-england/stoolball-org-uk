@@ -9,20 +9,27 @@
 }
 @{
     Model.LinkedByMemberLabel = "Player";
-    Model.LinkedByClubOrTeamLabel = "Team or club";
+    Model.LinkedByClubOrTeamLabel = "Club or team";
     Model.LinkedByStoolballEnglandLabel = "Stoolball England";
+    Model.AddIdentitiesFromTeamId = Model.ContextIdentity?.Team?.TeamId;
+    Model.CanUnlinkIdentitiesLinkedByClubOrTeam = true;
 }
+@await Html.PartialAsync("_JQueryValidate")
+@await Html.PartialAsync("_JQueryAutocomplete")
 @await Html.PartialAsync("_RelatedItems")
+@await Html.PartialAsync("_Forms")
 <div class="container-xl">
     <h1>Players linked to the statistics for @Model.ContextIdentity?.PlayerIdentityName</h1>
 
     @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
     {
-        <p>If a player changed their name or played for multiple teams in your club (for example, your mixed and ladies teams),
+        <p>If a player changed their name or played for multiple teams (for example, your mixed and ladies teams),
            their statistics may be spread over multiple players.</p>
             
         <p>You should combine all the player pages into one, to tidy up the list of players in your team and to see their true statistics. </p>
         <partial name="_LinkedPlayers" model="Model" />
+        <button class="btn btn-primary" type="submit">Save players</button>
+        <p><a href="@Model.ContextIdentity?.Team?.TeamRoute/edit/players/@Model.ContextIdentity?.RouteSegment">Cancel</a></p>
     }
     else
     {
