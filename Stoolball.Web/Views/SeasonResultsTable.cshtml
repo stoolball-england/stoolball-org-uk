@@ -50,7 +50,6 @@
         {
             if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable || Model.Season.ResultsTableType == ResultsTableType.NonLeagueResultsTable)
             {
-                var matchesAwaitingResults = new MatchListingViewModel(Umbraco.AssignedContentItem);
                 var withdrawnTeams = Model.Season.Teams.Where(x => x.WithdrawnDate.HasValue);
                 var columns = 7;
                 <table class="results-table table-as-cards table-as-cards-reset-md table-hover">
@@ -80,89 +79,8 @@
                     </thead>
                     <tbody>
                         @{
-                            var rows = new Dictionary<Guid, ResultsTableRow>();
-                            foreach (var team in Model.Season.Teams)
-                            {
-                                if (!team.WithdrawnDate.HasValue)
-                                {
-                                    rows.Add(team.Team.TeamId!.Value, new ResultsTableRow { Team = team.Team });
-                                }
-                            }
-                            // Look at matches to build data for each team
-                            foreach (var match in Model.Matches.Matches)
-                            {
-                                var homeTeam = match.Teams.FirstOrDefault(team => team.TeamRole == TeamRole.Home);
-                                var awayTeam = match.Teams.FirstOrDefault(team => team.TeamRole == TeamRole.Away);
-                                var homeRuns = homeTeam != null ? match.MatchInnings.Where(x => x.BattingMatchTeamId == homeTeam.MatchTeamId).Sum(x => x.Runs) : null;
-                                var awayRuns = awayTeam != null ? match.MatchInnings.Where(x => x.BattingMatchTeamId == awayTeam.MatchTeamId).Sum(x => x.Runs) : null;
-
-                                // Discount matches in the future, unless they've been forfeited
-                                if (match.StartTime >= DateTime.UtcNow && !match.IsNoResult() && !match.IsForfeit()) { break; }
-
-                                // Discount non-league matches
-                                if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable && match.MatchType != MatchType.LeagueMatch) { continue; }
-
-                                // Discount postponed matches
-                                if (match.MatchResultType == MatchResultType.Postponed || match.MatchResultType == MatchResultType.AbandonedDuringPlayAndPostponed) { continue; }
-
-                                // Discount matches where a team has withdrawn from the season
-                                if (homeTeam != null && withdrawnTeams.Any(x => x.Team.TeamId == homeTeam.Team.TeamId)) { continue; }
-                                if (awayTeam != null && withdrawnTeams.Any(x => x.Team.TeamId == awayTeam.Team.TeamId)) { continue; }
-
-                                // Make a note of missing results, to excuse inaccuracies
-                                if (!match.MatchResultType.HasValue)
-                                {
-                                    matchesAwaitingResults.Matches.Add(match);
-                                    continue;
-                                }
-
-                                // Home team
-                                if (homeTeam != null && rows.ContainsKey(homeTeam.Team.TeamId!.Value))
-                                {
-                                    rows[homeTeam.Team.TeamId.Value].Played++;
-                                    if (match.IsHomeWin()) { rows[homeTeam.Team.TeamId.Value].Won++; }
-                                    else if (match.IsAwayWin()) { rows[homeTeam.Team.TeamId.Value].Lost++; }
-                                    else if (match.IsEqualResult()) { rows[homeTeam.Team.TeamId.Value].Tied++; }
-                                    else if (match.IsNoResult()) { rows[homeTeam.Team.TeamId.Value].NoResult++; }
-                                    if (Model.Season.EnableRunsScored && homeRuns.HasValue) { rows[homeTeam.Team.TeamId.Value].RunsScored = (rows[homeTeam.Team.TeamId.Value].RunsScored + homeRuns.Value); }
-                                    if (Model.Season.EnableRunsConceded && awayRuns.HasValue) { rows[homeTeam.Team.TeamId.Value].RunsConceded = (rows[homeTeam.Team.TeamId.Value].RunsConceded + awayRuns.Value); }
-                                    if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
-                                    {
-                                        rows[homeTeam.Team.TeamId.Value].Points = (rows[homeTeam.Team.TeamId.Value].Points + (Model.Season.PointsRules.First(x => x.MatchResultType == match.MatchResultType)?.HomePoints ?? 0));
-                                    }
-                                }
-
-                                // Away team
-                                if (awayTeam != null && rows.ContainsKey(awayTeam.Team.TeamId!.Value))
-                                {
-                                    rows[awayTeam.Team.TeamId.Value].Played++;
-                                    if (match.IsHomeWin()) { rows[awayTeam.Team.TeamId.Value].Lost++; }
-                                    else if (match.IsAwayWin()) { rows[awayTeam.Team.TeamId.Value].Won++; }
-                                    else if (match.IsEqualResult()) { rows[awayTeam.Team.TeamId.Value].Tied++; }
-                                    else if (match.IsNoResult()) { rows[awayTeam.Team.TeamId.Value].NoResult++; }
-                                    if (Model.Season.EnableRunsScored && awayRuns.HasValue) { rows[awayTeam.Team.TeamId.Value].RunsScored = (rows[awayTeam.Team.TeamId.Value].RunsScored + awayRuns.Value); }
-                                    if (Model.Season.EnableRunsConceded && homeRuns.HasValue) { rows[awayTeam.Team.TeamId.Value].RunsConceded = (rows[awayTeam.Team.TeamId.Value].RunsConceded + homeRuns.Value); }
-                                    if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
-                                    {
-                                        rows[awayTeam.Team.TeamId.Value].Points = (rows[awayTeam.Team.TeamId.Value].Points + (Model.Season.PointsRules.FirstOrDefault(x => x.MatchResultType == match.MatchResultType)?.AwayPoints ?? 0));
-                                    }
-                                }
-                            }
-
-                            // Apply points adjustments
-                            if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
-                            {
-                                foreach (var adjustment in Model.Season.PointsAdjustments)
-                                {
-                                    if (adjustment.Team != null && adjustment.Points.HasValue)
-                                    {
-                                        rows[adjustment.Team.TeamId!.Value].Points += adjustment.Points.Value;
-                                    }
-                                }
-                            }
-
                             // For league tables, sort the teams so that the highest points come first
-                            var sortedRows = new List<ResultsTableRow>(rows.Values);
+                            var sortedRows = new List<ResultsTableRow>(((SeasonResultsTableViewModel)Model.Matches).ResultsTableRows);
                             if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                             {
                                 sortedRows.Sort(new LeagueTableRowComparer());
@@ -218,11 +136,13 @@
                     </ul>
                 }
 
-                if (matchesAwaitingResults.Matches.Count > 0)
+                var matchesAwaitingResultsModel = new MatchListingViewModel(Umbraco.AssignedContentItem);
+                var matchesAwaitingResults = ((SeasonResultsTableViewModel) Model.Matches).MatchesAwaitingResults;
+                if (matchesAwaitingResults.Any())
                 {
-
+                    matchesAwaitingResultsModel.Matches.AddRange(matchesAwaitingResults);
                     <p>Waiting for results from:</p>
-                    @await Html.PartialAsync("_MatchList", matchesAwaitingResults)
+                    @await Html.PartialAsync("_MatchList", matchesAwaitingResultsModel)
                 }
 
                 noResults = false;
