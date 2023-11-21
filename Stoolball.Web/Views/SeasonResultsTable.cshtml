@@ -96,8 +96,8 @@
                                 var homeRuns = homeTeam != null ? match.MatchInnings.Where(x => x.BattingMatchTeamId == homeTeam.MatchTeamId).Sum(x => x.Runs) : null;
                                 var awayRuns = awayTeam != null ? match.MatchInnings.Where(x => x.BattingMatchTeamId == awayTeam.MatchTeamId).Sum(x => x.Runs) : null;
 
-                                // Discount matches in the future
-                                if (match.StartTime >= DateTime.UtcNow) { break; }
+                                // Discount matches in the future, unless they've been forfeited
+                                if (match.StartTime >= DateTime.UtcNow && !match.IsNoResult() && !match.IsForfeit()) { break; }
 
                                 // Discount non-league matches
                                 if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable && match.MatchType != MatchType.LeagueMatch) { continue; }

@@ -58,6 +58,16 @@ namespace Stoolball.Matches
         }
 
         /// <summary>
+        ///  Gets whether the match was forfeit by either team
+        /// </summary>
+        public bool IsForfeit()
+        {
+            if (MatchResultType == Matches.MatchResultType.HomeWinByForfeit) return true;
+            if (MatchResultType == Matches.MatchResultType.AwayWinByForfeit) return true;
+            return false;
+        }
+
+        /// <summary>
         ///  Gets whether the match was won or tied
         /// </summary>
         public bool IsEqualResult()
