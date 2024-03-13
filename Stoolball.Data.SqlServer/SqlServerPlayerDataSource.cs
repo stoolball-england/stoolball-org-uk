@@ -146,6 +146,12 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@PlayerIdentityIds", filter.PlayerIdentityIds.Select(x => x.ToString()));
             }
 
+            if (filter?.ExcludePlayerIdentityIds?.Count > 0)
+            {
+                where.Add("stats.PlayerIdentityId NOT IN @ExcludePlayerIdentityIds");
+                parameters.Add("@ExcludePlayerIdentityIds", filter.ExcludePlayerIdentityIds.Select(x => x.ToString()));
+            }
+
             if (!string.IsNullOrEmpty(filter?.Query))
             {
                 where.Add("stats.PlayerIdentityName LIKE @Query");

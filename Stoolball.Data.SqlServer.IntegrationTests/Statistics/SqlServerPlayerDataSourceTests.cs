@@ -224,6 +224,47 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
+        public async Task Read_players_supports_exclude_by_player_identity_id()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playerWithOneIdentity = _databaseFixture.TestData.Players.First(x => x.PlayerIdentities.Count == 1);
+            var playerWithOtherIdentities = _databaseFixture.TestData.BowlerWithMultipleIdentities!;
+            var identityToExcludeOfSeveral = playerWithOtherIdentities.PlayerIdentities.First().PlayerIdentityId!.Value;
+
+            var results = await playerDataSource.ReadPlayers(
+                new PlayerFilter
+                {
+                    ExcludePlayerIdentityIds = new List<Guid> {
+                        playerWithOneIdentity.PlayerIdentities.First().PlayerIdentityId!.Value,
+                        identityToExcludeOfSeveral
+                    }
+                });
+
+            Assert.Equal(_databaseFixture.TestData.Players.Count - 1, results.Count);
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                if (player.PlayerId == playerWithOneIdentity.PlayerId)
+                {
+                    Assert.Null(results.FirstOrDefault(x => x.PlayerId == player.PlayerId));
+                }
+                else if (player.PlayerId == playerWithOtherIdentities.PlayerId)
+                {
+                    var resultForThisPlayer = results.FirstOrDefault(x => x.PlayerId == player.PlayerId);
+                    Assert.NotNull(resultForThisPlayer);
+
+                    // The identity should be filtered but not the player
+                    Assert.Equal(playerWithOtherIdentities.PlayerIdentities.Count - 1, resultForThisPlayer!.PlayerIdentities.Count);
+                    Assert.DoesNotContain(resultForThisPlayer!.PlayerIdentities, x => x.PlayerIdentityId == identityToExcludeOfSeveral);
+                }
+                else
+                {
+                    Assert.NotNull(results.FirstOrDefault(x => x.PlayerId == player.PlayerId));
+                }
+            }
+
+        }
+
+        [Fact]
         public async Task Read_player_identities_returns_basic_fields()
         {
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
@@ -423,6 +464,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             foreach (var identity in identities)
             {
                 Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_identities_supports_exclude_by_player_identity_id()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var identityToExclude = _databaseFixture.TestData.BowlerWithMultipleIdentities!.PlayerIdentities[0].PlayerIdentityId!.Value;
+
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { ExcludePlayerIdentityIds = new List<Guid>() { identityToExclude } });
+
+            var identities = _databaseFixture.TestData.PlayerIdentities;
+            Assert.Equal(identities.Count - 1, results.Count);
+            foreach (var identity in identities)
+            {
+                if (identity.PlayerIdentityId == identityToExclude)
+                {
+                    Assert.Null(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
+                }
+                else
+                {
+                    Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
+                }
             }
         }
 

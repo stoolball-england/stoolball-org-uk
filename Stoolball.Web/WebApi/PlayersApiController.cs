@@ -22,14 +22,34 @@ namespace Stoolball.Web.WebApi
 
         [HttpGet]
         [Route("api/players/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromQuery] string query, [FromQuery] string[] teams)
+        public async Task<AutocompleteResultSet> Autocomplete([FromQuery] string query, [FromQuery] string[] not, [FromQuery] string[] teams)
         {
+            if (not is null)
+            {
+                throw new ArgumentNullException(nameof(not));
+            }
+
             if (teams is null)
             {
                 throw new ArgumentNullException(nameof(teams));
             }
 
             var playerQuery = new PlayerFilter { Query = query };
+
+            foreach (var guid in not)
+            {
+                if (guid == null) continue;
+
+                try
+                {
+                    playerQuery.ExcludePlayerIdentityIds.Add(new Guid(guid));
+                }
+                catch (FormatException)
+                {
+                    // ignore that one
+                }
+            }
+
             foreach (var guid in teams)
             {
                 if (guid == null) continue;
