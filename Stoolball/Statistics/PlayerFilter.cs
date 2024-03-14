@@ -15,5 +15,6 @@ namespace Stoolball.Statistics
         public List<Guid> MatchLocationIds { get; internal set; } = new();
         public List<Guid> CompetitionIds { get; internal set; } = new();
         public List<Guid> SeasonIds { get; internal set; } = new();
+        public bool IncludePlayersAndIdentitiesLinkedToAMember { get; internal set; } = true;
     }
 }

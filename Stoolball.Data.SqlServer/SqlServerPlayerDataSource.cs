@@ -53,17 +53,17 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(connection));
             }
 
-            var sql = $@"SELECT DISTINCT PlayerId, PlayerRoute, 
-                                PlayerIdentityId, PlayerIdentityName, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed, COUNT(DISTINCT MatchId) AS TotalMatches,
-                                TeamId, TeamName 
+            var sql = $@"SELECT DISTINCT stats.PlayerId, stats.PlayerRoute, 
+                                stats.PlayerIdentityId, stats.PlayerIdentityName, MIN(stats.MatchStartTime) AS FirstPlayed,  MAX(stats.MatchStartTime) AS LastPlayed, COUNT(DISTINCT stats.MatchId) AS TotalMatches,
+                                stats.TeamId, stats.TeamName 
                                 FROM {Tables.PlayerInMatchStatistics} AS stats 
+                                <<JOIN>>
                                 <<WHERE>>
                                 GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName";
 
-            var (where, parameters) = BuildWhereClause(filter);
-            sql = sql.Replace("<<WHERE>>", $"WHERE 1=1 {where}");
+            var (query, parameters) = BuildQuery(filter, sql);
 
-            var rawResults = (await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(sql,
+            var rawResults = (await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(query,
                 (player, identity, team) =>
                 {
                     identity.Team = team;
@@ -99,14 +99,14 @@ namespace Stoolball.Data.SqlServer
                             COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed,
                             stats.PlayerId, stats.PlayerRoute, stats.TeamId, stats.TeamName
                             FROM {Views.PlayerIdentity} pi INNER JOIN {Tables.PlayerInMatchStatistics} AS stats ON pi.PlayerIdentityId = stats.PlayerIdentityId
+                            <<JOIN>>
                             <<WHERE>>
                             GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, pi.PlayerIdentityName, pi.RouteSegment, stats.TeamId, stats.TeamName 
                             ORDER BY stats.TeamId ASC, {PROBABILITY_CALCULATION} DESC, pi.PlayerIdentityName ASC";
 
-                var (where, parameters) = BuildWhereClause(filter);
-                sql = sql.Replace("<<WHERE>>", $"WHERE 1=1 {where}");
+                var (query, parameters) = BuildQuery(filter, sql);
 
-                var identities = (await connection.QueryAsync<PlayerIdentity, Player, Team, PlayerIdentity>(sql,
+                var identities = (await connection.QueryAsync<PlayerIdentity, Player, Team, PlayerIdentity>(query,
                     (identity, player, team) =>
                     {
                         identity.Team = team;
@@ -129,8 +129,9 @@ namespace Stoolball.Data.SqlServer
         /// <summary> 
         /// Adds standard filters to the WHERE clause
         /// </summary> 
-        private (string where, Dictionary<string, object> parameters) BuildWhereClause(PlayerFilter? filter)
+        private (string sql, Dictionary<string, object> parameters) BuildQuery(PlayerFilter? filter, string sql)
         {
+            var join = new List<string>();
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
 
@@ -150,6 +151,12 @@ namespace Stoolball.Data.SqlServer
             {
                 where.Add("stats.PlayerIdentityId NOT IN @ExcludePlayerIdentityIds");
                 parameters.Add("@ExcludePlayerIdentityIds", filter.ExcludePlayerIdentityIds.Select(x => x.ToString()));
+            }
+
+            if (filter?.IncludePlayersAndIdentitiesLinkedToAMember == false)
+            {
+                join.Add($"INNER JOIN {Tables.Player} p ON stats.PlayerId = p.PlayerId");
+                where.Add("p.MemberKey IS NULL");
             }
 
             if (!string.IsNullOrEmpty(filter?.Query))
@@ -188,7 +195,10 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@SeasonIds", filter.SeasonIds.Select(x => x.ToString()));
             }
 
-            return (where.Count > 0 ? " AND " + string.Join(" AND ", where) : string.Empty, parameters);
+            sql = sql.Replace("<<JOIN>>", join.Count > 0 ? string.Join(" ", join) : string.Empty)
+                     .Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
+
+            return (sql, parameters);
         }
 
         /// <inheritdoc />

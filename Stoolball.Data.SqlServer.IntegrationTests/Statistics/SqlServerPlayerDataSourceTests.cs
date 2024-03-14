@@ -264,6 +264,39 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Read_players_supports_include_players_linked_to_member(bool expectPlayer)
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playersToExclude = _databaseFixture.TestData.Players.Where(x => x.MemberKey.HasValue).Select(x => x.PlayerId).ToList();
+
+            var results = await playerDataSource.ReadPlayers(new PlayerFilter { IncludePlayersAndIdentitiesLinkedToAMember = expectPlayer });
+
+            var players = _databaseFixture.TestData.Players;
+            if (expectPlayer)
+            {
+                Assert.Equal(players.Count, results.Count);
+            }
+            else
+            {
+                Assert.Equal(players.Count - playersToExclude.Count, results.Count);
+            }
+
+            foreach (var player in players)
+            {
+                if (expectPlayer || !playersToExclude.Contains(player.PlayerId))
+                {
+                    Assert.NotNull(results.SingleOrDefault(x => x.PlayerId == player.PlayerId));
+                }
+                else
+                {
+                    Assert.Null(results.SingleOrDefault(x => x.PlayerId == player.PlayerId));
+                }
+            }
+        }
+
         [Fact]
         public async Task Read_player_identities_returns_basic_fields()
         {
@@ -486,6 +519,40 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 else
                 {
                     Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Read_player_identities_supports_include_players_linked_to_member(bool expectPlayer)
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playersToExclude = _databaseFixture.TestData.Players.Where(x => x.MemberKey.HasValue);
+            var identitiesToExclude = playersToExclude.SelectMany(x => x.PlayerIdentities).Select(x => x.PlayerIdentityId).Distinct().ToList();
+
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { IncludePlayersAndIdentitiesLinkedToAMember = expectPlayer });
+
+            var identities = _databaseFixture.TestData.PlayerIdentities;
+            if (expectPlayer)
+            {
+                Assert.Equal(identities.Count, results.Count);
+            }
+            else
+            {
+                Assert.Equal(identities.Count - identitiesToExclude.Count, results.Count);
+            }
+
+            foreach (var identity in identities)
+            {
+                if (expectPlayer || !identitiesToExclude.Contains(identity.PlayerIdentityId))
+                {
+                    Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
+                }
+                else
+                {
+                    Assert.Null(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
                 }
             }
         }

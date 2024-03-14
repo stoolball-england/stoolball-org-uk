@@ -22,7 +22,7 @@ namespace Stoolball.Web.WebApi
 
         [HttpGet]
         [Route("api/players/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromQuery] string query, [FromQuery] string[] not, [FromQuery] string[] teams)
+        public async Task<AutocompleteResultSet> Autocomplete([FromQuery] string query, [FromQuery] string[] not, [FromQuery] string[] teams, [FromQuery] bool includeLinkedToMember = true)
         {
             if (not is null)
             {
@@ -35,6 +35,7 @@ namespace Stoolball.Web.WebApi
             }
 
             var playerQuery = new PlayerFilter { Query = query };
+            playerQuery.IncludePlayersAndIdentitiesLinkedToAMember = includeLinkedToMember;
 
             foreach (var guid in not)
             {

@@ -70,7 +70,7 @@
                     placeholder = "Add another player",
                     autocomplete = "off",
                     type = "search",
-                    data_url = $"/api/players/autocomplete?teams={Model.AddIdentitiesFromTeamId}{notIdentities}",
+                    data_url = $"/api/players/autocomplete?teams={Model.AddIdentitiesFromTeamId}{notIdentities}&includeLinkedToMember={!Model.Player.MemberKey.HasValue}",
                     data_template = "player-template",
                     data_suggestion_template = "{{value}} ({{data.playerRecord}})",
                     aria_label = "Type a player name and press down arrow to select the player"
