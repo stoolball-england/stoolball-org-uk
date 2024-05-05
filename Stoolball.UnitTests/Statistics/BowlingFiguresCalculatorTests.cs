@@ -23,7 +23,23 @@ namespace Stoolball.UnitTests.Statistics
         {
             var calculator = CreateCalculator();
 
-            Assert.Throws<ArgumentNullException>(() => calculator.CalculateBowlingFigures(null));
+            Assert.Throws<ArgumentNullException>(() => calculator.CalculateBowlingFigures(null!));
+        }
+
+        [Fact]
+        public void Throws_ArgumentException_when_Bowler_is_null()
+        {
+            var calculator = CreateCalculator();
+
+            var innings = new MatchInnings
+            {
+                OversBowled = new List<Over>
+                {
+                    new Over { Bowler = null }
+                }
+            };
+
+            Assert.Throws<ArgumentException>(() => calculator.CalculateBowlingFigures(innings));
         }
 
         [Fact]
@@ -61,9 +77,9 @@ namespace Stoolball.UnitTests.Statistics
 
             var result = calculator.CalculateBowlingFigures(innings);
 
-            Assert.Equal(firstBowler, result[0].Bowler.PlayerIdentityName);
-            Assert.Equal(secondBowler, result[1].Bowler.PlayerIdentityName);
-            Assert.Equal(thirdBowler, result[2].Bowler.PlayerIdentityName);
+            Assert.Equal(firstBowler, result[0].Bowler!.PlayerIdentityName);
+            Assert.Equal(secondBowler, result[1].Bowler!.PlayerIdentityName);
+            Assert.Equal(thirdBowler, result[2].Bowler!.PlayerIdentityName);
         }
 
         [Theory]
@@ -320,6 +336,48 @@ namespace Stoolball.UnitTests.Statistics
         }
 
         [Fact]
+        public void BowlingFiguresId_should_be_preserved_for_existing_bowlers()
+        {
+            var calculator = CreateCalculator();
+            var bowler = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Bowler 1" };
+            var innings = new MatchInnings
+            {
+                OversBowled = new List<Over> {
+                    new Over { Bowler = bowler }
+                },
+                BowlingFigures = new List<BowlingFigures>
+                {
+                    new BowlingFigures
+                    {
+                        BowlingFiguresId = Guid.NewGuid(),
+                        Bowler = bowler
+                    }
+                }
+            };
+
+            var result = calculator.CalculateBowlingFigures(innings);
+
+            Assert.Equal(innings.BowlingFigures[0].BowlingFiguresId, result.Single(x => x.Bowler!.PlayerIdentityId == bowler.PlayerIdentityId).BowlingFiguresId);
+        }
+
+        [Fact]
+        public void BowlingFiguresId_should_be_generated_for_new_bowlers()
+        {
+            var calculator = CreateCalculator();
+            var bowler = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Bowler 1" };
+            var innings = new MatchInnings
+            {
+                OversBowled = new List<Over> {
+                    new Over { Bowler = bowler }
+                }
+            };
+
+            var result = calculator.CalculateBowlingFigures(innings);
+
+            Assert.NotNull(result.Single(x => x.Bowler!.PlayerIdentityId == bowler.PlayerIdentityId).BowlingFiguresId);
+        }
+
+        [Fact]
         public void PlayerIdentityId_should_be_preserved()
         {
             var calculator = CreateCalculator();
@@ -340,8 +398,8 @@ namespace Stoolball.UnitTests.Statistics
 
             var result = calculator.CalculateBowlingFigures(innings);
 
-            Assert.Equal(bowler1.PlayerIdentityId, result[0].Bowler.PlayerIdentityId);
-            Assert.Equal(bowler2.PlayerIdentityId, result[1].Bowler.PlayerIdentityId);
+            Assert.Equal(bowler1.PlayerIdentityId, result[0].Bowler!.PlayerIdentityId);
+            Assert.Equal(bowler2.PlayerIdentityId, result[1].Bowler!.PlayerIdentityId);
         }
 
 
@@ -368,8 +426,8 @@ namespace Stoolball.UnitTests.Statistics
 
             var result = calculator.CalculateBowlingFigures(innings);
 
-            Assert.Equal(teamId1.ToString(), result[0].Bowler.Team.TeamId.ToString());
-            Assert.Equal(teamId2.ToString(), result[1].Bowler.Team.TeamId.ToString());
+            Assert.Equal(teamId1.ToString(), result[0].Bowler!.Team!.TeamId.ToString());
+            Assert.Equal(teamId2.ToString(), result[1].Bowler!.Team!.TeamId.ToString());
         }
 
         [Fact]

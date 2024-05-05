@@ -27,9 +27,14 @@ namespace Stoolball.Statistics
                 throw new ArgumentNullException(nameof(innings));
             }
 
+            if (innings.OversBowled.Any(o => o.Bowler is null))
+            {
+                throw new ArgumentException($"Overs in {nameof(innings.OversBowled)} must have the Bowler property set", nameof(innings));
+            }
+
             // Get all bowlers who bowled, in the order they bowled
-            var bowlerNames = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.Bowler.ComparableName()).Distinct().ToList();
-            var bowlers = bowlerNames.Select(name => innings.OversBowled.First(over => over.Bowler.ComparableName() == name).Bowler).ToList();
+            var bowlerNames = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.Bowler!.ComparableName()).Distinct().ToList();
+            var bowlers = bowlerNames.Select(name => innings.OversBowled.First(over => over.Bowler!.ComparableName() == name).Bowler!).ToList();
 
             // Add unexpected bowlers who are recorded as taking wickets but not bowling
             foreach (var bowlerOnBattingCard in innings.PlayerInnings
@@ -50,7 +55,7 @@ namespace Stoolball.Statistics
                 decimal? overs = null;
                 int? maidens = null, runsConceded = null;
 
-                var oversByThisBowler = innings.OversBowled.Where(x => x.Bowler.ComparableName() == bowler.ComparableName());
+                var oversByThisBowler = innings.OversBowled.Where(x => x.Bowler!.ComparableName() == bowler.ComparableName());
 
                 if (oversByThisBowler.Any())
                 {
@@ -87,7 +92,7 @@ namespace Stoolball.Statistics
 
                 bowlingFigures.Add(new BowlingFigures
                 {
-                    BowlingFiguresId = Guid.NewGuid(),
+                    BowlingFiguresId = innings.BowlingFigures.SingleOrDefault(x => x.Bowler!.PlayerIdentityId == bowler.PlayerIdentityId)?.BowlingFiguresId ?? Guid.NewGuid(),
                     MatchInnings = innings,
                     Bowler = bowler,
                     Overs = overs,
