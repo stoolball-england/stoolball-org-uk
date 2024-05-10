@@ -50,6 +50,23 @@ function createRelatedItemsEditor() {
       );
     },
 
+    /* Finds IDs already selected and builds a query string to exclude them from results */
+    resetAutocompleteParams: function (selectedItem, url) {
+      const existingIdFields =
+        selectedItem.parentNode.querySelectorAll(".related-item__id");
+      if (!existingIdFields.length) {
+        return url;
+      }
+
+      url += url.indexOf("?") > -1 ? "&" : "?";
+
+      const existingIds = [];
+      for (let j = 0; j < existingIdFields.length; j++) {
+        existingIds.push(existingIdFields[j].value);
+      }
+      return url + "not=" + existingIds.join("&not=");
+    },
+
     /* Updates whether there are any data items selected in the editor */
     resetEmpty: function (editor) {
       const selectedItems = editor.querySelectorAll(".related-item__selected");
@@ -126,16 +143,6 @@ function createRelatedItemsEditor() {
 (function () {
   const editorUtilities = createRelatedItemsEditor();
 
-  function resetAutocompleteParams(selectedItem) {
-    const existingIdFields =
-      selectedItem.parentNode.querySelectorAll(".related-item__id");
-    const existingIds = [];
-    for (let j = 0; j < existingIdFields.length; j++) {
-      existingIds.push(existingIdFields[j].value);
-    }
-    return { not: existingIds };
-  }
-
   function findSelectedItemForDelete(target) {
     while (target !== null && target.parentNode !== null) {
       if (target.classList.contains("related-item__delete")) {
@@ -176,9 +183,12 @@ function createRelatedItemsEditor() {
             ".related-item__search"
           );
           if (searchField) {
-            $(searchField)
-              .autocomplete()
-              .setOptions({ params: resetAutocompleteParams(selectedItem) });
+            $(searchField).autocomplete({
+              serviceUrl: editorUtilities.resetAutocompleteParams(
+                selectedItem,
+                searchField.getAttribute("data-url")
+              ),
+            });
 
             /* Set the focus to the search field */
             searchField.focus();
@@ -215,11 +225,12 @@ function createRelatedItemsEditor() {
           searchField.getAttribute("data-template")
         ).innerHTML;
         const selectedItem = searchField.parentNode.parentNode;
-        const params = resetAutocompleteParams(selectedItem);
 
         $(searchField).autocomplete({
-          serviceUrl: url,
-          params: params,
+          serviceUrl: editorUtilities.resetAutocompleteParams(
+            selectedItem,
+            url
+          ),
           triggerSelectOnValidInput: false,
           onSelect: function (suggestion) {
             selectedItem.insertAdjacentHTML(
@@ -238,9 +249,12 @@ function createRelatedItemsEditor() {
             );
 
             /* Reset autocomplete options so the added team is excluded from further suggestions */
-            $(this)
-              .autocomplete()
-              .setOptions({ params: resetAutocompleteParams(selectedItem) });
+            $(this).autocomplete({
+              serviceUrl: editorUtilities.resetAutocompleteParams(
+                selectedItem,
+                url
+              ),
+            });
 
             /* Clear the search field */
             this.value = "";

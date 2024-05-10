@@ -119,3 +119,45 @@ describe("relatedItemsManager.resetEmpty", () => {
     expect(editor.classList.remove).toBeCalledWith("related-items__empty");
   });
 });
+
+describe("relatedItemsManager.resetAutocompleteParams", () => {
+  it("given a table row, should append selected ids in all sibling rows to an existing url using a 'not' parameter", () => {
+    document.body.innerHTML = `<table class="table table-hover related-items">
+      <tbody>
+        <tr class="related-item__selected">
+          <td class="related-item__delete related-item__selected__section">
+            <input class="related-item__data related-item__id" type="hidden" value="80357a92-c521-4c77-b07f-5ddecc46b7ba" />
+          </td>
+        </tr>
+        <tr class="related-item__selected">
+            <td class="related-item__delete related-item__selected__section">
+              <input class="related-item__data related-item__id" type="hidden" value="c53eae50-d580-4236-a5ed-a2de869acd91" />
+            </td>
+        </tr>
+      </tbody>
+  </table>`;
+
+    const objectUnderTest = relatedItemsEditor();
+
+    const firstRow = document.querySelector("tr");
+
+    // DO NOT expect the alternative format of not%5B%5D=80357a92-c521-4c77-b07f-5ddecc46b7ba
+    // which is valid, but not understood by [FromQuery] in .NET 5
+    const expectedSuffix =
+      "not=80357a92-c521-4c77-b07f-5ddecc46b7ba&not=c53eae50-d580-4236-a5ed-a2de869acd91";
+    const urlWithQuery = "https://example.org/path?some=query";
+    const result1 = objectUnderTest.resetAutocompleteParams(
+      firstRow,
+      urlWithQuery
+    );
+
+    const urlWithoutQuery = "https://example.org/path";
+    const result2 = objectUnderTest.resetAutocompleteParams(
+      firstRow,
+      urlWithoutQuery
+    );
+
+    expect(result1).toBe(urlWithQuery + "&" + expectedSuffix);
+    expect(result2).toBe(urlWithoutQuery + "?" + expectedSuffix);
+  });
+});
