@@ -77,7 +77,7 @@ namespace Stoolball.Web.Matches
                 model.MatchLocationId = model.Match.MatchLocation?.MatchLocationId;
                 model.MatchLocationName = model.Match.MatchLocation?.NameAndLocalityOrTownIfDifferent();
                 model.TossWonBy = model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value)?.MatchTeamId.ToString();
-                model.BattedFirst = model.Match.InningsOrderIsKnown ? model.Match.MatchInnings.First().BattingTeam.MatchTeamId.ToString() : null;
+                model.BattedFirst = model.Match.InningsOrderIsKnown ? model.Match.MatchInnings.First().BattingTeam?.MatchTeamId.ToString() : null;
 
                 var hasPlayedResult = (model.Match.MatchResultType == MatchResultType.HomeWin || model.Match.MatchResultType == MatchResultType.AwayWin || model.Match.MatchResultType == MatchResultType.Tie);
                 var hasNotPlayedResult = model.Match.MatchResultType.HasValue && !hasPlayedResult;
