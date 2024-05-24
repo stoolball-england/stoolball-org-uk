@@ -112,12 +112,12 @@
         }
 
         var tossWinners = Model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value);
-        if (tossWinners != null)
+        if (tossWinners != null && Model.Match.MatchInnings.First().BattingTeam is not null)
         {
             var tossResult = tossWinners.Team.TeamName + " won the toss";
             if (Model.Match.InningsOrderIsKnown)
             {
-                var choseTo = (tossWinners.MatchTeamId == Model.Match.MatchInnings.First().BattingTeam.MatchTeamId) ? "bat" : "bowl";
+                var choseTo = (tossWinners.MatchTeamId == Model.Match.MatchInnings.First().BattingTeam!.MatchTeamId) ? "bat" : "bowl";
                 tossResult += " and chose to " + choseTo;
             }
             <p>@tossResult.</p>
