@@ -11,8 +11,13 @@
     var nothingToDisplay = (minimalScorecard && !Model.MatchInnings.Runs.HasValue && !Model.MatchInnings.Wickets.HasValue && !Model.MatchInnings.HasExtras());
     if (!nothingToDisplay)
     {
+        var numberedInnings = $"{(Model.MatchInnings.InningsOrderInMatch / 2 + Model.MatchInnings.InningsOrderInMatch % 2).Ordinalize()} innings";
+        var teamName = Model.MatchInnings.BattingTeam?.Team?.TeamName;
+        var inningsTitle = teamName is not null ? $"{teamName}'s" : numberedInnings;
         <table class="batting-scorecard table-hover table-as-cards table-as-cards-reset-sm">
-            <caption>@Model.MatchInnings.BattingTeam.Team.TeamName's batting@(Model.TotalInningsInMatch > 2 ? $" ({(Model.MatchInnings.InningsOrderInMatch/2+Model.MatchInnings.InningsOrderInMatch%2).Ordinalize()} innings)" : null)</caption>
+            <caption>
+                @inningsTitle batting@(Model.TotalInningsInMatch > 2 ? $" ({numberedInnings})" : null)
+            </caption>
 
             @if (!minimalScorecard)
             {
