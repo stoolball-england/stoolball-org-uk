@@ -9,7 +9,8 @@ namespace Stoolball.Web.App_Plugins.Stoolball.UmbracoForms
         public void Compose(IUmbracoBuilder builder)
         {
             builder.WithCollectionBuilder<FieldCollectionBuilder>()
-                .Add<EmailField>();
+                .Add<EmailField>()
+                .Add<AntiSpamLongAnswerField>();
         }
     }
 }

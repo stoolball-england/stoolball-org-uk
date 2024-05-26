@@ -65,6 +65,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="App_Plugins\Stoolball.UmbracoForms\AntiSpamLongAnswerField.cs" />
     <Compile Include="App_Plugins\Stoolball.UmbracoForms\DependencyComposer.cs" />
     <Compile Include="App_Plugins\Stoolball.UmbracoForms\EmailField.cs" />
     <Compile Include="App_Plugins\Stoolball.PropertyEditors\StylesheetPickerPropertyValueConverter.cs" />
