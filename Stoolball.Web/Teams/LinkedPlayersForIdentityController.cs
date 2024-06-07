@@ -53,7 +53,7 @@ namespace Stoolball.Web.Teams
 
                 model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.ContextIdentity.Team);
 
-                model.Metadata.PageTitle = "Players linked to the statistics for " + model.ContextIdentity.PlayerIdentityName;
+                model.Metadata.PageTitle = $"Link {model.ContextIdentity.PlayerIdentityName} to the same player listed under another name";
 
                 _breadcrumbBuilder.BuildBreadcrumbsForEditPlayers(model.Breadcrumbs, model.ContextIdentity.Team);
 

@@ -19,11 +19,11 @@
 @await Html.PartialAsync("_RelatedItems")
 @await Html.PartialAsync("_Forms")
 <div class="container-xl">
-    <h1>Players linked to the statistics for @Model.ContextIdentity?.PlayerIdentityName</h1>
+    <h1>Link @Model.ContextIdentity?.PlayerIdentityName to the same player listed under another name</h1>
 
     @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
     {
-        <p>If a player changed their name or played for multiple teams (for example, your mixed and ladies teams),
+        <p>If a player changed their name or is listed with an incorrect spelling @* or played for multiple teams (for example, your mixed and ladies teams) *@,
            their statistics may be spread over multiple players.</p>
             
         <p>You should combine all the player pages into one, to tidy up the list of players in your team and to see their true statistics. </p>
