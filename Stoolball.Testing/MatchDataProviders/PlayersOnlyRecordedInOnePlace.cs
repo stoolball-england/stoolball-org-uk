@@ -54,6 +54,18 @@ namespace Stoolball.Testing.MatchDataProviders
                 RunsConceded = 10
             });
 
+            // When removing a single identity, it's important that code can cope with another player innings that has minimal data.
+            var batterBefore = _playerIdentityFaker.Generate(1).First();
+            batterBefore.Team = match.Teams[0].Team;
+            match.MatchInnings[0].PlayerInnings.Add(new PlayerInnings
+            {
+                PlayerInningsId = Guid.NewGuid(),
+                BattingPosition = 2,
+                Batter = batterBefore,
+                DismissalType = DismissalType.NotOut,
+                RunsScored = 50
+            });
+
             var batterFielderBowler = _playerIdentityFaker.Generate(3);
             batterFielderBowler[0].Team = match.Teams[0].Team;
             batterFielderBowler[1].Team = match.Teams[1].Team;
@@ -68,6 +80,16 @@ namespace Stoolball.Testing.MatchDataProviders
                 Bowler = batterFielderBowler[2],
                 RunsScored = 50,
                 BallsFaced = 60
+            });
+
+            var batterAfter = _playerIdentityFaker.Generate(1).First();
+            batterAfter.Team = match.Teams[0].Team;
+            match.MatchInnings[0].PlayerInnings.Add(new PlayerInnings
+            {
+                PlayerInningsId = Guid.NewGuid(),
+                BattingPosition = 2,
+                Batter = batterAfter,
+                DismissalType = DismissalType.DidNotBat
             });
 
             var awardWinner = _playerIdentityFaker.Generate(1)[0];

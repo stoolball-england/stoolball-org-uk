@@ -880,7 +880,7 @@ namespace Stoolball.Data.SqlServer
                                     playerInnings.PlayerInningsId,
                                     playerInnings.BattingPosition,
                                     auditableInnings.MatchInningsId,
-                                    BatterPlayerIdentityId = playerInnings.Batter.PlayerIdentityId,
+                                    BatterPlayerIdentityId = playerInnings.Batter?.PlayerIdentityId,
                                     DismissalType = playerInnings.DismissalType?.ToString(),
                                     DismissedByPlayerIdentityId = playerInnings.DismissedBy?.PlayerIdentityId,
                                     BowlerPlayerIdentityId = playerInnings.Bowler?.PlayerIdentityId,
@@ -905,7 +905,7 @@ namespace Stoolball.Data.SqlServer
                                 new
                                 {
                                     after.BattingPosition,
-                                    BatterPlayerIdentityId = after.Batter.PlayerIdentityId,
+                                    BatterPlayerIdentityId = after.Batter?.PlayerIdentityId,
                                     DismissalType = after.DismissalType?.ToString(),
                                     DismissedByPlayerIdentityId = after.DismissedBy?.PlayerIdentityId,
                                     BowlerPlayerIdentityId = after.Bowler?.PlayerIdentityId,
@@ -991,7 +991,7 @@ namespace Stoolball.Data.SqlServer
                         {
                             await MarkObsoletePlayersForDelete(bowlersRemoved,
                                 auditableInnings.BowlingTeam.Team.TeamId!.Value,
-                                (name, _) => playerInningsBefore.First(pi => pi.Bowler!.ComparableName() == ComparableNameFor(name)).Bowler!.PlayerIdentityId!.Value,
+                                (name, _) => playerInningsBefore.First(pi => pi.Bowler is not null && pi.Bowler.ComparableName() == ComparableNameFor(name)).Bowler!.PlayerIdentityId!.Value,
                                 transaction);
                         }
 
@@ -1000,7 +1000,7 @@ namespace Stoolball.Data.SqlServer
                         {
                             await MarkObsoletePlayersForDelete(fieldersRemoved,
                                 auditableInnings.BowlingTeam.Team.TeamId!.Value,
-                                (name, _) => playerInningsBefore.First(pi => pi.DismissedBy!.ComparableName() == ComparableNameFor(name)).DismissedBy!.PlayerIdentityId!.Value,
+                                (name, _) => playerInningsBefore.First(pi => pi.DismissedBy is not null && pi.DismissedBy.ComparableName() == ComparableNameFor(name)).DismissedBy!.PlayerIdentityId!.Value,
                                 transaction);
                         }
                     }

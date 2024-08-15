@@ -665,7 +665,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             // Find a player identity who we only record as having taken a wicket once
             var matchInnings = _databaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings);
-            var identityOnlyRecordedAsTakingAWicketOnce = _databaseFixture.TestData.PlayerIdentities.First(
+            var identitiesOnlyRecordedAsTakingAWicketOnce = _databaseFixture.TestData.PlayerIdentities.Where(
                     x => matchInnings.SelectMany(mi => mi.PlayerInnings.Where(pi => pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId)).Count() == 1 &&
                                                        !matchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Batter?.PlayerIdentityId == x.PlayerIdentityId ||
                                                                                                           pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId)) &&
@@ -673,36 +673,39 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                                                        !_databaseFixture.TestData.Matches.SelectMany(x => x.Awards).Any(aw => aw.PlayerIdentity?.PlayerIdentityId == x.PlayerIdentityId)
                                                     );
 
-            // Copy the match where that identity took a wicket
-            var match = CloneValidMatch(_databaseFixture.TestData.Matches.Single(m => m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId))));
-
-            // Remove the innings from the copy
-            var innings = match.MatchInnings.Single(mi => mi.PlayerInnings.Any(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId));
-            var playerInnings = innings.PlayerInnings.Single(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId);
-            innings.PlayerInnings.Remove(playerInnings);
-
-            // Act
-            var result = await repository.UpdateBattingScorecard(
-                    match,
-                    innings.MatchInningsId!.Value,
-                    _memberKey,
-                    _memberName);
-            await _playerRepository.ProcessAsyncUpdatesForPlayers();
-
-            // Assert
-            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            foreach (var identityOnlyRecordedAsTakingAWicketOnce in identitiesOnlyRecordedAsTakingAWicketOnce)
             {
-                var savedPlayerIdentity = await connection.QuerySingleOrDefaultAsync<Guid?>(
-                   $@"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId",
-                   new { identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId }).ConfigureAwait(false);
+                // Copy the match where that identity took a wicket
+                var match = CloneValidMatch(_databaseFixture.TestData.Matches.Single(m => m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId))));
 
-                Assert.Null(savedPlayerIdentity);
+                // Remove the innings from the copy
+                var innings = match.MatchInnings.Single(mi => mi.PlayerInnings.Any(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId));
+                var playerInnings = innings.PlayerInnings.Single(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId);
+                innings.PlayerInnings.Remove(playerInnings);
 
-                var savedPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>(
-                   $@"SELECT PlayerId FROM {Tables.Player} WHERE PlayerId = @PlayerId",
-                   new { identityOnlyRecordedAsTakingAWicketOnce.Player!.PlayerId }).ConfigureAwait(false);
+                // Act
+                var result = await repository.UpdateBattingScorecard(
+                        match,
+                        innings.MatchInningsId!.Value,
+                        _memberKey,
+                        _memberName);
+                await _playerRepository.ProcessAsyncUpdatesForPlayers();
 
-                Assert.Null(savedPlayer);
+                // Assert
+                using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+                {
+                    var savedPlayerIdentity = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                       $@"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId",
+                       new { identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId }).ConfigureAwait(false);
+
+                    Assert.Null(savedPlayerIdentity);
+
+                    var savedPlayer = await connection.QuerySingleOrDefaultAsync<Guid?>(
+                       $@"SELECT PlayerId FROM {Tables.Player} WHERE PlayerId = @PlayerId",
+                       new { identityOnlyRecordedAsTakingAWicketOnce.Player!.PlayerId }).ConfigureAwait(false);
+
+                    Assert.Null(savedPlayer);
+                }
             }
         }
 
