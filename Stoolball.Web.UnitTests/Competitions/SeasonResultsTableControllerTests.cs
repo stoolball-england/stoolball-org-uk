@@ -83,7 +83,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public async Task Route_matching_season_with_results_returns_SeasonViewModel()
         {
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
+            var season = new Season
             {
                 SeasonId = Guid.NewGuid(),
                 Competition = new Competition
@@ -93,7 +93,12 @@ namespace Stoolball.Web.UnitTests.Competitions
                 },
                 Results = "Example",
                 SeasonRoute = "/competitions/example/1234"
-            });
+            };
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(season);
+
+            _matchListingDataSource.Setup(x => x.ReadMatchListings(
+                It.Is<MatchFilter>(mf => mf.SeasonIds.Count == 1 && mf.SeasonIds[0] == season.SeasonId && mf.IncludeTournaments == false),
+                MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = CreateController())
             {
@@ -106,7 +111,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public async Task Route_matching_season_with_league_matches_returns_SeasonViewModel()
         {
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
+            var season = new Season
             {
                 SeasonId = Guid.NewGuid(),
                 Competition = new Competition
@@ -116,7 +121,12 @@ namespace Stoolball.Web.UnitTests.Competitions
                 },
                 MatchTypes = new List<MatchType>() { MatchType.LeagueMatch },
                 SeasonRoute = "/competitions/example/1234"
-            });
+            };
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(season);
+
+            _matchListingDataSource.Setup(x => x.ReadMatchListings(
+                It.Is<MatchFilter>(mf => mf.SeasonIds.Count == 1 && mf.SeasonIds[0] == season.SeasonId && mf.IncludeTournaments == false),
+                MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = CreateController())
             {

@@ -50,7 +50,9 @@ namespace Stoolball.Web.Competitions
                 Season = await _seasonDataSource.ReadSeasonByRoute(Request.Path, true).ConfigureAwait(false)
             };
 
-            if (model.Season == null || (!model.Season.MatchTypes.Contains(MatchType.LeagueMatch) &&
+            if (model.Season == null ||
+                model.Season.Competition is null ||
+                (!model.Season.MatchTypes.Contains(MatchType.LeagueMatch) &&
                 !model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) &&
                 !model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) &&
                 string.IsNullOrEmpty(model.Season.Results)))
@@ -71,7 +73,10 @@ namespace Stoolball.Web.Competitions
                 model.Season.PointsRules.AddRange(await _seasonDataSource.ReadPointsRules(model.Season.SeasonId.Value).ConfigureAwait(false));
                 model.Season.PointsAdjustments.AddRange(await _seasonDataSource.ReadPointsAdjustments(model.Season.SeasonId.Value).ConfigureAwait(false));
 
-                model.Season.Results = _emailProtector.ProtectEmailAddresses(model.Season.Results, User.Identity?.IsAuthenticated ?? false);
+                if (!string.IsNullOrEmpty(model.Season.Results))
+                {
+                    model.Season.Results = _emailProtector.ProtectEmailAddresses(model.Season.Results, User.Identity?.IsAuthenticated ?? false);
+                }
 
                 var resultsData = WorkOutResults(model.Season, model.Matches.Matches);
                 resultsViewModel.ResultsTableRows = resultsData.ResultsTableRows;
@@ -79,7 +84,7 @@ namespace Stoolball.Web.Competitions
 
                 model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
-                var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase);
+                var the = model.Season.Competition.CompetitionName?.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ?? false;
                 model.Metadata.PageTitle = $"Results table for {(the ? string.Empty : "the ")}{model.Season.SeasonFullNameAndPlayerType()}";
                 model.Metadata.Description = model.Season.Description();
 

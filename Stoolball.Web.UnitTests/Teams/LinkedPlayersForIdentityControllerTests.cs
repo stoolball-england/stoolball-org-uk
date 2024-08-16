@@ -105,7 +105,7 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 var model = (LinkedPlayersViewModel)((ViewResult)result).Model;
 
-                Assert.Equal($"Players linked to the statistics for {identity.PlayerIdentityName}", model.Metadata.PageTitle);
+                Assert.Equal($"Link {identity.PlayerIdentityName} to the same player listed under another name", model.Metadata.PageTitle);
             }
         }
 
