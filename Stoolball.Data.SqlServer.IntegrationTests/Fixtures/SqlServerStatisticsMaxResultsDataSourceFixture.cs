@@ -60,7 +60,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             inningsForPlayerWithAtLeast6Scores[5].BallsFaced = inningsForPlayerWithAtLeast6Scores[4].BallsFaced;
 
             // That might've changed bowling figures, so update them
-            var matchInningsForPlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).Single(mi => mi.PlayerInnings.Any(pi => pi.PlayerInningsId == inningsForPlayerWithAtLeast6Scores[5].PlayerInningsId));
+            var matchInningsForPlayerInnings = testData.MatchInnings.Single(mi => mi.PlayerInnings.Any(pi => pi.PlayerInningsId == inningsForPlayerWithAtLeast6Scores[5].PlayerInningsId));
             matchInningsForPlayerInnings.BowlingFigures = bowlingFiguresCalculator.CalculateBowlingFigures(matchInningsForPlayerInnings);
 
             // The assertion expects the fifth and sixth innings to be the same, but to be different that any that come before or after in the

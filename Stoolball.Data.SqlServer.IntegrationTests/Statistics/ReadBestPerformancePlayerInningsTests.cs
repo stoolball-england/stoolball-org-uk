@@ -31,7 +31,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerInnings(null).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Count(x => x.RunsScored.HasValue);
+            var expected = _databaseFixture.TestData.MatchInnings.SelectMany(x => x.PlayerInnings).Count(x => x.RunsScored.HasValue);
             Assert.Equal(expected, result);
         }
 
@@ -44,8 +44,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalPlayerInnings(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
-                .SelectMany(x => x.PlayerInnings)
+            var expected = _databaseFixture.TestData.PlayerInnings
                 .Count(x => x.Batter?.Player?.PlayerId == _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerId && x.RunsScored.HasValue);
             Assert.Equal(expected, result);
         }
@@ -176,7 +175,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Where(x => x.RunsScored.HasValue).ToList();
+            var expected = _databaseFixture.TestData.PlayerInnings.Where(x => x.RunsScored.HasValue).ToList();
             foreach (var expectedInnings in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result?.PlayerInningsId == expectedInnings.PlayerInningsId);
@@ -198,7 +197,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Where(x => x.RunsScored.HasValue).ToList();
+            var expected = _databaseFixture.TestData.PlayerInnings.Where(x => x.RunsScored.HasValue).ToList();
             foreach (var expectedInnings in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result?.PlayerInningsId == expectedInnings.PlayerInningsId);
@@ -219,7 +218,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Where(x => x.RunsScored.HasValue).ToList();
+            var expected = _databaseFixture.TestData.PlayerInnings.Where(x => x.RunsScored.HasValue).ToList();
             foreach (var expectedInnings in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result?.PlayerInningsId == expectedInnings.PlayerInningsId);
@@ -239,8 +238,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var matchInnings = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings);
-            foreach (var innings in matchInnings)
+            foreach (var innings in _databaseFixture.TestData.MatchInnings)
             {
                 foreach (var playerInnings in innings.PlayerInnings.Where(x => x.RunsScored.HasValue))
                 {
@@ -490,7 +488,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             const int pageSize = 10;
             var pageNumber = 1;
-            var remaining = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Count(x => x.RunsScored.HasValue);
+            var remaining = _databaseFixture.TestData.PlayerInnings.Count(x => x.RunsScored.HasValue);
             while (remaining > 0)
             {
                 var filter = new StatisticsFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = pageSize } };

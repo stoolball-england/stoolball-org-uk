@@ -5,7 +5,7 @@ namespace Stoolball.Statistics
 {
     public class PlayerInMatchStatisticsRecord
     {
-        public Guid PlayerInMatchStatisticsId { get; set; }
+        public Guid PlayerInMatchStatisticsId { get; set; } = Guid.NewGuid();
 
         public Guid PlayerId { get; set; }
 
@@ -34,8 +34,6 @@ namespace Stoolball.Statistics
         public bool? WonToss { get; set; }
 
         public bool? BattedFirst { get; set; }
-
-        public Guid? BowlingFiguresId { get; set; }
 
         public int? OverNumberOfFirstOverBowled { get; set; }
 

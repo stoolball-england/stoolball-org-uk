@@ -36,7 +36,7 @@ namespace Stoolball.Testing
             };
         }
 
-        internal Match CreateMatchBetween(Team teamA, List<PlayerIdentity> teamAPlayers, Team teamB, List<PlayerIdentity> teamBPlayers, bool homeTeamBatsFirst, TestData testData)
+        internal Match CreateMatchBetween(Team teamA, List<PlayerIdentity> teamAPlayers, Team teamB, List<PlayerIdentity> teamBPlayers, bool homeTeamBatsFirst, TestData testData, string routeTag)
         {
             var teamAInMatch = new TeamInMatch
             {
@@ -57,6 +57,7 @@ namespace Stoolball.Testing
             };
 
             var match = CreateMatchInThePastWithMinimalDetails();
+            match.MatchRoute = $"{match.MatchRoute}-generated-by-{routeTag}";
             match.Teams.Add(teamAInMatch);
             match.Teams.Add(teamBInMatch);
 

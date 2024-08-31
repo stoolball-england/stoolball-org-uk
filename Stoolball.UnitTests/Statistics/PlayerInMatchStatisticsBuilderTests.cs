@@ -615,15 +615,15 @@ namespace Stoolball.UnitTests.Statistics
 
             foreach (var innings in _matchFixture.Match.MatchInnings)
             {
-                var bowlersWithOvers = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.Bowler.PlayerIdentityId).Distinct();
+                var bowlersWithOvers = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.Bowler!.PlayerIdentityId).Distinct();
 
                 foreach (var bowler in bowlersWithOvers)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == bowler && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    Assert.Equal(innings.OversBowled.Where(x => x.Bowler.PlayerIdentityId == bowler).Sum(x => x.NoBalls), playerRecord!.NoBalls);
-                    Assert.Equal(innings.OversBowled.Where(x => x.Bowler.PlayerIdentityId == bowler).Sum(x => x.Wides), playerRecord.Wides);
+                    Assert.Equal(innings.OversBowled.Where(x => x.Bowler!.PlayerIdentityId == bowler).Sum(x => x.NoBalls), playerRecord!.NoBalls);
+                    Assert.Equal(innings.OversBowled.Where(x => x.Bowler!.PlayerIdentityId == bowler).Sum(x => x.Wides), playerRecord.Wides);
                 }
             }
         }
@@ -641,11 +641,10 @@ namespace Stoolball.UnitTests.Statistics
             {
                 foreach (var figures in innings.BowlingFigures)
                 {
-                    var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == figures.Bowler.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
+                    var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == figures.Bowler!.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
-                    Assert.Equal(figures.BowlingFiguresId, playerRecord!.BowlingFiguresId);
-                    Assert.Equal(figures.Overs, playerRecord.Overs);
+                    Assert.Equal(figures.Overs, playerRecord!.Overs);
                     Assert.Equal(figures.Maidens, playerRecord.Maidens);
                     Assert.Equal(figures.RunsConceded, playerRecord.RunsConceded);
                     Assert.Equal(figures.RunsConceded.HasValue, playerRecord.HasRunsConceded);
@@ -667,8 +666,8 @@ namespace Stoolball.UnitTests.Statistics
             {
                 var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
 
-                foreach (var identity in _playerIdentities.Where(x => !innings.BowlingFigures.Select(bf => bf.Bowler.PlayerIdentityId).Contains(x.PlayerIdentityId) &&
-                                                                      !pairedInnings.BowlingFigures.Select(bf => bf.Bowler.PlayerIdentityId).Contains(x.PlayerIdentityId)))
+                foreach (var identity in _playerIdentities.Where(x => !innings.BowlingFigures.Select(bf => bf.Bowler!.PlayerIdentityId).Contains(x.PlayerIdentityId) &&
+                                                                      !pairedInnings.BowlingFigures.Select(bf => bf.Bowler!.PlayerIdentityId).Contains(x.PlayerIdentityId)))
                 {
                     var playerRecords = result.Where(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
 

@@ -12,14 +12,18 @@ namespace Stoolball.Testing
 {
     public class TestData
     {
+        internal List<MatchAward> Awards { get; set; } = new();
         internal Club? ClubWithMinimalDetails { get; set; }
         internal Club? ClubWithTeamsAndMatchLocation { get; set; }
         internal List<Club> Clubs { get; set; } = new();
         internal Player? BowlerWithMultipleIdentities { get; set; }
         internal List<Player> Players { get; set; } = new();
         internal List<PlayerInnings> PlayerInnings { get; set; } = new();
+
+        internal List<BowlingFigures> BowlingFigures { get; set; } = new();
         internal List<PlayerIdentity> PlayerIdentities { get; set; } = new();
         internal List<Match> Matches { get; set; } = new();
+        internal List<MatchInnings> MatchInnings { get; set; } = new();
         internal Team? TeamWithMinimalDetails { get; set; }
         internal Team? TeamWithFullDetails { get; set; }
         internal List<Team> Teams { get; set; } = new();

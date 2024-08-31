@@ -995,7 +995,7 @@ namespace Stoolball.Testing
             foreach (var teamInTournament in testData.TournamentInThePastWithFullDetails.Teams)
             {
                 // Create a tournament match where the fully-detailed team plays everyone including themselves
-                var matchInTournament = _matchFactory.CreateMatchBetween(testData.TeamWithFullDetails, new List<PlayerIdentity>(), teamInTournament.Team, new List<PlayerIdentity>(), true, testData);
+                var matchInTournament = _matchFactory.CreateMatchBetween(testData.TeamWithFullDetails, new List<PlayerIdentity>(), teamInTournament.Team, new List<PlayerIdentity>(), true, testData, nameof(GenerateTestData) + "TournamentMatch");
                 matchInTournament.Tournament = testData.TournamentInThePastWithFullDetails;
                 matchInTournament.OrderInTournament = matchOrderInTournament;
                 matchInTournament.StartTime = testData.TournamentInThePastWithFullDetails.StartTime.AddMinutes((matchOrderInTournament - 1) * 45);
@@ -1140,6 +1140,11 @@ namespace Stoolball.Testing
             {
                 testData.TeamListings.Add(club.ToTeamListing());
             }
+
+            // Prepare collections to avoid repeatedly querying to create the same collections
+            testData.Awards.AddRange(testData.Matches.SelectMany(m => m.Awards));
+            testData.MatchInnings.AddRange(testData.Matches.SelectMany(x => x.MatchInnings));
+            testData.BowlingFigures.AddRange(testData.MatchInnings.SelectMany(mi => mi.BowlingFigures));
 
             // This must happen after ALL scorecards and awards are finalised
             foreach (var identity in testData.PlayerIdentities)
@@ -1416,7 +1421,7 @@ namespace Stoolball.Testing
                 }
                 while (teamA.TeamId == teamB.TeamId);
 
-                var match = _matchFactory.CreateMatchBetween(teamA, teamAPlayers, teamB, teamBPlayers, homeTeamBatsFirst, testData);
+                var match = _matchFactory.CreateMatchBetween(teamA, teamAPlayers, teamB, teamBPlayers, homeTeamBatsFirst, testData, nameof(GenerateMatchData) + "RandomMatches");
                 if (_randomiser.FiftyFiftyChance())
                 {
                     match.Comments = CreateComments(_randomiser.Between(1, 15), members);
@@ -1440,7 +1445,7 @@ namespace Stoolball.Testing
             matches.Add(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams(testData, teamsWithIdentities));
 
             // Ensure there's always an intra-club match to test
-            matches.Add(_matchFactory.CreateMatchBetween(teamsWithIdentities[0].team, teamsWithIdentities[0].identities, teamsWithIdentities[0].team, teamsWithIdentities[0].identities, _randomiser.FiftyFiftyChance(), testData));
+            matches.Add(_matchFactory.CreateMatchBetween(teamsWithIdentities[0].team, teamsWithIdentities[0].identities, teamsWithIdentities[0].team, teamsWithIdentities[0].identities, _randomiser.FiftyFiftyChance(), testData, nameof(GenerateMatchData) + "IntraClub"));
 
             // Aim to make these obsolete by recreating everything offered by CreateMatchInThePastWithFullDetails in the generated match data above
             var matchInTheFutureWithMinimalDetails = _matchFactory.CreateMatchInThePastWithMinimalDetails();
@@ -1468,7 +1473,7 @@ namespace Stoolball.Testing
         {
             var anyTeam1 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
             var anyTeam2 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
-            var match = _matchFactory.CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, _randomiser.FiftyFiftyChance(), testData);
+            var match = _matchFactory.CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, _randomiser.FiftyFiftyChance(), testData, nameof(CreateMatchWithTeamScoresButNoPlayerData));
 
             // remove any generated player data
             foreach (var innings in match.MatchInnings)
@@ -1501,7 +1506,7 @@ namespace Stoolball.Testing
         {
             var anyTeam1 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
             var anyTeam2 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
-            var match = _matchFactory.CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, _randomiser.FiftyFiftyChance(), testData);
+            var match = _matchFactory.CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, _randomiser.FiftyFiftyChance(), testData, nameof(CreateMatchWithFieldingByMultipleIdentities));
 
             // in the first innings a fielder should take catches under multiple identities
             var firstInnings = match.MatchInnings[0];
@@ -1560,7 +1565,7 @@ namespace Stoolball.Testing
 
             // 2. Create a match between those teams
             var teamsForPlayer = teamsWithIdentities.Where(t => anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.Select(x => x.Team.TeamId).Contains(t.team.TeamId)).ToList();
-            var match = _matchFactory.CreateMatchBetween(teamsForPlayer[0].team, teamsForPlayer[0].identities, teamsForPlayer[1].team, teamsForPlayer[1].identities, _randomiser.FiftyFiftyChance(), testData);
+            var match = _matchFactory.CreateMatchBetween(teamsForPlayer[0].team, teamsForPlayer[0].identities, teamsForPlayer[1].team, teamsForPlayer[1].identities, _randomiser.FiftyFiftyChance(), testData, nameof(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams));
 
             // 3. We know they'll be recorded as a batter in both innings. Ensure they take a wicket too.
             var wicketTaken = match.MatchInnings.First().PlayerInnings.First();

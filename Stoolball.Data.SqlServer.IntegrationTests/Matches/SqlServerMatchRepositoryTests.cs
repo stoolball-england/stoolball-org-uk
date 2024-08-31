@@ -172,6 +172,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                         RunsConceded = over.RunsConceded
                     });
                 }
+                foreach (var figures in inningsToCopy.BowlingFigures)
+                {
+                    match.MatchInnings[^1].BowlingFigures.Add(new BowlingFigures
+                    {
+                        BowlingFiguresId = figures.BowlingFiguresId,
+                        MatchInnings = match.MatchInnings.SingleOrDefault(mi => mi.MatchInningsId == figures.MatchInnings?.MatchInningsId),
+                        Bowler = figures.Bowler,
+                        Overs = figures.Overs,
+                        Maidens = figures.Maidens,
+                        RunsConceded = figures.RunsConceded,
+                        Wickets = figures.Wickets
+                    });
+                }
             }
 
             foreach (var award in matchToCopy.Awards)
@@ -396,18 +409,44 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             }
         }
 
+        /// <summary>
+        /// UpdateBattingScorecard expected the BowlingFiguresId in its input to be unchanged for existing bowlers and pre-generated for new bowlers. #660
+        /// </summary>
+        [Fact]
+        public async Task UpdateBattingScorecard_with_incorrect_BowlingFiguresId_for_existing_bowler_updates_extras_and_final_score()
+        {
+            int byes = 5, wides = 10, noBalls = 15, bonus = 20, runs = 140, wickets = 8;
+            Func<PlayerInnings, bool> selectPlayerInnings = pi => pi.Bowler is not null;
+            Func<MatchInnings, bool> selectMatchInnings = mi => mi.Byes != byes && mi.Wides != wides && mi.NoBalls != noBalls && mi.BonusOrPenaltyRuns != bonus && mi.Runs != runs && mi.Wickets != wickets
+                                                             && mi.PlayerInnings.Any(selectPlayerInnings);
+
+            var match = _databaseFixture.TestData.Matches.First(m => m.MatchInnings.Any(selectMatchInnings));
+            var clonedMatch = CloneValidMatch(match);
+            var matchInnings = clonedMatch.MatchInnings.First(selectMatchInnings);
+
+            var bowler = matchInnings.PlayerInnings.First(selectPlayerInnings).Bowler;
+            matchInnings.BowlingFigures.Single(bf => bf.Bowler!.PlayerIdentityId == bowler!.PlayerIdentityId).BowlingFiguresId = Guid.NewGuid();
+
+            await TestUpdateExtrasAndFinalScore(byes, wides, noBalls, bonus, runs, wickets, clonedMatch, matchInnings).ConfigureAwait(false);
+        }
+
         [Theory]
         [InlineData(null, null, null, null, null, null)]
         [InlineData(5, 10, 15, 20, 140, 8)]
         public async Task UpdateBattingScorecard_updates_extras_and_final_score(int? byes, int? wides, int? noBalls, int? bonus, int? runs, int? wickets)
         {
-            var repository = CreateRepository();
-
             Func<MatchInnings, bool> inningsSelector = mi => mi.Byes != byes && mi.Wides != wides && mi.NoBalls != noBalls && mi.BonusOrPenaltyRuns != bonus && mi.Runs != runs && mi.Wickets != wickets;
-            var match = _databaseFixture.TestData.Matches.First(m => m.MatchInnings.Any(inningsSelector));
 
-            var updatedMatch = CloneValidMatch(match);
-            var innings = updatedMatch.MatchInnings.First(inningsSelector);
+            var match = _databaseFixture.TestData.Matches.First(m => m.MatchInnings.Any(inningsSelector));
+            var clonedMatch = CloneValidMatch(match);
+            var innings = clonedMatch.MatchInnings.First(inningsSelector);
+
+            await TestUpdateExtrasAndFinalScore(byes, wides, noBalls, bonus, runs, wickets, clonedMatch, innings).ConfigureAwait(false);
+        }
+
+        private async Task TestUpdateExtrasAndFinalScore(int? byes, int? wides, int? noBalls, int? bonus, int? runs, int? wickets, Stoolball.Matches.Match clonedMatch, MatchInnings innings)
+        {
+            var repository = CreateRepository();
 
             innings.Byes = byes;
             innings.Wides = wides;
@@ -416,7 +455,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             innings.Runs = runs;
             innings.Wickets = wickets;
 
-            var returnedInnings = await repository.UpdateBattingScorecard(updatedMatch, innings.MatchInningsId!.Value, _memberKey, _memberName).ConfigureAwait(false);
+            var returnedInnings = await repository.UpdateBattingScorecard(clonedMatch, innings.MatchInningsId!.Value, _memberKey, _memberName).ConfigureAwait(false);
 
             Assert.NotNull(returnedInnings);
             Assert.Equal(innings.MatchInningsId, returnedInnings.MatchInningsId);
@@ -678,10 +717,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 // Copy the match where that identity took a wicket
                 var match = CloneValidMatch(_databaseFixture.TestData.Matches.Single(m => m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId))));
 
-                // Remove the innings from the copy
+                // Remove the record of the identity from the copy
                 var innings = match.MatchInnings.Single(mi => mi.PlayerInnings.Any(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId));
                 var playerInnings = innings.PlayerInnings.Single(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId);
                 innings.PlayerInnings.Remove(playerInnings);
+
+                var bowlingFigures = innings.BowlingFigures.Single(bf => bf.Bowler!.PlayerIdentityId == identityOnlyRecordedAsTakingAWicketOnce.PlayerIdentityId);
+                innings.BowlingFigures.Remove(bowlingFigures);
 
                 // Act
                 var result = await repository.UpdateBattingScorecard(
@@ -929,6 +971,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             var innings = match.MatchInnings.Single(mi => mi.OversBowled.Any(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsBowlingOneOver.PlayerIdentityId));
             var over = innings.OversBowled.Single(o => o.Bowler?.PlayerIdentityId == identityOnlyRecordedAsBowlingOneOver.PlayerIdentityId);
             innings.OversBowled.Remove(over);
+
+            var bowlingFigures = innings.BowlingFigures.Single(bf => bf.Bowler?.PlayerIdentityId == identityOnlyRecordedAsBowlingOneOver.PlayerIdentityId);
+            innings.BowlingFigures.Remove(bowlingFigures);
 
             // Act
             var result = await repository.UpdateBowlingScorecard(

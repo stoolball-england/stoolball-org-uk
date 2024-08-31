@@ -39,7 +39,7 @@ namespace Stoolball.Testing.MatchDataProviders
             var matchWhereThePlayerUnderTestBattedBowledAndFielded = _matchFactory.CreateMatchBetween(
                 readOnlyTestData.TeamWithFullDetails, new List<PlayerIdentity>(),
                 anyOppositionTeam, new List<PlayerIdentity>(),
-                _randomiser.FiftyFiftyChance(), readOnlyTestData);
+                _randomiser.FiftyFiftyChance(), readOnlyTestData, nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam));
 
 
             // Create a player with identities on testData.TeamWithFullDetails and any other team.
@@ -115,7 +115,7 @@ namespace Stoolball.Testing.MatchDataProviders
             // Create a match between the player's two teams. This must be a different match to the one where the player has batted and taken wickets, catches and run-outs.
             // Make sure the identity NOT on testData.TeamWithFullDetails has an award but no other part in the match.
             // When test queries filter by testData.TeamWithFullDetails they should NOT include the match where the player won an award for a different team in TotalMatches for the player.
-            var matchBetweenThePlayersTeams = _matchFactory.CreateMatchBetween(someOtherTeamThePlayerBelongsTo, new List<PlayerIdentity>(), readOnlyTestData.TeamWithFullDetails, new List<PlayerIdentity>(), _randomiser.FiftyFiftyChance(), readOnlyTestData);
+            var matchBetweenThePlayersTeams = _matchFactory.CreateMatchBetween(someOtherTeamThePlayerBelongsTo, new List<PlayerIdentity>(), readOnlyTestData.TeamWithFullDetails, new List<PlayerIdentity>(), _randomiser.FiftyFiftyChance(), readOnlyTestData, nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam));
             matchBetweenThePlayersTeams.MatchLocation = null;
             matchBetweenThePlayersTeams.Season = null;
             matchBetweenThePlayersTeams.Awards.Add(new MatchAward

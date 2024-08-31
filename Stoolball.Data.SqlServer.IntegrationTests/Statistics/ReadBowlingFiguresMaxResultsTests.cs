@@ -30,8 +30,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
-            var allExpectedResults = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
-                .SelectMany(x => x.BowlingFigures)
+            var allExpectedResults = _databaseFixture.TestData.BowlingFigures
                 .Where(x => x.Bowler.Player.PlayerId == _databaseFixture.PlayerWithFifthAndSixthBowlingFiguresTheSame.PlayerId)
                 .OrderByDescending(x => x.Wickets).ThenByDescending(x => x.RunsConceded.HasValue).ThenBy(x => x.RunsConceded);
 

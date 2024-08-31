@@ -60,7 +60,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadInningsStatistics(null).ConfigureAwait(false);
 
-            var innings = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings);
+            var innings = _databaseFixture.TestData.MatchInnings;
 
             // With no filter opposition results should be the same, because all teams are considered in both calculations
             AssertInningsStatistics(innings, innings, result);

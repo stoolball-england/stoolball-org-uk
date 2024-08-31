@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Dapper;
@@ -349,7 +350,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                 AND BowledByPlayerIdentityId IS NULL
                                 AND BowledByPlayerIdentityName IS NULL
                                 AND BowledByPlayerRoute IS NULL
-                                AND BowlingFiguresId IS NULL
                                 AND CaughtByPlayerIdentityId IS NULL
                                 AND CaughtByPlayerIdentityName IS NULL
                                 AND CaughtByPlayerRoute IS NULL
@@ -436,8 +436,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     // For this test the data doesn't need to be real (ie the team doesn't have to be right for the players, dismissals can be caught and run-out)  
                     // but the IDs do need to be valid foreign keys.
 
-                    var matchData = (await connection.QueryAsync<(Guid matchId, Guid homeMatchTeamId, Guid awayMatchTeamId, Guid oppositionTeamId)>(
-                        @$"SELECT TOP 3 m.MatchId, home.MatchTeamId AS HomeMatchTeamId, away.MatchTeamId AS AwayMatchTeamId, away.TeamId AS OppositionTeamId
+                    var matchData = (await connection.QueryAsync<(Guid matchId, Guid homeMatchTeamId, Guid oppositionTeamId)>(
+                        @$"SELECT TOP 3 m.MatchId, home.MatchTeamId AS HomeMatchTeamId, away.TeamId AS OppositionTeamId
                            FROM {Tables.Match} m 
                            INNER JOIN {Tables.MatchTeam} home ON m.MatchId = home.MatchId AND home.TeamRole = '{TeamRole.Home.ToString()}'
                            INNER JOIN {Tables.Team} homeTeam ON home.TeamId = homeTeam.TeamId
@@ -448,7 +448,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     var playerData = (await connection.QueryAsync<(Guid playerId, Guid playerIdentityId)>(
                         $"SELECT TOP 12 PlayerId, PlayerIdentityId FROM {Tables.PlayerIdentity}", transaction: transaction).ConfigureAwait(false)).AsList();
 
-                    var bowlingFiguresData = (await connection.QueryAsync<Guid>($"SELECT TOP 3 BowlingFiguresId FROM {Tables.BowlingFigures}", transaction: transaction).ConfigureAwait(false)).AsList();
                     var playerInningsData = (await connection.QueryAsync<Guid>($"SELECT TOP 3 PlayerInningsId FROM {Tables.PlayerInnings}", transaction: transaction).ConfigureAwait(false)).AsList();
 
                     var statisticsRecords = new List<PlayerInMatchStatisticsRecord>(3);
@@ -476,7 +475,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                             PlayerInningsNumber = isEven ? 1 : 2,
                             BattingPosition = 3 + i,
                             BowledByPlayerIdentityId = playerData[playerIndex + 1].playerIdentityId,
-                            BowlingFiguresId = bowlingFiguresData[i],
                             CaughtByPlayerIdentityId = playerData[playerIndex + 2].playerIdentityId,
                             RunOutByPlayerIdentityId = playerData[playerIndex + 3].playerIdentityId,
                             DismissalType = isEven ? DismissalType.CaughtAndBowled : DismissalType.Bowled,
@@ -525,7 +523,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                 AND PlayerInningsNumber = @PlayerInningsNumber
                                 AND BattingPosition = @BattingPosition
                                 AND BowledByPlayerIdentityId = @BowledByPlayerIdentityId
-                                AND BowlingFiguresId = @BowlingFiguresId
                                 AND CaughtByPlayerIdentityId = @CaughtByPlayerIdentityId
                                 AND RunOutByPlayerIdentityId = @RunOutByPlayerIdentityId
                                 AND DismissalType = @DismissalType
@@ -568,7 +565,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                     record.PlayerInningsNumber,
                                     record.BattingPosition,
                                     record.BowledByPlayerIdentityId,
-                                    record.BowlingFiguresId,
                                     record.CaughtByPlayerIdentityId,
                                     record.RunOutByPlayerIdentityId,
                                     record.DismissalType,
@@ -603,6 +599,218 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 }
             }
         }
+
+        [Fact]
+        public async Task UpdatePlayerStatistics_inserts_BowlingFiguresId_correctly_for_player_who_has_batted_and_bowled()
+        {
+            // To test a complex example, find a player who:
+            // - batted in both innings of a two innings match
+            // - batted twice in at least one of those innings
+            // - bowled in both innings
+            // - didn't bowl for both sides
+            var twoInningsMatches = _databaseFixture.TestData.Matches.Where(m => m.MatchInnings.Count > 2);
+            var batterIdentities = twoInningsMatches.SelectMany(m => m.MatchInnings).SelectMany(mi => mi.PlayerInnings).Select(pi => pi.Batter!.PlayerIdentityId).Distinct();
+
+            Stoolball.Matches.Match? match = null;
+            Guid? playerIdentityId = null;
+            foreach (var id in batterIdentities)
+            {
+                match = twoInningsMatches.FirstOrDefault(m =>
+                    (
+                        m.MatchInnings[0].PlayerInnings.Any(pi => pi.Batter!.PlayerIdentityId == id) &&
+                        m.MatchInnings[2].PlayerInnings.Any(pi => pi.Batter!.PlayerIdentityId == id) &&
+                        (m.MatchInnings[0].PlayerInnings.Count(pi => pi.Batter!.PlayerIdentityId == id) > 1 || m.MatchInnings[2].PlayerInnings.Count(pi => pi.Batter!.PlayerIdentityId == id) > 1) &&
+                        m.MatchInnings[1].BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id) &&
+                        m.MatchInnings[3].BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id) &&
+                        !m.MatchInnings[0].BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id) &&
+                        !m.MatchInnings[2].BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id)
+                    )
+
+                    ||
+
+                    (
+                        m.MatchInnings[1].PlayerInnings.Any(pi => pi.Batter!.PlayerIdentityId == id) &&
+                        m.MatchInnings[3].PlayerInnings.Any(pi => pi.Batter!.PlayerIdentityId == id) &&
+                        (m.MatchInnings[1].PlayerInnings.Count(pi => pi.Batter!.PlayerIdentityId == id) > 1 || m.MatchInnings[3].PlayerInnings.Count(pi => pi.Batter!.PlayerIdentityId == id) > 1)) &&
+                        m.MatchInnings[0].BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id) &&
+                        m.MatchInnings[2].BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id) &&
+                        !m.MatchInnings[1].BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id) &&
+                        !m.MatchInnings[3].BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id)
+                    );
+                if (match is not null)
+                {
+                    playerIdentityId = id;
+                    break;
+                }
+            }
+            if (match is null || playerIdentityId is null) { throw new InvalidOperationException("Required test data not found."); }
+
+            var statisticsRecords = new PlayerInMatchStatisticsBuilder(new PlayerIdentityFinder(), new OversHelper())
+                .BuildStatisticsForMatch(match)
+                .Where(record => record.PlayerIdentityId == playerIdentityId);
+
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
+                    await repo.UpdatePlayerStatistics(statisticsRecords, transaction).ConfigureAwait(false);
+
+                    foreach (var record in statisticsRecords)
+                    {
+                        int? count = null;
+                        // Check the BowlingFiguresId is only in the first batting record in an innings
+                        if (record.PlayerInningsNumber > 1)
+                        {
+                            count = await transaction.Connection.QuerySingleAsync<int>(@$"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} 
+                                WHERE PlayerInMatchStatisticsId = @PlayerInMatchStatisticsId 
+                                  AND BowlingFiguresId IS NULL",
+                                    new
+                                    {
+                                        record.PlayerInMatchStatisticsId
+                                    },
+                                    transaction).ConfigureAwait(false);
+
+                        }
+                        else
+                        {
+                            // Check the correct BowlingFiguresId is in each innings
+                            var bowlingFiguresId = match.MatchInnings.Where(mi => mi.InningsOrderInMatch == (record.MatchInningsPair * 2) - 1 || mi.InningsOrderInMatch == record.MatchInningsPair * 2)
+                                                                     .SelectMany(mi => mi.BowlingFigures)
+                                                                     .First(bf => bf.Bowler!.PlayerIdentityId == playerIdentityId)
+                                                                     .BowlingFiguresId;
+
+                            count = await transaction.Connection.QuerySingleAsync<int>(@$"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} 
+                                WHERE PlayerInMatchStatisticsId = @PlayerInMatchStatisticsId 
+                                  AND BowlingFiguresId = @BowlingFiguresId",
+                                    new
+                                    {
+                                        record.PlayerInMatchStatisticsId,
+                                        BowlingFiguresId = bowlingFiguresId
+                                    },
+                                    transaction).ConfigureAwait(false);
+                        }
+
+                        Assert.Equal(1, count);
+                    }
+
+                    transaction.Rollback();
+                }
+            }
+        }
+
+        [Fact]
+        public async Task UpdatePlayerStatistics_inserts_NULL_BowlingFiguresId_for_player_who_only_bowled()
+        {
+            var playerIdentity = _databaseFixture.TestData.PlayerIdentities
+                .First(id => !_databaseFixture.TestData.PlayerInnings.Any(pi => pi.Batter!.PlayerIdentityId == id.PlayerIdentityId) &&
+                              _databaseFixture.TestData.BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id.PlayerIdentityId) &&
+                             !_databaseFixture.TestData.Awards.Any(aw => aw.PlayerIdentity!.PlayerIdentityId == id.PlayerIdentityId));
+
+            var match = _databaseFixture.TestData.Matches.First(m => m.MatchInnings.Any(mi => mi.BowlingFigures.Any(pi => pi.Bowler!.PlayerIdentityId == playerIdentity.PlayerIdentityId)));
+
+            var statisticsRecords = new PlayerInMatchStatisticsBuilder(new PlayerIdentityFinder(), new OversHelper())
+                .BuildStatisticsForMatch(match)
+                .Where(record => record.PlayerIdentityId == playerIdentity.PlayerIdentityId);
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
+                    await repo.UpdatePlayerStatistics(statisticsRecords, transaction).ConfigureAwait(false);
+
+                    foreach (var record in statisticsRecords)
+                    {
+                        var bowlingFiguresId = match.MatchInnings.Where(mi => mi.InningsOrderInMatch == (record.MatchInningsPair * 2) - 1 || mi.InningsOrderInMatch == record.MatchInningsPair * 2)
+                                                                 .SelectMany(mi => mi.BowlingFigures)
+                                                                 .First(bf => bf.Bowler!.PlayerIdentityId == playerIdentity.PlayerIdentityId)
+                                                                 .BowlingFiguresId;
+
+                        var count = await transaction.Connection.QuerySingleAsync<int>(@$"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} 
+                                WHERE PlayerInMatchStatisticsId = @PlayerInMatchStatisticsId 
+                                  AND BowlingFiguresId = @BowlingFiguresId",
+                                    new
+                                    {
+                                        record.PlayerInMatchStatisticsId,
+                                        BowlingFiguresId = bowlingFiguresId
+                                    },
+                                    transaction).ConfigureAwait(false);
+
+                        Assert.Equal(1, count);
+                    }
+
+                    transaction.Rollback();
+                }
+            }
+        }
+
+        [Fact]
+        public async Task UpdatePlayerStatistics_inserts_NULL_BowlingFiguresId_for_player_who_only_batted()
+        {
+            var playerIdentity = _databaseFixture.TestData.PlayerIdentities
+                .First(id => _databaseFixture.TestData.PlayerInnings.Any(pi => pi.Batter!.PlayerIdentityId == id.PlayerIdentityId) &&
+                            !_databaseFixture.TestData.BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id.PlayerIdentityId) &&
+                            !_databaseFixture.TestData.Awards.Any(aw => aw.PlayerIdentity!.PlayerIdentityId == id.PlayerIdentityId));
+
+            var match = _databaseFixture.TestData.Matches.First(m => m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Batter!.PlayerIdentityId == playerIdentity.PlayerIdentityId)));
+
+            var statisticsRecords = new PlayerInMatchStatisticsBuilder(new PlayerIdentityFinder(), new OversHelper())
+                .BuildStatisticsForMatch(match)
+                .Where(record => record.PlayerIdentityId == playerIdentity.PlayerIdentityId);
+
+            await ActAndAssertThatBowlingFiguresIdIsNull(statisticsRecords).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task UpdatePlayerStatistics_inserts_BowlingFiguresId_correctly_for_player_who_neither_batted_or_bowled()
+        {
+            var playerIdentity = _databaseFixture.TestData.PlayerIdentities
+                  .First(id => !_databaseFixture.TestData.PlayerInnings.Any(pi => pi.Batter!.PlayerIdentityId == id.PlayerIdentityId) &&
+                               !_databaseFixture.TestData.BowlingFigures.Any(bf => bf.Bowler!.PlayerIdentityId == id.PlayerIdentityId) &&
+                                _databaseFixture.TestData.Awards.Any(aw => aw.PlayerIdentity!.PlayerIdentityId == id.PlayerIdentityId));
+
+            var match = _databaseFixture.TestData.Matches.First(m => m.Awards.Any(aw => aw.PlayerIdentity!.PlayerIdentityId == playerIdentity.PlayerIdentityId));
+
+            var statisticsRecords = new PlayerInMatchStatisticsBuilder(new PlayerIdentityFinder(), new OversHelper())
+                .BuildStatisticsForMatch(match)
+                .Where(record => record.PlayerIdentityId == playerIdentity.PlayerIdentityId);
+
+            await ActAndAssertThatBowlingFiguresIdIsNull(statisticsRecords).ConfigureAwait(false);
+        }
+
+        private async Task ActAndAssertThatBowlingFiguresIdIsNull(IEnumerable<PlayerInMatchStatisticsRecord> statisticsRecords)
+        {
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
+                    await repo.UpdatePlayerStatistics(statisticsRecords, transaction).ConfigureAwait(false);
+
+                    foreach (var record in statisticsRecords)
+                    {
+                        var count = await transaction.Connection.QuerySingleAsync<int>(@$"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} 
+                                WHERE PlayerInMatchStatisticsId = @PlayerInMatchStatisticsId 
+                                  AND BowlingFiguresId IS NULL",
+                                new
+                                {
+                                    record.PlayerInMatchStatisticsId
+                                },
+                                transaction).ConfigureAwait(false);
+
+                        Assert.Equal(1, count);
+                    }
+
+                    transaction.Rollback();
+                }
+            }
+        }
+
 
         public void Dispose() => _scope.Dispose();
     }

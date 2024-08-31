@@ -31,7 +31,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalBowlingFigures(null).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.BowlingFigures).Count();
+            var expected = _databaseFixture.TestData.BowlingFigures.Count;
             Assert.Equal(expected, result);
         }
 
@@ -44,8 +44,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
-                .SelectMany(x => x.BowlingFigures)
+            var expected = _databaseFixture.TestData.BowlingFigures
                 .Count(x => x.Bowler?.Player?.PlayerId == _databaseFixture.TestData.BowlerWithMultipleIdentities.PlayerId);
             Assert.Equal(expected, result);
         }
@@ -158,7 +157,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.BowlingFigures).ToList();
+            var expected = _databaseFixture.TestData.BowlingFigures;
             foreach (var expectedBowler in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result?.BowlingFiguresId == expectedBowler.BowlingFiguresId);
@@ -180,7 +179,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.BowlingFigures).ToList();
+            var expected = _databaseFixture.TestData.BowlingFigures;
             foreach (var expectedBowler in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result?.BowlingFiguresId == expectedBowler.BowlingFiguresId);
@@ -202,7 +201,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.BowlingFigures).ToList();
+            var expected = _databaseFixture.TestData.BowlingFigures;
             foreach (var expectedBowler in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result?.BowlingFiguresId == expectedBowler.BowlingFiguresId);
@@ -222,8 +221,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var matchInnings = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings);
-            foreach (var innings in matchInnings)
+            foreach (var innings in _databaseFixture.TestData.MatchInnings)
             {
                 foreach (var expectedBowler in innings.BowlingFigures)
                 {
@@ -475,7 +473,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             const int pageSize = 10;
             var pageNumber = 1;
-            var remaining = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.BowlingFigures).Count();
+            var remaining = _databaseFixture.TestData.BowlingFigures.Count;
             while (remaining > 0)
             {
                 var filter = new StatisticsFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = pageSize } };

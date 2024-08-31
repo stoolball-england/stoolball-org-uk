@@ -99,18 +99,18 @@ namespace Stoolball.Web.Matches
                 Batter = new PlayerIdentity
                 {
                     PlayerIdentityName = x.Batter?.Trim(),
-                    Team = model.CurrentInnings.MatchInnings.BattingTeam.Team
+                    Team = model.CurrentInnings.MatchInnings.BattingTeam!.Team
                 },
                 DismissalType = x.DismissalType,
                 DismissedBy = string.IsNullOrWhiteSpace(x.DismissedBy) ? null : new PlayerIdentity
                 {
                     PlayerIdentityName = x.DismissedBy.Trim(),
-                    Team = model.CurrentInnings.MatchInnings.BowlingTeam.Team
+                    Team = model.CurrentInnings.MatchInnings.BowlingTeam!.Team
                 },
                 Bowler = string.IsNullOrWhiteSpace(x.Bowler) ? null : new PlayerIdentity
                 {
                     PlayerIdentityName = x.Bowler.Trim(),
-                    Team = model.CurrentInnings.MatchInnings.BowlingTeam.Team
+                    Team = model.CurrentInnings.MatchInnings.BowlingTeam!.Team
                 },
                 RunsScored = x.RunsScored,
                 BallsFaced = x.BallsFaced
@@ -151,7 +151,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _matchRepository.UpdateBattingScorecard(model.Match, model.CurrentInnings.MatchInnings.MatchInningsId!.Value, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _playerCacheClearer.InvalidateCacheForTeams(model.CurrentInnings.MatchInnings.BattingTeam.Team, model.CurrentInnings.MatchInnings.BowlingTeam.Team);
+                _playerCacheClearer.InvalidateCacheForTeams(model.CurrentInnings.MatchInnings.BattingTeam!.Team!, model.CurrentInnings.MatchInnings.BowlingTeam!.Team!);
 
                 // redirect to the bowling scorecard for this innings
                 return Redirect($"{model.Match.MatchRoute}/edit/innings/{model.InningsOrderInMatch!.Value}/bowling");
@@ -167,14 +167,14 @@ namespace Stoolball.Web.Matches
             if (model.Match.Season != null)
             {
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
-                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.Competition.CompetitionName, Url = new Uri(model.Match.Season.Competition.CompetitionRoute, UriKind.Relative) });
-                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.SeasonName(), Url = new Uri(model.Match.Season.SeasonRoute, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.Competition!.CompetitionName, Url = new Uri(model.Match.Season.Competition.CompetitionRoute!, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.SeasonName(), Url = new Uri(model.Match.Season.SeasonRoute!, UriKind.Relative) });
             }
             else
             {
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Matches, Url = new Uri(Constants.Pages.MatchesUrl, UriKind.Relative) });
             }
-            model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.MatchName, Url = new Uri(model.Match.MatchRoute, UriKind.Relative) });
+            model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.MatchName, Url = new Uri(model.Match.MatchRoute!, UriKind.Relative) });
 
             return View("EditBattingScorecard", model);
         }

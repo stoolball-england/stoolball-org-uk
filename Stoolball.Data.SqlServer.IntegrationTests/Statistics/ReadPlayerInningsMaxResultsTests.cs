@@ -34,8 +34,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = (await dataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
-            var allExpectedResults = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
-                .SelectMany(x => x.PlayerInnings)
+            var allExpectedResults = _databaseFixture.TestData.PlayerInnings
                 .Where(x => x.Batter.Player.PlayerId == _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerId && x.RunsScored.HasValue)
                 .OrderByDescending(x => x.RunsScored).ThenBy(x => StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(x.DismissalType));
 

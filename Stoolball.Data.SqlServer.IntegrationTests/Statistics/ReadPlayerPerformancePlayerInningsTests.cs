@@ -32,7 +32,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
+            var expected = _databaseFixture.TestData.PlayerInnings;
             foreach (var expectedInnings in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result?.PlayerInningsId == expectedInnings.PlayerInningsId);
@@ -52,7 +52,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
+            var expected = _databaseFixture.TestData.PlayerInnings;
             foreach (var expectedInnings in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result?.PlayerInningsId == expectedInnings.PlayerInningsId);
@@ -73,7 +73,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
+            var expected = _databaseFixture.TestData.PlayerInnings;
             foreach (var expectedInnings in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result?.PlayerInningsId == expectedInnings.PlayerInningsId);
@@ -257,7 +257,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             const int pageSize = 10;
             var pageNumber = 1;
-            var remaining = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Count();
+            var remaining = _databaseFixture.TestData.PlayerInnings.Count;
             while (remaining > 0)
             {
                 var filter = new StatisticsFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = pageSize } };

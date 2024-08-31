@@ -150,7 +150,8 @@ namespace Stoolball.Data.SqlServer
                         (SELECT TeamRoute FROM {Tables.Team} WHERE TeamId = @OppositionTeamId),
                         (SELECT MatchLocationId FROM {Tables.Match} WHERE MatchId = @MatchId),
                      @MatchInningsPair, @TeamRunsScored, @TeamWicketsLost, @TeamBonusOrPenaltyRunsAwarded, @TeamRunsConceded, @TeamNoBallsConceded, @TeamWidesConceded, @TeamByesConceded, @TeamWicketsTaken, 
-                     @BowlingFiguresId, @OverNumberOfFirstOverBowled, @BallsBowled, @Overs, @Maidens, @NoBalls, @Wides, @RunsConceded, @HasRunsConceded, @Wickets, @WicketsWithBowling,
+                        (SELECT CASE WHEN @PlayerInningsNumber IS NOT NULL AND @PlayerInningsNumber > 1 THEN NULL ELSE (SELECT BowlingFiguresId FROM {Tables.BowlingFigures} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE BowlingMatchTeamId = @MatchTeamId AND (InningsOrderInMatch = @MatchInningsPair*2 OR InningsOrderInMatch = (@MatchInningsPair*2)-1)) AND BowlerPlayerIdentityId = @PlayerIdentityId) END),
+                     @OverNumberOfFirstOverBowled, @BallsBowled, @Overs, @Maidens, @NoBalls, @Wides, @RunsConceded, @HasRunsConceded, @Wickets, @WicketsWithBowling,
                      @WonToss, @BattedFirst, @PlayerInningsNumber, @PlayerInningsId, @BattingPosition, @DismissalType, @PlayerWasDismissed, @BowledByPlayerIdentityId, 
                         (SELECT CASE WHEN @BowledByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerIdentityName FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @BowledByPlayerIdentityId) END),
                         (SELECT CASE WHEN @BowledByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerRoute FROM {Views.PlayerIdentity} pi WHERE PlayerIdentityId = @BowledByPlayerIdentityId) END),
@@ -161,9 +162,11 @@ namespace Stoolball.Data.SqlServer
                         (SELECT CASE WHEN @RunOutByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerIdentityName FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @RunOutByPlayerIdentityId) END),
                         (SELECT CASE WHEN @RunOutByPlayerIdentityId IS NULL THEN NULL ELSE (SELECT PlayerRoute FROM {Views.PlayerIdentity} pi WHERE PlayerIdentityId = @RunOutByPlayerIdentityId) END),
                      @RunsScored, @BallsFaced, @Catches, @RunOuts, @WonMatch, @PlayerOfTheMatch)",
+
+
                         new
                         {
-                            PlayerInMatchStatisticsId = Guid.NewGuid(),
+                            record.PlayerInMatchStatisticsId,
                             record.PlayerId,
                             record.PlayerIdentityId,
                             record.MatchId,
@@ -178,7 +181,6 @@ namespace Stoolball.Data.SqlServer
                             record.TeamWidesConceded,
                             record.TeamByesConceded,
                             record.TeamWicketsTaken,
-                            record.BowlingFiguresId,
                             record.OverNumberOfFirstOverBowled,
                             record.BallsBowled,
                             record.Overs,
