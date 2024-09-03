@@ -193,32 +193,32 @@ jobs:
     needs: [stoolball-web-unit-tests, stoolball-unit-tests, stoolball-integration-tests, stoolball-web-js-tests, stoolball-sql-unit-tests]
     steps:
     - name: Download Stoolball.Web.UnitTests results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.7
       with:
         name: stoolball-web-unit-tests
 
     - name: Download Stoolball.UnitTests results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.7
       with:
         name: stoolball-unit-tests
 
     - name: Download Stoolball.Data.SqlServer.UnitTests results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.7
       with:
         name: stoolball-sql-unit-tests
 
     - name: Download Stoolball.Data.MemoryCache.UnitTests results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.7
       with:
         name: stoolball-cache-unit-tests
 
     - name: Download Stoolball.Data.SqlServer.IntegrationTests results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.7
       with:
         name: stoolball-integration-tests
 
     - name: Download Jest results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.7
       with:
         name: stoolball-web-js-tests
 
