@@ -293,6 +293,13 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
+        /// <inheritdoc />
+        public Task<Player> LinkPlayerIdentity(Player player, PlayerIdentity playerIdentity, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName)
+        {
+            throw new NotImplementedException();
+        }
+
+
         private async Task RedirectPlayerRoute(string routeBefore, string routeAfter, IDbTransaction transaction)
         {
             await _redirectsRepository.InsertRedirect(routeBefore, routeAfter, null, transaction);
@@ -404,6 +411,12 @@ namespace Stoolball.Data.SqlServer
                     transaction.Commit();
                 }
             }
+        }
+
+        /// <inheritdoc />
+        public Task UnlinkPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName)
+        {
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
