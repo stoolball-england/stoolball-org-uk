@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
-using Umbraco.Extensions;
 
 namespace Stoolball.Web.Routing
 {
@@ -20,7 +20,7 @@ namespace Stoolball.Web.Routing
             _routeParser = routeParser ?? throw new ArgumentNullException(nameof(routeParser));
         }
 
-        public bool TryFindContent(IPublishedRequestBuilder request)
+        Task<bool> IContentFinder.TryFindContent(IPublishedRequestBuilder request)
         {
             if (request is null)
             {
@@ -29,24 +29,24 @@ namespace Stoolball.Web.Routing
 
             if (!_umbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext))
             {
-                return false;
+                return Task.FromResult(false);
             }
 
             var matchedRouteType = _routeParser.ParseRouteType(request.Uri.GetAbsolutePathDecoded());
             if (matchedRouteType.HasValue)
             {
                 // Direct the response to the 'Stoolball router' document type to be handled by StoolballRouterController
-                var router = umbracoContext.Content.GetSingleByXPath("//stoolballRouter");
+                var router = umbracoContext.Content!.GetSingleByXPath("//stoolballRouter");
 
                 if (router != null)
                 {
                     request.SetPublishedContent(router);
                     request.TrySetTemplate(matchedRouteType.Value.ToString());
-                    return request.HasTemplate() && router.IsAllowedTemplate(request.Template.Alias);
+                    return Task.FromResult(request.HasTemplate() && router.IsAllowedTemplate(request.Template!.Alias));
                 }
             }
 
-            return false;
+            return Task.FromResult(false);
         }
     }
 }

@@ -105,6 +105,7 @@ $tables.Add([System.Tuple]::Create("dbo", "UCErrorLog"))
 
 # Umbraco Forms
 $tables.Add([System.Tuple]::Create("dbo", "UFDataSource"))
+$tables.Add([System.Tuple]::Create("dbo", "UFFolders"))
 $tables.Add([System.Tuple]::Create("dbo", "UFForms"))
 $tables.Add([System.Tuple]::Create("dbo", "UFPrevalueSource"))
 $tables.Add([System.Tuple]::Create("dbo", "UFRecordDataBit"))

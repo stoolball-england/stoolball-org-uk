@@ -439,6 +439,7 @@ Smidge
 Stoolball.Web/web.config
 coverage
 ood.flag
+appsettings-schema.json
 
 # Work with Umbraco Cloud in a separate repo
 .UmbracoCloud

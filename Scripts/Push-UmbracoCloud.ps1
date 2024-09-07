@@ -1,3 +1,9 @@
+param(
+    [string]$GitRemote
+)
+
+if (!$GitRemote) { $GitRemote = "origin" }
+
 $projectRoot = Resolve-Path "$PSScriptRoot\.."
 $cloudRoot = Resolve-Path "$projectRoot\.UmbracoCloud"
 
@@ -13,7 +19,7 @@ if ($configLine -match 'csproj = "(?<csproj>[\w.-]+)"') {
 
 # Pull updates from remote first - it should avoid merge conflicts with the commit which happens below
 Push-Location $cloudRoot
-git pull origin master
+git pull $GitRemote master
 Pop-Location
 
 # Build the code - it gets built anyway during deploy but this validates it builds before pushing, and will execute any MSBuild steps
@@ -35,13 +41,12 @@ foreach ($folder in $foldersToCopy) {
     Get-ChildItem -Recurse $cloudRoot\src\$folder\*.cs | Remove-Item
 
     robocopy $folderPath $cloudRoot\src\$folder `
-        /IF *.cs *.csproj *.cshtml *.uda *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 *.lic *.sql appsettings.json appsettings.Production.json compilerconfig.json umbraco-cloud.json web.release.config `
-        /XF member-group__*.uda *.test.js `
+        /IF *.cs *.csproj *.cshtml *.uda *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 *.lic *.sql appsettings.json appsettings.Production.json compilerconfig.json web.release.config `
+        /XF member-group__*.uda *.test.js umbraco-cloud.json `
         /S `
-        /XD $folderPath\obj $folderPath\bin $folderPath\node_modules $folderPath\sass $folderPath\App_Data $folderPath\wwwroot\media $folderPath\wwwroot\umbraco `
-        $folderPath\App_Plugins\Deploy $folderPath\App_Plugins\UmbracoForms $folderPath\App_Plugins\UmbracoId $folderPath\App_Plugins\uSync `
-        $folderPath\umbraco\config $folderPath\umbraco\Data $folderPath\umbraco\config\Logs $folderPath\umbraco\PartialViewMacros $folderPath\umbraco\UmbracoBackOffice `
-        $folderPath\umbraco\UmbracoInstall $folderPath\umbraco\UmbracoWebsite $folderPath\Smidge
+        /XD $folderPath\obj $folderPath\bin $folderPath\node_modules $folderPath\sass $folderPath\App_Data $folderPath\wwwroot\media `
+        $folderPath\App_Plugins\Deploy $folderPath\App_Plugins\UmbracoId $folderPath\App_Plugins\uSync `
+        $folderPath\umbraco\config $folderPath\umbraco\Data $folderPath\umbraco\config\Logs $folderPath\Smidge
 
     # Update versions for each deploy where needed
     $version = (Get-Random).ToString();
@@ -66,5 +71,5 @@ foreach ($folder in $foldersToCopy) {
 Push-Location $cloudRoot
 git add .
 git commit -am "Changes from local site"
-git push origin master
+git push $GitRemote master
 Pop-Location
