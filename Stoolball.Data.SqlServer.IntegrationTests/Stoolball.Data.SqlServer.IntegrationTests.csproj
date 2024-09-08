@@ -33,7 +33,7 @@
     <PackageReference Include="Umbraco.Deploy.Cloud" Version="10.0.0" />
     <PackageReference Include="Umbraco.Deploy.Contrib" Version="10.0.0" />
     <PackageReference Include="Umbraco.Deploy.Forms" Version="10.0.0" />
-    <PackageReference Include="Umbraco.Forms" Version="10.0.0" />
+    <PackageReference Include="Umbraco.Forms" Version="10.5.3" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
