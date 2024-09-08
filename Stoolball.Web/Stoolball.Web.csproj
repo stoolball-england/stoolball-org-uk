@@ -134,7 +134,7 @@
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="Umbraco.Cloud.Identity.Cms" Version="10.0.2" />
     <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="10.0.0" />
-    <PackageReference Include="Umbraco.Cms" Version="10.0.0" />
+    <PackageReference Include="Umbraco.Cms" Version="10.8.1" />
     <PackageReference Include="Umbraco.Deploy.Cloud" Version="10.0.0" />
     <PackageReference Include="Umbraco.Deploy.Contrib" Version="10.0.0" />
     <PackageReference Include="Umbraco.Deploy.Forms" Version="10.0.0" />
