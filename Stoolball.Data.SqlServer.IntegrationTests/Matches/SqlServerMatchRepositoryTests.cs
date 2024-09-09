@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using AngleSharp.Css.Dom;
 using Dapper;
-using Ganss.XSS;
+using Ganss.Xss;
 using Moq;
 using Stoolball.Awards;
 using Stoolball.Data.Abstractions;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Matches;
@@ -51,5 +52,76 @@ namespace Stoolball.Testing
         internal List<MatchListing> MatchListings { get; set; } = new();
         internal List<MatchListing> TournamentMatchListings { get; set; } = new();
         internal List<School> Schools { get; set; } = new();
+
+        internal (PlayerIdentity firstIdentity, PlayerIdentity secondIdentity) AnyTwoIdentitiesFromTheSameTeam()
+        {
+            PlayerIdentity? firstIdentity = null;
+            PlayerIdentity? secondIdentity = null;
+
+            foreach (var identity in PlayerIdentities)
+            {
+                firstIdentity = identity;
+                secondIdentity = PlayerIdentities.FirstOrDefault(x => x.PlayerIdentityId != firstIdentity.PlayerIdentityId && x.Team?.TeamId == firstIdentity.Team?.TeamId);
+
+                if (secondIdentity != null)
+                {
+                    break;
+                }
+            }
+
+            return (firstIdentity!, secondIdentity!);
+        }
+
+        internal Player AnyPlayerWithOnlyOneIdentity(Func<Player, bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Players.First(x => x.PlayerIdentities.Count == 1 && additionalCriteria(x));
+        }
+
+        internal Player AnyPlayerWithMultipleIdentities(Func<Player, bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Players.First(x => x.PlayerIdentities.Count > 1 && additionalCriteria(x));
+        }
+
+        internal Player AnyPlayerNotLinkedToMember(Func<Player, bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Players.First(x => !x.MemberKey.HasValue && additionalCriteria(x));
+        }
+
+        internal Player AnyPlayerLinkedToMemberWithMultipleIdentities(Func<Player, bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Players.First(x => x.MemberKey.HasValue && x.PlayerIdentities.Count > 1 && additionalCriteria(x));
+        }
+
+        internal Player AnyPlayerLinkedToMemberWithOnlyOneIdentity(Func<Player, bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Players.First(x => x.MemberKey.HasValue && x.PlayerIdentities.Count == 1 && additionalCriteria(x));
+        }
+
+        internal Player AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(Func<Player, bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Players.First(x => !x.MemberKey.HasValue && x.PlayerIdentities.Count == 1 && additionalCriteria(x));
+        }
+
+        internal Player AnyPlayerNotLinkedToMemberWithMultipleIdentities(Func<Player, bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Players.First(x => !x.MemberKey.HasValue && x.PlayerIdentities.Count > 1 && additionalCriteria(x));
+        }
+
+        internal (Guid memberKey, string memberName) AnyMemberLinkedToPlayer()
+        {
+            return Members.First(x => Players.Any(p => p.MemberKey == x.memberKey));
+        }
+
+        internal (Guid memberKey, string memberName) AnyMemberNotLinkedToPlayer()
+        {
+            return Members.First(x => !Players.Any(p => p.MemberKey == x.memberKey));
+        }
     }
 }

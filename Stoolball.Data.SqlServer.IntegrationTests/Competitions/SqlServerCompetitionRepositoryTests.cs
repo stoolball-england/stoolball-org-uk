@@ -654,7 +654,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         [Fact]
         public async Task Delete_competition_succeeds()
         {
-            var sanitizer = new Mock<Ganss.XSS.IHtmlSanitizer>();
+            var sanitizer = new Mock<Ganss.Xss.IHtmlSanitizer>();
             sanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
             sanitizer.Setup(x => x.AllowedAttributes).Returns(new HashSet<string>());
             sanitizer.Setup(x => x.AllowedCssProperties).Returns(new HashSet<string>());

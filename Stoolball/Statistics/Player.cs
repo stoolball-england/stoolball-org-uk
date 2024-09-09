@@ -146,6 +146,14 @@ namespace Stoolball.Statistics
             return names.Values;
         }
 
+        /// <summary>
+        /// Gets whether another player has an identity on the same team as any of this player's identities.
+        /// </summary>
+        /// <param name="otherPlayer">The player to compare.</param>
+        /// <returns><c>true</c> if at least one identity is on the same team as one identity; <c>false</c> otherwise.</returns>
+        public bool IsOnTheSameTeamAs(Player otherPlayer) => PlayerIdentities.Select(pi => pi.Team?.TeamId).Intersect(otherPlayer.PlayerIdentities.Select(pi => pi.Team?.TeamId)).Any();
+
+
         public string? PlayerRoute { get; set; }
 
         public Guid? MemberKey { get; set; }

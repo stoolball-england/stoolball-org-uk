@@ -186,7 +186,7 @@ namespace Stoolball.Data.SqlServer
         {
             if (player == null || !player.PlayerId.HasValue || string.IsNullOrEmpty(player.PlayerRoute))
             {
-                throw new ArgumentException(nameof(player), $"{nameof(player)} cannot be null and must have a PlayerId and PlayerRoute");
+                throw new ArgumentException($"{nameof(player)} cannot be null and must have a PlayerId and PlayerRoute", nameof(player));
             }
 
             if (string.IsNullOrWhiteSpace(memberName))
@@ -236,9 +236,7 @@ namespace Stoolball.Data.SqlServer
                     else
                     {
                         // Select the best route from the two players, and redirect
-                        var bestRoute = _bestRouteSelector.SelectBestRoute(existingPlayerForMember.PlayerRoute!, auditablePlayer.PlayerRoute!);
-                        var obsoleteRoute = bestRoute == existingPlayerForMember.PlayerRoute ? auditablePlayer.PlayerRoute : existingPlayerForMember.PlayerRoute;
-                        await RedirectPlayerRoute(obsoleteRoute!, bestRoute, transaction);
+                        var bestRoute = await FindBestRouteAndRedirect(auditablePlayer.PlayerRoute!, existingPlayerForMember.PlayerRoute!, transaction);
 
                         // Move the player identities from this player id to the member's player id
                         var replaceWithExistingPlayer = new { ExistingPlayerId = existingPlayerForMember.PlayerId, PlayerRoute = bestRoute, auditablePlayer.PlayerId, LinkedBy = PlayerIdentityLinkedBy.Member.ToString() };
@@ -293,12 +291,152 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        /// <inheritdoc />
-        public Task<Player> LinkPlayerIdentity(Player player, PlayerIdentity playerIdentity, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName)
+        private async Task<string> FindBestRouteAndRedirect(string route1, string route2, IDbTransaction transaction)
         {
-            throw new NotImplementedException();
+            var bestRoute = _bestRouteSelector.SelectBestRoute(route2, route1);
+            var obsoleteRoute = bestRoute == route2 ? route1 : route2;
+            await RedirectPlayerRoute(obsoleteRoute!, bestRoute, transaction);
+            return bestRoute;
         }
 
+        /// <inheritdoc />
+        public async Task<Player> LinkPlayerIdentity(Player targetPlayer, PlayerIdentity identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName)
+        {
+            if (targetPlayer?.PlayerId is null || string.IsNullOrEmpty(targetPlayer.PlayerRoute))
+            {
+                throw new ArgumentException($"{nameof(targetPlayer)} cannot be null and must have a PlayerId and PlayerRoute", nameof(targetPlayer));
+            }
+
+            if (identityToLinkToTarget?.PlayerIdentityId is null || identityToLinkToTarget?.Player?.PlayerId is null || string.IsNullOrEmpty(identityToLinkToTarget.Player.PlayerRoute))
+            {
+                throw new ArgumentException($"{nameof(identityToLinkToTarget)} cannot be null and must have a PlayerIdentityId, a PlayerId and PlayerRoute", nameof(identityToLinkToTarget));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var auditableTargetPlayer = _copier.CreateAuditableCopy(targetPlayer)!;
+                    var auditableIdentityToLinkToTarget = _copier.CreateAuditableCopy(identityToLinkToTarget)!;
+                    var auditablePlayerForIdentity = _copier.CreateAuditableCopy(auditableIdentityToLinkToTarget.Player)!;
+
+                    var memberKeyForTargetPlayerBefore = await connection.QuerySingleAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", auditableTargetPlayer, transaction);
+                    var identityToLinkBefore = await connection.QuerySingleAsync<(Guid PlayerId, Guid? MemberKey, int Identities)>(
+                        @$"SELECT p.PlayerId, p.MemberKey, (SELECT COUNT(*) FROM {Tables.PlayerIdentity} WHERE PlayerId = p.PlayerId) AS Identities 
+                           FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId
+                           WHERE pi.PlayerIdentityId = @PlayerIdentityId", auditableIdentityToLinkToTarget, transaction);
+
+                    // Are the players already linked to each other? If so, abort.
+                    if (auditableTargetPlayer.PlayerId == identityToLinkBefore.PlayerId)
+                    {
+                        throw new InvalidOperationException("The player identity is already linked to the target player");
+                    }
+
+                    // Are both players linked to a member? If so, abort.
+                    if (memberKeyForTargetPlayerBefore.HasValue && identityToLinkBefore.MemberKey.HasValue)
+                    {
+                        throw new InvalidOperationException("The target player and the identity to link are are linked to different members and cannot be linked to each other");
+                    }
+
+                    // Is either player linked to a member? If so, abort, unless it's the current member.
+                    // (When this process is extended to request permissions, this rule no longer applies.)
+                    if (memberKeyForTargetPlayerBefore.HasValue && memberKeyForTargetPlayerBefore != memberKey)
+                    {
+                        throw new InvalidOperationException("The target player is linked to a member and only that member can choose which identities to link");
+                    }
+
+                    if (identityToLinkBefore.MemberKey.HasValue && identityToLinkBefore.MemberKey != memberKey)
+                    {
+                        throw new InvalidOperationException("The identity to link is linked to a member and only that member can choose which identities to link");
+                    }
+
+                    // Does the identity to link already have sibling identities. If so, abort.
+                    // (When the UI catches up, this rule no longer applies.)
+                    if (identityToLinkBefore.Identities > 1)
+                    {
+                        throw new InvalidOperationException("The identity to link is linked to other identities and must be separated before it can be moved");
+                    }
+
+                    // Does the target player have an identity on the same team as the identity to link? If not, abort.
+                    var targetPlayerHasIdentityOnSameTeam = await connection.QuerySingleAsync<bool>(@$"
+                        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END 
+                        FROM {Tables.PlayerIdentity}
+                        WHERE PlayerId = @TargetPlayerId 
+                        AND TeamId = (SELECT TeamId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId)",
+                            new
+                            {
+                                TargetPlayerId = auditableTargetPlayer.PlayerId,
+                                auditableIdentityToLinkToTarget.PlayerIdentityId
+                            },
+                            transaction);
+
+                    if (!targetPlayerHasIdentityOnSameTeam)
+                    {
+                        throw new InvalidOperationException("The identity to link must be on the same team as the target player");
+                    }
+
+                    // Select the best route from the two players, and redirect.
+                    var bestRoute = await FindBestRouteAndRedirect(auditableTargetPlayer.PlayerRoute!, auditableIdentityToLinkToTarget.Player!.PlayerRoute!, transaction);
+
+                    // Move the player identities from the identity to link's current player id to the target player's id.
+                    if (bestRoute != auditableTargetPlayer.PlayerRoute)
+                    {
+                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, auditableTargetPlayer.PlayerId }, transaction);
+                    }
+                    var movePlayerIdentity = new { LinkedBy = linkedBy.ToString(), auditableTargetPlayer.PlayerId, auditableIdentityToLinkToTarget.PlayerIdentityId };
+                    await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy, PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", movePlayerIdentity, transaction);
+
+                    // We also need to update statistics, and delete the now-unused player that the identity has been moved away from. 
+                    // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so we just need to mark the player as safe to delete.
+                    await connection.ExecuteAsync($"UPDATE {Tables.Player} SET Deleted = 1 WHERE PlayerId = @PlayerId", auditableIdentityToLinkToTarget.Player, transaction);
+
+                    var serialisedDeletedPlayer = JsonConvert.SerializeObject(auditablePlayerForIdentity);
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Delete,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = auditablePlayerForIdentity.EntityUri,
+                        State = serialisedDeletedPlayer,
+                        RedactedState = serialisedDeletedPlayer,
+                        AuditDate = DateTime.UtcNow
+                    }, transaction);
+
+                    _logger.Info(LoggingTemplates.Deleted, serialisedDeletedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerIdentity));
+
+                    // Update the player to return with new details assigned to it.
+                    auditableTargetPlayer.PlayerRoute = bestRoute;
+                    auditableTargetPlayer.PlayerIdentities.Add(auditableIdentityToLinkToTarget);
+                    auditableIdentityToLinkToTarget.Player = null;
+
+                    var serialisedUpdatedPlayer = JsonConvert.SerializeObject(auditableTargetPlayer);
+                    auditableIdentityToLinkToTarget.Player = auditableTargetPlayer;
+
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Update,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = auditableTargetPlayer.EntityUri,
+                        State = serialisedUpdatedPlayer,
+                        RedactedState = serialisedUpdatedPlayer,
+                        AuditDate = DateTime.UtcNow
+                    }, transaction);
+
+                    _logger.Info(LoggingTemplates.Updated, serialisedUpdatedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerIdentity));
+
+                    transaction.Commit();
+
+                    return auditableTargetPlayer;
+                }
+            }
+        }
 
         private async Task RedirectPlayerRoute(string routeBefore, string routeAfter, IDbTransaction transaction)
         {
@@ -362,50 +500,7 @@ namespace Stoolball.Data.SqlServer
                     }
                     else
                     {
-                        // Create new player 
-                        var player = new Player { PlayerId = Guid.NewGuid() };
-                        player.PlayerIdentities.Add(playerIdentity);
-
-                        player.PlayerRoute = await _routeGenerator.GenerateUniqueRoute($"/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute,
-                           async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute AND Deleted = 0", new { PlayerRoute = route }, transaction)
-                        );
-
-                        await transaction.Connection.ExecuteAsync(
-                              $@"INSERT INTO {Tables.Player} 
-                                               (PlayerId, PlayerRoute) 
-                                               VALUES 
-                                               (@PlayerId, @PlayerRoute)",
-                              new
-                              {
-                                  player.PlayerId,
-                                  player.PlayerRoute
-                              }, transaction);
-
-                        // Update identity to point to new player
-                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @PlayerId, LinkedBy = @LinkedBy WHERE PlayerIdentityId = @PlayerIdentityId",
-                            new
-                            {
-                                player.PlayerId,
-                                playerIdentity.PlayerIdentityId,
-                                LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity.ToString()
-                            }, transaction);
-
-                        // We also need to update statistics to point to new player and new player route.
-                        // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so there is nothing to do here.
-
-                        var serialisedPlayer = JsonConvert.SerializeObject(_copier.CreateAuditableCopy(player));
-                        await _auditRepository.CreateAudit(new AuditRecord
-                        {
-                            Action = AuditAction.Create,
-                            MemberKey = memberKey,
-                            ActorName = memberName,
-                            EntityUri = player.EntityUri,
-                            State = serialisedPlayer,
-                            RedactedState = serialisedPlayer,
-                            AuditDate = DateTime.UtcNow
-                        }, transaction);
-
-                        _logger.Info(LoggingTemplates.Created, serialisedPlayer, memberName, memberKey, GetType(), nameof(UnlinkPlayerIdentityFromMemberAccount));
+                        await MoveIdentityToNewPlayer(playerIdentity, memberKey, memberName, transaction, nameof(UnlinkPlayerIdentityFromMemberAccount)).ConfigureAwait(false);
                     }
 
                     transaction.Commit();
@@ -413,10 +508,89 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        /// <inheritdoc />
-        public Task UnlinkPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName)
+        private async Task MoveIdentityToNewPlayer(PlayerIdentity playerIdentity, Guid memberKey, string memberName, IDbTransaction transaction, string callingMethodForLog)
         {
-            throw new NotImplementedException();
+            // Create new player 
+            var player = new Player { PlayerId = Guid.NewGuid() };
+            player.PlayerIdentities.Add(playerIdentity);
+
+            player.PlayerRoute = await _routeGenerator.GenerateUniqueRoute($"/players", playerIdentity.PlayerIdentityName!, NoiseWords.PlayerRoute,
+               async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute AND Deleted = 0", new { PlayerRoute = route }, transaction)
+            );
+
+            await transaction.Connection.ExecuteAsync(
+                  $@"INSERT INTO {Tables.Player} 
+                                               (PlayerId, PlayerRoute) 
+                                               VALUES 
+                                               (@PlayerId, @PlayerRoute)",
+                  new
+                  {
+                      player.PlayerId,
+                      player.PlayerRoute
+                  }, transaction);
+
+            // Update identity to point to new player
+            await transaction.Connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @PlayerId, LinkedBy = @LinkedBy WHERE PlayerIdentityId = @PlayerIdentityId",
+                new
+                {
+                    player.PlayerId,
+                    playerIdentity.PlayerIdentityId,
+                    LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity.ToString()
+                }, transaction);
+
+            // We also need to update statistics to point to new player and new player route.
+            // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so there is nothing to do here.
+
+            var serialisedPlayer = JsonConvert.SerializeObject(_copier.CreateAuditableCopy(player));
+            await _auditRepository.CreateAudit(new AuditRecord
+            {
+                Action = AuditAction.Create,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = player.EntityUri,
+                State = serialisedPlayer,
+                RedactedState = serialisedPlayer,
+                AuditDate = DateTime.UtcNow
+            }, transaction);
+
+            _logger.Info(LoggingTemplates.Created, serialisedPlayer, memberName, memberKey, GetType(), callingMethodForLog);
+        }
+
+        /// <inheritdoc />
+        public async Task UnlinkPlayerIdentity(PlayerIdentity identityToUnlink, Guid memberKey, string memberName)
+        {
+            if (identityToUnlink?.PlayerIdentityId is null || string.IsNullOrEmpty(identityToUnlink.PlayerIdentityName))
+            {
+                throw new ArgumentException($"{nameof(identityToUnlink)} cannot be null and must have a PlayerIdentityId and PlayerIdentityName", nameof(identityToUnlink));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var (totalIdentitiesLinkedToPlayer, playerId) = await connection.QuerySingleAsync<(int totalIdentitiesLinkedToMember, Guid playerId)>(
+                        $@"SELECT COUNT(*), PlayerId FROM {Views.PlayerIdentity} 
+                           WHERE PlayerId = (SELECT PlayerId FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId) 
+                           GROUP BY PlayerId", identityToUnlink, transaction).ConfigureAwait(false);
+
+                    if (totalIdentitiesLinkedToPlayer == 1)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    else
+                    {
+                        await MoveIdentityToNewPlayer(identityToUnlink, memberKey, memberName, transaction, nameof(UnlinkPlayerIdentity)).ConfigureAwait(false);
+                    }
+
+                    transaction.Commit();
+                }
+            }
         }
 
         /// <inheritdoc />

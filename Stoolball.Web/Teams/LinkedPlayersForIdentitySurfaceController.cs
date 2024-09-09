@@ -79,12 +79,12 @@ namespace Stoolball.Web.Teams
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 foreach (var identity in identitiesToLink)
                 {
-                    await _playerRepository.LinkPlayerIdentity(model.Player, formData.PlayerIdentities.Single(id => id.PlayerIdentityId == identity), PlayerIdentityLinkedBy.ClubOrTeam, currentMember.Key, currentMember.Name);
+                    await _playerRepository.LinkPlayerIdentity(model.Player, formData.PlayerIdentities.Single(id => id.PlayerIdentityId == identity), PlayerIdentityLinkedBy.ClubOrTeam, currentMember!.Key, currentMember.Name!);
                 }
 
                 foreach (var identity in identitiesToUnlink)
                 {
-                    await _playerRepository.UnlinkPlayerIdentity(identity, currentMember.Key, currentMember.Name);
+                    await _playerRepository.UnlinkPlayerIdentity(identity, currentMember!.Key, currentMember.Name!);
                 }
 
                 if (identitiesToUnlink.Any())

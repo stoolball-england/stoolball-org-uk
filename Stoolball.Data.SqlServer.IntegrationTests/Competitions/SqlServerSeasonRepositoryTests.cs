@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using AngleSharp.Css.Dom;
 using Dapper;
-using Ganss.XSS;
+using Ganss.Xss;
 using Moq;
 using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
