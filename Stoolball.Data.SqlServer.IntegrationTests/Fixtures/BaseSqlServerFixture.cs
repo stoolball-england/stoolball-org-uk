@@ -14,10 +14,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
     public abstract class BaseSqlServerFixture : IDisposable
     {
-        private const string _localDbInstance = @"(LocalDB)\MSSQLLocalDb";
+        private const string _localDbInstance = @"localhost\SqlExpress";
         private string? _sqlServerContainerInstance;
-        private readonly string _databaseName;
-        private readonly string _umbracoDatabasePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../../Stoolball.Web/umbraco/Data/Umbraco.mdf"));
+        private readonly string _testDatabaseName;
+        private readonly string _siteDatabaseName = "Umbraco";
         private readonly string _dacpacPath;
         private bool _isDisposed;
         DacServices _dacServices;
@@ -26,14 +26,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
         protected BaseSqlServerFixture(string databaseName)
         {
-            var testEnvironmentIsLocalDb = File.Exists(_umbracoDatabasePath);
-            _databaseName = databaseName;
-            _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"../../../{_databaseName}.dacpac");
+            var testEnvironmentIsLocalDev = Environment.GetEnvironmentVariable("GITHUB_ACTIONS")?.ToLowerInvariant() != "true";
+            _testDatabaseName = databaseName;
+            _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"../../../{_testDatabaseName}.dacpac");
             string connectionStringForTests;
 
             try
             {
-                if (testEnvironmentIsLocalDb)
+                if (testEnvironmentIsLocalDev)
                 {
                     // Clean up from any previous failed test run - not relevant (and causes a Kerberos error) in CI
                     RemoveIntegrationTestsDatabaseIfExists();
@@ -44,7 +44,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     {
                         DataSource = _localDbInstance,
                         IntegratedSecurity = true,
-                        InitialCatalog = _umbracoDatabasePath
+                        InitialCatalog = _siteDatabaseName,
+                        TrustServerCertificate = true
                     }.ToString());
 
                     CreateOrReplaceDacPac();
@@ -53,8 +54,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     {
                         DataSource = _localDbInstance,
                         IntegratedSecurity = true,
-                        InitialCatalog = _databaseName,
-                        MultipleActiveResultSets = true
+                        InitialCatalog = _testDatabaseName,
+                        MultipleActiveResultSets = true,
+                        TrustServerCertificate = true
                     }.ToString();
                 }
                 else
@@ -72,14 +74,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                         DataSource = _sqlServerContainerInstance,
                         UserID = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME"),
                         Password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD"),
-                        InitialCatalog = _databaseName,
-                        MultipleActiveResultSets = true
+                        InitialCatalog = _testDatabaseName,
+                        MultipleActiveResultSets = true,
+                        TrustServerCertificate = true
                     }.ToString();
                 }
 
                 // Import the DACPAC with a new name - and all data cleared down ready for testing
                 var dacpac = DacPackage.Load(_dacpacPath);
-                _dacServices.Deploy(dacpac, _databaseName, true, null, new CancellationToken());
+                _dacServices.Deploy(dacpac, _testDatabaseName, true, null, new CancellationToken());
             }
             catch (DacServicesException ex)
             {
@@ -103,7 +106,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 // When a .dacpac is regenerated there is a generated id and timestamp for the operation, which causes a git commit even if nothing
                 // else has changed. To prevent that, only replace the dacpac if the actual model inside it has changed.
                 var tempDacpacPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dacpac");
-                _dacServices.Extract(tempDacpacPath, _umbracoDatabasePath, _databaseName, new Version(1, 0, 0));
+                _dacServices.Extract(tempDacpacPath, _siteDatabaseName, _testDatabaseName, new Version(1, 0, 0));
 
                 var checksumBefore = ReadDacpacModelChecksum(_dacpacPath);
                 var checksumAfter = ReadDacpacModelChecksum(tempDacpacPath);
@@ -117,7 +120,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             }
             else
             {
-                _dacServices.Extract(_dacpacPath, _umbracoDatabasePath, _databaseName, new Version(1, 0, 0));
+                _dacServices.Extract(_dacpacPath, _siteDatabaseName, _testDatabaseName, new Version(1, 0, 0));
             }
         }
 
@@ -166,9 +169,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         private void RemoveIntegrationTestsDatabaseIfExists()
         {
             var smoServer = new Server(_localDbInstance);
-            if (smoServer.Databases.Contains(_databaseName))
+            if (smoServer.Databases.Contains(_testDatabaseName))
             {
-                smoServer.KillDatabase(_databaseName);
+                smoServer.KillDatabase(_testDatabaseName);
             }
         }
 
