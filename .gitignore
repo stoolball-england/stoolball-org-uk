@@ -386,10 +386,13 @@ member-group__*.uda
 ## Umbraco CMS .NETCore
 ##
 
-# Dont commit Umbraco data folder containing Examine Indexes, NuCache etc
+# Don't commit Umbraco content
+**/wwwroot/media/*
+
+# Don't commit Umbraco data folder containing Examine Indexes, NuCache etc
 **/umbraco/Data/
 
-# Dont commit files that are generated and cached from the default ImageSharp location
+# Don't commit files that are generated and cached from the default ImageSharp location
 **/umbraco/mediacache/
 
 # JSON Schema file for appsettings
