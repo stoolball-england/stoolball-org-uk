@@ -1,12 +1,52 @@
 {
   "Name": "List View - Media",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.ListView",
-  "DatabaseType": 1,
-  "Configuration": {"pageSize":100,"orderBy":"updateDate","orderDirection":"desc","includeProperties":[{"alias":"updateDate","header":"Last edited","isSystem":1},{"alias":"owner","header":"Updated by","isSystem":1}],"layouts":[{"name":"Grid","path":"views/propertyeditors/listview/layouts/grid/grid.html","icon":"icon-thumbnails-small","isSystem":1,"selected":true},{"name":"List","path":"views/propertyeditors/listview/layouts/list/list.html","icon":"icon-list","isSystem":1,"selected":true}],"bulkActionPermissions":{"allowBulkPublish":true,"allowBulkUnpublish":true,"allowBulkCopy":true,"allowBulkMove":true,"allowBulkDelete":true},"showContentFirst":false,"useInfiniteEditor":false},
-  "Parent": null,
+  "DatabaseType": "Nvarchar",
+  "Configuration": {
+    "pageSize": 100,
+    "orderDirection": "desc",
+    "includeProperties": [
+      {
+        "alias": "updateDate",
+        "header": "Last edited",
+        "isSystem": 1
+      },
+      {
+        "alias": "owner",
+        "header": "Updated by",
+        "isSystem": 1
+      }
+    ],
+    "orderBy": "updateDate",
+    "layouts": [
+      {
+        "name": "Grid",
+        "path": "views/propertyeditors/listview/layouts/grid/grid.html",
+        "icon": "icon-thumbnails-small",
+        "isSystem": 1,
+        "selected": true
+      },
+      {
+        "name": "List",
+        "path": "views/propertyeditors/listview/layouts/list/list.html",
+        "icon": "icon-list",
+        "isSystem": 1,
+        "selected": true
+      }
+    ],
+    "bulkActionPermissions": {
+      "allowBulkPublish": true,
+      "allowBulkUnpublish": true,
+      "allowBulkCopy": true,
+      "allowBulkMove": true,
+      "allowBulkDelete": true
+    },
+    "showContentFirst": false,
+    "useInfiniteEditor": false
+  },
   "Udi": "umb://data-type/3a0156c43b8c4803bdc16871faa83fff",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.0.0"
 }

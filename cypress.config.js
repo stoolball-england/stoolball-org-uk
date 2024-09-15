@@ -10,5 +10,6 @@ module.exports = defineConfig({
     specPattern: "cypress/tests/**/*.cy.{js,jsx,ts,tsx}",
     baseUrl: "https://localhost:44343",
     chromeWebSecurity: false,
+    experimentalRunAllSpecs: true,
   },
 });

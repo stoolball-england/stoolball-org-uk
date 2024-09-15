@@ -28,7 +28,7 @@ namespace Stoolball.Web.App_Plugins.Stoolball.UmbracoForms
 
         public override string GetDesignView() => "~/App_Plugins/UmbracoForms/backoffice/Common/FieldTypes/textarea.html";
 
-        public override IEnumerable<string> ValidateField(Form form, Field field, IEnumerable<object> postedValues, HttpContext context, IPlaceholderParsingService placeholderParsingService)
+        public override IEnumerable<string> ValidateField(Form form, Field field, IEnumerable<object> postedValues, HttpContext context, IPlaceholderParsingService placeholderParsingService, IFieldTypeStorage fieldTypeStorage)
         {
             var errors = new List<string>();
             var normalisedPostedValues = postedValues.Select(x => (x.ToString() ?? "").ToUpperInvariant().Replace(Environment.NewLine, " "));
@@ -40,7 +40,7 @@ namespace Stoolball.Web.App_Plugins.Stoolball.UmbracoForms
             }
 
             // Also validate it against the default method (to handle mandatory fields and regular expressions)
-            return base.ValidateField(form, field, postedValues, context, placeholderParsingService, errors);
+            return base.ValidateField(form, field, postedValues, context, placeholderParsingService, fieldTypeStorage, errors);
         }
     }
 }

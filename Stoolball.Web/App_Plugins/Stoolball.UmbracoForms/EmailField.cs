@@ -36,9 +36,9 @@ namespace Stoolball.Web.App_Plugins.Stoolball.UmbracoForms
         public override string GetDesignView() => "~/App_Plugins/Stoolball.UmbracoForms/EmailField.html";
 
         /// <inheritdoc />
-        public override IEnumerable<string> ValidateField(Form form, Field field, IEnumerable<object> postedValues, HttpContext context, IPlaceholderParsingService placeholderParsingService)
+        public override IEnumerable<string> ValidateField(Form form, Field field, IEnumerable<object> postedValues, HttpContext context, IPlaceholderParsingService placeholderParsingService, IFieldTypeStorage fieldTypeStorage)
         {
-            var errorMessages = new List<string>(base.ValidateField(form, field, postedValues, context, placeholderParsingService));
+            var errorMessages = new List<string>(base.ValidateField(form, field, postedValues, context, placeholderParsingService, fieldTypeStorage));
 
             if (postedValues != null)
             {

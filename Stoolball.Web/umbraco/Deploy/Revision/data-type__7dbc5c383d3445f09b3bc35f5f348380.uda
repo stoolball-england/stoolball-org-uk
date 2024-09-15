@@ -1,12 +1,74 @@
 {
   "Name": "News Block List",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.BlockList",
-  "DatabaseType": 0,
-  "Configuration": {"blocks":[{"contentElementTypeKey":"41914047-aec3-497f-a8bd-fd6b8fabb894","settingsElementTypeKey":"3b2b6ed4-da92-4aca-9262-fbfec272be72","view":"~/App_Plugins/Stoolball.BlockEditors/FormattedText.html","stylesheet":"~/css/base.min.css","editorSize":"medium","forceHideContentEditorInOverlay":false},{"contentElementTypeKey":"1e842305-259d-4448-b804-168859f39623","settingsElementTypeKey":"3b2b6ed4-da92-4aca-9262-fbfec272be72","view":"~/App_Plugins/Stoolball.BlockEditors/FormattedTextWithImage.html","stylesheet":"~/css/base.min.css","editorSize":"medium","forceHideContentEditorInOverlay":false},{"contentElementTypeKey":"b87922c7-a6a3-460b-affb-306139789583","settingsElementTypeKey":"3b2b6ed4-da92-4aca-9262-fbfec272be72","view":"~/App_Plugins/Stoolball.BlockEditors/ImageElementType.html","stylesheet":"~/css/base.min.css","editorSize":"medium","forceHideContentEditorInOverlay":false},{"contentElementTypeKey":"9f0490d7-f097-4789-a32f-31e6b73a237d","settingsElementTypeKey":"3b2b6ed4-da92-4aca-9262-fbfec272be72","view":"~/App_Plugins/Stoolball.BlockEditors/YouTubeVideo.html","stylesheet":"~/css/base.min.css","editorSize":"medium","forceHideContentEditorInOverlay":false},{"contentElementTypeKey":"9a571f61-1f6b-46bd-ba67-0bf12e1a62e6","settingsElementTypeKey":"3b2b6ed4-da92-4aca-9262-fbfec272be72","editorSize":"medium","forceHideContentEditorInOverlay":false}],"validationLimit":{},"useLiveEditing":false,"useInlineEditingAsDefault":false},
-  "Parent": null,
+  "Configuration": {
+    "blocks": [
+      {
+        "contentElementTypeKey": "41914047-aec3-497f-a8bd-fd6b8fabb894",
+        "settingsElementTypeKey": "3b2b6ed4-da92-4aca-9262-fbfec272be72",
+        "view": "~/App_Plugins/Stoolball.BlockEditors/FormattedText.html",
+        "stylesheet": "~/css/base.min.css",
+        "editorSize": "medium",
+        "forceHideContentEditorInOverlay": false
+      },
+      {
+        "contentElementTypeKey": "1e842305-259d-4448-b804-168859f39623",
+        "settingsElementTypeKey": "3b2b6ed4-da92-4aca-9262-fbfec272be72",
+        "view": "~/App_Plugins/Stoolball.BlockEditors/FormattedTextWithImage.html",
+        "stylesheet": "~/css/base.min.css",
+        "editorSize": "medium",
+        "forceHideContentEditorInOverlay": false
+      },
+      {
+        "contentElementTypeKey": "b87922c7-a6a3-460b-affb-306139789583",
+        "settingsElementTypeKey": "3b2b6ed4-da92-4aca-9262-fbfec272be72",
+        "view": "~/App_Plugins/Stoolball.BlockEditors/ImageElementType.html",
+        "stylesheet": "~/css/base.min.css",
+        "editorSize": "medium",
+        "forceHideContentEditorInOverlay": false
+      },
+      {
+        "contentElementTypeKey": "9f0490d7-f097-4789-a32f-31e6b73a237d",
+        "settingsElementTypeKey": "3b2b6ed4-da92-4aca-9262-fbfec272be72",
+        "view": "~/App_Plugins/Stoolball.BlockEditors/YouTubeVideo.html",
+        "stylesheet": "~/css/base.min.css",
+        "editorSize": "medium",
+        "forceHideContentEditorInOverlay": false
+      },
+      {
+        "contentElementTypeKey": "9a571f61-1f6b-46bd-ba67-0bf12e1a62e6",
+        "settingsElementTypeKey": "3b2b6ed4-da92-4aca-9262-fbfec272be72",
+        "editorSize": "medium",
+        "forceHideContentEditorInOverlay": false
+      }
+    ],
+    "validationLimit": {},
+    "useSingleBlockMode": false,
+    "useLiveEditing": false,
+    "useInlineEditingAsDefault": false
+  },
   "Udi": "umb://data-type/7dbc5c383d3445f09b3bc35f5f348380",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://document-type/1e842305259d4448b804168859f39623"
+    },
+    {
+      "Udi": "umb://document-type/3b2b6ed4da924aca9262fbfec272be72"
+    },
+    {
+      "Udi": "umb://document-type/41914047aec3497fa8bdfd6b8fabb894"
+    },
+    {
+      "Udi": "umb://document-type/9a571f611f6b46bdba670bf12e1a62e6"
+    },
+    {
+      "Udi": "umb://document-type/9f0490d7f0974789a32f31e6b73a237d"
+    },
+    {
+      "Udi": "umb://document-type/b87922c7a6a3460baffb306139789583"
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.0.0"
 }

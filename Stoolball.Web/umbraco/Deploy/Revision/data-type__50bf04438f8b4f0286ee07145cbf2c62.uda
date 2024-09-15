@@ -1,12 +1,36 @@
 {
   "Name": "Richtext editor - Product preview",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.TinyMCE",
-  "DatabaseType": 0,
-  "Configuration": {"editor":{"toolbar":["removeformat","bold","italic","link","unlink"],"stylesheets":["/css/tinymce.css"],"maxImageSize":500,"mode":"classic","dimensions":{"height":200}},"hideLabel":true,"ignoreUserStartNodes":false},
-  "Parent": null,
+  "Configuration": {
+    "editor": {
+      "toolbar": [
+        "removeformat",
+        "bold",
+        "italic",
+        "link",
+        "unlink"
+      ],
+      "stylesheets": [
+        "/css/tinymce.css"
+      ],
+      "maxImageSize": 500,
+      "mode": "classic",
+      "dimensions": {
+        "height": 200
+      }
+    },
+    "useLiveEditing": false,
+    "hideLabel": true,
+    "ignoreUserStartNodes": false
+  },
   "Udi": "umb://data-type/50bf04438f8b4f0286ee07145cbf2c62",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://stylesheet/tinymce.css",
+      "Mode": "Exist"
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.0.0"
 }

@@ -2,7 +2,7 @@ import { logToConsole } from "./functions/logging";
 
 describe("Match", () => {
   beforeEach(() => {
-    cy.visit("/matches/maresfield-mixed-brook-street-10apr2021");
+    cy.visit("/matches/maresfield-mixed-new-school-ninjas-22jul2021");
     cy.injectAxe();
   });
 

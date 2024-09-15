@@ -1,12 +1,15 @@
 {
   "Name": "Multi URL Picker",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.MultiUrlPicker",
-  "DatabaseType": 0,
-  "Configuration": {"minNumber":0,"maxNumber":0,"ignoreUserStartNodes":false,"hideAnchor":false},
-  "Parent": null,
+  "Configuration": {
+    "minNumber": 0,
+    "maxNumber": 0,
+    "hideAnchor": false,
+    "ignoreUserStartNodes": false
+  },
   "Udi": "umb://data-type/b4e3535a175347e28568602cf8cfee6f",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.0.0"
 }

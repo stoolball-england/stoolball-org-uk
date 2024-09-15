@@ -118,7 +118,7 @@ namespace Stoolball.Web.Account
         private async Task SendEmailIfNotActivatedOrLockedOut(IMember member)
         {
             string tokenField = string.Empty, tokenExpiryField = string.Empty, emailSubjectField = string.Empty, emailBodyField = string.Empty;
-            var loginPage = UmbracoContext.Content.GetSingleByXPath("//loginMember");
+            var loginPage = UmbracoContext.Content?.GetByRoute(Constants.Pages.SignInUrl);
             if (loginPage == null)
             {
                 // We can't send emails if we don't have the content, so just return.

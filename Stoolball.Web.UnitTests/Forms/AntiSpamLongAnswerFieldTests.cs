@@ -15,7 +15,7 @@ thankyou")]
         {
             var field = new AntiSpamLongAnswerField();
 
-            var result = field.ValidateField(new Form(), new Field(), new[] { message }, null!, null!);
+            var result = field.ValidateField(new Form(), new Field(), new[] { message }, null!, null!, null!);
 
             Assert.Empty(result);
         }
@@ -31,7 +31,7 @@ thankyou")]
         {
             var field = new AntiSpamLongAnswerField();
 
-            var result = field.ValidateField(new Form(), new Field(), new[] { message }, null!, null!);
+            var result = field.ValidateField(new Form(), new Field(), new[] { message }, null!, null!, null!);
 
             Assert.NotEmpty(result);
         }

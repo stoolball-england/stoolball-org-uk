@@ -4,7 +4,7 @@ describe("Create knockout match", () => {
   describe("When signed out", () => {
     beforeEach(() => {
       cy.visit(
-        "/competitions/mid-sussex-mixed-league/2021/matches/add/knockout"
+        "/competitions/surrey-ladies-stoolball-association-knockout-cup/2021/matches/add/knockout"
       );
       cy.injectAxe();
     });

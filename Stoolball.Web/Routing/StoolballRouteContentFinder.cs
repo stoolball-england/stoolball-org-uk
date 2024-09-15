@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
+using Umbraco.Extensions;
 
 namespace Stoolball.Web.Routing
 {
@@ -36,7 +37,7 @@ namespace Stoolball.Web.Routing
             if (matchedRouteType.HasValue)
             {
                 // Direct the response to the 'Stoolball router' document type to be handled by StoolballRouterController
-                var router = umbracoContext.Content!.GetSingleByXPath("//stoolballRouter");
+                var router = umbracoContext.Content!.GetByRoute("/stoolball-router");
 
                 if (router != null)
                 {

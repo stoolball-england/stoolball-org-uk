@@ -39,6 +39,8 @@ namespace Stoolball
             public const string Schools = "Schools";
             public const string SchoolsUrl = "/schools";
             public const string AccountUrl = "/account";
+            public const string SignInUrl = "/account/sign-in";
+            public const string SignOutUrl = "/account/sign-out";
         }
 
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]

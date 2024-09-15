@@ -3,10 +3,6 @@
   "Alias": "renderUmbracoForm",
   "MacroSource": "~/Views/MacroPartials/InsertUmbracoFormWithTheme.cshtml",
   "UseInEditor": true,
-  "CacheDuration": 0,
-  "CacheByPage": false,
-  "CacheByMember": false,
-  "DontRender": false,
   "Properties": [
     {
       "Key": "2d5fdda2-e19f-4103-b43e-269186fda969",
@@ -19,7 +15,6 @@
       "Key": "6aea3d9a-eea6-47af-8c58-fa37cc49f414",
       "Alias": "FormGuid",
       "Name": "Choose a form",
-      "SortOrder": 0,
       "EditorAlias": "UmbracoForms.FormPicker"
     },
     {
@@ -35,9 +30,9 @@
     {
       "Udi": "umb://partial-view-macro/InsertUmbracoFormWithTheme.cshtml",
       "Ordering": true,
-      "Mode": 1
+      "Mode": "Exist"
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.MacroArtifact",
-  "__version": "9.4.0"
+  "__version": "13.0.0"
 }

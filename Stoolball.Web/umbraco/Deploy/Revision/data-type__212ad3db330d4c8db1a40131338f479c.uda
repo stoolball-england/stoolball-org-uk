@@ -1,12 +1,27 @@
 {
   "Name": "Products Block List",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.BlockList",
-  "DatabaseType": 0,
-  "Configuration": {"blocks":[{"contentElementTypeKey":"94d3ec07-639e-433d-ac15-bc037fa2f6c4","label":"{{productName}}","editorSize":"medium","forceHideContentEditorInOverlay":false}],"validationLimit":{},"useLiveEditing":false,"useInlineEditingAsDefault":false},
-  "Parent": null,
+  "Configuration": {
+    "blocks": [
+      {
+        "contentElementTypeKey": "94d3ec07-639e-433d-ac15-bc037fa2f6c4",
+        "label": "{{productName}}",
+        "editorSize": "medium",
+        "forceHideContentEditorInOverlay": false
+      }
+    ],
+    "validationLimit": {},
+    "useSingleBlockMode": false,
+    "useLiveEditing": false,
+    "useInlineEditingAsDefault": false
+  },
   "Udi": "umb://data-type/212ad3db330d4c8db1a40131338f479c",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://document-type/94d3ec07639e433dac15bc037fa2f6c4"
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.0.0"
 }

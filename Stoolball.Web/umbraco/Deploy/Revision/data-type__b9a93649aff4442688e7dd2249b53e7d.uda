@@ -1,12 +1,36 @@
 {
   "Name": "Cookies Block List",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.BlockList",
-  "DatabaseType": 0,
-  "Configuration": {"blocks":[{"contentElementTypeKey":"41914047-aec3-497f-a8bd-fd6b8fabb894","view":"~/App_Plugins/Stoolball.BlockEditors/FormattedText.html","stylesheet":"~/css/base.min.css","editorSize":"medium","forceHideContentEditorInOverlay":false},{"contentElementTypeKey":"e8925975-0723-4e47-9837-14e874712218","editorSize":"medium","forceHideContentEditorInOverlay":false}],"validationLimit":{},"useLiveEditing":false,"useInlineEditingAsDefault":false},
-  "Parent": null,
+  "Configuration": {
+    "blocks": [
+      {
+        "contentElementTypeKey": "41914047-aec3-497f-a8bd-fd6b8fabb894",
+        "view": "~/App_Plugins/Stoolball.BlockEditors/FormattedText.html",
+        "stylesheet": "~/css/base.min.css",
+        "editorSize": "medium",
+        "forceHideContentEditorInOverlay": false
+      },
+      {
+        "contentElementTypeKey": "e8925975-0723-4e47-9837-14e874712218",
+        "editorSize": "medium",
+        "forceHideContentEditorInOverlay": false
+      }
+    ],
+    "validationLimit": {},
+    "useSingleBlockMode": false,
+    "useLiveEditing": false,
+    "useInlineEditingAsDefault": false
+  },
   "Udi": "umb://data-type/b9a93649aff4442688e7dd2249b53e7d",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://document-type/41914047aec3497fa8bdfd6b8fabb894"
+    },
+    {
+      "Udi": "umb://document-type/e892597507234e47983714e874712218"
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.0.0"
 }

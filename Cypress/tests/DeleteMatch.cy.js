@@ -3,7 +3,7 @@ import { logToConsole } from "./functions/logging";
 describe("Delete match", () => {
   describe("When signed out", () => {
     beforeEach(() => {
-      cy.visit("/matches/maresfield-mixed-brook-street-10apr2021/delete");
+      cy.visit("/matches/maresfield-mixed-new-school-ninjas-22jul2021/delete");
       cy.injectAxe();
     });
 

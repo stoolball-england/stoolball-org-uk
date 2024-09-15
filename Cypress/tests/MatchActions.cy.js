@@ -3,7 +3,7 @@ import { logToConsole } from "./functions/logging";
 describe("Match actions", () => {
   describe("When signed out", () => {
     beforeEach(() => {
-      cy.visit("/matches/maresfield-mixed-brook-street-10apr2021/edit");
+      cy.visit("/matches/maresfield-mixed-new-school-ninjas-22jul2021/edit");
       cy.injectAxe();
     });
 

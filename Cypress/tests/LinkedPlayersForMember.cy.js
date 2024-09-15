@@ -3,7 +3,7 @@ import { logToConsole } from "./functions/logging";
 describe("Linked players for member", () => {
   describe("When signed out", () => {
     beforeEach(() => {
-      cy.visit("/account/linked-players");
+      cy.visit("/account/my-statistics");
       cy.injectAxe();
     });
 

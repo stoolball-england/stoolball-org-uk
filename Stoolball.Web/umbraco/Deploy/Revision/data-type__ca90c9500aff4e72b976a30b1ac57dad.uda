@@ -1,12 +1,43 @@
 {
   "Name": "Richtext editor",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.TinyMCE",
-  "DatabaseType": 0,
-  "Configuration": {"editor":{"toolbar":["removeformat","styleselect","bold","italic","bullist","numlist","outdent","indent","link","unlink","table","fullscreen"],"stylesheets":["/css/tinymce.css"],"maxImageSize":500,"mode":"classic","dimensions":{"height":200}},"hideLabel":false,"ignoreUserStartNodes":false},
-  "Parent": null,
+  "Configuration": {
+    "editor": {
+      "toolbar": [
+        "removeformat",
+        "styleselect",
+        "bold",
+        "italic",
+        "bullist",
+        "numlist",
+        "outdent",
+        "indent",
+        "link",
+        "unlink",
+        "table",
+        "fullscreen"
+      ],
+      "stylesheets": [
+        "/css/tinymce.css"
+      ],
+      "maxImageSize": 500,
+      "mode": "classic",
+      "dimensions": {
+        "height": 200
+      }
+    },
+    "useLiveEditing": false,
+    "hideLabel": false,
+    "ignoreUserStartNodes": false
+  },
   "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
-  "Dependencies": [],
+  "Dependencies": [
+    {
+      "Udi": "umb://stylesheet/tinymce.css",
+      "Mode": "Exist"
+    }
+  ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.0.0"
 }
