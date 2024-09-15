@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Reflection;
 using System.Runtime.Serialization;
+using Microsoft.Data.SqlClient;
 
 namespace Stoolball.Data.SqlServer.UnitTests
 {
