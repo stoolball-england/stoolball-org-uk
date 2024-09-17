@@ -30,7 +30,7 @@ namespace Stoolball.Web.Security
                 throw new ArgumentNullException(nameof(filterContext));
             }
 
-            var routeType = _routeParser.ParseRouteType($"/{ filterContext.RouteData.Values["slug"]}");
+            var routeType = _routeParser.ParseRouteType($"/{filterContext.RouteData.Values["umbracoSlug"]}");
             if (routeType != null)
             {
                 var controllerType = _routeTypeMapper.MapRouteTypeToController(routeType.Value);

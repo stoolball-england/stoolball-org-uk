@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Ganss.XSS;
+using Ganss.Xss;
 using Newtonsoft.Json;
 using Stoolball.Awards;
 using Stoolball.Data.Abstractions;

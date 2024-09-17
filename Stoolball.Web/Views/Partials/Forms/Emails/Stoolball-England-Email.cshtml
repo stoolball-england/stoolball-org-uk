@@ -1,6 +1,6 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Forms.Core.Models.FormsHtmlModel>
 @inject Umbraco.Forms.Core.Services.IFormService formService
-@inject Ganss.XSS.IHtmlSanitizer htmlSanitiser
+@inject Ganss.Xss.IHtmlSanitizer htmlSanitiser
 @{ 
     var form = formService.Get(Model.FormId);
     htmlSanitiser.AllowedTags.Clear();

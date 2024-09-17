@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Ganss.XSS;
+using Ganss.Xss;
 using Newtonsoft.Json;
 using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
@@ -841,8 +841,8 @@ namespace Stoolball.Data.SqlServer
 
                     // Remove teams from the tournament. Delete the transient teams. (Player performances for transient teams should already be removed above.)
                     var transientTeamIds = await connection.QueryAsync<Guid>($@"SELECT t.TeamId
-                            FROM { Tables.TournamentTeam} tt
-                            INNER JOIN { Tables.Team} t ON tt.TeamId = t.TeamId
+                            FROM {Tables.TournamentTeam} tt
+                            INNER JOIN {Tables.Team} t ON tt.TeamId = t.TeamId
                             WHERE t.TeamType = '{TeamType.Transient.ToString()}' AND tt.TournamentId = @TournamentId"
                         , new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
 

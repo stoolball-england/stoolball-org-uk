@@ -105,7 +105,7 @@ namespace Stoolball.Web
             services.AddTransient<IEmailProtector, EmailProtector>();
             services.AddTransient<IEmailFormatter, EmailFormatter>();
             services.AddTransient<IHtmlFormatter, Stoolball.Html.HtmlFormatter>();
-            services.AddTransient<Ganss.XSS.IHtmlSanitizer, Ganss.XSS.HtmlSanitizer>();
+            services.AddTransient<Ganss.Xss.IHtmlSanitizer, Ganss.Xss.HtmlSanitizer>();
             services.AddTransient<Stoolball.Html.IHtmlSanitizer, Stoolball.Html.HtmlSanitizer>();
             services.AddTransient(typeof(Stoolball.Logging.ILogger<>), typeof(LogWrapper<>));
             services.AddTransient<IMatchInningsFactory, MatchInningsFactory>();

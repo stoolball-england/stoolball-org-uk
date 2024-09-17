@@ -1,6 +1,6 @@
 ﻿namespace Stoolball.Html
 {
-    public class HtmlSanitizer : Ganss.XSS.HtmlSanitizer, Stoolball.Html.IHtmlSanitizer
+    public class HtmlSanitizer : Ganss.Xss.HtmlSanitizer, Stoolball.Html.IHtmlSanitizer
     {
         public HtmlSanitizer() : base()
         {

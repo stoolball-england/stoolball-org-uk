@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Ganss.XSS;
+using Ganss.Xss;
 using Newtonsoft.Json;
 using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
@@ -142,7 +142,7 @@ namespace Stoolball.Data.SqlServer
                     if (previousSeason != null)
                     {
                         auditableSeason.PointsRules = (await connection.QueryAsync<PointsRule>(
-                            $@"SELECT MatchResultType, HomePoints, AwayPoints FROM { Tables.PointsRule } WHERE SeasonId = @SeasonId",
+                            $@"SELECT MatchResultType, HomePoints, AwayPoints FROM {Tables.PointsRule} WHERE SeasonId = @SeasonId",
                                 new
                                 {
                                     previousSeason.SeasonId
@@ -167,7 +167,7 @@ namespace Stoolball.Data.SqlServer
                     foreach (var pointsRule in auditableSeason.PointsRules)
                     {
                         pointsRule.PointsRuleId = Guid.NewGuid();
-                        await connection.ExecuteAsync($@"INSERT INTO { Tables.PointsRule } 
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.PointsRule} 
                                 (PointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints)
                                 VALUES (@PointsRuleId, @SeasonId, @MatchResultType, @HomePoints, @AwayPoints)",
                             new
@@ -186,9 +186,9 @@ namespace Stoolball.Data.SqlServer
                     {
                         var teamIds = await connection.QueryAsync<Guid>(
                             $@"SELECT DISTINCT t.TeamId 
-                                FROM { Tables.SeasonTeam } st 
-                                INNER JOIN { Tables.Team } t ON st.TeamId = t.TeamId 
-                                INNER JOIN { Tables.TeamVersion } tv ON t.TeamId = tv.TeamId
+                                FROM {Tables.SeasonTeam} st 
+                                INNER JOIN {Tables.Team} t ON st.TeamId = t.TeamId 
+                                INNER JOIN {Tables.TeamVersion} tv ON t.TeamId = tv.TeamId
                                 WHERE st.SeasonId = @SeasonId
                                 AND 
                                 st.WithdrawnDate IS NULL
@@ -203,7 +203,7 @@ namespace Stoolball.Data.SqlServer
                         foreach (var teamId in teamIds)
                         {
                             auditableSeason.Teams.Add(new TeamInSeason { Team = new Team { TeamId = teamId } });
-                            await connection.ExecuteAsync($@"INSERT INTO { Tables.SeasonTeam } 
+                            await connection.ExecuteAsync($@"INSERT INTO {Tables.SeasonTeam} 
                                 (SeasonTeamId, SeasonId, TeamId)
                                 VALUES (@SeasonTeamId, @SeasonId, @TeamId)",
                                 new

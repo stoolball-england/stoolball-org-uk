@@ -34,13 +34,13 @@ namespace Stoolball.Web.Routing
         [ServiceFilter(typeof(DelegatedContentSecurityPolicyAttribute))]
         public new async Task<IActionResult> Index()
         {
-            if (string.IsNullOrEmpty(ControllerContext.RouteData.Values["slug"]?.ToString()))
+            if (string.IsNullOrEmpty(ControllerContext.RouteData.Values["umbracoSlug"]?.ToString()))
             {
                 return NotFound();
             }
 
             // Find the appropriate controller from the route value
-            var routeType = _routeParser.ParseRouteType($"/{ ControllerContext.RouteData.Values["slug"]}");
+            var routeType = _routeParser.ParseRouteType($"/{ControllerContext.RouteData.Values["umbracoSlug"]}");
             if (routeType == null)
             {
                 return NotFound();

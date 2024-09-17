@@ -1,6 +1,6 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<BlockListItem>
 @using Umbraco.Cms.Core.Models.Blocks
-@inject Ganss.XSS.IHtmlSanitizer htmlSanitiser
+@inject Ganss.Xss.IHtmlSanitizer htmlSanitiser
 @{
     var content = (Tip)Model.Content;
     htmlSanitiser.KeepChildNodes = true;
