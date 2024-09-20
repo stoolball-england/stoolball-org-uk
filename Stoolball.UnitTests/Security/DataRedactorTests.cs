@@ -33,7 +33,7 @@ namespace Stoolball.UnitTests.Security
         public void RedactAll_handles_no_text_nodes()
         {
             var before = $"<p></p>";
-            var after = "<p>";
+            var after = "<p></p>";
             var redactor = new DataRedactor();
 
             var result = redactor.RedactAll(before);
@@ -87,7 +87,7 @@ namespace Stoolball.UnitTests.Security
         public void RedactPersonalData_handles_no_text_nodes()
         {
             var before = "<p></p>";
-            var after = "<p>";
+            var after = "<p></p>";
             var redactor = new DataRedactor();
 
             var result = redactor.RedactPersonalData(before);

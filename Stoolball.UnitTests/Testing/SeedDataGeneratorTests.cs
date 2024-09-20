@@ -16,12 +16,16 @@ namespace Stoolball.UnitTests.Testing
         private const int _iterations = 10;
         private readonly Randomiser _randomiser = new(new Random());
         private readonly Award _playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
+        private SeedDataGenerator CreateGenerator()
+        {
+            return new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
+                            Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>(), new PlayerFakerFactory(), Mock.Of<PlayerIdentityFakerFactory>(), _playerOfTheMatchAward);
+        }
 
         [Fact]
         public void Over_exists_with_only_a_bowler_name()
         {
-            var generator = new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
-                Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>(), Mock.Of<PlayerIdentityFakerFactory>(), _playerOfTheMatchAward);
+            var generator = CreateGenerator();
 
             for (var i = 0; i < _iterations; i++)
             {
@@ -34,8 +38,7 @@ namespace Stoolball.UnitTests.Testing
         [Fact]
         public void Five_wicket_haul_exists()
         {
-            var generator = new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
-                Mock.Of<TeamFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(), Mock.Of<SchoolFakerFactory>(), Mock.Of<PlayerIdentityFakerFactory>(), _playerOfTheMatchAward);
+            var generator = CreateGenerator();
 
             for (var i = 0; i < _iterations; i++)
             {

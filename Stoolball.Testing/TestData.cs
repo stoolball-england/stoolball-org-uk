@@ -72,6 +72,9 @@ namespace Stoolball.Testing
             return (firstIdentity!, secondIdentity!);
         }
 
+        internal IEnumerable<Player> PlayersWhoHavePlayedAtLeastOneMatch() => Players.Where(p => p.PlayerIdentities.Any(pi => pi.FirstPlayed is not null));
+        internal IEnumerable<PlayerIdentity> PlayerIdentitiesWhoHavePlayedAtLeastOneMatch() => PlayerIdentities.Where(pi => pi.FirstPlayed is not null);
+
         internal Player AnyPlayerWithOnlyOneIdentity(Func<Player, bool>? additionalCriteria = null)
         {
             additionalCriteria = additionalCriteria ?? (x => true);

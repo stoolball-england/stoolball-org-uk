@@ -27,7 +27,7 @@ namespace Stoolball.UnitTests.Statistics
             var matchFinder = new MatchFinder();
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
             var seedDataGenerator = new SeedDataGenerator(randomiser, _oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory(), new PlayerIdentityFakerFactory(), playerOfTheMatchAward);
+                new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory(), new PlayerFakerFactory(), new PlayerIdentityFakerFactory(), playerOfTheMatchAward);
 
             var homeTeam = new TeamInMatch
             {

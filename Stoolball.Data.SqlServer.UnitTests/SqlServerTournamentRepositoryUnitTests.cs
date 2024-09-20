@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using AngleSharp.Css.Dom;
-using Ganss.XSS;
+using Ganss.Xss;
 using Moq;
 using Stoolball.Data.Abstractions;
 using Stoolball.Logging;

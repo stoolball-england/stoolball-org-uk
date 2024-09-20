@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Css.Dom;
-using Ganss.XSS;
+using Ganss.Xss;
 using Moq;
 using Stoolball.Awards;
 using Stoolball.Data.Abstractions;

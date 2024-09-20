@@ -15,6 +15,8 @@ using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing.Fakers;
 using Stoolball.Testing.MatchDataProviders;
+using Stoolball.Testing.PlayerDataProviders;
+using Stoolball.Testing.TeamDataProviders;
 
 namespace Stoolball.Testing
 {
@@ -28,13 +30,14 @@ namespace Stoolball.Testing
         private readonly IFakerFactory<Team> _teamFakerFactory;
         private readonly IFakerFactory<MatchLocation> _matchLocationFakerFactory;
         private readonly IFakerFactory<School> _schoolFakerFactory;
+        private readonly IFakerFactory<Player> _playerFakerFactory;
         private readonly IFakerFactory<PlayerIdentity> _playerIdentityFakerFactory;
         private readonly Award _playerOfTheMatchAward;
         private readonly IOversHelper _oversHelper;
 
         internal SeedDataGenerator(Randomiser randomiser, IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder,
             IMatchFinder matchFinder, IFakerFactory<Team> teamFakerFactory, IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory,
-            IFakerFactory<PlayerIdentity> playerIdentityFakerFactory, Award playerOfTheMatchAward)
+            IFakerFactory<Player> playerFakerFactory, IFakerFactory<PlayerIdentity> playerIdentityFakerFactory, Award playerOfTheMatchAward)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
@@ -44,7 +47,8 @@ namespace Stoolball.Testing
             _teamFakerFactory = teamFakerFactory ?? throw new ArgumentNullException(nameof(teamFakerFactory));
             _matchLocationFakerFactory = matchLocationFakerFactory ?? throw new ArgumentNullException(nameof(matchLocationFakerFactory));
             _schoolFakerFactory = schoolFakerFactory ?? throw new ArgumentNullException(nameof(schoolFakerFactory));
-            _playerIdentityFakerFactory = playerIdentityFakerFactory;
+            _playerFakerFactory = playerFakerFactory ?? throw new ArgumentNullException(nameof(playerFakerFactory));
+            _playerIdentityFakerFactory = playerIdentityFakerFactory ?? throw new ArgumentNullException(nameof(playerIdentityFakerFactory));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
             _matchFactory = new MatchFactory(_randomiser, _playerOfTheMatchAward);
         }
@@ -751,6 +755,16 @@ namespace Stoolball.Testing
 
             var poolOfTeamsWithPlayers = GenerateTeams();
 
+            var playerProviders = new BasePlayerDataProvider[]{
+                new PlayersLinkedToMembersProvider(_teamFakerFactory, _playerFakerFactory, _playerIdentityFakerFactory),
+            };
+            var playersFromPlayerProviders = new List<Player>();
+            foreach (var provider in playerProviders)
+            {
+                var playersFromProvider = provider.CreatePlayers(testData);
+                playersFromPlayerProviders.AddRange(playersFromProvider);
+            }
+
             // Create a pool of competitions
             for (var i = 0; i < 10; i++)
             {
@@ -878,7 +892,11 @@ namespace Stoolball.Testing
                         )
                     );
 
-            testData.Members = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberKey: x.MemberKey, memberName: x.MemberName ?? string.Empty)).Distinct(new MemberEqualityComparer()).ToList();
+            var membersFromMatchComments = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberKey: x.MemberKey, memberName: x.MemberName ?? string.Empty));
+            var membersFromPlayerProviders = playersFromPlayerProviders.Where(p => p.MemberKey is not null).Select(p => (memberKey: p.MemberKey!.Value, memberName: string.Empty));
+            testData.Members = membersFromMatchComments
+                .Union(membersFromPlayerProviders)
+                .Distinct(new MemberEqualityComparer()).ToList();
 
             testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
             for (var i = 0; i < 10; i++)
@@ -942,11 +960,13 @@ namespace Stoolball.Testing
             teamWithMatchLocation.MatchLocations.Add(testData.MatchLocationForClub);
             testData.MatchLocationForClub.Teams.Add(teamWithMatchLocation);
 
+            var teamsFromPlayerProviders = playersFromPlayerProviders.SelectMany(p => p.PlayerIdentities).Where(pi => pi.Team is not null).Select(pi => pi.Team).OfType<Team>();
             var teamsInMatches = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsInTournaments = testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsInSeasons = testData.Competitions.SelectMany(x => x.Seasons).SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsAtMatchLocations = testData.MatchLocations.SelectMany(x => x.Teams);
             testData.Teams = poolOfTeamsWithPlayers.Select(x => x.team)
+                            .Union(teamsFromPlayerProviders)
                             .Union(teamsInMatches)
                             .Union(teamsInTournaments)
                             .Union(teamsInSeasons)
@@ -960,7 +980,6 @@ namespace Stoolball.Testing
             testData.Clubs.AddRange(testData.Teams.Select(x => x.Club).OfType<Club>().Distinct(new ClubEqualityComparer()));
 
             // Get a minimal team
-            //            TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");
             testData.TeamWithMinimalDetails = testData.Teams.First(x =>
                         string.IsNullOrEmpty(x.Introduction) &&
                         !x.AgeRangeLower.HasValue && !x.AgeRangeUpper.HasValue &&
@@ -1049,7 +1068,11 @@ namespace Stoolball.Testing
 
             testData.SeasonWithFullDetails = testData.Seasons.First(x => x.Teams.Any() && x.PointsRules.Any() && x.PointsAdjustments.Any());
 
-            testData.PlayerIdentities = testData.Matches.SelectMany(m => _playerIdentityFinder.PlayerIdentitiesInMatch(m)).Distinct(new PlayerIdentityEqualityComparer()).ToList();
+            var playerIdentitiesInMatches = testData.Matches.SelectMany(_playerIdentityFinder.PlayerIdentitiesInMatch);
+            var playerIdentitiesFromPlayerProviders = playersFromPlayerProviders.SelectMany(p => p.PlayerIdentities);
+            testData.PlayerIdentities = playerIdentitiesInMatches
+                .Union(playerIdentitiesFromPlayerProviders)
+                .Distinct(new PlayerIdentityEqualityComparer()).ToList();
             testData.Players = testData.PlayerIdentities.Select(x => x.Player).OfType<Player>().Distinct(playerComparer).ToList();
 
             foreach (var identity in testData.PlayerIdentities)
@@ -1149,10 +1172,16 @@ namespace Stoolball.Testing
             // This must happen after ALL scorecards and awards are finalised
             foreach (var identity in testData.PlayerIdentities)
             {
+                // Ensure the cyclical relationship between players and identities is populated
+                if (identity.Player is not null && !identity.Player.PlayerIdentities.Contains(identity)) { identity.Player.PlayerIdentities.Add(identity); }
+
                 var matchesPlayedByThisIdentity = _matchFinder.MatchesPlayedByPlayerIdentity(testData.Matches, identity.PlayerIdentityId!.Value);
                 identity.TotalMatches = matchesPlayedByThisIdentity.Select(x => x.MatchId).Distinct().Count();
-                identity.FirstPlayed = matchesPlayedByThisIdentity.Min(x => x.StartTime);
-                identity.LastPlayed = matchesPlayedByThisIdentity.Max(x => x.StartTime);
+                if (identity.TotalMatches > 0)
+                {
+                    identity.FirstPlayed = matchesPlayedByThisIdentity.Min(x => x.StartTime);
+                    identity.LastPlayed = matchesPlayedByThisIdentity.Max(x => x.StartTime);
+                }
             }
 
             return testData;

@@ -82,10 +82,7 @@ namespace Stoolball.Data.SqlServer
             }).ToList();
         }
 
-        /// <summary>
-        /// Gets a list of player identities based on a query
-        /// </summary>
-        /// <returns>A list of <see cref="PlayerIdentity"/> objects. An empty list if no player identities are found.</returns>
+        /// <inheritdoc/>
         public async Task<List<PlayerIdentity>> ReadPlayerIdentities(PlayerFilter? filter)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
