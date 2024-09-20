@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Stoolball.Awards;
 using Stoolball.Clubs;
 using Stoolball.Matches;
@@ -26,13 +27,16 @@ namespace Stoolball.UnitTests.Statistics
             var playerIdentityFinder = new PlayerIdentityFinder();
             var matchFinder = new MatchFinder();
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
+            var teamFakerFactory = new TeamFakerFactory();
+            var teamFaker = teamFakerFactory.Create();
             var seedDataGenerator = new SeedDataGenerator(randomiser, _oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory(), new PlayerFakerFactory(), new PlayerIdentityFakerFactory(), playerOfTheMatchAward);
+                teamFakerFactory, new MatchLocationFakerFactory(), new SchoolFakerFactory(), new PlayerFakerFactory(), new PlayerIdentityFakerFactory(), playerOfTheMatchAward);
+
 
             var homeTeam = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = seedDataGenerator.CreateTeamWithMinimalDetails("Home team"),
+                Team = teamFaker.Generate(1).Single(),
                 WonToss = true,
                 BattedFirst = true,
                 TeamRole = TeamRole.Home
@@ -41,7 +45,7 @@ namespace Stoolball.UnitTests.Statistics
             var awayTeam = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = seedDataGenerator.CreateTeamWithMinimalDetails("Away team"),
+                Team = teamFaker.Generate(1).Single(),
                 WonToss = false,
                 BattedFirst = false,
                 TeamRole = TeamRole.Away

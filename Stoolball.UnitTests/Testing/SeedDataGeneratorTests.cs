@@ -26,10 +26,11 @@ namespace Stoolball.UnitTests.Testing
         public void Over_exists_with_only_a_bowler_name()
         {
             var generator = CreateGenerator();
+            var teamFaker = new TeamFakerFactory().Create();
 
             for (var i = 0; i < _iterations; i++)
             {
-                var overs = generator.CreateOversBowled(generator.GenerateTeams()[0].identities, generator.CreateOverSets());
+                var overs = generator.CreateOversBowled(generator.GenerateTeams(teamFaker)[0].identities, generator.CreateOverSets());
 
                 Assert.Contains(overs, x => x.Bowler != null && x.BallsBowled == null && x.NoBalls == null && x.Wides == null && x.RunsConceded == null);
             }
@@ -39,11 +40,12 @@ namespace Stoolball.UnitTests.Testing
         public void Five_wicket_haul_exists()
         {
             var generator = CreateGenerator();
+            var teamFaker = new TeamFakerFactory().Create();
 
             for (var i = 0; i < _iterations; i++)
             {
-                var teams = generator.GenerateTeams();
-                var innings = generator.GenerateMatchData(new TestData(), teams).SelectMany(x => x.MatchInnings);
+                var teams = generator.GenerateTeams(teamFaker);
+                var innings = generator.GenerateMatchData(new TestData(), teamFaker, teams).SelectMany(x => x.MatchInnings);
 
                 var inningsWithFiveWicketHaulExists = innings.Any(x => // return true for this MatchInnings if...
                             x.PlayerInnings.Where(pi => StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(pi.DismissalType) && pi.Bowler != null) // for all wickets credited to a bowler...
