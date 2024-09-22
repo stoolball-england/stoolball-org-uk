@@ -31,7 +31,7 @@ namespace Stoolball.Data.Abstractions
         /// <param name="memberKey">The MemberKey of the member making the update.</param>
         /// <param name="memberName">The name of the member making the update.</param>
         /// <returns></returns>
-        Task<Player> LinkPlayerIdentity(Player targetPlayer, Guid identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName);
+        Task<Player> LinkPlayerIdentity(Guid targetPlayer, Guid identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName);
 
         /// <summary>
         /// Removes the player identity from its player, creating a new player not linked to the member. Or for the last player identity linked to a member, removes the MemberKey from the player.
@@ -49,7 +49,7 @@ namespace Stoolball.Data.Abstractions
         /// <param name="memberKey">The MemberKey of the member making the update.</param>
         /// <param name="memberName">The name of the member making the update.</param>
         /// <returns></returns>
-        Task UnlinkPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName);
+        Task UnlinkPlayerIdentity(Guid playerIdentity, Guid memberKey, string memberName);
 
         /// <summary>
         /// <see cref="LinkPlayerToMemberAccount"/>, <see cref="UnlinkPlayerIdentityFromMemberAccount"/> and <see cref="UpdatePlayerIdentity"/>. All leave updates to statistics and cleaning up unused resources incomplete, to be done asynchronously. This completes the work.

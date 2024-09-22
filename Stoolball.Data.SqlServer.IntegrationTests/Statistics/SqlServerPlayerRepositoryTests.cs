@@ -430,7 +430,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             SetupMocksForLinkPlayerIdentity(player, player);
 
             var repo = CreateRepository();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player, player.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player.PlayerId!.Value, player.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
         }
 
         [Fact]
@@ -441,7 +441,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             SetupMocksForLinkPlayerIdentity(player1, player2);
 
             var repo = CreateRepository();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
         }
 
         [Theory]
@@ -457,7 +457,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var currentMember = player1.MemberKey!.Value;
                 SetupMocksForLinkPlayerIdentity(player1, player2);
 
-                var exception = await Record.ExceptionAsync(async () => await repo.LinkPlayerIdentity(player1, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, currentMember, "Member name"));
+                var exception = await Record.ExceptionAsync(async () => await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, currentMember, "Member name"));
                 Assert.Null(exception);
             }
             else
@@ -467,7 +467,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var player2 = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.IsOnTheSameTeamAs(player1));
                 SetupMocksForLinkPlayerIdentity(player1, player2);
 
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, currentMember.memberKey, currentMember.memberName));
+                await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, currentMember.memberKey, currentMember.memberName));
             }
         }
 
@@ -485,7 +485,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var currentMember = player2.MemberKey!.Value;
                 SetupMocksForLinkPlayerIdentity(player1, player2);
 
-                var exception = await Record.ExceptionAsync(async () => await repo.LinkPlayerIdentity(player1, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, currentMember, "Member name"));
+                var exception = await Record.ExceptionAsync(async () => await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, currentMember, "Member name"));
                 Assert.Null(exception);
             }
             else
@@ -495,7 +495,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var player2 = _testData.AnyPlayerLinkedToMemberWithOnlyOneIdentity(p => p.MemberKey != currentMember.memberKey && p.IsOnTheSameTeamAs(player1));
                 SetupMocksForLinkPlayerIdentity(player1, player2);
 
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, currentMember.memberKey, currentMember.memberName));
+                await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, currentMember.memberKey, currentMember.memberName));
             }
         }
 
@@ -507,7 +507,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             SetupMocksForLinkPlayerIdentity(player1, player2);
 
             var repo = CreateRepository();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
         }
 
         [Fact]
@@ -518,7 +518,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             SetupMocksForLinkPlayerIdentity(player1, player2);
 
             var repo = CreateRepository();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
         }
 
         [Fact]
@@ -532,7 +532,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            var returnedPlayer = await repo.LinkPlayerIdentity(player1, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, member.memberKey, member.memberName);
+            var returnedPlayer = await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, member.memberKey, member.memberName);
             await repo.ProcessAsyncUpdatesForPlayers();
 
             // The returned player should have the result of merging both players
@@ -586,7 +586,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            await repo.LinkPlayerIdentity(player1, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, member.memberKey, member.memberName).ConfigureAwait(false);
+            await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, member.memberKey, member.memberName).ConfigureAwait(false);
 
             VerifyPlayerIsRedirected(player1.PlayerRoute!, player2.PlayerRoute!);
         }
@@ -602,7 +602,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            var returnedIdentity = await repo.LinkPlayerIdentity(player1, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, member.memberKey, member.memberName).ConfigureAwait(false);
+            var returnedIdentity = await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, member.memberKey, member.memberName).ConfigureAwait(false);
 
             // audits and logs delete of original player and update of target player
             _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri!.ToString().EndsWith(player1.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
@@ -621,10 +621,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         private void SetupMocksForLinkPlayerIdentity(Player player1, Player player2)
         {
             _routeSelector.Setup(x => x.SelectBestRoute(player2.PlayerRoute!, player1.PlayerRoute!)).Returns(player2.PlayerRoute!);
-
-            var player1Copy = new Player { PlayerId = player1.PlayerId, PlayerRoute = player1.PlayerRoute };
-            foreach (var id in player1.PlayerIdentities) { player1Copy.PlayerIdentities.Add(new PlayerIdentity { PlayerIdentityId = id.PlayerIdentityId }); }
-            _copier.Setup(x => x.CreateAuditableCopy(player1)).Returns(player1Copy);
         }
         #endregion
 
@@ -735,7 +731,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.UnlinkPlayerIdentity(player.PlayerIdentities.First(), Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.UnlinkPlayerIdentity(player.PlayerIdentities.First().PlayerIdentityId!.Value, Guid.NewGuid(), "Member name"));
         }
 
         [Fact]
@@ -750,7 +746,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var repo = CreateRepository();
 
-            await repo.UnlinkPlayerIdentity(identityToUnlink, Guid.NewGuid(), "Member name");
+            await repo.UnlinkPlayerIdentity(identityToUnlink.PlayerIdentityId!.Value, Guid.NewGuid(), "Member name");
             await repo.ProcessAsyncUpdatesForPlayers();
 
             using (var connectionForAssert = _connectionFactory.CreateDatabaseConnection())
@@ -789,7 +785,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var repo = CreateRepository();
 
-            await repo.UnlinkPlayerIdentity(playerIdentity, member.memberKey, member.memberName);
+            await repo.UnlinkPlayerIdentity(playerIdentity.PlayerIdentityId!.Value, member.memberKey, member.memberName);
 
             _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<string>(), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.UnlinkPlayerIdentity)));
