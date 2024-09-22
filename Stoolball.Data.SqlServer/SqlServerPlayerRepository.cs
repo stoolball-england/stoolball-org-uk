@@ -300,16 +300,11 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc />
-        public async Task<Player> LinkPlayerIdentity(Player targetPlayer, PlayerIdentity identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName)
+        public async Task<Player> LinkPlayerIdentity(Player targetPlayer, Guid identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName)
         {
             if (targetPlayer?.PlayerId is null || string.IsNullOrEmpty(targetPlayer.PlayerRoute))
             {
                 throw new ArgumentException($"{nameof(targetPlayer)} cannot be null and must have a PlayerId and PlayerRoute", nameof(targetPlayer));
-            }
-
-            if (identityToLinkToTarget?.PlayerIdentityId is null || identityToLinkToTarget?.Player?.PlayerId is null || string.IsNullOrEmpty(identityToLinkToTarget.Player.PlayerRoute))
-            {
-                throw new ArgumentException($"{nameof(identityToLinkToTarget)} cannot be null and must have a PlayerIdentityId, a PlayerId and PlayerRoute", nameof(identityToLinkToTarget));
             }
 
             if (string.IsNullOrWhiteSpace(memberName))
@@ -323,14 +318,12 @@ namespace Stoolball.Data.SqlServer
                 using (var transaction = connection.BeginTransaction())
                 {
                     var auditableTargetPlayer = _copier.CreateAuditableCopy(targetPlayer)!;
-                    var auditableIdentityToLinkToTarget = _copier.CreateAuditableCopy(identityToLinkToTarget)!;
-                    var auditablePlayerForIdentity = _copier.CreateAuditableCopy(auditableIdentityToLinkToTarget.Player)!;
 
                     var memberKeyForTargetPlayerBefore = await connection.QuerySingleAsync<Guid?>($"SELECT MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", auditableTargetPlayer, transaction);
-                    var identityToLinkBefore = await connection.QuerySingleAsync<(Guid PlayerId, Guid? MemberKey, int Identities)>(
-                        @$"SELECT p.PlayerId, p.MemberKey, (SELECT COUNT(*) FROM {Tables.PlayerIdentity} WHERE PlayerId = p.PlayerId) AS Identities 
+                    var identityToLinkBefore = await connection.QuerySingleAsync<(Guid PlayerId, string PlayerRoute, Guid? MemberKey, int Identities, string PlayerIdentityName)>(
+                        @$"SELECT p.PlayerId, p.PlayerRoute, p.MemberKey, (SELECT COUNT(*) FROM {Tables.PlayerIdentity} WHERE PlayerId = p.PlayerId) AS Identities, pi.PlayerIdentityName
                            FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId
-                           WHERE pi.PlayerIdentityId = @PlayerIdentityId", auditableIdentityToLinkToTarget, transaction);
+                           WHERE pi.PlayerIdentityId = @PlayerIdentityId", new { PlayerIdentityId = identityToLinkToTarget }, transaction);
 
                     // Are the players already linked to each other? If so, abort.
                     if (auditableTargetPlayer.PlayerId == identityToLinkBefore.PlayerId)
@@ -372,7 +365,7 @@ namespace Stoolball.Data.SqlServer
                             new
                             {
                                 TargetPlayerId = auditableTargetPlayer.PlayerId,
-                                auditableIdentityToLinkToTarget.PlayerIdentityId
+                                PlayerIdentityId = identityToLinkToTarget
                             },
                             transaction);
 
@@ -382,27 +375,29 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     // Select the best route from the two players, and redirect.
-                    var bestRoute = await FindBestRouteAndRedirect(auditableTargetPlayer.PlayerRoute!, auditableIdentityToLinkToTarget.Player!.PlayerRoute!, transaction);
+                    var bestRoute = await FindBestRouteAndRedirect(auditableTargetPlayer.PlayerRoute!, identityToLinkBefore.PlayerRoute, transaction);
 
                     // Move the player identities from the identity to link's current player id to the target player's id.
                     if (bestRoute != auditableTargetPlayer.PlayerRoute)
                     {
                         await connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, auditableTargetPlayer.PlayerId }, transaction);
                     }
-                    var movePlayerIdentity = new { LinkedBy = linkedBy.ToString(), auditableTargetPlayer.PlayerId, auditableIdentityToLinkToTarget.PlayerIdentityId };
+                    var movePlayerIdentity = new { LinkedBy = linkedBy.ToString(), auditableTargetPlayer.PlayerId, PlayerIdentityId = identityToLinkToTarget };
                     await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy, PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", movePlayerIdentity, transaction);
 
                     // We also need to update statistics, and delete the now-unused player that the identity has been moved away from. 
                     // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so we just need to mark the player as safe to delete.
-                    await connection.ExecuteAsync($"UPDATE {Tables.Player} SET Deleted = 1 WHERE PlayerId = @PlayerId", auditableIdentityToLinkToTarget.Player, transaction);
+                    await connection.ExecuteAsync($"UPDATE {Tables.Player} SET Deleted = 1 WHERE PlayerId = @PlayerId", new { identityToLinkBefore.PlayerId }, transaction);
 
-                    var serialisedDeletedPlayer = JsonConvert.SerializeObject(auditablePlayerForIdentity);
+                    var deletedPlayer = new Player { PlayerId = identityToLinkBefore.PlayerId, PlayerRoute = identityToLinkBefore.PlayerRoute };
+                    deletedPlayer.PlayerIdentities.Add(new PlayerIdentity { PlayerIdentityId = identityToLinkToTarget });
+                    var serialisedDeletedPlayer = JsonConvert.SerializeObject(deletedPlayer);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Delete,
                         MemberKey = memberKey,
                         ActorName = memberName,
-                        EntityUri = auditablePlayerForIdentity.EntityUri,
+                        EntityUri = deletedPlayer.EntityUri,
                         State = serialisedDeletedPlayer,
                         RedactedState = serialisedDeletedPlayer,
                         AuditDate = DateTime.UtcNow
@@ -411,12 +406,12 @@ namespace Stoolball.Data.SqlServer
                     _logger.Info(LoggingTemplates.Deleted, serialisedDeletedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerIdentity));
 
                     // Update the player to return with new details assigned to it.
+                    var reassignedPlayerIdentity = new PlayerIdentity { PlayerIdentityId = identityToLinkToTarget, PlayerIdentityName = identityToLinkBefore.PlayerIdentityName };
                     auditableTargetPlayer.PlayerRoute = bestRoute;
-                    auditableTargetPlayer.PlayerIdentities.Add(auditableIdentityToLinkToTarget);
-                    auditableIdentityToLinkToTarget.Player = null;
+                    auditableTargetPlayer.PlayerIdentities.Add(reassignedPlayerIdentity);
 
                     var serialisedUpdatedPlayer = JsonConvert.SerializeObject(auditableTargetPlayer);
-                    auditableIdentityToLinkToTarget.Player = auditableTargetPlayer;
+                    reassignedPlayerIdentity.Player = auditableTargetPlayer;
 
                     await _auditRepository.CreateAudit(new AuditRecord
                     {

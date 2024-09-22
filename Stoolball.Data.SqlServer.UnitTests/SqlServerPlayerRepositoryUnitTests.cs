@@ -152,9 +152,8 @@ namespace Stoolball.Data.SqlServer.UnitTests
 
             var invalidPlayer = CreateValidPlayer();
             invalidPlayer.PlayerId = null;
-            var validIdentity = CreateValidPlayerIdentity();
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerIdentity(invalidPlayer, validIdentity, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerIdentity(invalidPlayer, Guid.NewGuid(), PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
         }
 
 
@@ -167,47 +166,8 @@ namespace Stoolball.Data.SqlServer.UnitTests
 
             var invalidPlayer = CreateValidPlayer();
             invalidPlayer.PlayerRoute = playerRoute;
-            var validIdentity = CreateValidPlayerIdentity();
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerIdentity(invalidPlayer, validIdentity, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
-        }
-
-        [Fact]
-        public async Task LinkPlayerIdentity_throws_ArgumentException_if_identityToLinkToTarget_PlayerIdentityId_is_null()
-        {
-            var repo = CreateRepository();
-
-            var validPlayer = CreateValidPlayer();
-            var invalidIdentity = CreateValidPlayerIdentity();
-            invalidIdentity.PlayerIdentityId = null;
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerIdentity(validPlayer, invalidIdentity, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
-        }
-
-        [Fact]
-        public async Task LinkPlayerIdentity_throws_ArgumentException_if_identityToLinkToTarget_PlayerId_is_null()
-        {
-            var repo = CreateRepository();
-
-            var validPlayer = CreateValidPlayer();
-            var invalidIdentity = CreateValidPlayerIdentity();
-            invalidIdentity.Player!.PlayerId = null;
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerIdentity(validPlayer, invalidIdentity, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(null)]
-        public async Task LinkPlayerIdentity_throws_ArgumentException_if_identityToLinkToTarget_PlayerRoute_is_missing(string playerRoute)
-        {
-            var repo = CreateRepository();
-
-            var validPlayer = CreateValidPlayer();
-            var invalidIdentity = CreateValidPlayerIdentity();
-            invalidIdentity.Player!.PlayerRoute = playerRoute;
-
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerIdentity(validPlayer, invalidIdentity, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.LinkPlayerIdentity(invalidPlayer, Guid.NewGuid(), PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), "Member name"));
         }
 
         [Theory]
@@ -220,7 +180,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
             var validPlayer = CreateValidPlayer();
             var validIdentity = CreateValidPlayerIdentity();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.LinkPlayerIdentity(validPlayer, validIdentity, PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), memberName));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.LinkPlayerIdentity(validPlayer, Guid.NewGuid(), PlayerIdentityLinkedBy.ClubOrTeam, Guid.NewGuid(), memberName));
         }
 
         [Fact]

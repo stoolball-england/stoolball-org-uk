@@ -31,7 +31,7 @@ namespace Stoolball.Data.Abstractions
         /// <param name="memberKey">The MemberKey of the member making the update.</param>
         /// <param name="memberName">The name of the member making the update.</param>
         /// <returns></returns>
-        Task<Player> LinkPlayerIdentity(Player targetPlayer, PlayerIdentity identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName);
+        Task<Player> LinkPlayerIdentity(Player targetPlayer, Guid identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName);
 
         /// <summary>
         /// Removes the player identity from its player, creating a new player not linked to the member. Or for the last player identity linked to a member, removes the MemberKey from the player.
