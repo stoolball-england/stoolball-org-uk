@@ -37,15 +37,14 @@ namespace Stoolball.Data.SqlServer
 
             await transaction.Connection.ExecuteAsync($@"SET IDENTITY_INSERT SkybrudRedirects ON;
                             INSERT INTO SkybrudRedirects 
-							([Id], [Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
-							 [DestinationUrl], [Created], [Updated], [IsPermanent], [ForwardQueryString], [DestinationQuery], [DestinationFragment])
-							 VALUES ((SELECT MAX(Id)+1 FROM SkybrudRedirects), @Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
-                             @Created, @Updated, @IsPermanent, @ForwardQueryString, @DestinationQuery, @DestinationFragment);
+							([Id], [Key], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
+							 [DestinationUrl], [Created], [Updated], [IsPermanent], [ForwardQueryString], [DestinationQuery], [DestinationFragment], [DestinationCulture])
+							 VALUES (ISNULL((SELECT MAX(Id)+1 FROM SkybrudRedirects), 1), @Key, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
+                             @Created, @Updated, @IsPermanent, @ForwardQueryString, @DestinationQuery, @DestinationFragment, @DestinationCulture);
                             SET IDENTITY_INSERT SkybrudRedirects OFF",
                                          new
                                          {
                                              Key = Guid.NewGuid().ToString(),
-                                             RootId = 0,
                                              RootKey = "00000000-0000-0000-0000-000000000000",
                                              Url = "/" + originalRoute.TrimStart('/') + routeSuffix,
                                              QueryString = string.Empty,
@@ -58,49 +57,10 @@ namespace Stoolball.Data.SqlServer
                                              IsPermanent = true,
                                              ForwardQueryString = true,
                                              DestinationQuery = string.Empty,
-                                             DestinationFragment = string.Empty
+                                             DestinationFragment = string.Empty,
+                                             DestinationCulture = string.Empty
                                          },
                                         transaction).ConfigureAwait(false);
-        }
-
-        public async Task InsertRedirect(string originalRoute, int umbracoContentNodeId, Guid umbracoContentNodeKey, Uri umbracoContentNodeUrl, IDbTransaction transaction)
-        {
-            if (umbracoContentNodeUrl is null)
-            {
-                throw new ArgumentNullException(nameof(umbracoContentNodeUrl));
-            }
-
-            if (transaction is null)
-            {
-                throw new ArgumentNullException(nameof(transaction));
-            }
-
-            await transaction.Connection.ExecuteAsync($@"SET IDENTITY_INSERT SkybrudRedirects ON;
-                            INSERT INTO SkybrudRedirects 
-							([Id], [Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
-							 [DestinationUrl], [Created], [Updated], [IsPermanent], [ForwardQueryString], [DestinationQuery], [DestinationFragment])
-							 VALUES ((SELECT MAX(Id)+1 FROM SkybrudRedirects), @Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
-                             @Created, @Updated, @IsPermanent, @ForwardQueryString, @DestinationQuery, @DestinationFragment);
-                            SET IDENTITY_INSERT SkybrudRedirects OFF",
-                 new
-                 {
-                     Key = Guid.NewGuid().ToString(),
-                     RootId = 0,
-                     RootKey = "00000000-0000-0000-0000-000000000000",
-                     Url = "/" + originalRoute?.TrimStart('/'),
-                     QueryString = string.Empty,
-                     DestinationType = "Content",
-                     DestinationId = umbracoContentNodeId,
-                     DestinationKey = umbracoContentNodeKey,
-                     DestinationUrl = umbracoContentNodeUrl.ToString(),
-                     Created = DateTime.UtcNow,
-                     Updated = DateTime.UtcNow,
-                     IsPermanent = true,
-                     ForwardQueryString = false,
-                     DestinationQuery = string.Empty,
-                     DestinationFragment = string.Empty
-                 },
-                 transaction).ConfigureAwait(false);
         }
     }
 }

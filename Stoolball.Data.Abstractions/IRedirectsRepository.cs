@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Threading.Tasks;
 
 namespace Stoolball.Data.Abstractions
@@ -7,7 +6,6 @@ namespace Stoolball.Data.Abstractions
     public interface IRedirectsRepository
     {
         Task DeleteRedirectsByDestinationPrefix(string destinationPrefix, IDbTransaction transaction);
-        Task InsertRedirect(string originalRoute, int umbracoContentNodeId, Guid umbracoContentNodeKey, Uri umbracoContentNodeUrl, IDbTransaction transaction);
 
         Task InsertRedirect(string originalRoute, string revisedRoute, string? routeSuffix, IDbTransaction transaction);
     }
