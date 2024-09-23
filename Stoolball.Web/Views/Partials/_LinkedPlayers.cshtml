@@ -46,39 +46,37 @@
                 <td class="related-item__selected__section d-none d-sm-table-cell"><div class="related-item__animate">@when</div></td>
                 <td class="related-item__selected__section"><div class="related-item__animate">@DisplayLinkedBy(Model.Player.PlayerIdentities[i].LinkedBy)</div></td>
                 <td class="related-item__delete related-item__selected__section">
-                    @if ((Model.Player.PlayerIdentities[i].LinkedBy == PlayerIdentityLinkedBy.Member && Model.CanUnlinkIdentitiesLinkedByMember) ||
-                         (Model.Player.PlayerIdentities[i].LinkedBy == PlayerIdentityLinkedBy.ClubOrTeam && Model.CanUnlinkIdentitiesLinkedByClubOrTeam))
-                    {
-                        <div class="related-item__animate">
-                            @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", Model.Player.PlayerIdentities[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = Model.Player.PlayerIdentities[i].PlayerIdentityId })
+                    <div class="related-item__animate">
+                        @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", Model.Player.PlayerIdentities[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = Model.Player.PlayerIdentities[i].PlayerIdentityId })
+                        @if ((Model.Player.PlayerIdentities[i].LinkedBy == PlayerIdentityLinkedBy.Member && Model.CanUnlinkIdentitiesLinkedByMember) ||
+                             (Model.Player.PlayerIdentities[i].LinkedBy == PlayerIdentityLinkedBy.ClubOrTeam && Model.CanUnlinkIdentitiesLinkedByClubOrTeam))
+                        {
                             <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Unlink {Model.Player.PlayerIdentities[i].PlayerIdentityName} from your account")</button>
-                        </div>
-                    }
+                        }
+                    </div>
                 </td>
             </tr>
         }
-    </tbody>
     @if (Model.AddIdentitiesFromTeamId.HasValue)
     {            
-        <tbody>
-            <tr>
-                <td colspan="5">
-                    @Html.Label("player-autocomplete", "Link another player", new { @class = "sr-only" })
-                    @Html.TextBox("player-autocomplete", string.Empty, new
-                    {
-                    @class = "form-control related-item__search",
-                    placeholder = "Add another player",
-                    autocomplete = "off",
-                    type = "search",
-                    data_url = $"/api/players/autocomplete?teams={Model.AddIdentitiesFromTeamId}{notIdentities}&includeLinkedToMember={!Model.Player.MemberKey.HasValue}",
-                    data_template = "player-template",
-                    data_suggestion_template = "{{value}} ({{data.playerRecord}})",
-                    aria_label = "Type a player name and press down arrow to select the player"
-                    })
-                </td>
-            </tr>
-        </tbody>
+        <tr>
+            <td colspan="5">
+                @Html.Label("player-autocomplete", "Link another player", new { @class = "sr-only" })
+                @Html.TextBox("player-autocomplete", string.Empty, new
+                {
+                @class = "form-control related-item__search",
+                placeholder = "Add another player",
+                autocomplete = "off",
+                type = "search",
+                data_url = $"/api/players/autocomplete?teams={Model.AddIdentitiesFromTeamId}{notIdentities}&includeLinkedToMember={!Model.Player.MemberKey.HasValue}",
+                data_template = "player-template",
+                data_suggestion_template = "{{value}} ({{data.playerRecord}})",
+                aria_label = "Type a player name and press down arrow to select the player"
+                })
+            </td>
+        </tr>
     }
+    </tbody>
     @if (Model.CanRemoveFinalIdentity)
     {
         <tbody>
