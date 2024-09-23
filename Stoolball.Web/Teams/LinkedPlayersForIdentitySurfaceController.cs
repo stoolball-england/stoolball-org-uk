@@ -87,9 +87,12 @@ namespace Stoolball.Web.Teams
                     await _playerRepository.UnlinkPlayerIdentity(identity.PlayerIdentityId!.Value, currentMember!.Key, currentMember.Name!);
                 }
 
-                if (identitiesToUnlink.Any())
+                if (identitiesToLink.Any() || identitiesToUnlink.Any())
                 {
                     _playerCacheClearer.InvalidateCacheForPlayer(model.Player);
+
+                    var teams = model.Player.PlayerIdentities.Select(pi => pi.Team).OfType<Team>().ToArray();
+                    _playerCacheClearer.InvalidateCacheForTeams(teams);
                 }
 
                 var redirectToUrl = model.ContextIdentity.Team.TeamRoute + "/edit/players";

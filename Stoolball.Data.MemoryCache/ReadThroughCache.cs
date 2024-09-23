@@ -20,7 +20,7 @@ namespace Stoolball.Data.MemoryCache
         public void InvalidateCache(string key)
         {
             var cancellationKey = CancellationKey(key);
-            if (_memoryCache.TryGetValue<CancellationTokenSource>(cancellationKey, out var tokenSource))
+            if (_memoryCache.TryGetValue<CancellationTokenSource>(cancellationKey, out var tokenSource) && tokenSource is not null)
             {
                 tokenSource.Cancel();
                 _memoryCache.Remove(cancellationKey);
@@ -42,14 +42,17 @@ namespace Stoolball.Data.MemoryCache
                 _memoryCache.Set(cancellationKey, tokenSource, cancellationCacheExpiry);
             }
 
-            if (!_memoryCache.TryGetValue<TResult>(dependentKey, out var data))
+            if (!_memoryCache.TryGetValue<TResult>(dependentKey, out var data) || data is null)
             {
                 data = await cacheThis();
                 var dataCacheExpiry = new MemoryCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = absoluteCacheExpiration
                 };
-                dataCacheExpiry.AddExpirationToken(new CancellationChangeToken(tokenSource.Token));
+                if (tokenSource is not null)
+                {
+                    dataCacheExpiry.AddExpirationToken(new CancellationChangeToken(tokenSource.Token));
+                }
                 _memoryCache.Set(dependentKey, data, dataCacheExpiry);
 
                 // Update expiry of the CancellationSource so it hangs around long enough to expire the newly-cached data

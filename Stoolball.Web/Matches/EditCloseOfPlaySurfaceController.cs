@@ -98,11 +98,11 @@ namespace Stoolball.Web.Matches
                 if (model.Match.MatchResultType.HasValue && (int)model.Match.MatchResultType.Value == -1) { model.Match.MatchResultType = null; }
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                var updatedMatch = await _matchRepository.UpdateCloseOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var updatedMatch = await _matchRepository.UpdateCloseOfPlay(model.Match, currentMember!.Key, currentMember.Name!).ConfigureAwait(false);
                 await _matchListingCacheClearer.InvalidateCacheForMatch(beforeUpdate, updatedMatch).ConfigureAwait(false);
-                _playerCacheClearer.InvalidateCacheForTeams(model.Match.Teams.Select(x => x.Team).OfType<Team>().ToArray());
+                _playerCacheClearer.InvalidateCacheForTeams(model.Match.Teams);
 
-                return Redirect(updatedMatch.MatchRoute);
+                return Redirect(updatedMatch.MatchRoute!);
             }
 
             model.Match.MatchName = beforeUpdate.MatchName;
@@ -111,14 +111,14 @@ namespace Stoolball.Web.Matches
             if (model.Match.Season != null)
             {
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
-                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.Competition.CompetitionName, Url = new Uri(model.Match.Season.Competition.CompetitionRoute, UriKind.Relative) });
-                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.SeasonName(), Url = new Uri(model.Match.Season.SeasonRoute, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.Competition!.CompetitionName, Url = new Uri(model.Match.Season.Competition.CompetitionRoute!, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.SeasonName(), Url = new Uri(model.Match.Season.SeasonRoute!, UriKind.Relative) });
             }
             else
             {
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Matches, Url = new Uri(Constants.Pages.MatchesUrl, UriKind.Relative) });
             }
-            model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.MatchName, Url = new Uri(model.Match.MatchRoute, UriKind.Relative) });
+            model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.MatchName, Url = new Uri(model.Match.MatchRoute!, UriKind.Relative) });
 
             return View("EditCloseOfPlay", model);
         }

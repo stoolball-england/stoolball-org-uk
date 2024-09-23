@@ -150,8 +150,8 @@ namespace Stoolball.Web.Matches
             if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                await _matchRepository.UpdateBattingScorecard(model.Match, model.CurrentInnings.MatchInnings.MatchInningsId!.Value, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                _playerCacheClearer.InvalidateCacheForTeams(model.CurrentInnings.MatchInnings.BattingTeam!.Team!, model.CurrentInnings.MatchInnings.BowlingTeam!.Team!);
+                await _matchRepository.UpdateBattingScorecard(model.Match, model.CurrentInnings.MatchInnings.MatchInningsId!.Value, currentMember!.Key, currentMember.Name!).ConfigureAwait(false);
+                _playerCacheClearer.InvalidateCacheForTeams(model.Match.Teams);
 
                 // redirect to the bowling scorecard for this innings
                 return Redirect($"{model.Match.MatchRoute}/edit/innings/{model.InningsOrderInMatch!.Value}/bowling");

@@ -85,7 +85,7 @@ namespace Stoolball.Web.Teams
                     Team = model.PlayerIdentity.Team
                 };
 
-                var result = await _playerRepository.UpdatePlayerIdentity(playerIdentity, currentMember.Key, currentMember.UserName).ConfigureAwait(false);
+                var result = await _playerRepository.UpdatePlayerIdentity(playerIdentity, currentMember!.Key, currentMember.UserName!).ConfigureAwait(false);
 
                 if (result.Status == PlayerIdentityUpdateResult.NotUnique)
                 {
