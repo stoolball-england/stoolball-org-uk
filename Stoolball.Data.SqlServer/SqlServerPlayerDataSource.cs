@@ -156,6 +156,11 @@ namespace Stoolball.Data.SqlServer
                 where.Add("p.MemberKey IS NULL");
             }
 
+            if (filter?.IncludePlayersAndIdentitiesWithMultipleIdentities == false)
+            {
+                where.Add($"(SELECT COUNT(PlayerIdentityId) FROM {Tables.PlayerIdentity} WHERE PlayerId = pi.PlayerId) = 1");
+            }
+
             if (!string.IsNullOrEmpty(filter?.Query))
             {
                 where.Add("stats.PlayerIdentityName LIKE @Query");

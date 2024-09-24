@@ -13,6 +13,7 @@
             Serialize(filter.ExcludePlayerIdentityIds, "not");
             Serialize(filter.TeamIds, "team");
             Serialize(filter.IncludePlayersAndIdentitiesLinkedToAMember, "member");
+            Serialize(filter.IncludePlayersAndIdentitiesWithMultipleIdentities, "linked");
 
             return Serializer.ToQueryString();
         }

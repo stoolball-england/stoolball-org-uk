@@ -985,30 +985,6 @@ namespace Stoolball.Testing
                 .Distinct(new PlayerIdentityEqualityComparer()).ToList();
             testData.Players = testData.PlayerIdentities.Select(x => x.Player).OfType<Player>().Distinct(playerComparer).ToList();
 
-            foreach (var identity in testData.PlayerIdentities)
-            {
-                if (testData.PlayerIdentities.Count(x => x.Player?.PlayerId == identity.Player?.PlayerId) > 1 &&
-                    !testData.PlayersWithMultipleIdentities.Any(x => x.PlayerId == identity.Player?.PlayerId))
-                {
-                    testData.PlayersWithMultipleIdentities.Add(identity.Player!);
-                }
-            }
-
-            // Find any player who has multiple identities and bowled, and associate them to a member
-            testData.BowlerWithMultipleIdentities = testData.Matches
-                .SelectMany(x => x.MatchInnings)
-                .SelectMany(x => x.BowlingFigures)
-                .Where(x => testData.PlayersWithMultipleIdentities.Contains(x.Bowler?.Player, playerComparer))
-                .Select(x => x.Bowler?.Player)
-                .First();
-            testData.BowlerWithMultipleIdentities!.PlayerIdentities.Clear();
-            testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player?.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
-            testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberKey;
-            foreach (var identity in testData.BowlerWithMultipleIdentities.PlayerIdentities)
-            {
-                identity.LinkedBy = PlayerIdentityLinkedBy.Member;
-            }
-
             var matchProviders = new BaseMatchDataProvider[]{
                 new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward),
                 new APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(_randomiser, _matchFactory, _bowlingFiguresCalculator),
@@ -1035,6 +1011,23 @@ namespace Stoolball.Testing
                     var newPlayers = newPlayerIdentities.Select(x => x.Player).Where(x => x != null && !testData.Players.Select(p => p.PlayerId).Contains(x.PlayerId)).OfType<Player>();
                     if (newPlayers.Any()) { testData.Players.AddRange(newPlayers); }
                 }
+            }
+
+            testData.PlayersWithMultipleIdentities = FindPlayersWithMultipleIdentities(testData);
+
+            // Find any player who has multiple identities and bowled, and associate them to a member
+            testData.BowlerWithMultipleIdentities = testData.Matches
+                .SelectMany(x => x.MatchInnings)
+                .SelectMany(x => x.BowlingFigures)
+                .Where(x => testData.PlayersWithMultipleIdentities.Contains(x.Bowler?.Player, playerComparer))
+                .Select(x => x.Bowler?.Player)
+                .First();
+            testData.BowlerWithMultipleIdentities!.PlayerIdentities.Clear();
+            testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player?.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
+            testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberKey;
+            foreach (var identity in testData.BowlerWithMultipleIdentities.PlayerIdentities)
+            {
+                identity.LinkedBy = PlayerIdentityLinkedBy.Member;
             }
 
             testData.MatchListings.AddRange(testData.Matches.Where(x => x.Tournament == null).Select(x => x.ToMatchListing()).Union(testData.Tournaments.Select(x => x.ToMatchListing())));
@@ -1095,6 +1088,20 @@ namespace Stoolball.Testing
             }
 
             return testData;
+        }
+
+        private static List<Player> FindPlayersWithMultipleIdentities(TestData testData)
+        {
+            var results = new List<Player>();
+            foreach (var identity in testData.PlayerIdentities)
+            {
+                if (testData.PlayerIdentities.Count(x => x.Player?.PlayerId == identity.Player?.PlayerId) > 1 &&
+                    !results.Any(x => x.PlayerId == identity.Player?.PlayerId))
+                {
+                    results.Add(identity.Player!);
+                }
+            }
+            return results;
         }
 
         private static Team FindTeamWithMinimalDetails(TestData testData, IEnumerable<Team> teamsInMatches)

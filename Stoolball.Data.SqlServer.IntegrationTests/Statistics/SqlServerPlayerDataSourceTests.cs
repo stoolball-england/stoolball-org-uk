@@ -437,7 +437,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { TeamIds = new List<Guid> { expectedTeamId } });
 
-            var expected = _testData.PlayerIdentities.Where(x => x.Team.TeamId == expectedTeamId);
+            var expected = _testData.PlayerIdentities.Where(x => x.Team!.TeamId == expectedTeamId);
             Assert.Equal(expected.Count(), results.Count);
             foreach (var identity in expected)
             {
@@ -563,6 +563,28 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     Assert.Null(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
                 }
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_identities_supports_include_players_with_multiple_identities()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_connectionFactory, _routeNormaliser.Object, _statisticsQueryBuilder.Object);
+            var playersToExclude = _testData.PlayersWithMultipleIdentities;
+            var identitiesToExclude = playersToExclude.SelectMany(x => x.PlayerIdentities).Select(x => x.PlayerIdentityId).Distinct().ToList();
+            var expectedIdentities = _testData.PlayerIdentitiesWhoHavePlayedAtLeastOneMatch().Where(x => !identitiesToExclude.Contains(x.PlayerIdentityId)).Select(id => id.PlayerIdentityId).ToList();
+
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerFilter { IncludePlayersAndIdentitiesWithMultipleIdentities = false });
+
+            Assert.Equal(expectedIdentities.Count, results.Count);
+
+            foreach (var identity in expectedIdentities)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity));
+            }
+            foreach (var identity in identitiesToExclude)
+            {
+                Assert.Null(results.SingleOrDefault(x => x.PlayerIdentityId == identity));
             }
         }
 

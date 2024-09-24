@@ -22,7 +22,12 @@ namespace Stoolball.Web.WebApi
 
         [HttpGet]
         [Route("api/players/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromQuery] string query, [FromQuery] string[] not, [FromQuery] string[] teams, [FromQuery] bool includeLinkedToMember = true)
+        public async Task<AutocompleteResultSet> Autocomplete(
+            [FromQuery] string query,
+            [FromQuery] string[] not,
+            [FromQuery] string[] teams,
+            [FromQuery] bool includeLinkedToMember = true,
+            [FromQuery] bool includeMultipleIdentities = true)
         {
             if (not is null)
             {
@@ -34,8 +39,9 @@ namespace Stoolball.Web.WebApi
                 throw new ArgumentNullException(nameof(teams));
             }
 
-            var playerQuery = new PlayerFilter { Query = query };
-            playerQuery.IncludePlayersAndIdentitiesLinkedToAMember = includeLinkedToMember;
+            var playerFilter = new PlayerFilter { Query = query };
+            playerFilter.IncludePlayersAndIdentitiesLinkedToAMember = includeLinkedToMember;
+            playerFilter.IncludePlayersAndIdentitiesWithMultipleIdentities = includeMultipleIdentities;
 
             foreach (var guid in not)
             {
@@ -43,7 +49,7 @@ namespace Stoolball.Web.WebApi
 
                 try
                 {
-                    playerQuery.ExcludePlayerIdentityIds.Add(new Guid(guid));
+                    playerFilter.ExcludePlayerIdentityIds.Add(new Guid(guid));
                 }
                 catch (FormatException)
                 {
@@ -57,14 +63,14 @@ namespace Stoolball.Web.WebApi
 
                 try
                 {
-                    playerQuery.TeamIds.Add(new Guid(guid));
+                    playerFilter.TeamIds.Add(new Guid(guid));
                 }
                 catch (FormatException)
                 {
                     // ignore that one
                 }
             }
-            var players = await _playerDataSource.ReadPlayerIdentities(playerQuery).ConfigureAwait(false);
+            var players = await _playerDataSource.ReadPlayerIdentities(playerFilter).ConfigureAwait(false);
             return new AutocompleteResultSet
             {
                 suggestions = players.Select(x => new AutocompleteResult
@@ -74,8 +80,8 @@ namespace Stoolball.Web.WebApi
                     {
                         playerIdentityId = x.PlayerIdentityId.ToString(),
                         playerIdentityName = x.PlayerIdentityName,
-                        playerRecord = BuildPlayerRecord(x, playerQuery.TeamIds.Count != 1),
-                        teamId = x.Team.TeamId,
+                        playerRecord = BuildPlayerRecord(x, playerFilter.TeamIds.Count != 1),
+                        teamId = x.Team!.TeamId,
                         teamName = x.Team.TeamName
                     }
                 })
