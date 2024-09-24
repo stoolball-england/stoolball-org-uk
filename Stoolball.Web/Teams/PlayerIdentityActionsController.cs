@@ -40,7 +40,7 @@ namespace Stoolball.Web.Teams
         {
             var model = new PlayerIdentityViewModel(CurrentPage)
             {
-                PlayerIdentity = await _playerDataSource.ReadPlayerIdentityByRoute(Request.Path)
+                PlayerIdentity = await _playerDataSource.ReadPlayerIdentityByRoute(Request.Path).ConfigureAwait(false)
             };
 
             if (model.PlayerIdentity?.Team == null)
@@ -49,6 +49,10 @@ namespace Stoolball.Web.Teams
             }
             else
             {
+                // Query the player to get the other identities linked to this one
+                model.Player = await _playerDataSource.ReadPlayerByRoute(model.PlayerIdentity.Player!.PlayerRoute!).ConfigureAwait(false);
+                model.Player.PreferredName = model.PlayerIdentity.PlayerIdentityName;
+
                 model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.PlayerIdentity.Team);
 
                 model.Metadata.PageTitle = "Edit " + model.PlayerIdentity.PlayerIdentityName;

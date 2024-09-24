@@ -7,14 +7,23 @@ namespace Stoolball.Statistics
 {
     public class Player : IAuditable
     {
-        private string _preferredName = string.Empty;
+        private string _primaryName = string.Empty;
+        private string? _preferredName = string.Empty;
         private readonly List<string> _alternativeNames = new();
 
         public Guid? PlayerId { get; set; }
 
+        public string? PreferredName {
+            get => _preferredName;
+            set {
+                _primaryName = string.Empty;
+                _preferredName = value;
+            }
+        }
+
         private class CandidateName
         {
-            public string Name { get; set; }
+            public required string Name { get; set; }
             public int TotalMatches { get; set; }
             public DateTimeOffset? LastPlayed { get; set; }
             public int Weighting { get; set; } = 1;
@@ -26,7 +35,7 @@ namespace Stoolball.Statistics
         public string PlayerName()
         {
             InitialisePreferredAndAlternativeNames();
-            return _preferredName;
+            return _primaryName;
         }
 
         /// <summary>
@@ -34,8 +43,9 @@ namespace Stoolball.Statistics
         /// </summary>
         private void InitialisePreferredAndAlternativeNames()
         {
-            if (string.IsNullOrEmpty(_preferredName))
+            if (string.IsNullOrEmpty(_primaryName))
             {
+                _alternativeNames.Clear();
                 var names = CombineDuplicateNames();
                 var groups = DivideNamesIntoGroups(names);
                 for (var i = 0; i < groups.Count; i++)
@@ -44,10 +54,20 @@ namespace Stoolball.Statistics
                     groups[i] = OrderByWeightedTotalMatches(groups[i]);
                 }
                 var recombined = groups[0].Concat(groups[1]).Concat(groups[2]).ToList();
-                if (recombined.Count > 0)
+
+                if (!string.IsNullOrEmpty(_preferredName))
                 {
-                    _preferredName = recombined[0].Name;
-                    recombined.RemoveAt(0);
+                    _primaryName = _preferredName;
+                    var identityMatchingPreferredName = recombined.SingleOrDefault(name => name.Name == _preferredName);
+                    if (identityMatchingPreferredName is not null) { recombined.Remove(identityMatchingPreferredName); }
+                }
+                else
+                {
+                    if (recombined.Count > 0)
+                    {
+                        _primaryName = recombined[0].Name;
+                        recombined.RemoveAt(0);
+                    }
                 }
                 if (recombined.Count > 0)
                 {
@@ -80,7 +100,7 @@ namespace Stoolball.Statistics
                     weighting--;
                 }
                 candidate.Weighting = weighting;
-                lastPlayed = candidate.LastPlayed.Value;
+                lastPlayed = candidate.LastPlayed!.Value;
             }
             return group;
         }

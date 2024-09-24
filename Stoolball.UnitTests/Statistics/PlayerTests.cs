@@ -211,5 +211,40 @@ namespace Stoolball.UnitTests.Statistics
             Assert.Equal("NameE", alternativeNames[12]);
             Assert.Equal("NameA", alternativeNames[13]);
         }
+
+        [Fact]
+        public void Player_name_prioritises_PreferredName_if_set()
+        {
+            var player = new Player
+            {
+                PreferredName = "Preferred",
+                PlayerIdentities = new List<PlayerIdentity>
+                {
+                    new PlayerIdentity {
+                        PlayerIdentityName = "Name Complete", // Would beat the single-word name for the preferred identity in a calculated result
+                        TotalMatches = 10, // Would beat fewer matches for the preferred identity in a calculated result
+                        LastPlayed = DateTimeOffset.Now.Date // Would beat the older date for the preferred identity in a calculated result
+                    },
+                    new PlayerIdentity {
+                        PlayerIdentityName = "A Complete", // This identity would also beat the preferred identity in a calculated result
+                        TotalMatches = 10,
+                        LastPlayed = DateTimeOffset.Now.Date
+                    },
+                    new PlayerIdentity {
+                        PlayerIdentityName = "Preferred", // This identity should be preferred because it matches PreferredName, but not duplicated
+                        TotalMatches = 2,
+                        LastPlayed = DateTimeOffset.Now.Date.AddYears(-1)
+                    }
+                }
+            };
+
+            var preferredName = player.PlayerName();
+            var alternativeNames = player.AlternativeNames();
+
+            Assert.Equal(player.PreferredName, preferredName);
+            Assert.Equal(2, alternativeNames.Count);
+            Assert.Equal(player.PlayerIdentities[0].PlayerIdentityName, alternativeNames[0]);
+            Assert.Equal(player.PlayerIdentities[1].PlayerIdentityName, alternativeNames[1]);
+        }
     }
 }

@@ -1,13 +1,15 @@
 ﻿@inherits UmbracoViewPage<PlayerIdentityViewModel>
 @using Stoolball.Security
+@using Stoolball.Web.Statistics.Models
 @using Stoolball.Web.Teams
 @using Stoolball.Web.Teams.Models
 @using Umbraco.Cms.Web.Website.Controllers
+@{ SmidgeHelper.RequiresCss(new CssFile("/css/statistics.min.css") { Order = 100 }); }
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>Edit @Model.PlayerIdentity?.PlayerIdentityName</h1>
+    @await Html.PartialAsync("_PlayerHeading", new PlayerHeadingViewModel { Heading = "Edit " + Model.PlayerIdentity!.PlayerIdentityName, AlternativeNames = Model.Player!.AlternativeNames() })
 
     @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
     {
