@@ -81,6 +81,10 @@ li {
         columns: 2;
     }
 
+    .list-columns > li {
+        break-inside: avoid;
+    }
+
     @include media-breakpoint-up(sm) {
         .list-columns {
             columns: auto;
@@ -110,6 +114,7 @@ li {
 @media screen {
     .list-columns-wide > li { 
         margin-bottom: $spacer/4;
+        break-inside: avoid;
     }
 
     @include media-breakpoint-up(sm) {
