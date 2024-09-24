@@ -532,14 +532,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            var returnedPlayer = await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, member.memberKey, member.memberName);
+            var movedIdentityResult = await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, member.memberKey, member.memberName);
             await repo.ProcessAsyncUpdatesForPlayers();
 
-            // The returned player should have the result of merging both players
-            Assert.Equal(player1.PlayerId, returnedPlayer.PlayerId);
-            Assert.Equal(player2.PlayerRoute, returnedPlayer.PlayerRoute);
-            Assert.Equal(player1.PlayerIdentities.Count + 1, returnedPlayer.PlayerIdentities.Count);
-            Assert.Contains(returnedPlayer.PlayerIdentities.Select(pi => pi.PlayerIdentityId), id => id == player2.PlayerIdentities[0].PlayerIdentityId);
+            Assert.Equal(player1.PlayerId, movedIdentityResult.PlayerIdForTargetPlayer);
+            Assert.Equal(player1.PlayerRoute, movedIdentityResult.PreviousRouteForTargetPlayer);
+            Assert.Equal(player1.MemberKey, movedIdentityResult.MemberKeyForTargetPlayer);
+
+            Assert.Equal(player2.PlayerId, movedIdentityResult.PlayerIdForSourcePlayer);
+            Assert.Equal(player2.PlayerRoute, movedIdentityResult.PreviousRouteForSourcePlayer);
+            Assert.Equal(player2.MemberKey, movedIdentityResult.MemberKeyForSourcePlayer);
+
+            Assert.Equal(player2.PlayerRoute, movedIdentityResult.NewRouteForTargetPlayer);
 
             using (var connectionForAssert = _connectionFactory.CreateDatabaseConnection())
             {
@@ -602,15 +606,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            var returnedIdentity = await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, member.memberKey, member.memberName).ConfigureAwait(false);
+            await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.ClubOrTeam, member.memberKey, member.memberName).ConfigureAwait(false);
 
             // audits and logs delete of original player and update of target player
             _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri!.ToString().EndsWith(player1.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
-            foreach (var id in returnedIdentity.PlayerIdentities)
-            {
-                id.Player = null;
-            }
-            _logger.Verify(x => x.Info(LoggingTemplates.Updated, JsonConvert.SerializeObject(returnedIdentity), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerIdentity)));
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerIdentity)));
 
             var deletedPlayer = new Player { PlayerId = player2.PlayerId, PlayerRoute = player2.PlayerRoute };
             deletedPlayer.PlayerIdentities.Add(new PlayerIdentity { PlayerIdentityId = player2.PlayerIdentities[0].PlayerIdentityId });

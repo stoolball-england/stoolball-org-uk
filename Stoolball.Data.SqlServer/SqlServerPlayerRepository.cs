@@ -8,6 +8,7 @@ using Humanizer;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 using Stoolball.Data.Abstractions;
+using Stoolball.Data.Abstractions.Models;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Statistics;
@@ -300,7 +301,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc />
-        public async Task<Player> LinkPlayerIdentity(Guid targetPlayer, Guid identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName)
+        public async Task<MovedPlayerIdentity> LinkPlayerIdentity(Guid targetPlayer, Guid identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName)
         {
             if (string.IsNullOrWhiteSpace(memberName))
             {
@@ -413,7 +414,17 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    return updatedTargetPlayer;
+                    return new MovedPlayerIdentity
+                    {
+                        PlayerIdentityId = identityToLinkToTarget,
+                        PlayerIdForSourcePlayer = identityToLinkBefore.PlayerId,
+                        MemberKeyForSourcePlayer = identityToLinkBefore.MemberKey,
+                        PreviousRouteForSourcePlayer = identityToLinkBefore.PlayerRoute,
+                        PlayerIdForTargetPlayer = targetPlayer,
+                        MemberKeyForTargetPlayer = targetPlayerBefore.MemberKey,
+                        PreviousRouteForTargetPlayer = targetPlayerBefore.PlayerRoute,
+                        NewRouteForTargetPlayer = updatedTargetPlayer.PlayerRoute
+                    };
                 }
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Threading.Tasks;
+using Stoolball.Data.Abstractions.Models;
 using Stoolball.Statistics;
 
 namespace Stoolball.Data.Abstractions
@@ -30,8 +31,8 @@ namespace Stoolball.Data.Abstractions
         /// <param name="linkedBy">The role that authorises the current member to make the update.</param>
         /// <param name="memberKey">The MemberKey of the member making the update.</param>
         /// <param name="memberName">The name of the member making the update.</param>
-        /// <returns></returns>
-        Task<Player> LinkPlayerIdentity(Guid targetPlayer, Guid identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName);
+        /// <returns>Updated player ids and routes.</returns>
+        Task<MovedPlayerIdentity> LinkPlayerIdentity(Guid targetPlayer, Guid identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName);
 
         /// <summary>
         /// Removes the player identity from its player, creating a new player not linked to the member. Or for the last player identity linked to a member, removes the MemberKey from the player.

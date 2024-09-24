@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Data.Abstractions;
+using Stoolball.Data.Abstractions.Models;
 using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
@@ -77,9 +79,10 @@ namespace Stoolball.Web.Teams
                 var identitiesToUnlink = model.Player!.PlayerIdentities.Where(id => id.LinkedBy == PlayerIdentityLinkedBy.ClubOrTeam && !identitiesToKeep.Contains(id.PlayerIdentityId!.Value));
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
+                var movedPlayerResults = new List<MovedPlayerIdentity>();
                 foreach (var identity in identitiesToLink)
                 {
-                    await _playerRepository.LinkPlayerIdentity(model.Player.PlayerId!.Value, identity, PlayerIdentityLinkedBy.ClubOrTeam, currentMember!.Key, currentMember.Name!);
+                    movedPlayerResults.Add(await _playerRepository.LinkPlayerIdentity(model.Player.PlayerId!.Value, identity, PlayerIdentityLinkedBy.ClubOrTeam, currentMember!.Key, currentMember.Name!).ConfigureAwait(false));
                 }
 
                 foreach (var identity in identitiesToUnlink)
@@ -89,8 +92,26 @@ namespace Stoolball.Web.Teams
 
                 if (identitiesToLink.Any() || identitiesToUnlink.Any())
                 {
+                    // The target player is always the same, and needs its cache cleared for link or unlink.
                     _playerCacheClearer.InvalidateCacheForPlayer(model.Player);
 
+                    // The source identity needs its cache cleared for a link.
+                    var sourcePlayersCleared = new List<Guid>();
+                    foreach (var movedPlayer in movedPlayerResults)
+                    {
+                        if (sourcePlayersCleared.Contains(movedPlayer.PlayerIdForSourcePlayer)) { continue; }
+                        sourcePlayersCleared.Add(movedPlayer.PlayerIdForSourcePlayer);
+
+                        var sourcePlayer = new Player
+                        {
+                            PlayerId = movedPlayer.PlayerIdForSourcePlayer,
+                            MemberKey = movedPlayer.MemberKeyForSourcePlayer,
+                            PlayerRoute = movedPlayer.PreviousRouteForSourcePlayer
+                        };
+                        _playerCacheClearer.InvalidateCacheForPlayer(sourcePlayer);
+                    }
+
+                    // Clear cache for listings of all players in this target player's team (the source player is on the same team).
                     var teams = model.Player.PlayerIdentities.Select(pi => pi.Team).OfType<Team>().ToArray();
                     _playerCacheClearer.InvalidateCacheForTeams(teams);
                 }
