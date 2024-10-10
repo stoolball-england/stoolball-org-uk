@@ -22,7 +22,7 @@ namespace Stoolball.Web.Statistics.Models
         public string LinkedByMemberLabel { get; set; } = PlayerIdentityLinkedBy.Member.ToString();
         public string LinkedByClubOrTeamLabel { get; set; } = PlayerIdentityLinkedBy.ClubOrTeam.ToString();
         public string LinkedByStoolballEnglandLabel { get; set; } = PlayerIdentityLinkedBy.StoolballEngland.ToString();
-
+        public PlayerIdentityLinkedBy? CurrentMemberRole { get; set; }
         public bool CanUnlinkIdentitiesLinkedByMember { get; set; }
         public bool CanUnlinkIdentitiesLinkedByClubOrTeam { get; set; }
         public Guid? AddIdentitiesFromTeamId { get; set; }

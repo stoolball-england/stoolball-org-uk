@@ -85,7 +85,7 @@
         </tbody>
     }
 </table>
-@if (Model.AddIdentitiesFromTeamId.HasValue)
+@if (Model.AddIdentitiesFromTeamId.HasValue && Model.CurrentMemberRole.HasValue)
 {
     <script type="text/x-template" id="player-template">
         <table>
@@ -93,7 +93,7 @@
                 <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
                 <td class="related-item__selected__section"><div class="related-item__animate">{{data.teamName}}</div></td>
                 <td class="related-item__selected__section"><div class="related-item__animate">{{data.playerRecord}}</div></td>
-                <td class="related-item__selected__section"><div class="related-item__animate">@Model.LinkedByClubOrTeamLabel</div></td>
+                <td class="related-item__selected__section"><div class="related-item__animate">@DisplayLinkedBy(Model.CurrentMemberRole.Value)</div></td>
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
                         <input name="PlayerIdentities[0].PlayerIdentityId" class="related-item__data related-item__id" type="hidden" value="{{data.playerIdentityId}}" data-item="{{data.playerIdentityId}}" />

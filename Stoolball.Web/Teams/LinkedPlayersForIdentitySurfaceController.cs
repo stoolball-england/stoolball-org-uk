@@ -26,6 +26,7 @@ namespace Stoolball.Web.Teams
     {
         private readonly IMemberManager _memberManager;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
+        private readonly ITeamDataSource _teamDataSource;
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IPlayerRepository _playerRepository;
         private readonly IPlayerCacheInvalidator _playerCacheClearer;
@@ -34,6 +35,7 @@ namespace Stoolball.Web.Teams
             ServiceContext serviceContext, AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider,
             IMemberManager memberManager,
             IAuthorizationPolicy<Team> authorizationPolicy,
+            ITeamDataSource teamDataSource,
             IPlayerDataSource playerDataSource,
             IPlayerRepository playerRepository,
             IPlayerCacheInvalidator playerCacheClearer)
@@ -41,6 +43,7 @@ namespace Stoolball.Web.Teams
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
             _playerCacheClearer = playerCacheClearer ?? throw new ArgumentNullException(nameof(playerCacheClearer));
@@ -58,31 +61,37 @@ namespace Stoolball.Web.Teams
                 ContextIdentity = await _playerDataSource.ReadPlayerIdentityByRoute(Request.Path)
             };
 
-            if (model.ContextIdentity?.Team == null || model.ContextIdentity?.Player == null)
+            if (model.ContextIdentity?.Team == null || model.ContextIdentity.PlayerIdentityId == null || model.ContextIdentity?.Player == null)
             {
                 return NotFound();
             }
             else
             {
+                model.ContextIdentity.Team = await _teamDataSource.ReadTeamByRoute(model.ContextIdentity.Team.TeamRoute!).ConfigureAwait(false);
+                if (model.ContextIdentity?.Team == null) {  return NotFound(); }
+
                 model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.ContextIdentity.Team);
                 if (!model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
                 {
                     return Forbid();
                 }
 
+                var currentMember = await _memberManager.GetCurrentMemberAsync();
+                var isTeamOwner = await _memberManager.IsMemberAuthorizedAsync(null, [model.ContextIdentity.Team.MemberGroupName!], null);
+                var roleGrantingPermission = isTeamOwner ? PlayerIdentityLinkedBy.ClubOrTeam : PlayerIdentityLinkedBy.StoolballEngland;
+
                 model.Player = await _playerDataSource.ReadPlayerByRoute(model.ContextIdentity.Player!.PlayerRoute!);
 
                 var previousIdentities = model.Player!.PlayerIdentities.Select(id => id.PlayerIdentityId!.Value).ToList();
                 var submittedIdentities = formData.PlayerIdentities.Select(id => id.PlayerIdentityId!.Value).ToList();
                 var identitiesToLink = submittedIdentities.Where(id => !previousIdentities.Contains(id));
-                var identitiesToKeep = submittedIdentities.Where(id => previousIdentities.Contains(id)).Union([model.ContextIdentity.PlayerIdentityId!.Value]);
+                var identitiesToKeep = submittedIdentities.Where(id => previousIdentities.Contains(id)).Union([model.ContextIdentity.PlayerIdentityId.Value]);
                 var identitiesToUnlink = model.Player!.PlayerIdentities.Where(id => id.LinkedBy == PlayerIdentityLinkedBy.ClubOrTeam && !identitiesToKeep.Contains(id.PlayerIdentityId!.Value));
 
-                var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var movedPlayerResults = new List<MovedPlayerIdentity>();
                 foreach (var identity in identitiesToLink)
                 {
-                    movedPlayerResults.Add(await _playerRepository.LinkPlayerIdentity(model.Player.PlayerId!.Value, identity, PlayerIdentityLinkedBy.ClubOrTeam, currentMember!.Key, currentMember.Name!).ConfigureAwait(false));
+                    movedPlayerResults.Add(await _playerRepository.LinkPlayerIdentity(model.Player.PlayerId!.Value, identity, roleGrantingPermission, currentMember!.Key, currentMember.Name!).ConfigureAwait(false));
                 }
 
                 foreach (var identity in identitiesToUnlink)
