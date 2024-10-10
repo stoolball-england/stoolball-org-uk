@@ -75,7 +75,7 @@ namespace Stoolball.Web.Teams
                 var previousIdentities = model.Player!.PlayerIdentities.Select(id => id.PlayerIdentityId!.Value).ToList();
                 var submittedIdentities = formData.PlayerIdentities.Select(id => id.PlayerIdentityId!.Value).ToList();
                 var identitiesToLink = submittedIdentities.Where(id => !previousIdentities.Contains(id));
-                var identitiesToKeep = submittedIdentities.Where(id => previousIdentities.Contains(id));
+                var identitiesToKeep = submittedIdentities.Where(id => previousIdentities.Contains(id)).Union([model.ContextIdentity.PlayerIdentityId!.Value]);
                 var identitiesToUnlink = model.Player!.PlayerIdentities.Where(id => id.LinkedBy == PlayerIdentityLinkedBy.ClubOrTeam && !identitiesToKeep.Contains(id.PlayerIdentityId!.Value));
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();

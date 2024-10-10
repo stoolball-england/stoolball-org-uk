@@ -13,6 +13,7 @@
     Model.LinkedByStoolballEnglandLabel = "Stoolball England";
     Model.AddIdentitiesFromTeamId = Model.ContextIdentity?.Team?.TeamId;
     Model.CanUnlinkIdentitiesLinkedByClubOrTeam = true;
+    Model.ShowLinkedIdentityInTable = false;
 }
 @await Html.PartialAsync("_JQueryValidate")
 @await Html.PartialAsync("_JQueryAutocomplete")

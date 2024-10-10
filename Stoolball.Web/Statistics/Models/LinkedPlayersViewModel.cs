@@ -27,5 +27,6 @@ namespace Stoolball.Web.Statistics.Models
         public bool CanUnlinkIdentitiesLinkedByClubOrTeam { get; set; }
         public Guid? AddIdentitiesFromTeamId { get; set; }
         public bool CanRemoveFinalIdentity { get; set; }
+        public bool ShowLinkedIdentityInTable { get; set; } = true;
     }
 }

@@ -20,6 +20,7 @@
 @{
     if (Model.Player is null) { return; }
     var notIdentities = new StringBuilder();
+    var identitiesToShow = Model.ShowLinkedIdentityInTable ? Model.Player.PlayerIdentities : Model.Player.PlayerIdentities.Where(id => id.PlayerIdentityId != Model.ContextIdentity!.PlayerIdentityId).ToList();
 }
 <table class="table table-hover related-items linked-players" data-related-item="player">
     <thead class="thead-dark">
@@ -32,26 +33,26 @@
         </tr>
     </thead>
     <tbody>
-        @for (var i = 0; i < Model.Player.PlayerIdentities.Count; i++)
+        @for (var i = 0; i < identitiesToShow.Count; i++)
         {
-            var firstMatch = Model.Player.PlayerIdentities[i].FirstPlayed;
-            var lastMatch = Model.Player.PlayerIdentities[i].LastPlayed;
+            var firstMatch = identitiesToShow[i].FirstPlayed;
+            var lastMatch = identitiesToShow[i].LastPlayed;
             var matchYears = firstMatch != null && lastMatch != null ? (firstMatch.Value.Year == lastMatch.Value.Year) ? $"in {firstMatch.Value.Year}" : $"from {firstMatch.Value.Year} to {lastMatch.Value.Year}" : string.Empty;
-            var when = $"{Model.Player.PlayerIdentities[i].TotalMatches} {(Model.Player.PlayerIdentities[i].TotalMatches == 1 ? "match" : "matches")} {matchYears}";
-            notIdentities.Append($"&not={Model.Player.PlayerIdentities[i].PlayerIdentityId}");
+            var when = $"{identitiesToShow[i].TotalMatches} {(identitiesToShow[i].TotalMatches == 1 ? "match" : "matches")} {matchYears}";
+            notIdentities.Append($"&not={identitiesToShow[i].PlayerIdentityId}");
 
             <tr class="related-item__selected">
-                <td class="related-item__selected__section"><div class="related-item__animate">@Model.Player.PlayerIdentities[i].PlayerIdentityName</div></td>
-                <td class="related-item__selected__section"><div class="related-item__animate">@Model.Player.PlayerIdentities[i].Team?.TeamName</div></td>
+                <td class="related-item__selected__section"><div class="related-item__animate">@identitiesToShow[i].PlayerIdentityName</div></td>
+                <td class="related-item__selected__section"><div class="related-item__animate">@identitiesToShow[i].Team?.TeamName</div></td>
                 <td class="related-item__selected__section d-none d-sm-table-cell"><div class="related-item__animate">@when</div></td>
-                <td class="related-item__selected__section"><div class="related-item__animate">@DisplayLinkedBy(Model.Player.PlayerIdentities[i].LinkedBy)</div></td>
+                <td class="related-item__selected__section"><div class="related-item__animate">@DisplayLinkedBy(identitiesToShow[i].LinkedBy)</div></td>
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
-                        @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", Model.Player.PlayerIdentities[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = Model.Player.PlayerIdentities[i].PlayerIdentityId })
-                        @if ((Model.Player.PlayerIdentities[i].LinkedBy == PlayerIdentityLinkedBy.Member && Model.CanUnlinkIdentitiesLinkedByMember) ||
-                             (Model.Player.PlayerIdentities[i].LinkedBy == PlayerIdentityLinkedBy.ClubOrTeam && Model.CanUnlinkIdentitiesLinkedByClubOrTeam))
+                        @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", identitiesToShow[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = identitiesToShow[i].PlayerIdentityId })
+                        @if ((identitiesToShow[i].LinkedBy == PlayerIdentityLinkedBy.Member && Model.CanUnlinkIdentitiesLinkedByMember) ||
+                       (identitiesToShow[i].LinkedBy == PlayerIdentityLinkedBy.ClubOrTeam && Model.CanUnlinkIdentitiesLinkedByClubOrTeam))
                         {
-                            <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Unlink {Model.Player.PlayerIdentities[i].PlayerIdentityName} from your account")</button>
+                            <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Unlink {identitiesToShow[i].PlayerIdentityName} from your account")</button>
                         }
                     </div>
                 </td>
