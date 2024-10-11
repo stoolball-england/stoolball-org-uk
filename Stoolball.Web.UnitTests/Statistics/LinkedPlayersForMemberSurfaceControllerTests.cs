@@ -95,7 +95,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         public async Task UnlinkPlayerIdentityFromMemberAccount_not_called_for_identity_not_linked_by_member()
         {
             var player = CreatePlayerWith4PlayerIdentities();
-            player.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.ClubOrTeam;
+            player.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.Team;
             var memberKey = Guid.NewGuid();
             var memberName = "Member name";
             _memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = memberKey, Name = memberName }));

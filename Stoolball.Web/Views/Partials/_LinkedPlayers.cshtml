@@ -9,8 +9,8 @@
         {
             case PlayerIdentityLinkedBy.Member:
                 return Model.LinkedByMemberLabel;
-            case PlayerIdentityLinkedBy.ClubOrTeam:
-                return Model.LinkedByClubOrTeamLabel;
+            case PlayerIdentityLinkedBy.Team:
+                return Model.LinkedByTeamLabel;
             case PlayerIdentityLinkedBy.StoolballEngland:
                 return Model.LinkedByStoolballEnglandLabel;
         }
@@ -50,7 +50,7 @@
                     <div class="related-item__animate">
                         @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", identitiesToShow[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = identitiesToShow[i].PlayerIdentityId })
                         @if ((identitiesToShow[i].LinkedBy == PlayerIdentityLinkedBy.Member && Model.CanUnlinkIdentitiesLinkedByMember) ||
-                       (identitiesToShow[i].LinkedBy == PlayerIdentityLinkedBy.ClubOrTeam && Model.CanUnlinkIdentitiesLinkedByClubOrTeam))
+                       (identitiesToShow[i].LinkedBy == PlayerIdentityLinkedBy.Team && Model.CanUnlinkIdentitiesLinkedByTeam))
                         {
                             <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", $"Unlink {identitiesToShow[i].PlayerIdentityName} from your account")</button>
                         }

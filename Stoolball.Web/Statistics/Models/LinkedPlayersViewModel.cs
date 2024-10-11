@@ -20,11 +20,11 @@ namespace Stoolball.Web.Statistics.Models
 
         public string LinkedByHeading { get; set; } = "Linked by";
         public string LinkedByMemberLabel { get; set; } = PlayerIdentityLinkedBy.Member.ToString();
-        public string LinkedByClubOrTeamLabel { get; set; } = PlayerIdentityLinkedBy.ClubOrTeam.ToString();
+        public string LinkedByTeamLabel { get; set; } = PlayerIdentityLinkedBy.Team.ToString();
         public string LinkedByStoolballEnglandLabel { get; set; } = PlayerIdentityLinkedBy.StoolballEngland.ToString();
         public PlayerIdentityLinkedBy? CurrentMemberRole { get; set; }
         public bool CanUnlinkIdentitiesLinkedByMember { get; set; }
-        public bool CanUnlinkIdentitiesLinkedByClubOrTeam { get; set; }
+        public bool CanUnlinkIdentitiesLinkedByTeam { get; set; }
         public Guid? AddIdentitiesFromTeamId { get; set; }
         public bool CanRemoveFinalIdentity { get; set; }
         public bool ShowLinkedIdentityInTable { get; set; } = true;

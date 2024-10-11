@@ -4,7 +4,7 @@
     {
         DefaultIdentity,
         Member,
-        ClubOrTeam,
+        Team,
         StoolballEngland
     }
 }

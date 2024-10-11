@@ -9,10 +9,10 @@
 }
 @{
     Model.LinkedByMemberLabel = "Player";
-    Model.LinkedByClubOrTeamLabel = "Club or team";
+    Model.LinkedByTeamLabel = "Team";
     Model.LinkedByStoolballEnglandLabel = "Stoolball England";
     Model.AddIdentitiesFromTeamId = Model.ContextIdentity?.Team?.TeamId;
-    Model.CanUnlinkIdentitiesLinkedByClubOrTeam = true;
+    Model.CanUnlinkIdentitiesLinkedByTeam = true;
     Model.ShowLinkedIdentityInTable = false;
 }
 @await Html.PartialAsync("_JQueryValidate")

@@ -63,7 +63,7 @@ namespace Stoolball.Web.Teams
 
                 model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.ContextIdentity.Team);
                 var isTeamOwner = await _memberManager.IsMemberAuthorizedAsync(null, [model.ContextIdentity.Team.MemberGroupName!], null);
-                model.CurrentMemberRole = isTeamOwner ? PlayerIdentityLinkedBy.ClubOrTeam : PlayerIdentityLinkedBy.StoolballEngland;
+                model.CurrentMemberRole = isTeamOwner ? PlayerIdentityLinkedBy.Team : PlayerIdentityLinkedBy.StoolballEngland;
 
                 model.Metadata.PageTitle = $"Link {model.ContextIdentity.PlayerIdentityName} to the same player listed under another name";
 

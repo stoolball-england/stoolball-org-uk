@@ -78,7 +78,7 @@ namespace Stoolball.Web.Teams
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var isTeamOwner = await _memberManager.IsMemberAuthorizedAsync(null, [model.ContextIdentity.Team.MemberGroupName!], null);
-                var roleGrantingPermission = isTeamOwner ? PlayerIdentityLinkedBy.ClubOrTeam : PlayerIdentityLinkedBy.StoolballEngland;
+                var roleGrantingPermission = isTeamOwner ? PlayerIdentityLinkedBy.Team : PlayerIdentityLinkedBy.StoolballEngland;
 
                 model.Player = await _playerDataSource.ReadPlayerByRoute(model.ContextIdentity.Player!.PlayerRoute!);
 
@@ -86,7 +86,7 @@ namespace Stoolball.Web.Teams
                 var submittedIdentities = formData.PlayerIdentities.Select(id => id.PlayerIdentityId!.Value).ToList();
                 var identitiesToLink = submittedIdentities.Where(id => !previousIdentities.Contains(id));
                 var identitiesToKeep = submittedIdentities.Where(id => previousIdentities.Contains(id)).Union([model.ContextIdentity.PlayerIdentityId.Value]);
-                var identitiesToUnlink = model.Player!.PlayerIdentities.Where(id => id.LinkedBy == PlayerIdentityLinkedBy.ClubOrTeam && !identitiesToKeep.Contains(id.PlayerIdentityId!.Value));
+                var identitiesToUnlink = model.Player!.PlayerIdentities.Where(id => id.LinkedBy == PlayerIdentityLinkedBy.Team && !identitiesToKeep.Contains(id.PlayerIdentityId!.Value));
 
                 var movedPlayerResults = new List<MovedPlayerIdentity>();
                 foreach (var identity in identitiesToLink)
