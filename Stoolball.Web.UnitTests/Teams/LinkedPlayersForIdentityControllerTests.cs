@@ -11,13 +11,16 @@ using Stoolball.Teams;
 using Stoolball.Web.Navigation;
 using Stoolball.Web.Statistics.Models;
 using Stoolball.Web.Teams;
+using Umbraco.Cms.Core.Security;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Teams
 {
     public class LinkedPlayersForIdentityControllerTests : UmbracoBaseTest
     {
+        private readonly Mock<IMemberManager> _memberManager = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
+        private readonly Mock<ITeamDataSource> _teamDataSource = new();
         private readonly Mock<IAuthorizationPolicy<Team>> _authorizationPolicy = new();
         private readonly Mock<ITeamBreadcrumbBuilder> _breadcrumbBuilder = new();
 
@@ -27,7 +30,9 @@ namespace Stoolball.Web.UnitTests.Teams
                 Mock.Of<ILogger<LinkedPlayersForIdentityController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
+                _memberManager.Object,
                 _authorizationPolicy.Object,
+                _teamDataSource.Object,
                 _playerDataSource.Object,
                 _breadcrumbBuilder.Object)
             {
@@ -41,11 +46,12 @@ namespace Stoolball.Web.UnitTests.Teams
             {
                 PlayerIdentityId = Guid.NewGuid(),
                 PlayerIdentityName = "John Smith",
-                Team = new Team(),
+                Team = new Team { TeamRoute = "/teams/example" },
                 Player = new Player { PlayerId = Guid.NewGuid(), PlayerRoute = "/players/example-player" }
             };
             _playerDataSource.Setup(x => x.ReadPlayerIdentityByRoute(Request.Object.Path)).ReturnsAsync(identity);
             _playerDataSource.Setup(x => x.ReadPlayerByRoute(identity.Player.PlayerRoute, null)).ReturnsAsync(identity.Player);
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(identity.Team.TeamRoute, false)).ReturnsAsync(identity.Team);
             _authorizationPolicy.Setup(x => x.IsAuthorized(identity.Team)).Returns(Task.FromResult(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditTeam, true } }));
             return identity;
         }

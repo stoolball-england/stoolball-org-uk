@@ -51,7 +51,7 @@ namespace Stoolball.Web.Teams
             {
                 // Query the player to get the other identities linked to this one
                 model.Player = await _playerDataSource.ReadPlayerByRoute(model.PlayerIdentity.Player!.PlayerRoute!).ConfigureAwait(false);
-                model.Player.PreferredName = model.PlayerIdentity.PlayerIdentityName;
+                model.Player!.PreferredName = model.PlayerIdentity.PlayerIdentityName;
 
                 model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.PlayerIdentity.Team);
 

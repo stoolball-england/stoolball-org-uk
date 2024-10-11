@@ -41,10 +41,12 @@ namespace Stoolball.Web.UnitTests.Teams
             {
                 PlayerIdentityId = Guid.NewGuid(),
                 PlayerIdentityName = "John Smith",
-                Team = new Team()
+                Team = new Team(),
+                Player = new Player { PlayerRoute = "/player/john-smith" }
             };
-            _playerDataSource.Setup(x => x.ReadPlayerIdentityByRoute(Request.Object.Path)).Returns(Task.FromResult<PlayerIdentity?>(identity));
-            _authorizationPolicy.Setup(x => x.IsAuthorized(identity.Team)).Returns(Task.FromResult(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditTeam, true } }));
+            _playerDataSource.Setup(x => x.ReadPlayerIdentityByRoute(Request.Object.Path)).ReturnsAsync(identity);
+            _playerDataSource.Setup(x => x.ReadPlayerByRoute(identity.Player.PlayerRoute, null)).ReturnsAsync(identity.Player);
+            _authorizationPolicy.Setup(x => x.IsAuthorized(identity.Team)).ReturnsAsync(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditTeam, true } });
             return identity;
         }
 
