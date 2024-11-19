@@ -117,14 +117,39 @@ namespace Stoolball.Testing
             return Players.First(x => !x.MemberKey.HasValue && x.PlayerIdentities.Count > 1 && additionalCriteria(x));
         }
 
-        internal (Guid memberKey, string memberName) AnyMemberLinkedToPlayer()
+        internal (Guid memberKey, string memberName) AnyMemberLinkedToPlayer(Func<(Guid, string), bool>? additionalCriteria = null)
         {
-            return Members.First(x => Players.Any(p => p.MemberKey == x.memberKey));
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Members.First(x => Players.Any(p => p.MemberKey == x.memberKey) && additionalCriteria(x));
         }
 
-        internal (Guid memberKey, string memberName) AnyMemberNotLinkedToPlayer()
+        internal (Guid memberKey, string memberName) AnyMemberLinkedToPlayerWithOnlyOneIdentity(Func<(Guid, string), bool>? additionalCriteria = null)
         {
-            return Members.First(x => !Players.Any(p => p.MemberKey == x.memberKey));
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Members.First(x => Players.Any(p => p.MemberKey == x.memberKey && p.PlayerIdentities.Count == 1) && additionalCriteria(x));
+        }
+
+        internal (Guid memberKey, string memberName) AnyMemberLinkedToPlayerWithMultipleIdentities(Func<(Guid, string), bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Members.First(x => Players.Any(p => p.MemberKey == x.memberKey && p.PlayerIdentities.Count > 1) && additionalCriteria(x));
+        }
+
+        internal (Guid memberKey, string memberName) AnyMemberNotLinkedToPlayer(Func<(Guid, string), bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Members.First(x => !Players.Any(p => p.MemberKey == x.memberKey) && additionalCriteria(x));
+        }
+        internal (Guid memberKey, string memberName) AnyMemberNotLinkedToPlayerWithOnlyOneIdentity(Func<(Guid, string), bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Members.First(x => !Players.Any(p => p.MemberKey == x.memberKey && p.PlayerIdentities.Count == 1) && additionalCriteria(x));
+        }
+
+        internal (Guid memberKey, string memberName) AnyMemberNotLinkedToPlayerWithMultipleIdentities(Func<(Guid, string), bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Members.First(x => !Players.Any(p => p.MemberKey == x.memberKey && p.PlayerIdentities.Count > 1) && additionalCriteria(x));
         }
     }
 }

@@ -811,8 +811,8 @@ namespace Stoolball.Testing
 
             testData.MatchInThePastWithFullDetailsAndTournament = FindMatchInThePastWithFullDetailsAndTournament(testData);
 
-            var membersFromMatchComments = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberKey: x.MemberKey, memberName: x.MemberName ?? string.Empty));
-            var membersFromPlayerProviders = playersFromPlayerProviders.Where(p => p.MemberKey is not null).Select(p => (memberKey: p.MemberKey!.Value, memberName: string.Empty));
+            var membersFromMatchComments = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberKey: x.MemberKey, memberName: x.MemberName ?? "No name"));
+            var membersFromPlayerProviders = playersFromPlayerProviders.Where(p => p.MemberKey is not null).Select(p => (memberKey: p.MemberKey!.Value, memberName: "No name"));
             testData.Members = membersFromMatchComments
                 .Union(membersFromPlayerProviders)
                 .Distinct(new MemberEqualityComparer()).ToList();

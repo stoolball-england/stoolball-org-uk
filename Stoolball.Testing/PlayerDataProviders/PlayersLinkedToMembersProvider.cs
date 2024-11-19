@@ -28,6 +28,28 @@ namespace Stoolball.Testing.TeamDataProviders
                 players[i].PlayerIdentities.Add(identities[i]);
                 identities[i].Player = players[i];
                 identities[i].Team = team;
+                identities[i].LinkedBy = PlayerIdentityLinkedBy.Member;
+                players[i].MemberKey = Guid.NewGuid();
+            }
+
+            // another player on the same team, with two identities both linked by member
+            var playerWithTwoIdentitiesLinkedByMember = _playerFaker.Generate(1).Single();
+            playerWithTwoIdentitiesLinkedByMember.PlayerIdentities.AddRange(_playerIdentityFaker.Generate(2));
+            playerWithTwoIdentitiesLinkedByMember.MemberKey = Guid.NewGuid();
+
+            foreach (var identity in playerWithTwoIdentitiesLinkedByMember.PlayerIdentities)
+            {
+                identity.Player = playerWithTwoIdentitiesLinkedByMember;
+                identity.Team = team;
+                identity.LinkedBy = PlayerIdentityLinkedBy.Member;
+            }
+
+            for (var i = 0; i < 2; i++)
+            {
+                players[i].PlayerIdentities.Add(identities[i]);
+                identities[i].Player = players[i];
+                identities[i].Team = team;
+                identities[i].LinkedBy = PlayerIdentityLinkedBy.Member;
                 players[i].MemberKey = Guid.NewGuid();
             }
 
