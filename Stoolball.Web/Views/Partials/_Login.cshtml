@@ -61,10 +61,3 @@
 }
 
 @Html.ProtectEmailAddresses(emailProtector, loginPage?.Value<IHtmlEncodedString>("resetPassword"))
-
-@if (loginPage != null && loginPage.HasValue("migratedMemberAccounts"))
-{
-    <div class="alert alert-info">
-        @Html.ProtectEmailAddresses(emailProtector, loginPage?.Value<IHtmlEncodedString>("migratedMemberAccounts"))
-    </div>
-}
