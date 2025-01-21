@@ -1,6 +1,6 @@
 ﻿<button type="button" class="block-list-editor__button" ng-click="block.edit()" ng-controller="ImageElementTypeController">
     <div class="block__text-with-image block__text-with-image__{{ imagePosition }}">
-        <div class="block__text" ng-bind-html="block.data.text"></div>
+        <div class="block__text" ng-bind-html="block.data.text.markup"></div>
         <figure class="block__image" ng-show="{{image}}">
             <img srcset="{{image.mediaLink}}?width=150&height=150&mode=max&upscale=false 576w,
                      {{image.mediaLink}}?width=300&height=300&mode=max&upscale=false 768w,
