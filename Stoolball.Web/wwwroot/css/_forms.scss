@@ -7,6 +7,13 @@
 @import "../../../node_modules/bootstrap/scss/_custom-forms.scss";
 @import "./_mixins.scss";
 
+/* Make TinyMCE editor border the same as other form borders. */
+.tox.tox-tinymce {
+    border-width: 1px;
+    border-color: #ced4da;
+    border-radius: .25rem;
+}
+
 /* Bootstrap and .NET JQuery validation are applying different rules in some cases, 
    so re-use the Bootstrap styles but on different selectors, and in a way that invalid wins 
    if both are matched.

@@ -127,12 +127,12 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="Skybrud.Umbraco.Redirects" Version="13.0.4" />
     <PackageReference Include="SolarCalculator" Version="3.1.0" />
-    <PackageReference Include="Umbraco.Cloud.Identity.Cms" Version="13.1.0" />
+    <PackageReference Include="Umbraco.Cloud.Identity.Cms" Version="13.2.1" />
     <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="13.0.1" />
-    <PackageReference Include="Umbraco.Cms" Version="13.5.0" />
-    <PackageReference Include="Umbraco.Deploy.Cloud" Version="13.2.1" />
+    <PackageReference Include="Umbraco.Cms" Version="13.5.3" />
+    <PackageReference Include="Umbraco.Deploy.Cloud" Version="13.2.2" />
     <PackageReference Include="Umbraco.Deploy.Contrib" Version="13.2.0" />
-    <PackageReference Include="Umbraco.Forms" Version="13.2.2" />
+    <PackageReference Include="Umbraco.Forms" Version="13.2.5" />
     <PackageReference Include="Umbraco.Forms.Deploy" Version="13.0.2" />
     <PackageReference Include="uSync" Version="13.2.5" />
   </ItemGroup>

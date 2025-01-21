@@ -12,8 +12,6 @@ window.addEventListener("DOMContentLoaded", function () {
     selector: "textarea",
 
     // General options
-    theme_url: "/umbraco/lib/tinymce/themes/modern/theme.min.js",
-    skin_url: "/umbraco/lib/tinymce/skins/lightgray",
     plugins: "link lists",
     statusbar: false,
     height: 300,
