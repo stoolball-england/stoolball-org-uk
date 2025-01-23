@@ -1,6 +1,7 @@
 window.addEventListener("DOMContentLoaded", function () {
-  // URLs are specified for plugins, theme and skin because it makes them work when bundled by ClientDependency
-  tinymce.PluginManager.load(
+  // URLs are specified for plugins, theme and skin because it makes them work when bundled by Smidge
+tinymce.baseURL = "/umbraco/lib/tinymce";
+tinymce.PluginManager.load(
     "link",
     "/umbraco/lib/tinymce/plugins/link/plugin.min.js"
   );
