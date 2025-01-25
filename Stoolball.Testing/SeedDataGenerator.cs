@@ -16,6 +16,7 @@ using Stoolball.Teams;
 using Stoolball.Testing.Fakers;
 using Stoolball.Testing.MatchDataProviders;
 using Stoolball.Testing.PlayerDataProviders;
+using Stoolball.Testing.SchoolDataProviders;
 
 namespace Stoolball.Testing
 {
@@ -1027,15 +1028,6 @@ namespace Stoolball.Testing
             ForceTheFifthAndSixthRunOutsResultsToBeEqual(testData);
             ForceTheFifthAndSixthMostWicketsResultsToBeEqual(testData);
 
-            // Create schools data, with extra separate teams and locations
-            var schoolFaker = _schoolFakerFactory.Create();
-            testData.Schools = schoolFaker.Generate(20);
-
-            CreateSchoolTeamsForSchools(testData.Schools, _teamFakerFactory.Create, _matchLocationFakerFactory.Create);
-
-            testData.Teams.AddRange(testData.Schools.SelectMany(x => x.Teams));
-            testData.MatchLocations.AddRange(testData.Schools.SelectMany(x => x.Teams).SelectMany(x => x.MatchLocations).Distinct(new MatchLocationEqualityComparer()));
-
             CreateImmutableTestData(testData);
 
             BuildCollections(testData);
@@ -1099,9 +1091,18 @@ namespace Stoolball.Testing
 
             // Add teams created to support other objects
             var teamsFromPlayers = testData.Players.SelectMany(p => p.PlayerIdentities).Where(pi => pi.Team is not null).Select(pi => pi.Team).OfType<Team>();
+            var teamsFromSchools = testData.Schools.SelectMany(x => x.Teams);
+
+            var teamComparer = new TeamEqualityComparer();
             testData.Teams = testData.Teams
-                            .Union(teamsFromPlayers, new TeamEqualityComparer())
+                            .Union(teamsFromPlayers, teamComparer)
+                            .Union(teamsFromSchools, teamComparer)
                             .ToList();
+
+            // Add match locations created to support other objects
+            testData.MatchLocations = testData.MatchLocations
+                                     .Union(testData.Teams.SelectMany(x => x.MatchLocations), new MatchLocationEqualityComparer())
+                                     .ToList();
 
             // Create collections from team data
             testData.TeamListings = CreateTeamListingsFromClubsAndTeams(testData);
@@ -1138,22 +1139,36 @@ namespace Stoolball.Testing
         /// <param name="testData"></param>
         private void CreateImmutableTestData(TestData testData)
         {
+            testData.Schools.AddRange(CreateTestDataFromSchoolProviders(testData));
+
             testData.Players.AddRange(CreateTestDataFromPlayerProviders(testData));
+        }
+
+        private List<School> CreateTestDataFromSchoolProviders(TestData testData)
+        {
+            var providers = new BaseSchoolDataProvider[]{
+                new SchoolDataProvider(_schoolFakerFactory, _teamFakerFactory, _matchLocationFakerFactory)
+            };
+            var schools = new List<School>();
+            foreach (var provider in providers)
+            {
+                schools.AddRange(provider.CreateSchools());
+            }
+            return schools;
         }
 
         private List<Player> CreateTestDataFromPlayerProviders(TestData testData)
         {
-            var playerProviders = new BasePlayerDataProvider[]{
+            var providers = new BasePlayerDataProvider[]{
                 new PlayersLinkedToMembersProvider(_teamFakerFactory, _playerFakerFactory, _playerIdentityFakerFactory),
                 new PlayersNotLinkedToMembersProvider(_teamFakerFactory, _playerFakerFactory, _playerIdentityFakerFactory)
             };
-            var playersFromPlayerProviders = new List<Player>();
-            foreach (var provider in playerProviders)
+            var players = new List<Player>();
+            foreach (var provider in providers)
             {
-                var playersFromProvider = provider.CreatePlayers(testData);
-                playersFromPlayerProviders.AddRange(playersFromProvider);
+                players.AddRange(provider.CreatePlayers(testData));
             }
-            return playersFromPlayerProviders;
+            return players;
         }
 
         private static List<Player> FindPlayersWithMultipleIdentities(TestData testData)
@@ -1297,75 +1312,6 @@ namespace Stoolball.Testing
                             )
                         )
                 ?? throw new InvalidOperationException($"{nameof(FindMatchInThePastWithFullDetails)} did not find a match.");
-        }
-
-        private void CreateSchoolTeamsForSchools(List<School> schools, Func<Faker<Team>> teamFakerMaker, Func<Faker<MatchLocation>> locationFakerMaker)
-        {
-            var schoolTeamFaker = teamFakerMaker()
-                .RuleFor(x => x.TeamType, faker => faker.Random.ListItem<TeamType>(new List<TeamType> { TeamType.SchoolAgeGroup, TeamType.SchoolClub, TeamType.SchoolOther }));
-            var locationFaker = locationFakerMaker();
-
-            for (var i = 0; i < schools.Count; i++)
-            {
-                // First 3 schools have no teams therefore the school should be inactive.
-                if (i < 3)
-                {
-                    schools[i].UntilYear = 2019;
-                    continue;
-                }
-
-                // Then even indexes get one team, odd get multiple.
-                schools[i].Teams = schoolTeamFaker.Generate((i % 2) + 1);
-                schools[i].Teams.ForEach(t => t.School = schools[i]);
-
-                // Up to 7 they don't get a match location. Above that they do.
-                // At index 9 the school with two teams gets the same location twice. 
-                // At index 11 the school gets multiple teams with different locations AND multiple locations for a team.
-                if (i == 9)
-                {
-                    // handle special case
-                    var location = locationFaker.Generate(1).First();
-                    schools[i].Teams.ForEach(x =>
-                    {
-                        x.MatchLocations.Add(location);
-                        location.Teams.Add(x);
-                    });
-                }
-                else if (i == 11)
-                {
-                    // handle special case
-                    var locations1and2 = locationFaker.Generate(2);
-                    schools[i].Teams[0].MatchLocations.AddRange(locations1and2);
-                    locations1and2[0].Teams.Add(schools[i].Teams[0]);
-                    locations1and2[1].Teams.Add(schools[i].Teams[0]);
-
-                    var location3 = locationFaker.Generate(1).First();
-                    schools[i].Teams[1].MatchLocations.Add(location3);
-                    location3.Teams.Add(schools[i].Teams[1]);
-                }
-                else if (i > 7)
-                {
-                    // add a match location to each team
-                    schools[i].Teams.ForEach(x =>
-                    {
-                        var location = locationFaker.Generate(1).First();
-                        x.MatchLocations.Add(location);
-                        location.Teams.Add(x);
-                    });
-                }
-
-                // Up to 11, all teams are active.
-                // Above 11, one team in multiple is inactive.
-                // Above 15, both teams are inactive therefore the school should be inactive.
-                if (i > 15 && schools[i].Teams.Count > 1)
-                {
-                    schools[i].Teams.ForEach(t => t.UntilYear = DateTimeOffset.UtcNow.AddYears(-1).Year);
-                }
-                else if (i > 11 && schools[i].Teams.Count > 1)
-                {
-                    schools[i].Teams[0].UntilYear = DateTimeOffset.UtcNow.AddYears(-2).Year;
-                }
-            }
         }
 
         private class PlayerTotal
