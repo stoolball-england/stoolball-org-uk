@@ -1699,7 +1699,7 @@ namespace Stoolball.Testing
 
             // 1. Find any player with identities on two teams
             var anyPlayerWithIdentitiesOnMultipleTeams = teamsWithIdentities.SelectMany(x => x.identities)
-                .GroupBy(x => x.Player!.PlayerId, x => x, (playerId, playerIdentities) => new Player { PlayerId = playerId, PlayerIdentities = new PlayerIdentityList(playerIdentities) })
+                .GroupBy(x => x.Player!.PlayerId, x => x, (playerId, playerIdentities) => new Player { PlayerId = playerId, PlayerRoute = $"/players/{playerId}", PlayerIdentities = new PlayerIdentityList(playerIdentities) })
                 .Where(x => x.PlayerIdentities.Select(t => t.Team!.TeamId!.Value).Distinct().Count() > 1)
                 .First();
 

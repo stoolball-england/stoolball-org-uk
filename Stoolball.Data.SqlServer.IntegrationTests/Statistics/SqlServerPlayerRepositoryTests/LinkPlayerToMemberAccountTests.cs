@@ -17,7 +17,7 @@ using Xunit;
 using static Dapper.SqlMapper;
 using static Stoolball.Constants;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
+namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRepositoryTests
 {
     [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class LinkPlayerToMemberAccountTests : IDisposable

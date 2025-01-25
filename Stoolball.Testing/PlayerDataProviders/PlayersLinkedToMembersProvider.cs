@@ -42,6 +42,7 @@ namespace Stoolball.Testing.PlayerDataProviders
                 identity.Team = team;
                 identity.LinkedBy = PlayerIdentityLinkedBy.Member;
             }
+            players.Add(playerWithTwoIdentitiesLinkedByMember);
 
             // another player on the same team, not linked to a member
             var playerWithoutMember = _playerFaker.Generate(1).Single();
@@ -49,6 +50,21 @@ namespace Stoolball.Testing.PlayerDataProviders
             identities[2].Player = playerWithoutMember;
             identities[2].Team = team;
             players.Add(playerWithoutMember);
+
+            // another player on the same team, with two identities but only one linked by member
+            var playerWithTwoIdentitiesOneLinkedByMember = _playerFaker.Generate(1).Single();
+            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities.AddRange(_playerIdentityFaker.Generate(2));
+            playerWithTwoIdentitiesOneLinkedByMember.MemberKey = Guid.NewGuid();
+
+            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[0].Player = playerWithTwoIdentitiesOneLinkedByMember;
+            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[0].Team = team;
+            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.Member;
+
+            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[1].Player = playerWithTwoIdentitiesOneLinkedByMember;
+            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[1].Team = team;
+            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[1].LinkedBy = PlayerIdentityLinkedBy.Team;
+
+            players.Add(playerWithTwoIdentitiesOneLinkedByMember);
 
             return players;
         }

@@ -21,15 +21,15 @@ using Xunit;
 using static Dapper.SqlMapper;
 using static Stoolball.Constants;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
+namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRepositoryTests
 {
     [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
-    public class SqlServerPlayerRepositoryTests : IDisposable
+    public class SqlServerPlayerRepositoryTests(SqlServerTestDataFixture _fixture) : IDisposable
     {
         #region Setup and dispose
-        private readonly IDatabaseConnectionFactory _connectionFactory;
-        private readonly TestData _testData;
-        private readonly TransactionScope _scope;
+        private readonly IDatabaseConnectionFactory _connectionFactory = _fixture.ConnectionFactory;
+        private readonly TestData _testData = _fixture.TestData;
+        private readonly TransactionScope _scope = new(TransactionScopeAsyncFlowOption.Enabled);
         private readonly Mock<IAuditRepository> _auditRepository = new();
         private readonly Mock<ILogger<SqlServerPlayerRepository>> _logger = new();
         private readonly Mock<IStoolballEntityCopier> _copier = new();
@@ -39,12 +39,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         private readonly Mock<IRedirectsRepository> _redirectsRepository = new();
         private readonly Mock<IPlayerCacheInvalidator> _playerCacheClearer = new();
 
-        public SqlServerPlayerRepositoryTests(SqlServerTestDataFixture databaseFixture)
-        {
-            _connectionFactory = databaseFixture?.ConnectionFactory ?? throw new ArgumentException($"{nameof(databaseFixture)}.{nameof(databaseFixture.ConnectionFactory)} cannot be null", nameof(databaseFixture));
-            _testData = databaseFixture?.TestData ?? throw new ArgumentException($"{nameof(databaseFixture)}.{nameof(databaseFixture.TestData)} cannot be null", nameof(databaseFixture));
-            _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-        }
         public void Dispose() => _scope.Dispose();
 
         private SqlServerPlayerRepository CreateRepository()
@@ -496,79 +490,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
         #endregion
 
-        #region UnlinkPlayerIdentity
-
-        [Fact]
-        public async Task UnlinkPlayerIdentity_throws_InvalidOperationException_for_last_identity()
-        {
-            var player = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity();
-
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.UnlinkPlayerIdentity(player.PlayerIdentities.First().PlayerIdentityId!.Value, Guid.NewGuid(), "Member name"));
-        }
-
-        [Fact]
-        public async Task UnlinkPlayerIdentity_for_penultimate_identity_moves_identity_to_new_player_including_statistics()
-        {
-            var player = _testData.AnyPlayerNotLinkedToMemberWithMultipleIdentities(p => p.PlayerIdentities.Count == 2 &&
-                                                                                         p.PlayerIdentities.Count(pi => pi.LinkedBy == PlayerIdentityLinkedBy.Team) == 2);
-            var identityToKeep = player.PlayerIdentities[0];
-            var identityToUnlink = player.PlayerIdentities[1];
-
-            var generatedPlayerRoute = "/players/" + Guid.NewGuid().ToString();
-            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", identityToUnlink.PlayerIdentityName!, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(generatedPlayerRoute));
-
-            var repo = CreateRepository();
-
-            await repo.UnlinkPlayerIdentity(identityToUnlink.PlayerIdentityId!.Value, Guid.NewGuid(), "Member name");
-            await repo.ProcessAsyncUpdatesForPlayers();
-
-            using (var connectionForAssert = _connectionFactory.CreateDatabaseConnection())
-            {
-                connectionForAssert.Open();
-
-                var originalPlayerStillLinked = await connectionForAssert.QuerySingleAsync<(Guid PlayerId, PlayerIdentityLinkedBy LinkedBy)>($"SELECT PlayerId, LinkedBy FROM {Tables.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId", identityToKeep).ConfigureAwait(false);
-                Assert.Equal(player.PlayerId, originalPlayerStillLinked.PlayerId);
-                Assert.Equal(PlayerIdentityLinkedBy.DefaultIdentity, originalPlayerStillLinked.LinkedBy);
-
-                var newPlayerLinkedToIdentity = await connectionForAssert.QuerySingleAsync<(Guid? playerId, string route, PlayerIdentityLinkedBy linkedBy)>(
-                    $@"SELECT p.PlayerId, p.PlayerRoute, p.LinkedBy
-                       FROM {Views.PlayerIdentity} p 
-                       WHERE PlayerIdentityId = @PlayerIdentityId", identityToUnlink).ConfigureAwait(false);
-                Assert.NotEqual(player.PlayerId, newPlayerLinkedToIdentity.playerId);
-                Assert.Equal(generatedPlayerRoute, newPlayerLinkedToIdentity.route);
-                Assert.Equal(PlayerIdentityLinkedBy.DefaultIdentity, newPlayerLinkedToIdentity.linkedBy);
-
-                var statisticsForIdentity = await connectionForAssert.QueryAsync<(Guid? playerId, string route)>($"SELECT PlayerId, PlayerRoute FROM {Tables.PlayerInMatchStatistics} WHERE PlayerIdentityId = @PlayerIdentityId", identityToUnlink);
-                foreach (var row in statisticsForIdentity)
-                {
-                    Assert.Equal(newPlayerLinkedToIdentity.playerId, row.playerId);
-                    Assert.Equal(generatedPlayerRoute, row.route);
-                }
-            }
-        }
-
-        [Fact]
-        public async Task UnlinkPlayerIdentity_for_penultimate_identity_audits_and_logs()
-        {
-            var player = _testData.AnyPlayerNotLinkedToMemberWithMultipleIdentities(p => p.PlayerIdentities.Count == 2);
-            var playerIdentity = player.PlayerIdentities[0];
-            var member = _testData.AnyMemberNotLinkedToPlayer();
-
-            var generatedPlayerRoute = "/players/" + Guid.NewGuid().ToString();
-            _routeGenerator.Setup(x => x.GenerateUniqueRoute("/players", playerIdentity.PlayerIdentityName!, NoiseWords.PlayerRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(generatedPlayerRoute));
-
-            var repo = CreateRepository();
-
-            await repo.UnlinkPlayerIdentity(playerIdentity.PlayerIdentityId!.Value, member.memberKey, member.memberName);
-
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            _logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<string>(), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.UnlinkPlayerIdentity)));
-        }
-
-        #endregion
-
         #region UpdatePlayerIdentity
 
         [Fact]
@@ -624,8 +545,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var playerIdentityToUpdate = _testData.PlayerIdentities.First(x =>
                                                 _testData.PlayerInnings.Any(pi => pi.Batter?.PlayerIdentityId == x.PlayerIdentityId) &&
                                                 _testData.PlayerInnings.Any(pi => pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId) &&
-                                                _testData.PlayerInnings.Any(pi => (pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.Caught) ||
-                                                                                                  (pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.CaughtAndBowled)) &&
+                                                _testData.PlayerInnings.Any(pi => pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.Caught ||
+                                                                                                  pi.Bowler?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.CaughtAndBowled) &&
                                                 _testData.PlayerInnings.Any(pi => pi.DismissedBy?.PlayerIdentityId == x.PlayerIdentityId && pi.DismissalType == DismissalType.RunOut));
 
             var updatedPlayerIdentity = SetupCopyOfPlayerIdentity(playerIdentityToUpdate, Guid.NewGuid().ToString());

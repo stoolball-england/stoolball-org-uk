@@ -552,7 +552,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc />
-        public async Task UnlinkPlayerIdentity(Guid identityToUnlink, Guid memberKey, string memberName)
+        public async Task UnlinkPlayerIdentity(Guid identityIdToUnlink, Guid memberKey, string memberName)
         {
             if (string.IsNullOrWhiteSpace(memberName))
             {
@@ -564,30 +564,34 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var identitiesForPlayer = (await connection.QueryAsync<(Guid PlayerId, Guid PlayerIdentityId, string Name, PlayerIdentityLinkedBy LinkedBy)>(
-                        $@"SELECT PlayerId, PlayerIdentityId, PlayerIdentityName, LinkedBy
+                    var identitiesForPlayer = (await connection.QueryAsync<(Guid PlayerId, Guid? MemberKey, Guid PlayerIdentityId, string Name, PlayerIdentityLinkedBy LinkedBy)>(
+                        $@"SELECT PlayerId, MemberKey, PlayerIdentityId, PlayerIdentityName, LinkedBy
                            FROM {Views.PlayerIdentity} 
                            WHERE PlayerId = (SELECT PlayerId FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId)",
-                        new { PlayerIdentityId = identityToUnlink }, transaction).ConfigureAwait(false)).ToList();
+                        new { PlayerIdentityId = identityIdToUnlink }, transaction).ConfigureAwait(false)).ToList();
 
                     if (identitiesForPlayer.Count == 1)
                     {
-                        throw new InvalidOperationException();
+                        throw new InvalidOperationException("Cannot unlink a PlayerIdentity that is the only PlayerIdentity for a Player");
                     }
-                    else
+
+                    var identityToUnlink = identitiesForPlayer.Single(pi => pi.PlayerIdentityId == identityIdToUnlink);
+                    if (identityToUnlink.LinkedBy == PlayerIdentityLinkedBy.Member &&
+                        identityToUnlink.MemberKey != memberKey)
                     {
-                        var identityToUnlinkName = identitiesForPlayer.Single(pi => pi.PlayerIdentityId == identityToUnlink).Name;
-                        await MoveIdentityToNewPlayer(identityToUnlink, identityToUnlinkName, memberKey, memberName, transaction, nameof(UnlinkPlayerIdentity)).ConfigureAwait(false);
+                        throw new InvalidOperationException("A PlayerIdentity linked by a Member can only be unlinked by the Member for the Player");
+                    }
 
-                        var remainingIdentities = identitiesForPlayer.Where(pi => pi.PlayerIdentityId != identityToUnlink).ToList();
-                        if (remainingIdentities.Count == 1 &&
-                            remainingIdentities[0].LinkedBy == PlayerIdentityLinkedBy.Team || remainingIdentities[0].LinkedBy == PlayerIdentityLinkedBy.StoolballEngland)
-                        {
-                            _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy WHERE PlayerIdentityId = @PlayerIdentityId",
-                                                              new { LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity.ToString(), remainingIdentities[0].PlayerIdentityId },
-                                                              transaction).ConfigureAwait(false);
+                    await MoveIdentityToNewPlayer(identityIdToUnlink, identityToUnlink.Name, memberKey, memberName, transaction, nameof(UnlinkPlayerIdentity)).ConfigureAwait(false);
 
-                        }
+                    var remainingIdentities = identitiesForPlayer.Where(pi => pi.PlayerIdentityId != identityIdToUnlink).ToList();
+                    if (remainingIdentities.Count == 1 &&
+                        remainingIdentities[0].LinkedBy == PlayerIdentityLinkedBy.Team || remainingIdentities[0].LinkedBy == PlayerIdentityLinkedBy.StoolballEngland)
+                    {
+                        _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy WHERE PlayerIdentityId = @PlayerIdentityId",
+                                                          new { LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity.ToString(), remainingIdentities[0].PlayerIdentityId },
+                                                          transaction).ConfigureAwait(false);
+
                     }
 
                     transaction.Commit();

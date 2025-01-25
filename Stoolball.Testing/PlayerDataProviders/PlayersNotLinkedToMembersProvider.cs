@@ -25,17 +25,25 @@ namespace Stoolball.Testing.PlayerDataProviders
             playerWithSingleIdentity.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity;
 
             // player with two identities both linked by team, on the same team, not linked to member
-            var playerWithTwoIdentitiesLinkedByTeam = _playerFaker.Generate(1).Single();
-            playerWithTwoIdentitiesLinkedByTeam.PlayerIdentities.AddRange(_playerIdentityFaker.Generate(2));
+            var playerWithTwoIdentitiesLinkedByTeam = CreatePlayerWithMultipleIdentitiesLinkedByTeam(2, team);
+            var playerWithThreeIdentitiesLinkedByTeam = CreatePlayerWithMultipleIdentitiesLinkedByTeam(3, team);
 
-            foreach (var identity in playerWithTwoIdentitiesLinkedByTeam.PlayerIdentities)
+            return [playerWithSingleIdentity, playerWithTwoIdentitiesLinkedByTeam, playerWithThreeIdentitiesLinkedByTeam];
+        }
+
+        private Player CreatePlayerWithMultipleIdentitiesLinkedByTeam(int howManyIdentities, Team team)
+        {
+            var player = _playerFaker.Generate(1).Single();
+            player.PlayerIdentities.AddRange(_playerIdentityFaker.Generate(howManyIdentities));
+
+            foreach (var identity in player.PlayerIdentities)
             {
-                identity.Player = playerWithTwoIdentitiesLinkedByTeam;
+                identity.Player = player;
                 identity.Team = team;
                 identity.LinkedBy = PlayerIdentityLinkedBy.Team;
             }
 
-            return [playerWithSingleIdentity, playerWithTwoIdentitiesLinkedByTeam];
+            return player;
         }
     }
 }
