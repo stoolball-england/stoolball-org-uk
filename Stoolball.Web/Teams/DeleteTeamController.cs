@@ -68,7 +68,7 @@ namespace Stoolball.Web.Teams
                 model.Team.Players = (await _playerDataSource.ReadPlayerIdentities(new PlayerFilter
                 {
                     TeamIds = teamIds
-                }).ConfigureAwait(false)).Select(x => new Player { PlayerIdentities = new List<PlayerIdentity> { x } }).ToList();
+                }).ConfigureAwait(false)).Select(x => new Player { PlayerIdentities = [x] }).ToList();
 
                 model.ConfirmDeleteRequest.RequiredText = model.Team.TeamName;
 

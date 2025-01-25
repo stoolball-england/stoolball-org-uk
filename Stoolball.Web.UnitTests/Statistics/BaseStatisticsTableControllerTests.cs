@@ -93,21 +93,21 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             return new Player
             {
-                PlayerIdentities = new List<PlayerIdentity>
+                PlayerIdentities =
+                [
+                    new PlayerIdentity
                     {
-                        new PlayerIdentity
-                        {
-                            PlayerIdentityName = "Example player 1",
-                            Team = new Team { TeamId = Guid.NewGuid(), TeamName = "Team name 1" },
-                            TotalMatches = 5,
-                        },
-                        new PlayerIdentity
-                        {
-                            PlayerIdentityName = "Example player 2",
-                            Team = new Team { TeamId = Guid.NewGuid(), TeamName = "Team name 2" },
-                            TotalMatches = 10, // deliberately higher than the first identity to test that they're sorted later
-                        }
+                        PlayerIdentityName = "Example player 1",
+                        Team = new Team { TeamId = Guid.NewGuid(), TeamName = "Team name 1" },
+                        TotalMatches = 5,
+                    },
+                    new PlayerIdentity
+                    {
+                        PlayerIdentityName = "Example player 2",
+                        Team = new Team { TeamId = Guid.NewGuid(), TeamName = "Team name 2" },
+                        TotalMatches = 10, // deliberately higher than the first identity to test that they're sorted later
                     }
+                ]
             };
         }
 

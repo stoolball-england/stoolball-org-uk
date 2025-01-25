@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -58,10 +57,10 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             var player = new Player
             {
-                PlayerIdentities = new List<PlayerIdentity> {
-                new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid() },
-                new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid() }
-            }
+                PlayerIdentities = [
+                    new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid() },
+                    new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid() }
+                ]
             };
             var defaultFilter = new StatisticsFilter { Player = player };
             var appliedFilter = defaultFilter.Clone();

@@ -42,15 +42,14 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             return new Player
             {
-                PlayerIdentities = new List<PlayerIdentity>
-                {
+                PlayerIdentities = [
                     new PlayerIdentity
                     {
                         PlayerIdentityId = Guid.NewGuid(),
                         PlayerIdentityName = "Player one",
                         Team = new Team{ TeamName = "Example team"}
                     }
-                }
+                ]
             };
         }
 
@@ -175,13 +174,13 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             var player = new Player
             {
-                PlayerIdentities = new List<PlayerIdentity> {
+                PlayerIdentities = [
                     new PlayerIdentity
                     {
                         PlayerIdentityName = "Player one",
                         Team = new Team { TeamId = Guid.NewGuid(), TeamName = "Example team" }
                     }
-                }
+                ]
             };
             var appliedFilterWithoutNameFromQueryString = new StatisticsFilter { Player = CreatePlayer(), Team = new Team { TeamId = player.PlayerIdentities[0].Team!.TeamId } };
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(Request.Object.QueryString.Value)).Returns(appliedFilterWithoutNameFromQueryString);

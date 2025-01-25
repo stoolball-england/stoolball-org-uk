@@ -41,7 +41,7 @@ namespace Stoolball
                 PlayerId = player.PlayerId,
                 PlayerRoute = player.PlayerRoute,
                 MemberKey = player.MemberKey,
-                PlayerIdentities = player.PlayerIdentities.Select(x => CreateAuditableCopy(x)).OfType<PlayerIdentity>().ToList()
+                PlayerIdentities = new PlayerIdentityList(player.PlayerIdentities.Select(x => CreateAuditableCopy(x)).OfType<PlayerIdentity>())
             };
         }
 

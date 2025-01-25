@@ -16,7 +16,6 @@ using Stoolball.Teams;
 using Stoolball.Testing.Fakers;
 using Stoolball.Testing.MatchDataProviders;
 using Stoolball.Testing.PlayerDataProviders;
-using Stoolball.Testing.TeamDataProviders;
 
 namespace Stoolball.Testing
 {
@@ -246,9 +245,9 @@ namespace Stoolball.Testing
             foreach (var teamInSeason in team.Seasons)
             {
                 teamInSeason.Team = team;
-                teamInSeason.Season.Teams.Add(teamInSeason);
+                teamInSeason.Season!.Teams.Add(teamInSeason);
             }
-            competition.Seasons.AddRange(team.Seasons.Select(x => x.Season));
+            competition.Seasons.AddRange(team.Seasons.Select(x => x.Season)!);
             return team;
         }
 
@@ -558,7 +557,7 @@ namespace Stoolball.Testing
             };
             foreach (var season in tournament.Seasons)
             {
-                season.Competition.Seasons.Add(season);
+                season.Competition!.Seasons.Add(season);
             }
             return tournament;
         }
@@ -689,8 +688,8 @@ namespace Stoolball.Testing
             {
                 PlayerId = Guid.NewGuid(),
                 PlayerRoute = $"/players/{playerName.Kebaberize()}-{Guid.NewGuid()}",
-                PlayerIdentities = new List<PlayerIdentity>
-                {
+                PlayerIdentities =
+                [
                     new PlayerIdentity
                     {
                         PlayerIdentityId = Guid.NewGuid(),
@@ -698,7 +697,7 @@ namespace Stoolball.Testing
                         RouteSegment = playerName.Kebaberize(),
                         Team = team
                     }
-                }
+                ]
             };
         }
 
@@ -752,16 +751,6 @@ namespace Stoolball.Testing
 
             var poolOfTeamsWithPlayers = GenerateTeams(teamFaker);
 
-            var playerProviders = new BasePlayerDataProvider[]{
-                new PlayersLinkedToMembersProvider(_teamFakerFactory, _playerFakerFactory, _playerIdentityFakerFactory),
-            };
-            var playersFromPlayerProviders = new List<Player>();
-            foreach (var provider in playerProviders)
-            {
-                var playersFromProvider = provider.CreatePlayers(testData);
-                playersFromPlayerProviders.AddRange(playersFromProvider);
-            }
-
             // Create a pool of competitions
             for (var i = 0; i < 10; i++)
             {
@@ -812,10 +801,7 @@ namespace Stoolball.Testing
             testData.MatchInThePastWithFullDetailsAndTournament = FindMatchInThePastWithFullDetailsAndTournament(testData);
 
             var membersFromMatchComments = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberKey: x.MemberKey, memberName: x.MemberName ?? "No name"));
-            var membersFromPlayerProviders = playersFromPlayerProviders.Where(p => p.MemberKey is not null).Select(p => (memberKey: p.MemberKey!.Value, memberName: "No name"));
-            testData.Members = membersFromMatchComments
-                .Union(membersFromPlayerProviders)
-                .Distinct(new MemberEqualityComparer()).ToList();
+            testData.Members = membersFromMatchComments.ToList();
 
             testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
             for (var i = 0; i < 10; i++)
@@ -882,13 +868,11 @@ namespace Stoolball.Testing
             teamWithMatchLocation.MatchLocations.Add(testData.MatchLocationForClub);
             testData.MatchLocationForClub.Teams.Add(teamWithMatchLocation);
 
-            var teamsFromPlayerProviders = playersFromPlayerProviders.SelectMany(p => p.PlayerIdentities).Where(pi => pi.Team is not null).Select(pi => pi.Team).OfType<Team>();
             var teamsInMatches = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsInTournaments = testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsInSeasons = testData.Competitions.SelectMany(x => x.Seasons).SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsAtMatchLocations = testData.MatchLocations.SelectMany(x => x.Teams);
             testData.Teams = poolOfTeamsWithPlayers.Select(x => x.team)
-                            .Union(teamsFromPlayerProviders)
                             .Union(teamsInMatches)
                             .Union(teamsInTournaments)
                             .Union(teamsInSeasons)
@@ -978,11 +962,8 @@ namespace Stoolball.Testing
 
             testData.SeasonWithFullDetails = testData.Seasons.First(x => x.Teams.Any() && x.PointsRules.Any() && x.PointsAdjustments.Any());
 
-            var playerIdentitiesInMatches = testData.Matches.SelectMany(_playerIdentityFinder.PlayerIdentitiesInMatch);
-            var playerIdentitiesFromPlayerProviders = playersFromPlayerProviders.SelectMany(p => p.PlayerIdentities);
-            testData.PlayerIdentities = playerIdentitiesInMatches
-                .Union(playerIdentitiesFromPlayerProviders)
-                .Distinct(new PlayerIdentityEqualityComparer()).ToList();
+            var playerIdentitiesInMatches = testData.Matches.SelectMany(_playerIdentityFinder.PlayerIdentitiesInMatch).Distinct(new PlayerIdentityEqualityComparer());
+            testData.PlayerIdentities = playerIdentitiesInMatches.ToList();
             testData.Players = testData.PlayerIdentities.Select(x => x.Player).OfType<Player>().Distinct(playerComparer).ToList();
 
             var matchProviders = new BaseMatchDataProvider[]{
@@ -1055,29 +1036,26 @@ namespace Stoolball.Testing
             testData.Teams.AddRange(testData.Schools.SelectMany(x => x.Teams));
             testData.MatchLocations.AddRange(testData.Schools.SelectMany(x => x.Teams).SelectMany(x => x.MatchLocations).Distinct(new MatchLocationEqualityComparer()));
 
-            foreach (var team in testData.Teams.Where(t => t.Club == null ||
-                                                           t.Club.Teams.Count() == 1 ||
-                                                          (t.Club.Teams.Count(x => !x.UntilYear.HasValue) == 1 && !t.UntilYear.HasValue)))
-            {
-                testData.TeamListings.Add(team.ToTeamListing());
-            }
-            foreach (var club in testData.Clubs.Where(c => c.Teams.Count == 0 ||
-                                                           c.Teams.Count(x => !x.UntilYear.HasValue) > 1))
-            {
-                testData.TeamListings.Add(club.ToTeamListing());
-            }
+            CreateImmutableTestData(testData);
 
-            // Prepare collections to avoid repeatedly querying to create the same collections
-            testData.Awards.AddRange(testData.Matches.SelectMany(m => m.Awards));
-            testData.MatchInnings.AddRange(testData.Matches.SelectMany(x => x.MatchInnings));
-            testData.BowlingFigures.AddRange(testData.MatchInnings.SelectMany(mi => mi.BowlingFigures));
+            BuildCollections(testData);
 
-            // This must happen after ALL scorecards and awards are finalised
+            EnsureCyclicalRelationshipsArePopulated(testData);
+
+            PopulateCalculatedProperties(testData);
+
+            return testData;
+        }
+
+        /// <summary>
+        /// Ensure that calculated properties are populated. Must not change any source data or relationships.
+        /// </summary>
+        /// <param name="testData"></param>
+        private void PopulateCalculatedProperties(TestData testData)
+        {
+            // The following steps must happen after ALL scorecards and awards are finalised
             foreach (var identity in testData.PlayerIdentities)
             {
-                // Ensure the cyclical relationship between players and identities is populated
-                if (identity.Player is not null && !identity.Player.PlayerIdentities.Contains(identity)) { identity.Player.PlayerIdentities.Add(identity); }
-
                 var matchesPlayedByThisIdentity = _matchFinder.MatchesPlayedByPlayerIdentity(testData.Matches, identity.PlayerIdentityId!.Value);
                 identity.TotalMatches = matchesPlayedByThisIdentity.Select(x => x.MatchId).Distinct().Count();
                 if (identity.TotalMatches > 0)
@@ -1086,8 +1064,96 @@ namespace Stoolball.Testing
                     identity.LastPlayed = matchesPlayedByThisIdentity.Max(x => x.StartTime);
                 }
             }
+        }
 
-            return testData;
+        /// <summary>
+        /// Ensure that objects which have cyclical relationships have those relationships populated, in case test data providers did not populate them.
+        /// </summary>
+        /// <param name="testData"></param>
+        private static void EnsureCyclicalRelationshipsArePopulated(TestData testData)
+        {
+            foreach (var identity in testData.PlayerIdentities)
+            {
+                // Ensure the cyclical relationship between players and identities is populated
+                if (identity.Player is not null && !identity.Player.PlayerIdentities.Contains(identity)) { identity.Player.PlayerIdentities.Add(identity); }
+            }
+        }
+
+        /// <summary>
+        /// Build collections from finalised test data to avoid repeatedly querying to create the same collection.
+        /// </summary>
+        /// <param name="testData"></param>
+        private static void BuildCollections(TestData testData)
+        {
+            // Add members created to support other objects
+            var membersFromPlayers = testData.Players.Where(p => p.MemberKey is not null).Select(p => (memberKey: p.MemberKey!.Value, memberName: "No name"));
+            testData.Members = testData.Members
+                              .Union(membersFromPlayers, new MemberEqualityComparer())
+                              .ToList();
+
+            // Add player identities created to support other objects
+            var playerIdentitiesFromPlayers = testData.Players.SelectMany(p => p.PlayerIdentities);
+            testData.PlayerIdentities = testData.PlayerIdentities
+                                       .Union(playerIdentitiesFromPlayers, new PlayerIdentityEqualityComparer())
+                                       .ToList();
+
+            // Add teams created to support other objects
+            var teamsFromPlayers = testData.Players.SelectMany(p => p.PlayerIdentities).Where(pi => pi.Team is not null).Select(pi => pi.Team).OfType<Team>();
+            testData.Teams = testData.Teams
+                            .Union(teamsFromPlayers, new TeamEqualityComparer())
+                            .ToList();
+
+            // Create collections from team data
+            testData.TeamListings = CreateTeamListingsFromClubsAndTeams(testData);
+
+            // Create collections from player data
+            testData.PlayersWithMultipleIdentities = FindPlayersWithMultipleIdentities(testData);
+
+            // Create collections from match data
+            testData.Awards.AddRange(testData.Matches.SelectMany(m => m.Awards));
+            testData.MatchInnings.AddRange(testData.Matches.SelectMany(x => x.MatchInnings));
+            testData.BowlingFigures.AddRange(testData.MatchInnings.SelectMany(mi => mi.BowlingFigures));
+        }
+
+        private static List<TeamListing> CreateTeamListingsFromClubsAndTeams(TestData testData)
+        {
+            var teamListings = new List<TeamListing>();
+            foreach (var team in testData.Teams.Where(t => t.Club == null ||
+                                                                       t.Club.Teams.Count() == 1 ||
+                                                                      (t.Club.Teams.Count(x => !x.UntilYear.HasValue) == 1 && !t.UntilYear.HasValue)))
+            {
+                teamListings.Add(team.ToTeamListing());
+            }
+            foreach (var club in testData.Clubs.Where(c => c.Teams.Count == 0 ||
+                                                           c.Teams.Count(x => !x.UntilYear.HasValue) > 1))
+            {
+                teamListings.Add(club.ToTeamListing());
+            }
+            return teamListings;
+        }
+
+        /// <summary>
+        /// Create test data from providers, for specific scenarios which must not be altered in case they are no longer valid.
+        /// </summary>
+        /// <param name="testData"></param>
+        private void CreateImmutableTestData(TestData testData)
+        {
+            testData.Players.AddRange(CreateTestDataFromPlayerProviders(testData));
+        }
+
+        private List<Player> CreateTestDataFromPlayerProviders(TestData testData)
+        {
+            var playerProviders = new BasePlayerDataProvider[]{
+                new PlayersLinkedToMembersProvider(_teamFakerFactory, _playerFakerFactory, _playerIdentityFakerFactory),
+                new PlayersNotLinkedToMembersProvider(_teamFakerFactory, _playerFakerFactory, _playerIdentityFakerFactory)
+            };
+            var playersFromPlayerProviders = new List<Player>();
+            foreach (var provider in playerProviders)
+            {
+                var playersFromProvider = provider.CreatePlayers(testData);
+                playersFromPlayerProviders.AddRange(playersFromProvider);
+            }
+            return playersFromPlayerProviders;
         }
 
         private static List<Player> FindPlayersWithMultipleIdentities(TestData testData)
@@ -1099,6 +1165,14 @@ namespace Stoolball.Testing
                     !results.Any(x => x.PlayerId == identity.Player?.PlayerId))
                 {
                     results.Add(identity.Player!);
+                }
+            }
+
+            foreach (var player in testData.Players.Where(p => p.PlayerIdentities.Count() > 1))
+            {
+                if (!results.Any(x => x.PlayerId == player.PlayerId))
+                {
+                    results.Add(player);
                 }
             }
             return results;
@@ -1396,14 +1470,14 @@ namespace Stoolball.Testing
                 Player = x,
                 Runs = testData.Matches.SelectMany(m => m.MatchInnings)
                                        .SelectMany(mi => mi.PlayerInnings)
-                                       .Where(pi => pi.Batter.Player.PlayerId == x.PlayerId)
+                                       .Where(pi => pi.Batter!.Player!.PlayerId == x.PlayerId)
                                        .Sum(pi => pi.RunsScored)
             }).OrderByDescending(x => x.Runs).ToList();
 
             var differenceBetweenFifthAndSixth = allPlayers[4].Runs - allPlayers[5].Runs;
             var anyInningsByPlayerSix = testData.Matches.SelectMany(m => m.MatchInnings)
                                        .SelectMany(mi => mi.PlayerInnings)
-                                       .First(pi => pi.Batter.Player.PlayerId == allPlayers[5].Player.PlayerId && pi.RunsScored.HasValue);
+                                       .First(pi => pi.Batter!.Player!.PlayerId == allPlayers[5].Player.PlayerId && pi.RunsScored.HasValue);
             anyInningsByPlayerSix.RunsScored += differenceBetweenFifthAndSixth;
         }
 
@@ -1414,7 +1488,7 @@ namespace Stoolball.Testing
                 Player = x,
                 Wickets = testData.Matches.SelectMany(m => m.MatchInnings)
                                        .SelectMany(mi => mi.BowlingFigures)
-                                       .Where(pi => pi.Bowler.Player.PlayerId == x.PlayerId)
+                                       .Where(pi => pi.Bowler!.Player!.PlayerId == x.PlayerId)
                                        .Sum(pi => pi.Wickets)
             }).OrderByDescending(x => x.Wickets).ToList();
 
@@ -1424,13 +1498,13 @@ namespace Stoolball.Testing
             while (differenceBetweenFifthAndSixth > 0)
             {
                 var matchInningsWherePlayerSixCouldTakeWickets = testData.Matches.SelectMany(m => m.MatchInnings)
-                                                   .Where(mi => sixthPlayer.Player.PlayerIdentities.Select(pi => pi.Team.TeamId!.Value).Contains(mi.BowlingTeam.Team.TeamId!.Value) &&
+                                                   .Where(mi => sixthPlayer.Player.PlayerIdentities.Select(pi => pi.Team!.TeamId!.Value).Contains(mi.BowlingTeam!.Team!.TeamId!.Value) &&
                                                                 mi.PlayerInnings.Any(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType))
                                                    ).First();
 
                 var playerInningsToChange = matchInningsWherePlayerSixCouldTakeWickets.PlayerInnings.First(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType));
                 playerInningsToChange.DismissalType = DismissalType.Bowled;
-                playerInningsToChange.Bowler = sixthPlayer.Player.PlayerIdentities.First(x => x.Team.TeamId == matchInningsWherePlayerSixCouldTakeWickets.BowlingTeam.Team.TeamId);
+                playerInningsToChange.Bowler = sixthPlayer.Player.PlayerIdentities.First(x => x.Team!.TeamId == matchInningsWherePlayerSixCouldTakeWickets.BowlingTeam!.Team!.TeamId);
 
                 matchInningsWherePlayerSixCouldTakeWickets.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(matchInningsWherePlayerSixCouldTakeWickets);
 
@@ -1468,9 +1542,9 @@ namespace Stoolball.Testing
             }
 
             var allIdentities = teamsWithIdentities.SelectMany(x => x.identities);
-            foreach (var player in allIdentities.Select(x => x.Player))
+            foreach (var player in allIdentities.Select(x => x.Player).OfType<Player>())
             {
-                player.PlayerIdentities = allIdentities.Where(x => x.Player?.PlayerId == player.PlayerId).ToList();
+                player.PlayerIdentities = new PlayerIdentityList(allIdentities.Where(x => x.Player?.PlayerId == player.PlayerId));
             }
 
             // Create matches for them to play in, with scorecards
@@ -1576,12 +1650,12 @@ namespace Stoolball.Testing
 
             // in the first innings a fielder should take catches under multiple identities
             var firstInnings = match.MatchInnings[0];
-            var firstInningsIdentities = firstInnings.BowlingTeam.Team.TeamId == anyTeam1.team.TeamId ? anyTeam1.identities : anyTeam2.identities;
+            var firstInningsIdentities = firstInnings.BowlingTeam!.Team!.TeamId == anyTeam1.team.TeamId ? anyTeam1.identities : anyTeam2.identities;
 
-            var catcherWithMultipleIdentities = firstInningsIdentities.FirstOrDefault(x => firstInningsIdentities.Count(p => p.Player.PlayerId == x.Player.PlayerId) > 1)?.Player.PlayerId;
+            var catcherWithMultipleIdentities = firstInningsIdentities.FirstOrDefault(x => firstInningsIdentities.Count(p => p.Player!.PlayerId == x.Player!.PlayerId) > 1)?.Player!.PlayerId;
             if (catcherWithMultipleIdentities.HasValue)
             {
-                var catcherIdentities = firstInningsIdentities.Where(x => x.Player.PlayerId == catcherWithMultipleIdentities).ToList();
+                var catcherIdentities = firstInningsIdentities.Where(x => x.Player!.PlayerId == catcherWithMultipleIdentities).ToList();
 
                 for (var i = 0; i < 6; i++)
                 {
@@ -1601,7 +1675,7 @@ namespace Stoolball.Testing
 
             // in the second innings a fielder should complete run-outs under multiple identities
             var secondInnings = match.MatchInnings[1];
-            var secondInningsIdentities = secondInnings.BowlingTeam.Team.TeamId == anyTeam1.team.TeamId ? anyTeam1.identities : anyTeam2.identities;
+            var secondInningsIdentities = secondInnings.BowlingTeam.Team!.TeamId == anyTeam1.team.TeamId ? anyTeam1.identities : anyTeam2.identities;
 
             var fielderWithMultipleIdentities = secondInningsIdentities.FirstOrDefault(x => secondInningsIdentities.Count(p => p.Player.PlayerId == x.Player.PlayerId) > 1)?.Player.PlayerId;
             if (fielderWithMultipleIdentities.HasValue)
@@ -1625,18 +1699,18 @@ namespace Stoolball.Testing
 
             // 1. Find any player with identities on two teams
             var anyPlayerWithIdentitiesOnMultipleTeams = teamsWithIdentities.SelectMany(x => x.identities)
-                .GroupBy(x => x.Player.PlayerId, x => x, (playerId, playerIdentities) => new Player { PlayerId = playerId, PlayerIdentities = playerIdentities.ToList() })
-                .Where(x => x.PlayerIdentities.Select(t => t.Team.TeamId!.Value).Distinct().Count() > 1)
+                .GroupBy(x => x.Player!.PlayerId, x => x, (playerId, playerIdentities) => new Player { PlayerId = playerId, PlayerIdentities = new PlayerIdentityList(playerIdentities) })
+                .Where(x => x.PlayerIdentities.Select(t => t.Team!.TeamId!.Value).Distinct().Count() > 1)
                 .First();
 
             // 2. Create a match between those teams
-            var teamsForPlayer = teamsWithIdentities.Where(t => anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.Select(x => x.Team.TeamId).Contains(t.team.TeamId)).ToList();
+            var teamsForPlayer = teamsWithIdentities.Where(t => anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.Select(x => x.Team!.TeamId).Contains(t.team.TeamId)).ToList();
             var match = _matchFactory.CreateMatchBetween(teamsForPlayer[0].team, teamsForPlayer[0].identities, teamsForPlayer[1].team, teamsForPlayer[1].identities, _randomiser.FiftyFiftyChance(), testData, nameof(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams));
 
             // 3. We know they'll be recorded as a batter in both innings. Ensure they take a wicket too.
             var wicketTaken = match.MatchInnings.First().PlayerInnings.First();
             wicketTaken.DismissalType = DismissalType.CaughtAndBowled;
-            wicketTaken.Bowler = anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.First(x => x.Team.TeamId == match.MatchInnings.First().BowlingTeam.Team.TeamId);
+            wicketTaken.Bowler = anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.First(x => x.Team!.TeamId == match.MatchInnings.First().BowlingTeam!.Team!.TeamId);
 
             return match;
         }

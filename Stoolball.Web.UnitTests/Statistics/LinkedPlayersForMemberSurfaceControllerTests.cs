@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -48,13 +47,13 @@ namespace Stoolball.Web.UnitTests.Statistics
             return new Player
             {
                 PlayerRoute = "/example-player",
-                PlayerIdentities = new List<PlayerIdentity>
-                {
+                PlayerIdentities =
+                [
                     new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid(), LinkedBy = PlayerIdentityLinkedBy.Member },
                     new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid(), LinkedBy = PlayerIdentityLinkedBy.Member },
                     new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid(), LinkedBy = PlayerIdentityLinkedBy.Member },
                     new PlayerIdentity{ PlayerIdentityId = Guid.NewGuid(), LinkedBy = PlayerIdentityLinkedBy.Member }
-                }
+                ]
             };
         }
 

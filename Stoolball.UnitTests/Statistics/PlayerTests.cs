@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Stoolball.Statistics;
 using Xunit;
 
@@ -12,8 +11,8 @@ namespace Stoolball.UnitTests.Statistics
         {
             var player = new Player
             {
-                PlayerIdentities = new List<PlayerIdentity>
-                {
+                PlayerIdentities =
+                [
                     new PlayerIdentity {
                         PlayerIdentityName = "Name One",
                         TotalMatches = 2,
@@ -29,7 +28,7 @@ namespace Stoolball.UnitTests.Statistics
                         TotalMatches = 2,
                         LastPlayed = DateTimeOffset.Now.Date
                     }
-                }
+                ]
             };
 
             var preferredName = player.PlayerName();
@@ -45,8 +44,8 @@ namespace Stoolball.UnitTests.Statistics
         {
             var player = new Player
             {
-                PlayerIdentities = new List<PlayerIdentity>
-                {
+                PlayerIdentities =
+                [
                     new PlayerIdentity {
                         PlayerIdentityName = "Name One",
                         TotalMatches = 2,
@@ -57,7 +56,7 @@ namespace Stoolball.UnitTests.Statistics
                         TotalMatches = 2,
                         LastPlayed = DateTimeOffset.Now.Date
                     }
-                }
+                ]
             };
 
             var preferredName = player.PlayerName();
@@ -77,8 +76,8 @@ namespace Stoolball.UnitTests.Statistics
         {
             var player = new Player
             {
-                PlayerIdentities = new List<PlayerIdentity>
-                {
+                PlayerIdentities =
+                [
                     new PlayerIdentity {
                         PlayerIdentityName = "Name",
                         TotalMatches = 2,
@@ -94,7 +93,7 @@ namespace Stoolball.UnitTests.Statistics
                         TotalMatches = 2,
                         LastPlayed = DateTimeOffset.Now.Date
                     }
-                }
+                ]
             };
 
             var preferredName = player.PlayerName();
@@ -111,8 +110,8 @@ namespace Stoolball.UnitTests.Statistics
         {
             var player = new Player
             {
-                PlayerIdentities = new List<PlayerIdentity>
-                {
+                PlayerIdentities =
+                [
                     new PlayerIdentity {
                         PlayerIdentityName = "Name One",
                         TotalMatches = 2,
@@ -188,7 +187,7 @@ namespace Stoolball.UnitTests.Statistics
                         TotalMatches = 2,
                         LastPlayed = DateTimeOffset.Now.Date.AddDays(-4) // Fourth most recent, should boost to 2 matches * 2 weight = 4
                     }
-                }
+                ]
             };
 
             var preferredName = player.PlayerName();
@@ -218,8 +217,8 @@ namespace Stoolball.UnitTests.Statistics
             var player = new Player
             {
                 PreferredName = "Preferred",
-                PlayerIdentities = new List<PlayerIdentity>
-                {
+                PlayerIdentities =
+                [
                     new PlayerIdentity {
                         PlayerIdentityName = "Name Complete", // Would beat the single-word name for the preferred identity in a calculated result
                         TotalMatches = 10, // Would beat fewer matches for the preferred identity in a calculated result
@@ -235,7 +234,7 @@ namespace Stoolball.UnitTests.Statistics
                         TotalMatches = 2,
                         LastPlayed = DateTimeOffset.Now.Date.AddYears(-1)
                     }
-                }
+                ]
             };
 
             var preferredName = player.PlayerName();

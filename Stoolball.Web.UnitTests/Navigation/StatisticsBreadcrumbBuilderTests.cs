@@ -46,7 +46,7 @@ namespace Stoolball.Web.UnitTests.Navigation
         {
             var builder = new StatisticsBreadcrumbBuilder();
             var breadcrumbs = new List<Breadcrumb>();
-            var player = new Player { PlayerRoute = "/players/example", PlayerIdentities = new List<PlayerIdentity> { new PlayerIdentity { PlayerIdentityName = "Example player" } } };
+            var player = new Player { PlayerRoute = "/players/example", PlayerIdentities = [new PlayerIdentity { PlayerIdentityName = "Example player" }] };
 
             builder.BuildBreadcrumbs(breadcrumbs, new StatisticsFilter { Player = player });
 

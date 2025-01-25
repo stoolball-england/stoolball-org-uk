@@ -5,9 +5,8 @@ using Bogus;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing.Fakers;
-using Stoolball.Testing.PlayerDataProviders;
 
-namespace Stoolball.Testing.TeamDataProviders
+namespace Stoolball.Testing.PlayerDataProviders
 {
     internal class PlayersLinkedToMembersProvider(IFakerFactory<Team> teamFakerFactory, IFakerFactory<Player> playerFakerFactory, IFakerFactory<PlayerIdentity> playerIdentityFakerFactory) : BasePlayerDataProvider
     {
@@ -42,15 +41,6 @@ namespace Stoolball.Testing.TeamDataProviders
                 identity.Player = playerWithTwoIdentitiesLinkedByMember;
                 identity.Team = team;
                 identity.LinkedBy = PlayerIdentityLinkedBy.Member;
-            }
-
-            for (var i = 0; i < 2; i++)
-            {
-                players[i].PlayerIdentities.Add(identities[i]);
-                identities[i].Player = players[i];
-                identities[i].Team = team;
-                identities[i].LinkedBy = PlayerIdentityLinkedBy.Member;
-                players[i].MemberKey = Guid.NewGuid();
             }
 
             // another player on the same team, not linked to a member

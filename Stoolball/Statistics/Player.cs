@@ -178,7 +178,7 @@ namespace Stoolball.Statistics
 
         public Guid? MemberKey { get; set; }
 
-        public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
+        public PlayerIdentityList PlayerIdentities { get; internal set; } = new PlayerIdentityList();
 
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 

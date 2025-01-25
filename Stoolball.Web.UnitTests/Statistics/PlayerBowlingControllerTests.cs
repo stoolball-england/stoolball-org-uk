@@ -119,13 +119,13 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             var player = new Player
             {
-                PlayerIdentities = new List<PlayerIdentity> {
+                PlayerIdentities = [
                     new PlayerIdentity
                     {
                         PlayerIdentityName = "Player one",
                         Team = new Team { TeamName = "Example team" }
                     }
-                }
+                ]
             };
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
             _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, null)).Returns(Task.FromResult<Player?>(player));
@@ -145,13 +145,13 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             var player = new Player
             {
-                PlayerIdentities = new List<PlayerIdentity> {
+                PlayerIdentities = [
                     new PlayerIdentity
                     {
                         PlayerIdentityName = "Player one",
                         Team = new Team { TeamName = "Example team" }
                     }
-                }
+                ]
             };
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(Request.Object.QueryString.Value)).Returns(new StatisticsFilter());
             _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, null)).Returns(Task.FromResult<Player?>(player));
@@ -170,13 +170,13 @@ namespace Stoolball.Web.UnitTests.Statistics
         {
             var player = new Player
             {
-                PlayerIdentities = new List<PlayerIdentity> {
+                PlayerIdentities = [
                     new PlayerIdentity
                     {
                         PlayerIdentityName = "Player one",
                         Team = new Team { TeamId = Guid.NewGuid(), TeamName = "Example team" }
                     }
-                }
+                ]
             };
             var appliedFilterWithoutNameFromQueryString = new StatisticsFilter { Team = new Team { TeamId = player.PlayerIdentities[0].Team!.TeamId } };
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(Request.Object.QueryString.Value)).Returns(appliedFilterWithoutNameFromQueryString);

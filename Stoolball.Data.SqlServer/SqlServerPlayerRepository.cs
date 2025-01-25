@@ -313,11 +313,11 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var targetPlayerBefore = await connection.QuerySingleAsync<(string PlayerRoute, Guid? MemberKey)>($"SELECT PlayerRoute, MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", new Player { PlayerId = targetPlayer }, transaction);
+                    var targetPlayerBefore = await connection.QuerySingleAsync<(string PlayerRoute, Guid? MemberKey)>($"SELECT PlayerRoute, MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", new Player { PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
                     var identityToLinkBefore = await connection.QuerySingleAsync<(Guid PlayerId, string PlayerRoute, Guid? MemberKey, int Identities, string PlayerIdentityName, Guid TeamId)>(
                         @$"SELECT p.PlayerId, p.PlayerRoute, p.MemberKey, (SELECT COUNT(*) FROM {Tables.PlayerIdentity} WHERE PlayerId = p.PlayerId) AS Identities, pi.PlayerIdentityName, pi.TeamId
                            FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId
-                           WHERE pi.PlayerIdentityId = @PlayerIdentityId", new { PlayerIdentityId = identityToLinkToTarget }, transaction);
+                           WHERE pi.PlayerIdentityId = @PlayerIdentityId", new { PlayerIdentityId = identityToLinkToTarget }, transaction).ConfigureAwait(false);
 
                     // Are the players already linked to each other? If so, abort.
                     if (targetPlayer == identityToLinkBefore.PlayerId)
@@ -353,7 +353,7 @@ namespace Stoolball.Data.SqlServer
                     // Does the target player have an identity on the same team as the identity to link? If not, abort.
                     var targetPlayerExistingIdentities = await connection.QueryAsync<(Guid PlayerIdentityId, string PlayerIdentityName, Guid TeamId)>(
                         $"SELECT PlayerIdentityId, PlayerIdentityName, TeamId FROM {Tables.PlayerIdentity} WHERE PlayerId = @PlayerId",
-                        new { PlayerId = targetPlayer }, transaction);
+                        new { PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
                     var targetPlayerHasIdentityOnSameTeam = targetPlayerExistingIdentities.Any(id => id.TeamId == identityToLinkBefore.TeamId);
 
                     if (!targetPlayerHasIdentityOnSameTeam)
@@ -367,19 +367,23 @@ namespace Stoolball.Data.SqlServer
                     // Move the player identities from the identity to link's current player id to the target player's id.
                     if (bestRoute != targetPlayerBefore.PlayerRoute)
                     {
-                        await connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, PlayerId = targetPlayer }, transaction);
+                        _ = await connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
                     }
                     var movePlayerIdentity = new { LinkedBy = linkedBy.ToString(), PlayerId = targetPlayer, PlayerIdentityId = identityToLinkToTarget };
-                    await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy, PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", movePlayerIdentity, transaction);
+                    _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy, PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", movePlayerIdentity, transaction).ConfigureAwait(false);
+
+                    // If the target player has and identities with LinkedBy = DefaultIdentity, they should now be linked by this activity
+                    _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy WHERE PlayerId = @PlayerId AND LinkedBy = '{PlayerIdentityLinkedBy.DefaultIdentity.ToString()}'",
+                                                      new { LinkedBy = linkedBy.ToString(), PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
 
                     // We also need to update statistics, and delete the now-unused player that the identity has been moved away from. 
                     // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so we just need to mark the player as safe to delete.
-                    await connection.ExecuteAsync($"UPDATE {Tables.Player} SET Deleted = 1 WHERE PlayerId = @PlayerId", new { identityToLinkBefore.PlayerId }, transaction);
+                    _ = await connection.ExecuteAsync($"UPDATE {Tables.Player} SET Deleted = 1 WHERE PlayerId = @PlayerId", new { identityToLinkBefore.PlayerId }, transaction).ConfigureAwait(false);
 
                     var deletedPlayer = new Player { PlayerId = identityToLinkBefore.PlayerId, PlayerRoute = identityToLinkBefore.PlayerRoute };
                     deletedPlayer.PlayerIdentities.Add(new PlayerIdentity { PlayerIdentityId = identityToLinkToTarget });
                     var serialisedDeletedPlayer = JsonConvert.SerializeObject(deletedPlayer);
-                    await _auditRepository.CreateAudit(new AuditRecord
+                    _ = await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Delete,
                         MemberKey = memberKey,
@@ -388,7 +392,7 @@ namespace Stoolball.Data.SqlServer
                         State = serialisedDeletedPlayer,
                         RedactedState = serialisedDeletedPlayer,
                         AuditDate = DateTime.UtcNow
-                    }, transaction);
+                    }, transaction).ConfigureAwait(false);
 
                     _logger.Info(LoggingTemplates.Deleted, serialisedDeletedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerIdentity));
 
@@ -399,7 +403,7 @@ namespace Stoolball.Data.SqlServer
                     updatedTargetPlayer.PlayerIdentities.Add(reassignedPlayerIdentity);
 
                     var serialisedUpdatedPlayer = JsonConvert.SerializeObject(updatedTargetPlayer);
-                    await _auditRepository.CreateAudit(new AuditRecord
+                    _ = await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
                         MemberKey = memberKey,
@@ -408,7 +412,7 @@ namespace Stoolball.Data.SqlServer
                         State = serialisedUpdatedPlayer,
                         RedactedState = serialisedUpdatedPlayer,
                         AuditDate = DateTime.UtcNow
-                    }, transaction);
+                    }, transaction).ConfigureAwait(false);
 
                     _logger.Info(LoggingTemplates.Updated, serialisedUpdatedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerIdentity));
 
@@ -560,19 +564,30 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var (totalIdentitiesLinkedToPlayer, playerId, playerIdentityName) = await connection.QuerySingleAsync<(int totalIdentitiesLinkedToMember, Guid playerId, string playerIdentityName)>(
-                        $@"SELECT COUNT(*), PlayerId, (SELECT PlayerIdentityName FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId) AS PlayerIdentityName
+                    var identitiesForPlayer = (await connection.QueryAsync<(Guid PlayerId, Guid PlayerIdentityId, string Name, PlayerIdentityLinkedBy LinkedBy)>(
+                        $@"SELECT PlayerId, PlayerIdentityId, PlayerIdentityName, LinkedBy
                            FROM {Views.PlayerIdentity} 
-                           WHERE PlayerId = (SELECT PlayerId FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId) 
-                           GROUP BY PlayerId", new { PlayerIdentityId = identityToUnlink }, transaction).ConfigureAwait(false);
+                           WHERE PlayerId = (SELECT PlayerId FROM {Views.PlayerIdentity} WHERE PlayerIdentityId = @PlayerIdentityId)",
+                        new { PlayerIdentityId = identityToUnlink }, transaction).ConfigureAwait(false)).ToList();
 
-                    if (totalIdentitiesLinkedToPlayer == 1)
+                    if (identitiesForPlayer.Count == 1)
                     {
                         throw new InvalidOperationException();
                     }
                     else
                     {
-                        await MoveIdentityToNewPlayer(identityToUnlink, playerIdentityName, memberKey, memberName, transaction, nameof(UnlinkPlayerIdentity)).ConfigureAwait(false);
+                        var identityToUnlinkName = identitiesForPlayer.Single(pi => pi.PlayerIdentityId == identityToUnlink).Name;
+                        await MoveIdentityToNewPlayer(identityToUnlink, identityToUnlinkName, memberKey, memberName, transaction, nameof(UnlinkPlayerIdentity)).ConfigureAwait(false);
+
+                        var remainingIdentities = identitiesForPlayer.Where(pi => pi.PlayerIdentityId != identityToUnlink).ToList();
+                        if (remainingIdentities.Count == 1 &&
+                            remainingIdentities[0].LinkedBy == PlayerIdentityLinkedBy.Team || remainingIdentities[0].LinkedBy == PlayerIdentityLinkedBy.StoolballEngland)
+                        {
+                            _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy WHERE PlayerIdentityId = @PlayerIdentityId",
+                                                              new { LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity.ToString(), remainingIdentities[0].PlayerIdentityId },
+                                                              transaction).ConfigureAwait(false);
+
+                        }
                     }
 
                     transaction.Commit();

@@ -77,7 +77,7 @@ namespace Stoolball.Data.SqlServer
             return rawResults.GroupBy(x => x.PlayerId).Select(group =>
             {
                 var player = group.First();
-                player.PlayerIdentities = group.Select(x => x.PlayerIdentities.Single()).OfType<PlayerIdentity>().ToList();
+                player.PlayerIdentities = new PlayerIdentityList(group.Select(x => x.PlayerIdentities.Single()).OfType<PlayerIdentity>());
                 return player;
             }).ToList();
         }
@@ -116,7 +116,7 @@ namespace Stoolball.Data.SqlServer
                 // Populate the PlayerIdentities collections of the players with the data that we have
                 foreach (var identity in identities)
                 {
-                    identity.Player!.PlayerIdentities = identities.Where(x => x.Player?.PlayerId == identity.Player.PlayerId).ToList();
+                    identity.Player!.PlayerIdentities = new PlayerIdentityList(identities.Where(x => x.Player?.PlayerId == identity.Player.PlayerId));
                 }
 
                 return identities;
@@ -243,7 +243,7 @@ namespace Stoolball.Data.SqlServer
                 var playerToReturn = playerData.GroupBy(x => x.PlayerId).Select(group =>
                 {
                     var player = group.First();
-                    player.PlayerIdentities = group.Select(x => x.PlayerIdentities.Single()).OfType<PlayerIdentity>().ToList();
+                    player.PlayerIdentities = new PlayerIdentityList(group.Select(x => x.PlayerIdentities.Single()).OfType<PlayerIdentity>());
                     return player;
                 }).FirstOrDefault();
 
