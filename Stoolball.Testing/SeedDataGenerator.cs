@@ -655,25 +655,6 @@ namespace Stoolball.Testing
             return oversBowled;
         }
 
-        private Player CreatePlayer(string playerName, Team team)
-        {
-            return new Player
-            {
-                PlayerId = Guid.NewGuid(),
-                PlayerRoute = $"/players/{playerName.Kebaberize()}-{Guid.NewGuid()}",
-                PlayerIdentities =
-                [
-                    new PlayerIdentity
-                    {
-                        PlayerIdentityId = Guid.NewGuid(),
-                        PlayerIdentityName = playerName,
-                        RouteSegment = playerName.Kebaberize(),
-                        Team = team
-                    }
-                ]
-            };
-        }
-
         private List<HtmlComment> CreateComments(int howMany, List<(Guid memberKey, string memberName)> members)
         {
             var randomiser = new Random();
@@ -1628,9 +1609,11 @@ namespace Stoolball.Testing
             var poolOfPlayers = new List<PlayerIdentity>();
             for (var i = 0; i < 8; i++)
             {
-                var player = CreatePlayer($"{playerName} {i + 1}", team);
-                var playerIdentity = player.PlayerIdentities.First();
+                var player = _playerFaker.Generate();
+                var playerIdentity = _playerIdentityFaker.Generate();
                 playerIdentity.Player = player;
+                playerIdentity.Team = team;
+                player.PlayerIdentities.Add(playerIdentity);
                 poolOfPlayers.Add(playerIdentity);
             }
 
