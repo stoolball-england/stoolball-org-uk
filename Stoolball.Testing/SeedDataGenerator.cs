@@ -981,11 +981,6 @@ namespace Stoolball.Testing
             testData.MatchListings.AddRange(testData.Matches.Where(x => x.Tournament == null).Select(x => x.ToMatchListing()).Union(testData.Tournaments.Select(x => x.ToMatchListing())));
             testData.TournamentMatchListings.AddRange(testData.Matches.Where(x => x.Tournament != null).Select(x => x.ToMatchListing()));
 
-            // Find any player who has a single identity, and associate them to a different member
-            var playerWithSingleIdentity = testData.Players.First(x => x.PlayerIdentities.Count == 1);
-            playerWithSingleIdentity.MemberKey = testData.AnyMemberNotLinkedToPlayer().memberKey;
-            playerWithSingleIdentity.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.Member;
-
             // Get all batting records
             testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
 
@@ -1127,7 +1122,8 @@ namespace Stoolball.Testing
         {
             var providers = new BasePlayerDataProvider[]{
                 new PlayersLinkedToMembersProvider(_teamFakerFactory, _playerFakerFactory, _playerIdentityFakerFactory),
-                new PlayersNotLinkedToMembersProvider(_teamFakerFactory, _playerFakerFactory, _playerIdentityFakerFactory)
+                new PlayersNotLinkedToMembersProvider(_teamFakerFactory, _playerFakerFactory, _playerIdentityFakerFactory),
+                new PlayersLinkedToMembersOnSameTeamAsPlayersNotLinkedToMembersProvider(_teamFakerFactory, _playerFakerFactory, _playerIdentityFakerFactory)
             };
             var players = new List<Player>();
             foreach (var provider in providers)

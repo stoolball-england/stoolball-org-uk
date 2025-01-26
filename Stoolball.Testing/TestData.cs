@@ -87,6 +87,12 @@ namespace Stoolball.Testing
             return Players.First(x => x.PlayerIdentities.Count > 1 && additionalCriteria(x));
         }
 
+        internal Player AnyPlayerLinkedToMember(Func<Player, bool>? additionalCriteria = null)
+        {
+            additionalCriteria = additionalCriteria ?? (x => true);
+            return Players.First(x => x.MemberKey.HasValue && additionalCriteria(x));
+        }
+
         internal Player AnyPlayerNotLinkedToMember(Func<Player, bool>? additionalCriteria = null)
         {
             additionalCriteria = additionalCriteria ?? (x => true);

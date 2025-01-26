@@ -364,16 +364,28 @@ namespace Stoolball.Data.SqlServer
                     // Select the best route from the two players, and redirect.
                     var bestRoute = await FindBestRouteAndRedirect(targetPlayerBefore.PlayerRoute, identityToLinkBefore.PlayerRoute, transaction);
 
+                    // If this change was allowed because the current member is linking their own record, but acting as team owner,
+                    // ensure their MemberKey is preserved and that player identities are linked by Member
+                    if (identityToLinkBefore.MemberKey == memberKey)
+                    {
+                        _ = await connection.ExecuteAsync($"UPDATE {Tables.Player} SET MemberKey = @MemberKey WHERE PlayerId = @PlayerId",
+                                                            new { identityToLinkBefore.MemberKey, PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
+                    }
+                    if (targetPlayerBefore.MemberKey == memberKey || identityToLinkBefore.MemberKey == memberKey)
+                    {
+                        linkedBy = PlayerIdentityLinkedBy.Member;
+                    }
+
                     // Move the player identities from the identity to link's current player id to the target player's id.
                     if (bestRoute != targetPlayerBefore.PlayerRoute)
                     {
                         _ = await connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
                     }
-                    var movePlayerIdentity = new { LinkedBy = linkedBy.ToString(), PlayerId = targetPlayer, PlayerIdentityId = identityToLinkToTarget };
-                    _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy, PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", movePlayerIdentity, transaction).ConfigureAwait(false);
+                    var movePlayerIdentity = new { PlayerId = targetPlayer, PlayerIdentityId = identityToLinkToTarget };
+                    _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", movePlayerIdentity, transaction).ConfigureAwait(false);
 
-                    // If the target player has and identities with LinkedBy = DefaultIdentity, they should now be linked by this activity
-                    _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy WHERE PlayerId = @PlayerId AND LinkedBy = '{PlayerIdentityLinkedBy.DefaultIdentity.ToString()}'",
+                    // If the target player identities should now be linked by this activity
+                    _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy WHERE PlayerId = @PlayerId",
                                                       new { LinkedBy = linkedBy.ToString(), PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
 
                     // We also need to update statistics, and delete the now-unused player that the identity has been moved away from. 
@@ -422,12 +434,13 @@ namespace Stoolball.Data.SqlServer
                     {
                         PlayerIdentityId = identityToLinkToTarget,
                         PlayerIdForSourcePlayer = identityToLinkBefore.PlayerId,
-                        MemberKeyForSourcePlayer = identityToLinkBefore.MemberKey,
+                        PreviousMemberKeyForSourcePlayer = identityToLinkBefore.MemberKey,
                         PreviousRouteForSourcePlayer = identityToLinkBefore.PlayerRoute,
                         PlayerIdForTargetPlayer = targetPlayer,
-                        MemberKeyForTargetPlayer = targetPlayerBefore.MemberKey,
+                        PreviousMemberKeyForTargetPlayer = targetPlayerBefore.MemberKey,
                         PreviousRouteForTargetPlayer = targetPlayerBefore.PlayerRoute,
-                        NewRouteForTargetPlayer = updatedTargetPlayer.PlayerRoute
+                        NewRouteForTargetPlayer = updatedTargetPlayer.PlayerRoute,
+                        NewMemberKeyForTargetPlayer = targetPlayerBefore.MemberKey ?? identityToLinkBefore.MemberKey,
                     };
                 }
             }

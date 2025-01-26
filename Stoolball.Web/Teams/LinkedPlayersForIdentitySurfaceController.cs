@@ -114,7 +114,7 @@ namespace Stoolball.Web.Teams
                         var sourcePlayer = new Player
                         {
                             PlayerId = movedPlayer.PlayerIdForSourcePlayer,
-                            MemberKey = movedPlayer.MemberKeyForSourcePlayer,
+                            MemberKey = movedPlayer.PreviousMemberKeyForSourcePlayer,
                             PlayerRoute = movedPlayer.PreviousRouteForSourcePlayer
                         };
                         _playerCacheClearer.InvalidateCacheForPlayer(sourcePlayer);
