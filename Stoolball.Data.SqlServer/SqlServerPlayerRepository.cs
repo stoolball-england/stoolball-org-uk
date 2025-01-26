@@ -243,7 +243,7 @@ namespace Stoolball.Data.SqlServer
                         var replaceWithExistingPlayer = new { ExistingPlayerId = existingPlayerForMember.PlayerId, PlayerRoute = bestRoute, auditablePlayer.PlayerId, LinkedBy = PlayerIdentityLinkedBy.Member.ToString() };
                         if (bestRoute != existingPlayerForMember.PlayerRoute)
                         {
-                            await connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, PlayerId = existingPlayerForMember.PlayerId }, transaction);
+                            await connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, existingPlayerForMember.PlayerId }, transaction);
                         }
                         await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy, PlayerId = @ExistingPlayerId WHERE PlayerId = @PlayerId", replaceWithExistingPlayer, transaction);
 
