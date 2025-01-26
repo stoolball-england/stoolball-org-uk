@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Bogus;
 using Stoolball.Statistics;
 using Stoolball.Teams;
@@ -15,11 +14,11 @@ namespace Stoolball.Testing.PlayerDataProviders
 
         internal override IEnumerable<Player> CreatePlayers(TestData readOnlyTestData)
         {
-            var team = _teamFaker.Generate(1).Single();
+            var team = _teamFaker.Generate();
 
             // player with a single identity
-            var playerWithSingleIdentity = _playerFaker.Generate(1).Single();
-            playerWithSingleIdentity.PlayerIdentities.Add(_playerIdentityFaker.Generate(1).Single());
+            var playerWithSingleIdentity = _playerFaker.Generate();
+            playerWithSingleIdentity.PlayerIdentities.Add(_playerIdentityFaker.Generate());
             playerWithSingleIdentity.PlayerIdentities[0].Player = playerWithSingleIdentity;
             playerWithSingleIdentity.PlayerIdentities[0].Team = team;
             playerWithSingleIdentity.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity;
@@ -34,7 +33,7 @@ namespace Stoolball.Testing.PlayerDataProviders
 
         private Player CreatePlayerWithMultipleIdentities(int howManyIdentities, PlayerIdentityLinkedBy linkedBy, Team team)
         {
-            var player = _playerFaker.Generate(1).Single();
+            var player = _playerFaker.Generate();
             player.PlayerIdentities.AddRange(_playerIdentityFaker.Generate(howManyIdentities));
 
             foreach (var identity in player.PlayerIdentities)

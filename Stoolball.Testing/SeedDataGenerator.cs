@@ -26,17 +26,26 @@ namespace Stoolball.Testing
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly IPlayerIdentityFinder _playerIdentityFinder;
         private readonly IMatchFinder _matchFinder;
-        private readonly MatchFactory _matchFactory;
         private readonly IFakerFactory<Team> _teamFakerFactory;
         private readonly IFakerFactory<MatchLocation> _matchLocationFakerFactory;
         private readonly IFakerFactory<School> _schoolFakerFactory;
         private readonly IFakerFactory<Player> _playerFakerFactory;
         private readonly IFakerFactory<PlayerIdentity> _playerIdentityFakerFactory;
+        private readonly MatchFactory _matchFactory;
+        private readonly Faker<Competition> _competitionFaker;
+        private readonly Faker<Team> _teamFaker;
+        private readonly Faker<Club> _clubFaker;
+        private readonly Faker<MatchLocation> _matchLocationFaker;
+        private readonly Faker<School> _schoolFaker;
+        private readonly Faker<Player> _playerFaker;
+        private readonly Faker<PlayerIdentity> _playerIdentityFaker;
         private readonly Award _playerOfTheMatchAward;
         private readonly IOversHelper _oversHelper;
 
-        internal SeedDataGenerator(Randomiser randomiser, IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder,
-            IMatchFinder matchFinder, IFakerFactory<Team> teamFakerFactory, IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory,
+        internal SeedDataGenerator(Randomiser randomiser, IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator,
+            IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
+            IFakerFactory<Competition> competitionFakerFactory, IFakerFactory<Team> teamFakerFactory, IFakerFactory<Club> clubFakerFactory,
+            IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory,
             IFakerFactory<Player> playerFakerFactory, IFakerFactory<PlayerIdentity> playerIdentityFakerFactory, Award playerOfTheMatchAward)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
@@ -49,23 +58,18 @@ namespace Stoolball.Testing
             _schoolFakerFactory = schoolFakerFactory ?? throw new ArgumentNullException(nameof(schoolFakerFactory));
             _playerFakerFactory = playerFakerFactory ?? throw new ArgumentNullException(nameof(playerFakerFactory));
             _playerIdentityFakerFactory = playerIdentityFakerFactory ?? throw new ArgumentNullException(nameof(playerIdentityFakerFactory));
+            _competitionFaker = competitionFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(competitionFakerFactory));
+            _teamFaker = teamFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(teamFakerFactory));
+            _clubFaker = clubFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(clubFakerFactory));
+            _matchLocationFaker = matchLocationFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(matchLocationFakerFactory));
+            _schoolFaker = schoolFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(schoolFakerFactory));
+            _playerFaker = playerFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(playerFakerFactory));
+            _playerIdentityFaker = playerIdentityFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(playerIdentityFakerFactory));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
             _matchFactory = new MatchFactory(_randomiser, _playerOfTheMatchAward);
         }
 
-        private Club CreateClubWithMinimalDetails()
-        {
-            return new Club
-            {
-                ClubId = Guid.NewGuid(),
-                ClubName = "Club minimal",
-                ClubRoute = "/clubs/club-minimal-" + Guid.NewGuid(),
-                MemberGroupKey = Guid.NewGuid(),
-                MemberGroupName = "Club minimal owners"
-            };
-        }
-
-        private Club CreateClubWithTeams(Faker<Team> teamFaker)
+        private Club CreateClubWithTeams()
         {
             var club = new Club
             {
@@ -76,18 +80,18 @@ namespace Stoolball.Testing
                 MemberGroupName = "Club with teams owners",
             };
 
-            var inactiveAlphabeticallyFirst = teamFaker.Generate(1).Single();
+            var inactiveAlphabeticallyFirst = _teamFaker.Generate();
             inactiveAlphabeticallyFirst.TeamName = "Inactive team";
             inactiveAlphabeticallyFirst.Club = club;
             inactiveAlphabeticallyFirst.TeamType = TeamType.Representative;
             inactiveAlphabeticallyFirst.UntilYear = 2019;
 
-            var activeAlphabeticallySecond = teamFaker.Generate(1).Single();
+            var activeAlphabeticallySecond = _teamFaker.Generate();
             activeAlphabeticallySecond.TeamName = "Sort me first in club";
             activeAlphabeticallySecond.TeamType = TeamType.Regular;
             activeAlphabeticallySecond.Club = club;
 
-            var activeAlphabeticallyThird = teamFaker.Generate(1).Single();
+            var activeAlphabeticallyThird = _teamFaker.Generate();
             activeAlphabeticallyThird.TeamName = "Sort me second in club";
             activeAlphabeticallyThird.TeamType = TeamType.Occasional;
             activeAlphabeticallyThird.Club = club;
@@ -98,18 +102,6 @@ namespace Stoolball.Testing
             club.Teams.Add(inactiveAlphabeticallyFirst);
 
             return club;
-        }
-
-        internal Competition CreateCompetitionWithMinimalDetails()
-        {
-            return new Competition
-            {
-                CompetitionId = Guid.NewGuid(),
-                CompetitionName = "Minimal league",
-                CompetitionRoute = "/competitions/minimal-league-" + Guid.NewGuid(),
-                MemberGroupKey = Guid.NewGuid(),
-                MemberGroupName = "Minimal league owners"
-            };
         }
 
         private Competition CreateCompetitionWithFullDetails()
@@ -197,9 +189,9 @@ namespace Stoolball.Testing
             return season;
         }
 
-        private Team CreateTeamWithFullDetails(string teamName, Faker<Team> teamFaker)
+        private Team CreateTeamWithFullDetails(string teamName)
         {
-            var competition = CreateCompetitionWithMinimalDetails();
+            var competition = _competitionFaker.Generate();
             competition.PlayerType = PlayerType.Ladies; // Ensures there is always at least one Ladies competition
             var team = new Team
             {
@@ -225,8 +217,8 @@ namespace Stoolball.Testing
                 MemberGroupKey = Guid.NewGuid(),
                 MemberGroupName = teamName + " owners",
                 MatchLocations = new List<MatchLocation> {
-                    CreateMatchLocationWithMinimalDetails(),
-                    CreateMatchLocationWithFullDetails(teamFaker)
+                    _matchLocationFaker.Generate(),
+                    CreateMatchLocationWithFullDetails()
                 },
                 Seasons = new List<TeamInSeason> {
                     new TeamInSeason
@@ -252,40 +244,21 @@ namespace Stoolball.Testing
             return team;
         }
 
-        internal MatchLocation CreateMatchLocationWithMinimalDetails()
+        private MatchLocation CreateMatchLocationWithFullDetails()
         {
-            return new MatchLocation
-            {
-                MatchLocationId = Guid.NewGuid(),
-                PrimaryAddressableObjectName = "Primary Pitch 1",
-                SecondaryAddressableObjectName = "Our secondary ground",
-                StreetDescription = "Our street",
-                Locality = "Our locality",
-                Town = "Our town",
-                AdministrativeArea = "Our county",
-                Postcode = "AB1 2CD",
-                MatchLocationRoute = "/locations/our-ground-" + Guid.NewGuid(),
-                GeoPrecision = GeoPrecision.Postcode,
-                MemberGroupKey = Guid.NewGuid(),
-                MemberGroupName = "Our ground owners"
-            };
-        }
-
-        private MatchLocation CreateMatchLocationWithFullDetails(Faker<Team> teamFaker)
-        {
-            var activeTeam = teamFaker.Generate(1).Single();
+            var activeTeam = _teamFaker.Generate();
             activeTeam.TeamName = "Team active";
-            var anotherActiveTeam = teamFaker.Generate(1).Single();
+            var anotherActiveTeam = _teamFaker.Generate();
             anotherActiveTeam.TeamName = "Team that plays";
-            var transientTeam = teamFaker.Generate(1).Single();
+            var transientTeam = _teamFaker.Generate();
             transientTeam.TeamName = "Transient team";
             transientTeam.TeamType = TeamType.Transient;
-            var inactiveTeam = teamFaker.Generate(1).Single();
+            var inactiveTeam = _teamFaker.Generate();
             inactiveTeam.TeamName = "Inactive but alphabetically first";
             inactiveTeam.UntilYear = 2019;
 
-            var matchLocation = CreateMatchLocationWithMinimalDetails();
-            matchLocation.Teams = new List<Team> { inactiveTeam, activeTeam, transientTeam, anotherActiveTeam };
+            var matchLocation = _matchLocationFaker.Generate();
+            matchLocation.Teams = [inactiveTeam, activeTeam, transientTeam, anotherActiveTeam];
 
             activeTeam.MatchLocations.Add(matchLocation);
             anotherActiveTeam.MatchLocations.Add(matchLocation);
@@ -296,13 +269,13 @@ namespace Stoolball.Testing
         }
 
 
-        private Match CreateMatchInThePastWithFullDetails(Faker<Team> teamFaker, List<(Guid memberId, string memberName)> members)
+        private Match CreateMatchInThePastWithFullDetails(List<(Guid memberId, string memberName)> members)
         {
             // Note: Team names would sort the away team first alphabetically
             var homeTeam = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = teamFaker.Generate(1).Single(),
+                Team = _teamFaker.Generate(),
                 WonToss = true,
                 BattedFirst = true,
                 TeamRole = TeamRole.Home
@@ -311,7 +284,7 @@ namespace Stoolball.Testing
             var awayTeam = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = teamFaker.Generate(1).Single(),
+                Team = _teamFaker.Generate(),
                 WonToss = false,
                 BattedFirst = false,
                 TeamRole = TeamRole.Away
@@ -356,7 +329,7 @@ namespace Stoolball.Testing
             var thirdInningsOverSets = CreateOverSets();
             var fourthInningsOverSets = CreateOverSets();
 
-            var competition = CreateCompetitionWithMinimalDetails();
+            var competition = _competitionFaker.Generate();
             var season = CreateSeasonWithMinimalDetails(competition, 2020, 2020);
             competition.Seasons.Add(season);
 
@@ -472,7 +445,7 @@ namespace Stoolball.Testing
                         OversBowled = CreateOversBowled(new List<PlayerIdentity>(homePlayers), fourthInningsOverSets)
                     }
                 },
-                MatchLocation = CreateMatchLocationWithMinimalDetails(),
+                MatchLocation = _matchLocationFaker.Generate(),
                 MatchResultType = MatchResultType.HomeWin,
                 MatchNotes = "<p>This is a test match, not a Test Match.</p>",
                 MatchRoute = "/matches/team-a-vs-team-b-1jul2020-" + Guid.NewGuid(),
@@ -515,10 +488,9 @@ namespace Stoolball.Testing
             };
         }
 
-        private Tournament CreateTournamentInThePastWithFullDetailsExceptMatches(Faker<Team> teamFaker, List<(Guid memberKey, string memberName)> members)
+        private Tournament CreateTournamentInThePastWithFullDetailsExceptMatches(List<(Guid memberKey, string memberName)> members)
         {
-            var competition1 = CreateCompetitionWithMinimalDetails();
-            var competition2 = CreateCompetitionWithMinimalDetails();
+            var competitions = _competitionFaker.Generate(2);
             var tournament = new Tournament
             {
                 TournamentId = Guid.NewGuid(),
@@ -533,27 +505,27 @@ namespace Stoolball.Testing
                 SpacesInTournament = 8,
                 TournamentNotes = "Notes about the tournament",
                 MemberKey = Guid.NewGuid(),
-                Teams = new List<TeamInTournament> {
+                Teams = [
                     new TeamInTournament {
                         TournamentTeamId = Guid.NewGuid(),
-                        Team = teamFaker.Generate(1).Single()
+                        Team = _teamFaker.Generate()
                     },
                     new TeamInTournament {
                         TournamentTeamId = Guid.NewGuid(),
-                        Team = teamFaker.Generate(1).Single()
+                        Team = _teamFaker.Generate()
                     },
                     new TeamInTournament {
                         TournamentTeamId = Guid.NewGuid(),
-                        Team = teamFaker.Generate(1).Single()
+                        Team = _teamFaker.Generate()
                     }
-                },
-                TournamentLocation = CreateMatchLocationWithMinimalDetails(),
+                ],
+                TournamentLocation = _matchLocationFaker.Generate(),
                 DefaultOverSets = CreateOverSets(),
-                Seasons = new List<Season>()
-                {
-                    CreateSeasonWithMinimalDetails(competition1, 2020, 2020),
-                    CreateSeasonWithMinimalDetails(competition2, 2020, 2020)
-                },
+                Seasons =
+                [
+                    CreateSeasonWithMinimalDetails(competitions[0], 2020, 2020),
+                    CreateSeasonWithMinimalDetails(competitions[1], 2020, 2020)
+                ],
                 Comments = CreateComments(10, members)
             };
             foreach (var season in tournament.Seasons)
@@ -722,17 +694,17 @@ namespace Stoolball.Testing
             return comments;
         }
 
-        internal List<(Team team, List<PlayerIdentity> identities)> GenerateTeams(Faker<Team> teamFaker)
+        internal List<(Team team, List<PlayerIdentity> identities)> GenerateTeams()
         {
             // Create a pool of teams of 8 players
             var poolOfTeams = new List<(Team team, List<PlayerIdentity> identities)>();
             for (var i = 0; i < 5; i++)
             {
-                var team = _randomiser.IsEven(i) ? CreateTeamWithFullDetails($"Team {i + 1}", teamFaker) : teamFaker.Generate(1).Single();
+                var team = _randomiser.IsEven(i) ? CreateTeamWithFullDetails($"Team {i + 1}") : _teamFaker.Generate();
                 poolOfTeams.Add((team, CreatePlayerIdentitiesForTeam(team, $"{team.TeamName} pool player")));
                 if (_randomiser.IsEven(i))
                 {
-                    poolOfTeams[poolOfTeams.Count - 1].team.Club = CreateClubWithMinimalDetails();
+                    poolOfTeams[poolOfTeams.Count - 1].team.Club = _clubFaker.Generate();
                 }
             }
 
@@ -748,9 +720,8 @@ namespace Stoolball.Testing
         {
             var testData = new TestData();
             var playerComparer = new PlayerEqualityComparer();
-            var teamFaker = _teamFakerFactory.Create();
 
-            var poolOfTeamsWithPlayers = GenerateTeams(teamFaker);
+            var poolOfTeamsWithPlayers = GenerateTeams();
 
             // Create a pool of competitions
             for (var i = 0; i < 10; i++)
@@ -778,7 +749,7 @@ namespace Stoolball.Testing
                 }
                 else
                 {
-                    testData.Competitions.Add(CreateCompetitionWithMinimalDetails());
+                    testData.Competitions.Add(_competitionFaker.Generate());
                     testData.Competitions[testData.Competitions.Count - 1].Seasons.Add(CreateSeasonWithMinimalDetails(testData.Competitions[testData.Competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i));
                 }
             }
@@ -786,12 +757,12 @@ namespace Stoolball.Testing
             // Create a pool of match locations 
             for (var i = 0; i < 10; i++)
             {
-                testData.MatchLocations.Add(_randomiser.IsEven(i) ? CreateMatchLocationWithFullDetails(teamFaker) : CreateMatchLocationWithMinimalDetails());
+                testData.MatchLocations.Add(_randomiser.IsEven(i) ? CreateMatchLocationWithFullDetails() : _matchLocationFaker.Generate());
             }
             testData.MatchLocations.AddRange(poolOfTeamsWithPlayers.SelectMany(x => x.team.MatchLocations).OfType<MatchLocation>());
 
             // Create match and tournament data
-            testData.Matches = GenerateMatchData(testData, teamFaker, poolOfTeamsWithPlayers);
+            testData.Matches = GenerateMatchData(testData, poolOfTeamsWithPlayers);
 
             testData.MatchInThePastWithMinimalDetails = FindMatchInThePastWithMinimalDetails(testData);
 
@@ -807,7 +778,7 @@ namespace Stoolball.Testing
             testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
             for (var i = 0; i < 10; i++)
             {
-                var tournament = CreateTournamentInThePastWithFullDetailsExceptMatches(teamFaker, testData.Members);
+                var tournament = CreateTournamentInThePastWithFullDetailsExceptMatches(testData.Members);
                 if (testData.TournamentInThePastWithFullDetails == null) { testData.TournamentInThePastWithFullDetails = tournament; }
                 testData.Tournaments.Add(tournament);
 
@@ -840,31 +811,26 @@ namespace Stoolball.Testing
             testData.TournamentInTheFutureWithMinimalDetails.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
             testData.Tournaments.Add(testData.TournamentInTheFutureWithMinimalDetails);
 
-            testData.ClubWithMinimalDetails = CreateClubWithMinimalDetails();
+            testData.ClubWithMinimalDetails = _clubFaker.Generate();
 
-            var clubWithOneActiveTeam = CreateClubWithMinimalDetails();
-            var onlyTeamInClub = teamFaker.Generate(1).Single();
+            var clubWithOneActiveTeam = _clubFaker.Generate();
+            var onlyTeamInClub = _teamFaker.Generate();
             onlyTeamInClub.TeamName = "Only team in the club";
             clubWithOneActiveTeam.Teams.Add(onlyTeamInClub);
             onlyTeamInClub.Club = clubWithOneActiveTeam;
 
-            var clubWithOneActiveTeamAndOthersInactive = CreateClubWithMinimalDetails();
-            var activeTeamInClub = teamFaker.Generate(1).Single();
+            var clubWithOneActiveTeamAndOthersInactive = _clubFaker.Generate();
+            var activeTeamInClub = _teamFaker.Generate();
             activeTeamInClub.TeamName = "Only active team in the club";
-            var inactiveTeamInClub = teamFaker.Generate(1).Single();
+            var inactiveTeamInClub = _teamFaker.Generate();
             inactiveTeamInClub.TeamName = "Inactive team in a club with an active team";
             inactiveTeamInClub.UntilYear = DateTimeOffset.UtcNow.Year - 2;
             clubWithOneActiveTeamAndOthersInactive.Teams.AddRange(new[] { activeTeamInClub, inactiveTeamInClub });
             activeTeamInClub.Club = clubWithOneActiveTeamAndOthersInactive;
             inactiveTeamInClub.Club = clubWithOneActiveTeamAndOthersInactive;
 
-            testData.ClubWithTeamsAndMatchLocation = CreateClubWithTeams(teamFaker);
-            testData.MatchLocationForClub = CreateMatchLocationWithMinimalDetails();
-            testData.MatchLocationForClub.PrimaryAddressableObjectName = "Club PAON";
-            testData.MatchLocationForClub.SecondaryAddressableObjectName = "Club SAON";
-            testData.MatchLocationForClub.Locality = "Club locality";
-            testData.MatchLocationForClub.Town = "Club town";
-            testData.MatchLocationForClub.AdministrativeArea = "Club area";
+            testData.ClubWithTeamsAndMatchLocation = CreateClubWithTeams();
+            testData.MatchLocationForClub = _matchLocationFaker.Generate();
             var teamWithMatchLocation = testData.ClubWithTeamsAndMatchLocation.Teams.First(x => !x.UntilYear.HasValue);
             teamWithMatchLocation.MatchLocations.Add(testData.MatchLocationForClub);
             testData.MatchLocationForClub.Teams.Add(teamWithMatchLocation);
@@ -939,7 +905,7 @@ namespace Stoolball.Testing
             testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
                 .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
                 .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season?.Competition))
-                .Union(new[] { CreateCompetitionWithMinimalDetails() })
+                .Union(new[] { _competitionFaker.Generate() })
                 .OfType<Competition>()
                 .Distinct(new CompetitionEqualityComparer()).ToList();
             testData.CompetitionWithMinimalDetails = testData.Competitions.First(x =>
@@ -951,7 +917,7 @@ namespace Stoolball.Testing
                 );
             testData.CompetitionWithFullDetails = testData.Competitions.First(x => x.Seasons.Any());
 
-            var competitionForSeason = CreateCompetitionWithMinimalDetails();
+            var competitionForSeason = _competitionFaker.Generate();
             competitionForSeason.UntilYear = 2021;
             testData.SeasonWithMinimalDetails = CreateSeasonWithMinimalDetails(competitionForSeason, 2020, 2020);
             competitionForSeason.Seasons.Add(testData.SeasonWithMinimalDetails);
@@ -1459,7 +1425,7 @@ namespace Stoolball.Testing
         }
 
 
-        internal List<Match> GenerateMatchData(TestData testData, Faker<Team> teamFaker, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
+        internal List<Match> GenerateMatchData(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
         {
             var members = CreateMembers();
 
@@ -1538,9 +1504,9 @@ namespace Stoolball.Testing
             matchInTheFutureWithMinimalDetails.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
             matches.Add(matchInTheFutureWithMinimalDetails);
             matches.Add(_matchFactory.CreateMatchInThePastWithMinimalDetails());
-            matches.Add(CreateMatchInThePastWithFullDetails(teamFaker, members));
+            matches.Add(CreateMatchInThePastWithFullDetails(members));
 
-            var matchInThePastWithFullDetailsAndTournament = CreateMatchInThePastWithFullDetails(teamFaker, members);
+            var matchInThePastWithFullDetailsAndTournament = CreateMatchInThePastWithFullDetails(members);
             matchInThePastWithFullDetailsAndTournament.Tournament = CreateTournamentInThePastWithMinimalDetails();
             matchInThePastWithFullDetailsAndTournament.Season!.FromYear = matchInThePastWithFullDetailsAndTournament.Season.UntilYear = 2018;
             matches.Add(matchInThePastWithFullDetailsAndTournament);

@@ -21,16 +21,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var playerIdentityFinder = new PlayerIdentityFinder();
             var matchFinder = new MatchFinder();
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
+            var competitionFakerFactory = new CompetitionFakerFactory();
             var teamFakerFactory = new TeamFakerFactory();
+            var clubFakerFactory = new ClubFakerFactory();
             var matchLocationFakerFactory = new MatchLocationFakerFactory();
             var schoolFakerFactory = new SchoolFakerFactory();
             var playerIdentityFakerFactory = new PlayerIdentityFakerFactory();
             var playerFakerFactory = new PlayerFakerFactory();
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
-            var randomSeedDataGenerator = new SeedDataGenerator(randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder, teamFakerFactory,
-                matchLocationFakerFactory, schoolFakerFactory, playerFakerFactory, playerIdentityFakerFactory, playerOfTheMatchAward);
+            var randomSeedDataGenerator = new SeedDataGenerator(randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
+                competitionFakerFactory, teamFakerFactory, clubFakerFactory, matchLocationFakerFactory, schoolFakerFactory, playerFakerFactory,
+                playerIdentityFakerFactory, playerOfTheMatchAward);
 
-            // Use Bogus to generate Schools data
             Randomizer.Seed = new Random(85437684);
             TestData = randomSeedDataGenerator.GenerateTestData();
 

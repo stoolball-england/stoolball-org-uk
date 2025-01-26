@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Stoolball.Awards;
 using Stoolball.Clubs;
 using Stoolball.Matches;
@@ -29,14 +28,18 @@ namespace Stoolball.UnitTests.Statistics
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
             var teamFakerFactory = new TeamFakerFactory();
             var teamFaker = teamFakerFactory.Create();
+            var competitionFakerFactory = new CompetitionFakerFactory();
+            var competitionFaker = competitionFakerFactory.Create();
+            var matchLocationFakerFactory = new MatchLocationFakerFactory();
+            var matchLocationFaker = matchLocationFakerFactory.Create();
             var seedDataGenerator = new SeedDataGenerator(randomiser, _oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                teamFakerFactory, new MatchLocationFakerFactory(), new SchoolFakerFactory(), new PlayerFakerFactory(), new PlayerIdentityFakerFactory(), playerOfTheMatchAward);
+                competitionFakerFactory, teamFakerFactory, new ClubFakerFactory(), matchLocationFakerFactory, new SchoolFakerFactory(), new PlayerFakerFactory(), new PlayerIdentityFakerFactory(), playerOfTheMatchAward);
 
 
             var homeTeam = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = teamFaker.Generate(1).Single(),
+                Team = teamFaker.Generate(),
                 WonToss = true,
                 BattedFirst = true,
                 TeamRole = TeamRole.Home
@@ -45,7 +48,7 @@ namespace Stoolball.UnitTests.Statistics
             var awayTeam = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = teamFaker.Generate(1).Single(),
+                Team = teamFaker.Generate(),
                 WonToss = false,
                 BattedFirst = false,
                 TeamRole = TeamRole.Away
@@ -88,7 +91,7 @@ namespace Stoolball.UnitTests.Statistics
             var thirdInningsOverSets = seedDataGenerator.CreateOverSets();
             var fourthInningsOverSets = seedDataGenerator.CreateOverSets();
 
-            var competition = seedDataGenerator.CreateCompetitionWithMinimalDetails();
+            var competition = competitionFaker.Generate();
             var season = seedDataGenerator.CreateSeasonWithMinimalDetails(competition, 2020, 2020);
             competition.Seasons.Add(season);
 
@@ -207,7 +210,7 @@ namespace Stoolball.UnitTests.Statistics
                         OversBowled = seedDataGenerator.CreateOversBowled(HomePlayers, fourthInningsOverSets)
                     }
                 },
-                MatchLocation = seedDataGenerator.CreateMatchLocationWithMinimalDetails(),
+                MatchLocation = matchLocationFaker.Generate(),
                 MatchResultType = MatchResultType.HomeWin,
                 MatchNotes = "<p>This is a test match, not a Test Match.</p>",
                 MatchRoute = "/matches/team-a-vs-team-b-1jul2020-" + Guid.NewGuid(),

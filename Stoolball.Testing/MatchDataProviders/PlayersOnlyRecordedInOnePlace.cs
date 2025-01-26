@@ -43,7 +43,7 @@ namespace Stoolball.Testing.MatchDataProviders
             match.MatchInnings[1].BattingMatchTeamId = match.Teams[1].MatchTeamId;
             match.MatchInnings[1].BattingTeam = match.Teams[1];
 
-            var bowler = _playerIdentityFaker.Generate(1).Single();
+            var bowler = _playerIdentityFaker.Generate();
             bowler.Team = match.Teams[1].Team;
             match.MatchInnings[0].OversBowled.Add(new Over
             {

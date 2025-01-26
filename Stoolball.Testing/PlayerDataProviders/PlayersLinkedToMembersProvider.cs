@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Bogus;
 using Stoolball.Statistics;
 using Stoolball.Teams;
@@ -16,7 +15,7 @@ namespace Stoolball.Testing.PlayerDataProviders
 
         internal override IEnumerable<Player> CreatePlayers(TestData readOnlyTestData)
         {
-            var team = _teamFaker.Generate(1).Single();
+            var team = _teamFaker.Generate();
 
             // two players with only one identity, on the same team, and both linked to a member
             var players = _playerFaker.Generate(2);
@@ -32,7 +31,7 @@ namespace Stoolball.Testing.PlayerDataProviders
             }
 
             // another player on the same team, with two identities both linked by member
-            var playerWithTwoIdentitiesLinkedByMember = _playerFaker.Generate(1).Single();
+            var playerWithTwoIdentitiesLinkedByMember = _playerFaker.Generate();
             playerWithTwoIdentitiesLinkedByMember.PlayerIdentities.AddRange(_playerIdentityFaker.Generate(2));
             playerWithTwoIdentitiesLinkedByMember.MemberKey = Guid.NewGuid();
 
@@ -45,14 +44,14 @@ namespace Stoolball.Testing.PlayerDataProviders
             players.Add(playerWithTwoIdentitiesLinkedByMember);
 
             // another player on the same team, not linked to a member
-            var playerWithoutMember = _playerFaker.Generate(1).Single();
+            var playerWithoutMember = _playerFaker.Generate();
             playerWithoutMember.PlayerIdentities.Add(identities[2]);
             identities[2].Player = playerWithoutMember;
             identities[2].Team = team;
             players.Add(playerWithoutMember);
 
             // another player on the same team, with two identities but only one linked by member
-            var playerWithTwoIdentitiesOneLinkedByMember = _playerFaker.Generate(1).Single();
+            var playerWithTwoIdentitiesOneLinkedByMember = _playerFaker.Generate();
             playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities.AddRange(_playerIdentityFaker.Generate(2));
             playerWithTwoIdentitiesOneLinkedByMember.MemberKey = Guid.NewGuid();
 

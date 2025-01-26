@@ -20,6 +20,7 @@ namespace Stoolball.Testing.Fakers
                 .RuleFor(x => x.Town, faker => maxLength(faker.Address.City(), 30))
                 .RuleFor(x => x.AdministrativeArea, faker => maxLength(faker.Address.County(), 30))
                 .RuleFor(x => x.Postcode, faker => maxLength(faker.Address.ZipCode(), 8))
+                .RuleFor(x => x.GeoPrecision, faker => faker.PickRandom<GeoPrecision>())
                 .RuleFor(x => x.MemberGroupKey, () => Guid.NewGuid())
                 .RuleFor(x => x.MemberGroupName, (faker, location) => location.PrimaryAddressableObjectName + " " + location.StreetDescription + " owners")
                 .RuleFor(x => x.MatchLocationRoute, (faker, location) => "/locations/" + (location.PrimaryAddressableObjectName + " " + location.StreetDescription).Kebaberize());
