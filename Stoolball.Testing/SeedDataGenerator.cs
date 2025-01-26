@@ -972,7 +972,7 @@ namespace Stoolball.Testing
                 .First();
             testData.BowlerWithMultipleIdentities!.PlayerIdentities.Clear();
             testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player?.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
-            testData.BowlerWithMultipleIdentities.MemberKey = testData.Members.First().memberKey;
+            testData.BowlerWithMultipleIdentities.MemberKey = testData.AnyMemberNotLinkedToPlayer().memberKey;
             foreach (var identity in testData.BowlerWithMultipleIdentities.PlayerIdentities)
             {
                 identity.LinkedBy = PlayerIdentityLinkedBy.Member;
@@ -983,7 +983,7 @@ namespace Stoolball.Testing
 
             // Find any player who has a single identity, and associate them to a different member
             var playerWithSingleIdentity = testData.Players.First(x => x.PlayerIdentities.Count == 1);
-            playerWithSingleIdentity.MemberKey = testData.Members[1].memberKey;
+            playerWithSingleIdentity.MemberKey = testData.AnyMemberNotLinkedToPlayer().memberKey;
             playerWithSingleIdentity.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.Member;
 
             // Get all batting records
