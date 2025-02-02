@@ -19,7 +19,7 @@
 }
 @{
     if (Model.Player is null) { return; }
-    var notIdentities = new StringBuilder();
+    var notIdentities = new StringBuilder($"&not={Model.ContextIdentity!.PlayerIdentityId}");
     var identitiesToShow = Model.ShowLinkedIdentityInTable ? Model.Player.PlayerIdentities : Model.Player.PlayerIdentities.Where(id => id.PlayerIdentityId != Model.ContextIdentity!.PlayerIdentityId).ToList();
 }
 <table class="table table-hover related-items linked-players" data-related-item="player">
