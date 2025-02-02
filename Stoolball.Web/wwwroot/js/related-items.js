@@ -183,12 +183,14 @@ function createRelatedItemsEditor() {
             ".related-item__search"
           );
           if (searchField) {
-            $(searchField).autocomplete({
-              serviceUrl: editorUtilities.resetAutocompleteParams(
-                selectedItem,
-                searchField.getAttribute("data-url")
-              ),
-            });
+            $(searchField)
+              .autocomplete()
+              .setOptions({
+                serviceUrl: editorUtilities.resetAutocompleteParams(
+                  selectedItem,
+                  searchField.getAttribute("data-url")
+                ),
+              });
 
             /* Set the focus to the search field */
             searchField.focus();
@@ -249,12 +251,14 @@ function createRelatedItemsEditor() {
             );
 
             /* Reset autocomplete options so the added team is excluded from further suggestions */
-            $(this).autocomplete({
-              serviceUrl: editorUtilities.resetAutocompleteParams(
-                selectedItem,
-                url
-              ),
-            });
+            $(this)
+              .autocomplete()
+              .setOptions({
+                serviceUrl: editorUtilities.resetAutocompleteParams(
+                  selectedItem,
+                  url
+                ),
+              });
 
             /* Clear the search field */
             this.value = "";
