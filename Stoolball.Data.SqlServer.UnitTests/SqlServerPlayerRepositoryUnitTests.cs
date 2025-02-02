@@ -140,7 +140,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.LinkPlayerIdentity(Guid.NewGuid(), Guid.NewGuid(), PlayerIdentityLinkedBy.Team, Guid.NewGuid(), memberName));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.LinkPlayers(Guid.NewGuid(), Guid.NewGuid(), PlayerIdentityLinkedBy.Team, Guid.NewGuid(), memberName));
         }
 
         [Fact]

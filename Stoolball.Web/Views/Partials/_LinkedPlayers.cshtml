@@ -49,6 +49,7 @@
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
                         @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", identitiesToShow[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = identitiesToShow[i].PlayerIdentityId })
+                        @Html.Hidden($"PlayerIdentities[{i}].PlayerId", identitiesToShow[i].Player?.PlayerId, new { @class = "related-item__data", data_item = identitiesToShow[i].Player?.PlayerId})
                         @if ((identitiesToShow[i].LinkedBy == PlayerIdentityLinkedBy.Member && Model.CanUnlinkIdentitiesLinkedByMember) ||
                        (identitiesToShow[i].LinkedBy == PlayerIdentityLinkedBy.Team && Model.CanUnlinkIdentitiesLinkedByTeam))
                         {
@@ -97,6 +98,7 @@
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
                         <input name="PlayerIdentities[0].PlayerIdentityId" class="related-item__data related-item__id" type="hidden" value="{{data.playerIdentityId}}" data-item="{{data.playerIdentityId}}" />
+                        <input name="PlayerIdentities[0].Player.PlayerId" class="related-item__data" type="hidden" value="{{data.playerId}}" data-item="{{data.playerIdentityId}}" />
                         <button type="button" class="btn-delete-icon">@await Html.PartialAsync("_DeleteIcon", "Remove {{value}}")</button>
                     </div>
                 </td>

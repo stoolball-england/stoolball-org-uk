@@ -2,9 +2,8 @@
 
 namespace Stoolball.Data.Abstractions.Models
 {
-    public record MovedPlayerIdentity
+    public record LinkPlayersResult
     {
-        public Guid PlayerIdentityId { get; set; }
         public Guid PlayerIdForSourcePlayer { get; set; }
         public Guid? PreviousMemberKeyForSourcePlayer { get; set; }
         public required string PreviousRouteForSourcePlayer { get; set; }

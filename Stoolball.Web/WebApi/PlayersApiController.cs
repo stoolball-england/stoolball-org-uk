@@ -78,6 +78,7 @@ namespace Stoolball.Web.WebApi
                     value = x.PlayerIdentityName,
                     data = new
                     {
+                        playerId = x.Player?.PlayerId,
                         playerIdentityId = x.PlayerIdentityId.ToString(),
                         playerIdentityName = x.PlayerIdentityName,
                         playerRecord = BuildPlayerRecord(x, playerFilter.TeamIds.Count != 1),

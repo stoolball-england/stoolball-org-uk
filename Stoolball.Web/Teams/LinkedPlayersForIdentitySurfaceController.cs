@@ -68,7 +68,7 @@ namespace Stoolball.Web.Teams
             else
             {
                 model.ContextIdentity.Team = await _teamDataSource.ReadTeamByRoute(model.ContextIdentity.Team.TeamRoute!).ConfigureAwait(false);
-                if (model.ContextIdentity?.Team == null) {  return NotFound(); }
+                if (model.ContextIdentity?.Team == null) { return NotFound(); }
 
                 model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(model.ContextIdentity.Team);
                 if (!model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
@@ -88,10 +88,12 @@ namespace Stoolball.Web.Teams
                 var identitiesToKeep = submittedIdentities.Where(id => previousIdentities.Contains(id)).Union([model.ContextIdentity.PlayerIdentityId.Value]);
                 var identitiesToUnlink = model.Player!.PlayerIdentities.Where(id => id.LinkedBy == PlayerIdentityLinkedBy.Team && !identitiesToKeep.Contains(id.PlayerIdentityId!.Value));
 
-                var movedPlayerResults = new List<MovedPlayerIdentity>();
-                foreach (var identity in identitiesToLink)
+                var movedPlayerResults = new List<LinkPlayersResult>();
+
+                var playersToLink = formData.PlayerIdentities.Where(pi => identitiesToLink.Contains(pi.PlayerIdentityId!.Value)).Select(pi => pi.Player!.PlayerId!.Value).Distinct();
+                foreach (var playerId in playersToLink)
                 {
-                    movedPlayerResults.Add(await _playerRepository.LinkPlayerIdentity(model.Player.PlayerId!.Value, identity, roleGrantingPermission, currentMember!.Key, currentMember.Name!).ConfigureAwait(false));
+                    movedPlayerResults.Add(await _playerRepository.LinkPlayers(model.Player.PlayerId!.Value, playerId, roleGrantingPermission, currentMember!.Key, currentMember.Name!).ConfigureAwait(false));
                 }
 
                 foreach (var identity in identitiesToUnlink)

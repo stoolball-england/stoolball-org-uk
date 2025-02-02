@@ -21,7 +21,7 @@ using static Stoolball.Constants;
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRepositoryTests
 {
     [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
-    public class LinkPlayerIdentityTests(SqlServerTestDataFixture _fixture) : IDisposable
+    public class LinkPlayersTests(SqlServerTestDataFixture _fixture) : IDisposable
     {
         #region Setup and dispose
         private readonly IDatabaseConnectionFactory _connectionFactory = _fixture.ConnectionFactory;
@@ -56,17 +56,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
 
         #region Never allowed
         [Fact]
-        public async Task LinkPlayerIdentity_throws_InvalidOperationException_if_identity_is_already_linked_to_target_player()
+        public async Task LinkPlayers_throws_InvalidOperationException_if_player_to_link_is_same_as_target_player()
         {
             var player = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity();
             SetupMocksForLinkPlayerIdentity(player, player);
 
             var repo = CreateRepository();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player.PlayerId!.Value, player.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(player.PlayerId!.Value, player.PlayerId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name"));
         }
 
         [Fact]
-        public async Task LinkPlayerIdentity_throws_InvalidOperationException_if_both_players_are_linked_to_a_member()
+        public async Task LinkPlayers_throws_InvalidOperationException_if_both_players_are_linked_to_a_member()
         {
             var player1 = _testData.AnyPlayerLinkedToMemberWithOnlyOneIdentity(p => p.PlayerIdentities[0].LinkedBy == PlayerIdentityLinkedBy.Member &&
                                                                                     _testData.Players.Any(p2 => p2.PlayerIdentities.Count == 1 &&
@@ -80,7 +80,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             SetupMocksForLinkPlayerIdentity(player1, player2);
 
             var repo = CreateRepository();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name").ConfigureAwait(false));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(player1.PlayerId!.Value, player2.PlayerId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name").ConfigureAwait(false));
         }
 
         [Theory]
@@ -90,7 +90,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
         [InlineData(false, 1, false)]
         [InlineData(false, 2, true)]
         [InlineData(false, 2, false)]
-        public async Task LinkPlayerIdentity_throws_InvalidOperationException_if_identity_to_link_is_linked_to_other_identities(
+        public async Task LinkPlayers_throws_InvalidOperationException_if_player_to_link_has_multiple_identities(
             bool targetPlayerIsLinkedToAnyMember,
             int totalIdentitiesForTargetPlayer,
             bool identityToLinkIsLinkedToAnyMember)
@@ -105,16 +105,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
                                                             p.PlayerIdentities.Count == totalIdentitiesForTargetPlayer &&
                                                             p.PlayerIdentities.All(pi => pi.LinkedBy == ExpectedLinkedBy(targetPlayerIsLinkedToAnyMember, totalIdentitiesForTargetPlayer > 1)) &&
                                                             _testData.Players.Any(p2 => selectPlayerToLinkOnTheSameTeam(p2, p)));
-            var playerWithIdentityToLink = _testData.Players.First(p => selectPlayerToLinkOnTheSameTeam(p, targetPlayer));
+            var playerToLink = _testData.Players.First(p => selectPlayerToLinkOnTheSameTeam(p, targetPlayer));
 
-            SetupMocksForLinkPlayerIdentity(targetPlayer, playerWithIdentityToLink);
+            SetupMocksForLinkPlayerIdentity(targetPlayer, playerToLink);
 
             var repo = CreateRepository();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(targetPlayer.PlayerId!.Value, playerWithIdentityToLink.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name"));
         }
 
         [Fact]
-        public async Task LinkPlayerIdentity_throws_InvalidOperationException_if_member_for_player_to_link_has_linked_identities_on_multiple_teams()
+        public async Task LinkPlayers_throws_InvalidOperationException_if_member_for_player_to_link_has_linked_identities_on_multiple_teams()
         {
             Func<Player, Player, bool> selectPlayerToLinkOnTheSameTeam =
               (playerToMatch, playerOnTheSameTeam) => playerToMatch.MemberKey.HasValue &&
@@ -126,75 +126,75 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var targetPlayer = _testData.AnyPlayerNotLinkedToMemberWithMultipleIdentities(p =>
                                                         p.PlayerIdentities.All(pi => pi.LinkedBy == PlayerIdentityLinkedBy.Team) &&
                                                         _testData.Players.Any(p2 => selectPlayerToLinkOnTheSameTeam(p2, p)));
-            var playerWithIdentityToLink = _testData.Players.First(p => selectPlayerToLinkOnTheSameTeam(p, targetPlayer));
+            var playerToLink = _testData.Players.First(p => selectPlayerToLinkOnTheSameTeam(p, targetPlayer));
 
-            SetupMocksForLinkPlayerIdentity(targetPlayer, playerWithIdentityToLink);
+            SetupMocksForLinkPlayerIdentity(targetPlayer, playerToLink);
 
             var repo = CreateRepository();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(targetPlayer.PlayerId!.Value, playerWithIdentityToLink.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name"));
         }
 
         [Fact]
-        public async Task LinkPlayerIdentity_throws_InvalidOperationException_if_target_player_does_not_have_an_identity_on_the_same_team_as_identity_to_link()
+        public async Task LinkPlayers_throws_InvalidOperationException_if_target_player_does_not_have_an_identity_on_the_same_team_as_player_to_link()
         {
             var player1 = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity();
             var player2 = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => !p.IsOnTheSameTeamAs(player1));
             SetupMocksForLinkPlayerIdentity(player1, player2);
 
             var repo = CreateRepository();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name"));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(player1.PlayerId!.Value, player2.PlayerId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name"));
         }
         #endregion
 
         #region Not allowed, because either player is linked to a member who is not the current member
 
         [Fact]
-        public async Task LinkPlayerIdentity_throws_InvalidOperationException_if_target_player_is_linked_to_a_member_who_is_not_the_current_member()
+        public async Task LinkPlayers_throws_InvalidOperationException_if_target_player_is_linked_to_a_member_who_is_not_the_current_member()
         {
             var repo = CreateRepository();
 
             var currentMember = _testData.AnyMemberLinkedToPlayer();
             var targetPlayer = _testData.AnyPlayerLinkedToMemberWithOnlyOneIdentity(p => p.MemberKey != currentMember.memberKey && _testData.Players.Any(p2 => p2.MemberKey is null && p2.IsOnTheSameTeamAs(p)));
-            var playerWithIdentityToLink = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.IsOnTheSameTeamAs(targetPlayer));
-            SetupMocksForLinkPlayerIdentity(targetPlayer, playerWithIdentityToLink);
+            var playerToLink = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.IsOnTheSameTeamAs(targetPlayer));
+            SetupMocksForLinkPlayerIdentity(targetPlayer, playerToLink);
 
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(targetPlayer.PlayerId!.Value, playerWithIdentityToLink.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, currentMember.memberKey, currentMember.memberName).ConfigureAwait(false));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, currentMember.memberKey, currentMember.memberName).ConfigureAwait(false));
         }
 
         [Fact]
-        public async Task LinkPlayerIdentity_throws_InvalidOperationException_if_identity_to_link_is_linked_to_a_member_who_is_not_the_current_member()
+        public async Task LinkPlayers_throws_InvalidOperationException_if_player_to_link_is_linked_to_a_member_who_is_not_the_current_member()
         {
             var repo = CreateRepository();
 
             var currentMember = _testData.AnyMemberLinkedToPlayer();
             var targetPlayer = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => _testData.Players.Any(p2 => p2.MemberKey.HasValue && p2.MemberKey != currentMember.memberKey && p2.PlayerIdentities.Count == 1 && p2.IsOnTheSameTeamAs(p))); ;
-            var playerWithIdentityToLink = _testData.AnyPlayerLinkedToMemberWithOnlyOneIdentity(p => p.MemberKey != currentMember.memberKey && p.IsOnTheSameTeamAs(targetPlayer));
-            SetupMocksForLinkPlayerIdentity(targetPlayer, playerWithIdentityToLink);
+            var playerToLink = _testData.AnyPlayerLinkedToMemberWithOnlyOneIdentity(p => p.MemberKey != currentMember.memberKey && p.IsOnTheSameTeamAs(targetPlayer));
+            SetupMocksForLinkPlayerIdentity(targetPlayer, playerToLink);
 
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayerIdentity(targetPlayer.PlayerId!.Value, playerWithIdentityToLink.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, currentMember.memberKey, currentMember.memberName));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, currentMember.memberKey, currentMember.memberName));
         }
         #endregion
 
         #region Allowed, if either player is linked to the current member
 
         [Fact]
-        public async Task LinkPlayerIdentity_merges_players_if_target_player_is_linked_to_current_member()
+        public async Task LinkPlayers_merges_players_if_target_player_is_linked_to_current_member()
         {
             var repo = CreateRepository();
 
             var targetPlayer = _testData.AnyPlayerLinkedToMemberWithOnlyOneIdentity(p => _testData.Players.Any(p2 => p2.MemberKey is null && p2.IsOnTheSameTeamAs(p)));
-            var playerWithIdentityToLink = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.IsOnTheSameTeamAs(targetPlayer));
+            var playerToLink = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.IsOnTheSameTeamAs(targetPlayer));
             var currentMember = targetPlayer.MemberKey!.Value;
-            SetupMocksForLinkPlayerIdentity(targetPlayer, playerWithIdentityToLink);
+            SetupMocksForLinkPlayerIdentity(targetPlayer, playerToLink);
 
-            var movedIdentityResult = await repo.LinkPlayerIdentity(targetPlayer.PlayerId!.Value, playerWithIdentityToLink.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, currentMember, "Member name").ConfigureAwait(false);
+            var movedIdentityResult = await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, currentMember, "Member name").ConfigureAwait(false);
             await repo.ProcessAsyncUpdatesForPlayers();
 
-            await AssertMergedPlayers(targetPlayer, playerWithIdentityToLink, movedIdentityResult, true);
+            await AssertMergedPlayers(targetPlayer, playerToLink, movedIdentityResult, true);
         }
 
         [Fact]
-        public async Task LinkPlayerIdentity_merges_players_if_identity_to_link_is_linked_to_a_member_if_it_is_the_current_member()
+        public async Task LinkPlayers_merges_players_if_player_to_link_is_linked_to_a_member_if_it_is_the_current_member()
         {
             var repo = CreateRepository();
 
@@ -206,60 +206,60 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
 
             var targetPlayer = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.PlayerIdentities[0].LinkedBy == PlayerIdentityLinkedBy.DefaultIdentity &&
                                                                                             _testData.Players.Any(p2 => selectPlayerToLinkOnTheSameTeam(p2, p)));
-            var playerWithIdentityToLink = _testData.AnyPlayerLinkedToMember(p => selectPlayerToLinkOnTheSameTeam(p, targetPlayer));
+            var playerToLink = _testData.AnyPlayerLinkedToMember(p => selectPlayerToLinkOnTheSameTeam(p, targetPlayer));
 
-            var currentMember = playerWithIdentityToLink.MemberKey!.Value;
-            SetupMocksForLinkPlayerIdentity(targetPlayer, playerWithIdentityToLink);
+            var currentMember = playerToLink.MemberKey!.Value;
+            SetupMocksForLinkPlayerIdentity(targetPlayer, playerToLink);
 
-            var movedIdentityResult = await repo.LinkPlayerIdentity(targetPlayer.PlayerId!.Value, playerWithIdentityToLink.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, currentMember, "Member name").ConfigureAwait(false);
+            var movedIdentityResult = await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, currentMember, "Member name").ConfigureAwait(false);
             await repo.ProcessAsyncUpdatesForPlayers();
 
-            await AssertMergedPlayers(targetPlayer, playerWithIdentityToLink, movedIdentityResult, true);
+            await AssertMergedPlayers(targetPlayer, playerToLink, movedIdentityResult, true);
         }
         #endregion
 
         #region Always allowed
         [Fact]
-        public async Task LinkPlayerIdentity_merges_two_default_identities()
+        public async Task LinkPlayers_merges_two_default_identities()
         {
             var targetPlayer = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity();
-            var playerWithIdentityToLink = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.PlayerId != targetPlayer.PlayerId && p.IsOnTheSameTeamAs(targetPlayer));
+            var playerToLink = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.PlayerId != targetPlayer.PlayerId && p.IsOnTheSameTeamAs(targetPlayer));
 
-            SetupMocksForLinkPlayerIdentity(targetPlayer, playerWithIdentityToLink);
+            SetupMocksForLinkPlayerIdentity(targetPlayer, playerToLink);
 
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            var movedIdentityResult = await repo.LinkPlayerIdentity(targetPlayer.PlayerId!.Value, playerWithIdentityToLink.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, member.memberKey, member.memberName);
+            var movedIdentityResult = await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, member.memberKey, member.memberName);
             await repo.ProcessAsyncUpdatesForPlayers();
 
-            await AssertMergedPlayers(targetPlayer, playerWithIdentityToLink, movedIdentityResult, false);
+            await AssertMergedPlayers(targetPlayer, playerToLink, movedIdentityResult, false);
         }
 
 
         [Fact]
-        public async Task LinkPlayerIdentity_merges_players_if_target_is_linked_to_other_identities_on_the_same_team()
+        public async Task LinkPlayers_merges_players_if_target_is_linked_to_other_identities_on_the_same_team()
         {
-            var playerWithIdentityToLink = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.PlayerIdentities[0].LinkedBy == PlayerIdentityLinkedBy.DefaultIdentity &&
+            var playerToLink = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.PlayerIdentities[0].LinkedBy == PlayerIdentityLinkedBy.DefaultIdentity &&
                                                                                                         _testData.Players.Any(p2 => p2.IsOnTheSameTeamAs(p) &&
                                                                                                                                    !p2.MemberKey.HasValue &&
                                                                                                                                     p2.PlayerIdentities.Count > 1 &&
                                                                                                                                     p2.PlayerIdentities.All(x => x.LinkedBy == PlayerIdentityLinkedBy.Team)
                                                                                                                                 ));
-            var targetPlayer = _testData.AnyPlayerNotLinkedToMemberWithMultipleIdentities(p => p.IsOnTheSameTeamAs(playerWithIdentityToLink) &&
+            var targetPlayer = _testData.AnyPlayerNotLinkedToMemberWithMultipleIdentities(p => p.IsOnTheSameTeamAs(playerToLink) &&
                                                                                                p.PlayerIdentities.All(x => x.LinkedBy == PlayerIdentityLinkedBy.Team));
-            SetupMocksForLinkPlayerIdentity(targetPlayer, playerWithIdentityToLink);
+            SetupMocksForLinkPlayerIdentity(targetPlayer, playerToLink);
 
             var repo = CreateRepository();
-            var movedIdentityResult = await repo.LinkPlayerIdentity(targetPlayer.PlayerId!.Value, playerWithIdentityToLink.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name");
+            var movedIdentityResult = await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, Guid.NewGuid(), "Member name");
             await repo.ProcessAsyncUpdatesForPlayers();
 
-            await AssertMergedPlayers(targetPlayer, playerWithIdentityToLink, movedIdentityResult, false);
+            await AssertMergedPlayers(targetPlayer, playerToLink, movedIdentityResult, false);
         }
 
 
         [Fact]
-        public async Task LinkPlayerIdentity_redirects_deleted_player_to_linked_player()
+        public async Task LinkPlayers_redirects_deleted_player_to_linked_player()
         {
             var player1 = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity();
             var player2 = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.PlayerId != player1.PlayerId);
@@ -268,13 +268,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, member.memberKey, member.memberName).ConfigureAwait(false);
+            await repo.LinkPlayers(player1.PlayerId!.Value, player2.PlayerId!.Value, PlayerIdentityLinkedBy.Team, member.memberKey, member.memberName).ConfigureAwait(false);
 
             _redirectsRepository.VerifyPlayerIsRedirected(player1.PlayerRoute!, player2.PlayerRoute!);
         }
 
         [Fact]
-        public async Task LinkPlayerIdentity_audits_and_logs()
+        public async Task LinkPlayers_audits_and_logs()
         {
             var player1 = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity();
             var player2 = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.PlayerId != player1.PlayerId);
@@ -284,22 +284,22 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            await repo.LinkPlayerIdentity(player1.PlayerId!.Value, player2.PlayerIdentities[0].PlayerIdentityId!.Value, PlayerIdentityLinkedBy.Team, member.memberKey, member.memberName).ConfigureAwait(false);
+            await repo.LinkPlayers(player1.PlayerId!.Value, player2.PlayerId!.Value, PlayerIdentityLinkedBy.Team, member.memberKey, member.memberName).ConfigureAwait(false);
 
             // audits and logs delete of original player and update of target player
             _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri!.ToString().EndsWith(player1.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
-            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerIdentity)));
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayers)));
 
             var deletedPlayer = new Player { PlayerId = player2.PlayerId, PlayerRoute = player2.PlayerRoute };
             deletedPlayer.PlayerIdentities.Add(new PlayerIdentity { PlayerIdentityId = player2.PlayerIdentities[0].PlayerIdentityId });
             _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Delete && x.EntityUri!.ToString().EndsWith(player2.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
-            _logger.Verify(x => x.Info(LoggingTemplates.Deleted, JsonConvert.SerializeObject(deletedPlayer), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerIdentity)));
+            _logger.Verify(x => x.Info(LoggingTemplates.Deleted, JsonConvert.SerializeObject(deletedPlayer), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayers)));
         }
 
         #endregion
 
         #region Helpers
-        private async Task AssertMergedPlayers(Player targetPlayer, Player playerWithIdentityToLink, MovedPlayerIdentity movedIdentityResult, bool currentMemberWasLinkedToEitherPlayer)
+        private async Task AssertMergedPlayers(Player targetPlayer, Player playerWithIdentityToLink, LinkPlayersResult movedIdentityResult, bool currentMemberWasLinkedToEitherPlayer)
         {
             Assert.Equal(targetPlayer.PlayerId, movedIdentityResult.PlayerIdForTargetPlayer);
             Assert.Equal(targetPlayer.PlayerRoute, movedIdentityResult.PreviousRouteForTargetPlayer);

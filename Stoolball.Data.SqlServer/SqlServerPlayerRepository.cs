@@ -301,7 +301,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc />
-        public async Task<MovedPlayerIdentity> LinkPlayerIdentity(Guid targetPlayer, Guid identityToLinkToTarget, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName)
+        public async Task<LinkPlayersResult> LinkPlayers(Guid targetPlayer, Guid playerToLink, PlayerIdentityLinkedBy linkedBy, Guid memberKey, string memberName)
         {
             if (string.IsNullOrWhiteSpace(memberName))
             {
@@ -313,87 +313,86 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var targetPlayerBefore = await connection.QuerySingleAsync<(string PlayerRoute, Guid? MemberKey)>($"SELECT PlayerRoute, MemberKey FROM {Tables.Player} WHERE PlayerId = @PlayerId", new Player { PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
-                    var identityToLinkBefore = await connection.QuerySingleAsync<(Guid PlayerId, string PlayerRoute, Guid? MemberKey, int Identities, string PlayerIdentityName, Guid TeamId)>(
-                        @$"SELECT p.PlayerId, p.PlayerRoute, p.MemberKey, (SELECT COUNT(*) FROM {Tables.PlayerIdentity} WHERE PlayerId = p.PlayerId) AS Identities, pi.PlayerIdentityName, pi.TeamId
-                           FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId
-                           WHERE pi.PlayerIdentityId = @PlayerIdentityId", new { PlayerIdentityId = identityToLinkToTarget }, transaction).ConfigureAwait(false);
+                    var targetPlayerBefore = (await connection.QueryAsync<(Guid PlayerId, string PlayerRoute, Guid? MemberKey, Guid PlayerIdentityId, string PlayerIdentityName, Guid TeamId)>(
+                        @$"SELECT PlayerId, PlayerRoute, MemberKey, PlayerIdentityId, PlayerIdentityName, TeamId
+                           FROM {Views.PlayerIdentity} 
+                           WHERE PlayerId = @PlayerId", new { PlayerId = targetPlayer }, transaction).ConfigureAwait(false)).ToList();
+                    var playerToLinkBefore = (await connection.QueryAsync<(Guid PlayerId, string PlayerRoute, Guid? MemberKey, Guid PlayerIdentityId, string PlayerIdentityName, Guid TeamId)>(
+                        @$"SELECT PlayerId, PlayerRoute, MemberKey, PlayerIdentityId, PlayerIdentityName, TeamId
+                           FROM {Views.PlayerIdentity} 
+                           WHERE PlayerId = @PlayerId", new { PlayerId = playerToLink }, transaction).ConfigureAwait(false)).ToList();
 
-                    // Are the players already linked to each other? If so, abort.
-                    if (targetPlayer == identityToLinkBefore.PlayerId)
+                    // Are the players the same? If so, abort.
+                    if (targetPlayer == playerToLink)
                     {
-                        throw new InvalidOperationException("The player identity is already linked to the target player");
+                        throw new InvalidOperationException("The player is already linked to the target player");
                     }
 
                     // Are both players linked to a member? If so, abort.
-                    if (targetPlayerBefore.MemberKey.HasValue && identityToLinkBefore.MemberKey.HasValue)
+                    if (targetPlayerBefore[0].MemberKey.HasValue && playerToLinkBefore[0].MemberKey.HasValue)
                     {
-                        throw new InvalidOperationException("The target player and the identity to link are are linked to different members and cannot be linked to each other");
+                        throw new InvalidOperationException("The target player and the player to link are are linked to different members and cannot be linked to each other");
                     }
 
                     // Is either player linked to a member? If so, abort, unless it's the current member.
                     // (When this process is extended to request permissions, this rule no longer applies.)
-                    if (targetPlayerBefore.MemberKey.HasValue && targetPlayerBefore.MemberKey != memberKey)
+                    if (targetPlayerBefore[0].MemberKey.HasValue && targetPlayerBefore[0].MemberKey != memberKey)
                     {
                         throw new InvalidOperationException("The target player is linked to a member and only that member can choose which identities to link");
                     }
 
-                    if (identityToLinkBefore.MemberKey.HasValue && identityToLinkBefore.MemberKey != memberKey)
+                    if (playerToLinkBefore[0].MemberKey.HasValue && playerToLinkBefore[0].MemberKey != memberKey)
                     {
-                        throw new InvalidOperationException("The identity to link is linked to a member and only that member can choose which identities to link");
+                        throw new InvalidOperationException("The player to link is linked to a member and only that member can choose which identities to link");
                     }
 
-                    // Does the identity to link already have sibling identities. If so, abort.
+                    // Does the identity to link already have multiple identities? If so, abort.
                     // (When the UI catches up, this rule no longer applies.)
-                    if (identityToLinkBefore.Identities > 1)
+                    if (playerToLinkBefore.Count > 1)
                     {
-                        throw new InvalidOperationException("The identity to link is linked to other identities and must be separated before it can be moved");
+                        throw new InvalidOperationException("The player to link has multiple identities and must be separated before it can be moved");
                     }
 
                     // Does the target player have an identity on the same team as the identity to link? If not, abort.
-                    var targetPlayerExistingIdentities = await connection.QueryAsync<(Guid PlayerIdentityId, string PlayerIdentityName, Guid TeamId)>(
-                        $"SELECT PlayerIdentityId, PlayerIdentityName, TeamId FROM {Tables.PlayerIdentity} WHERE PlayerId = @PlayerId",
-                        new { PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
-                    var targetPlayerHasIdentityOnSameTeam = targetPlayerExistingIdentities.Any(id => id.TeamId == identityToLinkBefore.TeamId);
-
+                    var targetPlayerHasIdentityOnSameTeam = targetPlayerBefore.Any(id => playerToLinkBefore.Any(pi => pi.TeamId == id.TeamId));
                     if (!targetPlayerHasIdentityOnSameTeam)
                     {
-                        throw new InvalidOperationException("The identity to link must be on the same team as the target player");
+                        throw new InvalidOperationException("The player to link must have at least one identity on the same team as the target player");
                     }
 
                     // Select the best route from the two players, and redirect.
-                    var bestRoute = await FindBestRouteAndRedirect(targetPlayerBefore.PlayerRoute, identityToLinkBefore.PlayerRoute, transaction);
+                    var bestRoute = await FindBestRouteAndRedirect(targetPlayerBefore[0].PlayerRoute, playerToLinkBefore[0].PlayerRoute, transaction);
 
                     // If this change was allowed because the current member is linking their own record, but acting as team owner,
                     // ensure their MemberKey is preserved and that player identities are linked by Member
-                    if (identityToLinkBefore.MemberKey == memberKey)
+                    if (playerToLinkBefore[0].MemberKey == memberKey)
                     {
                         _ = await connection.ExecuteAsync($"UPDATE {Tables.Player} SET MemberKey = @MemberKey WHERE PlayerId = @PlayerId",
-                                                            new { identityToLinkBefore.MemberKey, PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
+                                                            new { playerToLinkBefore[0].MemberKey, PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
                     }
-                    if (targetPlayerBefore.MemberKey == memberKey || identityToLinkBefore.MemberKey == memberKey)
+                    if (targetPlayerBefore[0].MemberKey == memberKey || playerToLinkBefore[0].MemberKey == memberKey)
                     {
                         linkedBy = PlayerIdentityLinkedBy.Member;
                     }
 
                     // Move the player identities from the identity to link's current player id to the target player's id.
-                    if (bestRoute != targetPlayerBefore.PlayerRoute)
+                    if (bestRoute != targetPlayerBefore[0].PlayerRoute)
                     {
                         _ = await connection.ExecuteAsync($"UPDATE {Tables.Player} SET PlayerRoute = @PlayerRoute WHERE PlayerId = @PlayerId", new { PlayerRoute = bestRoute, PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
                     }
-                    var movePlayerIdentity = new { PlayerId = targetPlayer, PlayerIdentityId = identityToLinkToTarget };
-                    _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @PlayerId WHERE PlayerIdentityId = @PlayerIdentityId", movePlayerIdentity, transaction).ConfigureAwait(false);
+                    var movePlayerIdentity = new { TargetPlayerId = targetPlayer, PlayerId = playerToLink };
+                    _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET PlayerId = @TargetPlayerId WHERE PlayerId = @PlayerId", movePlayerIdentity, transaction).ConfigureAwait(false);
 
-                    // If the target player identities should now be linked by this activity
+                    // The target player identities should now be linked by this activity
                     _ = await connection.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET LinkedBy = @LinkedBy WHERE PlayerId = @PlayerId",
                                                       new { LinkedBy = linkedBy.ToString(), PlayerId = targetPlayer }, transaction).ConfigureAwait(false);
 
                     // We also need to update statistics, and delete the now-unused player that the identity has been moved away from. 
                     // However this is done asynchronously by ProcessAsyncUpdatesForPlayers, so we just need to mark the player as safe to delete.
-                    _ = await connection.ExecuteAsync($"UPDATE {Tables.Player} SET Deleted = 1 WHERE PlayerId = @PlayerId", new { identityToLinkBefore.PlayerId }, transaction).ConfigureAwait(false);
+                    _ = await connection.ExecuteAsync($"UPDATE {Tables.Player} SET Deleted = 1 WHERE PlayerId = @PlayerId", new { PlayerId = playerToLink }, transaction).ConfigureAwait(false);
 
-                    var deletedPlayer = new Player { PlayerId = identityToLinkBefore.PlayerId, PlayerRoute = identityToLinkBefore.PlayerRoute };
-                    deletedPlayer.PlayerIdentities.Add(new PlayerIdentity { PlayerIdentityId = identityToLinkToTarget });
+                    var deletedPlayer = new Player { PlayerId = playerToLink, PlayerRoute = playerToLinkBefore[0].PlayerRoute };
+                    deletedPlayer.PlayerIdentities.AddRange(playerToLinkBefore.Select(pi => new PlayerIdentity { PlayerIdentityId = pi.PlayerIdentityId }));
                     var serialisedDeletedPlayer = JsonConvert.SerializeObject(deletedPlayer);
                     _ = await _auditRepository.CreateAudit(new AuditRecord
                     {
@@ -406,13 +405,12 @@ namespace Stoolball.Data.SqlServer
                         AuditDate = DateTime.UtcNow
                     }, transaction).ConfigureAwait(false);
 
-                    _logger.Info(LoggingTemplates.Deleted, serialisedDeletedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerIdentity));
+                    _logger.Info(LoggingTemplates.Deleted, serialisedDeletedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayers));
 
                     // Update the player to return with new details assigned to it.
-                    var reassignedPlayerIdentity = new PlayerIdentity { PlayerIdentityId = identityToLinkToTarget, PlayerIdentityName = identityToLinkBefore.PlayerIdentityName };
-                    var updatedTargetPlayer = new Player { PlayerId = targetPlayer, PlayerRoute = bestRoute, MemberKey = targetPlayerBefore.MemberKey };
-                    updatedTargetPlayer.PlayerIdentities.AddRange(targetPlayerExistingIdentities.Select(id => new PlayerIdentity { PlayerIdentityId = id.PlayerIdentityId, PlayerIdentityName = id.PlayerIdentityName, Team = new Teams.Team { TeamId = id.TeamId } }));
-                    updatedTargetPlayer.PlayerIdentities.Add(reassignedPlayerIdentity);
+                    var updatedTargetPlayer = new Player { PlayerId = targetPlayer, PlayerRoute = bestRoute, MemberKey = targetPlayerBefore[0].MemberKey ?? playerToLinkBefore[0].MemberKey };
+                    updatedTargetPlayer.PlayerIdentities.AddRange(targetPlayerBefore.Select(id => new PlayerIdentity { PlayerIdentityId = id.PlayerIdentityId, PlayerIdentityName = id.PlayerIdentityName, Team = new Teams.Team { TeamId = id.TeamId } }));
+                    updatedTargetPlayer.PlayerIdentities.AddRange(playerToLinkBefore.Select(id => new PlayerIdentity { PlayerIdentityId = id.PlayerIdentityId, PlayerIdentityName = id.PlayerIdentityName, Team = new Teams.Team { TeamId = id.TeamId } }));
 
                     var serialisedUpdatedPlayer = JsonConvert.SerializeObject(updatedTargetPlayer);
                     _ = await _auditRepository.CreateAudit(new AuditRecord
@@ -426,21 +424,20 @@ namespace Stoolball.Data.SqlServer
                         AuditDate = DateTime.UtcNow
                     }, transaction).ConfigureAwait(false);
 
-                    _logger.Info(LoggingTemplates.Updated, serialisedUpdatedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayerIdentity));
+                    _logger.Info(LoggingTemplates.Updated, serialisedUpdatedPlayer, memberName, memberKey, GetType(), nameof(LinkPlayers));
 
                     transaction.Commit();
 
-                    return new MovedPlayerIdentity
+                    return new LinkPlayersResult
                     {
-                        PlayerIdentityId = identityToLinkToTarget,
-                        PlayerIdForSourcePlayer = identityToLinkBefore.PlayerId,
-                        PreviousMemberKeyForSourcePlayer = identityToLinkBefore.MemberKey,
-                        PreviousRouteForSourcePlayer = identityToLinkBefore.PlayerRoute,
+                        PlayerIdForSourcePlayer = playerToLink,
+                        PreviousMemberKeyForSourcePlayer = playerToLinkBefore[0].MemberKey,
+                        PreviousRouteForSourcePlayer = playerToLinkBefore[0].PlayerRoute,
                         PlayerIdForTargetPlayer = targetPlayer,
-                        PreviousMemberKeyForTargetPlayer = targetPlayerBefore.MemberKey,
-                        PreviousRouteForTargetPlayer = targetPlayerBefore.PlayerRoute,
+                        PreviousMemberKeyForTargetPlayer = targetPlayerBefore[0].MemberKey,
+                        PreviousRouteForTargetPlayer = targetPlayerBefore[0].PlayerRoute,
                         NewRouteForTargetPlayer = updatedTargetPlayer.PlayerRoute,
-                        NewMemberKeyForTargetPlayer = targetPlayerBefore.MemberKey ?? identityToLinkBefore.MemberKey,
+                        NewMemberKeyForTargetPlayer = targetPlayerBefore[0].MemberKey ?? playerToLinkBefore[0].MemberKey,
                     };
                 }
             }
