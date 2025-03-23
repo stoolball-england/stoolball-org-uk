@@ -37,7 +37,7 @@ jobs:
       run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./web-unit-tests.cobertura.xml }
 
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: stoolball-web-unit-tests
         path: web-unit-tests.cobertura.xml
@@ -58,7 +58,7 @@ jobs:
       run: Get-ChildItem -Recurse cobertura-coverage.xml | ForEach-Object { Move-Item $_.FullName ./web-js-tests.cobertura.xml }
 
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: stoolball-web-js-tests
         path: web-js-tests.cobertura.xml
@@ -87,7 +87,7 @@ jobs:
       run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./unit-tests.cobertura.xml }
 
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: stoolball-unit-tests
         path: unit-tests.cobertura.xml
@@ -116,7 +116,7 @@ jobs:
       run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./cache-unit-tests.cobertura.xml }
 
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: stoolball-cache-unit-tests
         path: cache-unit-tests.cobertura.xml
@@ -145,7 +145,7 @@ jobs:
       run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./sql-unit-tests.cobertura.xml }
 
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: stoolball-sql-unit-tests
         path: sql-unit-tests.cobertura.xml
@@ -183,7 +183,7 @@ jobs:
       run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./integration-tests.cobertura.xml }
 
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: stoolball-integration-tests
         path: integration-tests.cobertura.xml
@@ -193,32 +193,32 @@ jobs:
     needs: [stoolball-web-unit-tests, stoolball-unit-tests, stoolball-integration-tests, stoolball-web-js-tests, stoolball-sql-unit-tests]
     steps:
     - name: Download Stoolball.Web.UnitTests results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: stoolball-web-unit-tests
 
     - name: Download Stoolball.UnitTests results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: stoolball-unit-tests
 
     - name: Download Stoolball.Data.SqlServer.UnitTests results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: stoolball-sql-unit-tests
 
     - name: Download Stoolball.Data.MemoryCache.UnitTests results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: stoolball-cache-unit-tests
 
     - name: Download Stoolball.Data.SqlServer.IntegrationTests results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: stoolball-integration-tests
 
     - name: Download Jest results
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: stoolball-web-js-tests
 
