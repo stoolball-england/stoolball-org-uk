@@ -37,7 +37,8 @@
             {
                 @Html.HiddenFor(m => Model.PreferredNextRoute)
                 <partial name="_LinkedPlayers" model="Model" />
-     
+                @await Html.PartialAsync("_StatisticsCacheWarning")
+
                 <button class="btn btn-primary" type="submit">Save players</button>
                 <p><a href="@Model.PreferredNextRoute">Cancel</a></p>
             }

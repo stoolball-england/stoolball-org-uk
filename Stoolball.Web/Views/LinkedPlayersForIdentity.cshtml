@@ -39,6 +39,7 @@
             <partial name="_LinkedPlayers" model="Model" />
             if (!playerLinkedToMemberWhoIsNotCurrentMember)
             {
+                @await Html.PartialAsync("_StatisticsCacheWarning")
                 <button class="btn btn-primary" type="submit">Save players</button>
             }
             <p><a href="@Model.ContextIdentity?.Team?.TeamRoute/edit/players/@Model.ContextIdentity?.RouteSegment">Cancel</a></p>               
