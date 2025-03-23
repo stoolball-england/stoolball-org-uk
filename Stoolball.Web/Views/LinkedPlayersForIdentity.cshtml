@@ -5,13 +5,14 @@
 @using Stoolball.Web.Teams.Models
 @using Umbraco.Cms.Web.Website.Controllers
 @section head {
-    <meta name="robots" content="noindex,follow" />
+<meta name="robots" content="noindex,follow" />
 }
 @{
     Model.LinkedByMemberLabel = "Player";
     Model.LinkedByTeamLabel = "Team";
     Model.LinkedByStoolballEnglandLabel = "Stoolball England";
-    Model.AddIdentitiesFromTeamId = Model.ContextIdentity?.Team?.TeamId;
+    var playerLinkedToMemberWhoIsNotCurrentMember = Model.Player!.MemberKey.HasValue && Model.Player.MemberKey != Model.CurrentMemberKey;
+    Model.AddIdentitiesFromTeamId = playerLinkedToMemberWhoIsNotCurrentMember ? null : Model.ContextIdentity?.Team?.TeamId;
     Model.CanUnlinkIdentitiesLinkedByTeam = true;
     Model.ShowLinkedIdentityInTable = false;
 }
@@ -24,15 +25,23 @@
 
     @if (Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam])
     {
+        if (playerLinkedToMemberWhoIsNotCurrentMember)
+        {
+            <p class="alert alert-danger">You cannot link identities to @Model.ContextIdentity?.PlayerIdentityName because they are already linked by the player.</p>
+        }
+
         <p>If a player changed their name or is listed with an incorrect spelling @* or played for multiple teams (for example, your mixed and ladies teams) *@,
-           their statistics may be spread over multiple players.</p>
-            
+            their statistics may be spread over multiple players.</p>
+
         <p>You should combine all the player pages into one, to tidy up the list of players in your team and to see their true statistics. </p>
         using (Html.BeginUmbracoForm<LinkedPlayersForIdentitySurfaceController>(nameof(LinkedPlayersForIdentitySurfaceController.UpdateLinkedPlayers)))
         {
             <partial name="_LinkedPlayers" model="Model" />
-            <button class="btn btn-primary" type="submit">Save players</button>
-            <p><a href="@Model.ContextIdentity?.Team?.TeamRoute/edit/players/@Model.ContextIdentity?.RouteSegment">Cancel</a></p>
+            if (!playerLinkedToMemberWhoIsNotCurrentMember)
+            {
+                <button class="btn btn-primary" type="submit">Save players</button>
+            }
+            <p><a href="@Model.ContextIdentity?.Team?.TeamRoute/edit/players/@Model.ContextIdentity?.RouteSegment">Cancel</a></p>               
         }
     }
     else

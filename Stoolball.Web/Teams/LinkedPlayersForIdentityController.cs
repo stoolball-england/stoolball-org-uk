@@ -48,7 +48,8 @@ namespace Stoolball.Web.Teams
         {
             var model = new LinkedPlayersViewModel(CurrentPage)
             {
-                ContextIdentity = await _playerDataSource.ReadPlayerIdentityByRoute(Request.Path)
+                ContextIdentity = await _playerDataSource.ReadPlayerIdentityByRoute(Request.Path),
+                CurrentMemberKey = (await _memberManager.GetCurrentMemberAsync())?.Key
             };
 
             if (model.ContextIdentity?.Team?.TeamRoute == null || model.ContextIdentity?.Player?.PlayerRoute == null)

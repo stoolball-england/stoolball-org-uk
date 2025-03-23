@@ -16,6 +16,8 @@ namespace Stoolball.Web.Statistics.Models
 
         public PlayerIdentity? ContextIdentity { get; set; }
 
+        public Guid? CurrentMemberKey { get; set; }
+
         public string PreferredNextRoute { get; set; } = Constants.Pages.AccountUrl;
 
         public string LinkedByHeading { get; set; } = "Linked by";

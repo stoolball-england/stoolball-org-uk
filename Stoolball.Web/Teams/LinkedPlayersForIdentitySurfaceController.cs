@@ -77,10 +77,16 @@ namespace Stoolball.Web.Teams
                 }
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
+                model.CurrentMemberKey = currentMember?.Key;
                 var isTeamOwner = await _memberManager.IsMemberAuthorizedAsync(null, [model.ContextIdentity.Team.MemberGroupName!], null);
                 var roleGrantingPermission = isTeamOwner ? PlayerIdentityLinkedBy.Team : PlayerIdentityLinkedBy.StoolballEngland;
 
                 model.Player = await _playerDataSource.ReadPlayerByRoute(model.ContextIdentity.Player!.PlayerRoute!);
+
+                if (model.Player!.MemberKey.HasValue && model.Player.MemberKey != currentMember!.Key)
+                {
+                    return Forbid();
+                }
 
                 var previousIdentities = model.Player!.PlayerIdentities.Select(id => id.PlayerIdentityId!.Value).ToList();
                 var submittedIdentities = formData.PlayerIdentities.Select(id => id.PlayerIdentityId!.Value).ToList();
