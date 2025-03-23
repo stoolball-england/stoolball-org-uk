@@ -77,7 +77,7 @@ namespace Stoolball.Data.SqlServer
             return rawResults.GroupBy(x => x.PlayerId).Select(group =>
             {
                 var player = group.First();
-                player.PlayerIdentities = new PlayerIdentityList(group.Select(x => x.PlayerIdentities.Single()).OfType<PlayerIdentity>());
+                player.PlayerIdentities = [.. group.Select(x => x.PlayerIdentities.Single()).OfType<PlayerIdentity>().Distinct(new PlayerIdentityEqualityComparer())];
                 return player;
             }).ToList();
         }
