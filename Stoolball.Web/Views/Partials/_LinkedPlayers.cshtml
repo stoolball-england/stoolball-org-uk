@@ -49,7 +49,7 @@
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
                         @Html.Hidden($"PlayerIdentities[{i}].PlayerIdentityId", identitiesToShow[i].PlayerIdentityId, new { @class = "related-item__data related-item__id", data_item = identitiesToShow[i].PlayerIdentityId })
-                        @Html.Hidden($"PlayerIdentities[{i}].PlayerId", identitiesToShow[i].Player?.PlayerId, new { @class = "related-item__data", data_item = identitiesToShow[i].Player?.PlayerId})
+                        @Html.Hidden($"PlayerIdentities[{i}].Player.PlayerId", Model.Player.PlayerId, new { @class = "related-item__data", data_item = identitiesToShow[i].PlayerIdentityId })
                         @if ((identitiesToShow[i].LinkedBy == PlayerIdentityLinkedBy.Member && Model.CanUnlinkIdentitiesLinkedByMember) ||
                        (identitiesToShow[i].LinkedBy == PlayerIdentityLinkedBy.Team && Model.CanUnlinkIdentitiesLinkedByTeam))
                         {
