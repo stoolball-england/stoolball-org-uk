@@ -88,7 +88,14 @@ namespace Stoolball.Web
                 .Build();
 #pragma warning restore IDE0022 // Use expression body for methods
 
-            services.AddApplicationInsightsTelemetry();
+            services.AddApplicationInsightsTelemetry(opt =>
+            {
+                // Disable some default telemetry to reduce cost
+                opt.EnablePerformanceCounterCollectionModule = false;
+                opt.EnableQuickPulseMetricStream = false;
+                opt.EnableHeartbeat = false;
+                opt.EnableEventCounterCollectionModule = false;
+            });
 
             // Utility classes
             services.AddTransient<IAddMatchMenuViewModelFactory, AddMatchMenuViewModelFactory>();
