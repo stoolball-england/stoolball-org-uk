@@ -2,15 +2,13 @@
   "Name": "Club Statistics",
   "Alias": "ClubStatistics",
   "File": "umb://template-file/ClubStatistics.cshtml",
-  "Master": null,
   "Udi": "umb://template/c448d7db3ed14fecb53a9df3be7abd67",
   "Dependencies": [
     {
       "Udi": "umb://template-file/ClubStatistics.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

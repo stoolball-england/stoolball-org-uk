@@ -1,12 +1,14 @@
 {
   "Name": "Dropdown multiple",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.DropDown.Flexible",
-  "DatabaseType": 1,
-  "Configuration": {"multiple":true,"items":[]},
-  "Parent": null,
+  "DatabaseType": "Nvarchar",
+  "Configuration": {
+    "multiple": true,
+    "items": []
+  },
   "Udi": "umb://data-type/f38f0ac71d27439c9f3f089cd8825a53",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

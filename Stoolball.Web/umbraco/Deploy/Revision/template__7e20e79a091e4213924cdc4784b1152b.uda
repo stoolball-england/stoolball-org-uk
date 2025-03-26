@@ -2,15 +2,13 @@
   "Name": "Teams Map",
   "Alias": "TeamsMap",
   "File": "umb://template-file/TeamsMap.cshtml",
-  "Master": null,
   "Udi": "umb://template/7e20e79a091e4213924cdc4784b1152b",
   "Dependencies": [
     {
       "Udi": "umb://template-file/TeamsMap.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

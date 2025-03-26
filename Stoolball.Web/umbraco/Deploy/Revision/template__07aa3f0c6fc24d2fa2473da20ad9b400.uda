@@ -2,15 +2,13 @@
   "Name": "Matches for Team",
   "Alias": "matchesForTeam",
   "File": "umb://template-file/matchesForTeam.cshtml",
-  "Master": null,
   "Udi": "umb://template/07aa3f0c6fc24d2fa2473da20ad9b400",
   "Dependencies": [
     {
       "Udi": "umb://template-file/matchesForTeam.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

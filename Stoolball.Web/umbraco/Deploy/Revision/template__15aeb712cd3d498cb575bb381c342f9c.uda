@@ -2,15 +2,13 @@
   "Name": "Schools",
   "Alias": "Schools",
   "File": "umb://template-file/Schools.cshtml",
-  "Master": null,
   "Udi": "umb://template/15aeb712cd3d498cb575bb381c342f9c",
   "Dependencies": [
     {
       "Udi": "umb://template-file/Schools.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

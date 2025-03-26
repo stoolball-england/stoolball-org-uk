@@ -1,12 +1,13 @@
 {
   "Name": "Label (string)",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.Label",
-  "DatabaseType": 1,
-  "Configuration": {"umbracoDataValueType":"STRING"},
-  "Parent": null,
+  "DatabaseType": "Nvarchar",
+  "Configuration": {
+    "umbracoDataValueType": "STRING"
+  },
   "Udi": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

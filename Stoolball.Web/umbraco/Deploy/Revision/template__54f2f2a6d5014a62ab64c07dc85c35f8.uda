@@ -2,15 +2,13 @@
   "Name": "Player Performances",
   "Alias": "PlayerPerformances",
   "File": "umb://template-file/PlayerPerformances.cshtml",
-  "Master": null,
   "Udi": "umb://template/54f2f2a6d5014a62ab64c07dc85c35f8",
   "Dependencies": [
     {
       "Udi": "umb://template-file/PlayerPerformances.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.2"
+  "__version": "13.2.2"
 }

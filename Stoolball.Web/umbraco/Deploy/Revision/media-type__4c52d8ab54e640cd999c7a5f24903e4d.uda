@@ -3,72 +3,39 @@
   "Alias": "File",
   "Icon": "icon-document",
   "Thumbnail": "icon-document",
-  "Description": null,
-  "IsContainer": false,
   "Permissions": {
-    "AllowVaryingByCulture": false,
-    "AllowVaryingBySegment": false,
     "AllowedAtRoot": true,
-    "IsElementType": false,
     "AllowedChildContentTypes": []
   },
-  "Parent": null,
   "CompositionContentTypes": [],
   "PropertyGroups": [
     {
       "Key": "50899f9c-023a-4466-b623-aba9049885fe",
       "Name": "File",
       "SortOrder": 1,
-      "Type": 0,
       "Alias": "file",
       "PropertyTypes": [
         {
           "Key": "00000018-0000-0000-0000-000000000000",
           "Alias": "umbracoFile",
           "DataType": "umb://data-type/84c6b44131df4ffeb67e67d5bc3ae65a",
-          "Description": null,
           "Mandatory": true,
-          "Name": "Upload file",
-          "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "Name": "Upload file"
         },
         {
           "Key": "00000019-0000-0000-0000-000000000000",
           "Alias": "umbracoExtension",
           "DataType": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
-          "Description": null,
-          "Mandatory": false,
           "Name": "Type",
-          "SortOrder": 1,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 1
         },
         {
           "Key": "0000001a-0000-0000-0000-000000000000",
           "Alias": "umbracoBytes",
           "DataType": "umb://data-type/930861bfe2624eada704f99453565708",
           "Description": "in bytes",
-          "Mandatory": false,
           "Name": "Size",
-          "SortOrder": 2,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 2
         }
       ]
     }
@@ -78,20 +45,17 @@
   "Dependencies": [
     {
       "Udi": "umb://data-type/84c6b44131df4ffeb67e67d5bc3ae65a",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://data-type/930861bfe2624eada704f99453565708",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.MediaTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

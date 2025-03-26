@@ -2,15 +2,13 @@
   "Name": "Player Fielding",
   "Alias": "PlayerFielding",
   "File": "umb://template-file/PlayerFielding.cshtml",
-  "Master": null,
   "Udi": "umb://template/ec016dc00063444584220b657ffdc244",
   "Dependencies": [
     {
       "Udi": "umb://template-file/PlayerFielding.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

@@ -1,21 +1,11 @@
 {
   "Name": "YouTube video",
   "Alias": "youTubeVideo",
-  "DefaultTemplate": null,
   "AllowedTemplates": [],
-  "HistoryCleanup": {
-    "PreventCleanup": false,
-    "KeepAllVersionsNewerThanDays": null,
-    "KeepLatestVersionPerDayForDays": null
-  },
+  "HistoryCleanup": {},
   "Icon": "icon-video color-black",
   "Thumbnail": "folder.png",
-  "Description": null,
-  "IsContainer": false,
   "Permissions": {
-    "AllowVaryingByCulture": false,
-    "AllowVaryingBySegment": false,
-    "AllowedAtRoot": false,
     "IsElementType": true,
     "AllowedChildContentTypes": []
   },
@@ -25,25 +15,15 @@
     {
       "Key": "33b8f20a-dd4c-4c20-a913-870d9b45d8a2",
       "Name": "Content",
-      "SortOrder": 0,
-      "Type": 0,
       "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "b6476d60-7e5d-4abe-bbaf-186e1c2c2f7c",
           "Alias": "videoURL",
           "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
-          "Description": null,
           "Mandatory": true,
           "Name": "Video URL",
-          "SortOrder": 0,
-          "Validation": "https?://[a-zA-Z0-9-.]+.[a-zA-Z]{2,}",
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "Validation": "https?://[a-zA-Z0-9-.]+.[a-zA-Z]{2,}"
         }
       ]
     }
@@ -53,15 +33,13 @@
   "Dependencies": [
     {
       "Udi": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

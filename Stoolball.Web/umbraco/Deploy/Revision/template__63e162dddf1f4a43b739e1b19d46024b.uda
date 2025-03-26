@@ -2,15 +2,13 @@
   "Name": "Most X Wickets",
   "Alias": "MostXWickets",
   "File": "umb://template-file/MostXWickets.cshtml",
-  "Master": null,
   "Udi": "umb://template/63e162dddf1f4a43b739e1b19d46024b",
   "Dependencies": [
     {
       "Udi": "umb://template-file/MostXWickets.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.2"
+  "__version": "13.2.2"
 }

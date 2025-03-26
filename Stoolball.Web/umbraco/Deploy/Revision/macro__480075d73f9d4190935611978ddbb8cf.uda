@@ -34,5 +34,5 @@
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.MacroArtifact",
-  "__version": "13.0.0"
+  "__version": "13.2.2"
 }

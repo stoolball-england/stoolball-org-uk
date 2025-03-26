@@ -2,15 +2,13 @@
   "Name": "Edit Batting Scorecard",
   "Alias": "EditBattingScorecard",
   "File": "umb://template-file/EditBattingScorecard.cshtml",
-  "Master": null,
   "Udi": "umb://template/abdd163638dd46c38dbd2e62814f9618",
   "Dependencies": [
     {
       "Udi": "umb://template-file/EditBattingScorecard.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

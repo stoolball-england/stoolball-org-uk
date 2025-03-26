@@ -2,15 +2,13 @@
   "Name": "Create Team",
   "Alias": "createTeam",
   "File": "umb://template-file/createTeam.cshtml",
-  "Master": null,
   "Udi": "umb://template/58890656a2d64ddca2679308bb7ffe42",
   "Dependencies": [
     {
       "Udi": "umb://template-file/createTeam.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

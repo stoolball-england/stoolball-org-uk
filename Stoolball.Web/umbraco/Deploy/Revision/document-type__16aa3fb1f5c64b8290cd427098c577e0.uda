@@ -5,20 +5,12 @@
   "AllowedTemplates": [
     "umb://template/207b1110bbe74e93bd83c3761b338ee3"
   ],
-  "HistoryCleanup": {
-    "PreventCleanup": false,
-    "KeepAllVersionsNewerThanDays": null,
-    "KeepLatestVersionPerDayForDays": null
-  },
+  "HistoryCleanup": {},
   "Icon": "icon-newspaper color-grey",
   "Thumbnail": "folder.png",
   "Description": "A home page for Stoolball England news",
   "IsContainer": true,
   "Permissions": {
-    "AllowVaryingByCulture": false,
-    "AllowVaryingBySegment": false,
-    "AllowedAtRoot": false,
-    "IsElementType": false,
     "AllowedChildContentTypes": [
       "umb://document-type/da6181ad33494a98915f9d000e1e226b"
     ]
@@ -34,30 +26,24 @@
   "Dependencies": [
     {
       "Udi": "umb://document-type-container/b0a6bedc9cac475b8ebfbca3bffbce3b",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
-      "Udi": "umb://document-type/da6181ad33494a98915f9d000e1e226b",
-      "Ordering": false,
-      "Mode": 0
+      "Udi": "umb://document-type/da6181ad33494a98915f9d000e1e226b"
     },
     {
       "Udi": "umb://template/207b1110bbe74e93bd83c3761b338ee3",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

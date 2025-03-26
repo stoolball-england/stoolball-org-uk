@@ -2,15 +2,13 @@
   "Name": "Create Season",
   "Alias": "createSeason",
   "File": "umb://template-file/createSeason.cshtml",
-  "Master": null,
   "Udi": "umb://template/7770c3e197814c2fb06aea342782894e",
   "Dependencies": [
     {
       "Udi": "umb://template-file/createSeason.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

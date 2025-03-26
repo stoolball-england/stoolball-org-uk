@@ -2,15 +2,13 @@
   "Name": "Rename Player Identity",
   "Alias": "RenamePlayerIdentity",
   "File": "umb://template-file/RenamePlayerIdentity.cshtml",
-  "Master": null,
   "Udi": "umb://template/aed410e27d304837a97213713ddf6f11",
   "Dependencies": [
     {
       "Udi": "umb://template-file/RenamePlayerIdentity.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.2"
+  "__version": "13.2.2"
 }

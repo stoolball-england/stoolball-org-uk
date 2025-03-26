@@ -2,15 +2,13 @@
   "Name": "Personal Details",
   "Alias": "PersonalDetails",
   "File": "umb://template-file/PersonalDetails.cshtml",
-  "Master": null,
   "Udi": "umb://template/2085112cf5d9471389ea030a78464a13",
   "Dependencies": [
     {
       "Udi": "umb://template-file/PersonalDetails.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

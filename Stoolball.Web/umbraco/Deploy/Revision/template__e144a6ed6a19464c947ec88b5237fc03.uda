@@ -2,15 +2,13 @@
   "Name": "Edit Training Session",
   "Alias": "EditTrainingSession",
   "File": "umb://template-file/EditTrainingSession.cshtml",
-  "Master": null,
   "Udi": "umb://template/e144a6ed6a19464c947ec88b5237fc03",
   "Dependencies": [
     {
       "Udi": "umb://template-file/EditTrainingSession.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

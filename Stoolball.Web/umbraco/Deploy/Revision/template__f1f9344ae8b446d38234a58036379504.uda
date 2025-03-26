@@ -2,15 +2,13 @@
   "Name": "My Account",
   "Alias": "MyAccount",
   "File": "umb://template-file/MyAccount.cshtml",
-  "Master": null,
   "Udi": "umb://template/f1f9344ae8b446d38234a58036379504",
   "Dependencies": [
     {
       "Udi": "umb://template-file/MyAccount.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

@@ -1,12 +1,14 @@
 {
   "Name": "Date Picker",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.DateTime",
-  "DatabaseType": 3,
-  "Configuration": {"format":"YYYY-MM-DD","offsetTime":false},
-  "Parent": null,
+  "DatabaseType": "Date",
+  "Configuration": {
+    "format": "YYYY-MM-DD",
+    "offsetTime": false
+  },
   "Udi": "umb://data-type/5046194e4237453ca54715db3a07c4e1",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

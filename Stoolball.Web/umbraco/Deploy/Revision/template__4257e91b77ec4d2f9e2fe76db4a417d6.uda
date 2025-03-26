@@ -2,15 +2,13 @@
   "Name": "Edit Team",
   "Alias": "editTeam",
   "File": "umb://template-file/editTeam.cshtml",
-  "Master": null,
   "Udi": "umb://template/4257e91b77ec4d2f9e2fe76db4a417d6",
   "Dependencies": [
     {
       "Udi": "umb://template-file/editTeam.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

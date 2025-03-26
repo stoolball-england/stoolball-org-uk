@@ -2,15 +2,13 @@
   "Name": "Confirm Email Address",
   "Alias": "ConfirmEmailAddress",
   "File": "umb://template-file/ConfirmEmailAddress.cshtml",
-  "Master": null,
   "Udi": "umb://template/3d736c7583b641e6abb6a534efcd456d",
   "Dependencies": [
     {
       "Udi": "umb://template-file/ConfirmEmailAddress.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

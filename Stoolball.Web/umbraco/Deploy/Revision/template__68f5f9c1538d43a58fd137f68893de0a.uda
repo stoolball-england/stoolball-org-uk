@@ -2,15 +2,13 @@
   "Name": "Catches",
   "Alias": "Catches",
   "File": "umb://template-file/Catches.cshtml",
-  "Master": null,
   "Udi": "umb://template/68f5f9c1538d43a58fd137f68893de0a",
   "Dependencies": [
     {
       "Udi": "umb://template-file/Catches.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

@@ -2,15 +2,13 @@
   "Name": "Most Runs",
   "Alias": "MostRuns",
   "File": "umb://template-file/MostRuns.cshtml",
-  "Master": null,
   "Udi": "umb://template/0e91f8c950fc49bdb885c844dc58e6ca",
   "Dependencies": [
     {
       "Udi": "umb://template-file/MostRuns.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

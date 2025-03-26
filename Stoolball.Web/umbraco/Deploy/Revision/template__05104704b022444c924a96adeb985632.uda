@@ -2,15 +2,13 @@
   "Name": "Player of the Match Awards",
   "Alias": "PlayerOfTheMatchAwards",
   "File": "umb://template-file/PlayerOfTheMatchAwards.cshtml",
-  "Master": null,
   "Udi": "umb://template/05104704b022444c924a96adeb985632",
   "Dependencies": [
     {
       "Udi": "umb://template-file/PlayerOfTheMatchAwards.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.2"
+  "__version": "13.2.2"
 }

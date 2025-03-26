@@ -2,15 +2,13 @@
   "Name": "Create Friendly Match",
   "Alias": "createFriendlyMatch",
   "File": "umb://template-file/createFriendlyMatch.cshtml",
-  "Master": null,
   "Udi": "umb://template/90448f17316045e5aee41c4c74655f42",
   "Dependencies": [
     {
       "Udi": "umb://template-file/createFriendlyMatch.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

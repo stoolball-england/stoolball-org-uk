@@ -1,12 +1,16 @@
 {
   "Name": "Product Picker",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.MediaPicker",
-  "DatabaseType": 0,
-  "Configuration": {"multiPicker":false,"onlyImages":true,"disableFolderSelect":true,"startNodeId":"umb://media/f0cf6bcedfc74926abc93c33119036fc","ignoreUserStartNodes":false},
-  "Parent": null,
+  "Configuration": {
+    "multiPicker": false,
+    "onlyImages": true,
+    "disableFolderSelect": true,
+    "startNodeId": "umb://media/f0cf6bcedfc74926abc93c33119036fc",
+    "ignoreUserStartNodes": false
+  },
   "Udi": "umb://data-type/1e1163cf08f74b679c044b680d3f60e0",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

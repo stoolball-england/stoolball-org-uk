@@ -5,20 +5,11 @@
   "AllowedTemplates": [
     "umb://template/86c81ee4670c452cacd0cfe3d39420c6"
   ],
-  "HistoryCleanup": {
-    "PreventCleanup": false,
-    "KeepAllVersionsNewerThanDays": null,
-    "KeepLatestVersionPerDayForDays": null
-  },
+  "HistoryCleanup": {},
   "Icon": "icon-newspaper-alt color-grey",
   "Thumbnail": "folder.png",
   "Description": "A news story that is listed on the News page.",
-  "IsContainer": false,
   "Permissions": {
-    "AllowVaryingByCulture": false,
-    "AllowVaryingBySegment": false,
-    "AllowedAtRoot": false,
-    "IsElementType": false,
     "AllowedChildContentTypes": []
   },
   "Parent": "umb://document-type-container/b0a6bedc9cac475b8ebfbca3bffbce3b",
@@ -30,8 +21,6 @@
     {
       "Key": "651831be-346b-4fa0-87e2-d64bce77aa3f",
       "Name": "Content",
-      "SortOrder": 0,
-      "Type": 0,
       "Alias": "content",
       "PropertyTypes": [
         {
@@ -39,32 +28,15 @@
           "Alias": "blockList",
           "DataType": "umb://data-type/7dbc5c383d3445f09b3bc35f5f348380",
           "Description": "Click the settings icon next to any section to include it in the summary.\n\nTypically you should include just a paragraph or two and an image in the summary.",
-          "Mandatory": false,
-          "Name": "Content",
-          "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "Name": "Content"
         },
         {
           "Key": "4a66598e-4b46-4729-b07f-30cf8ad7375b",
           "Alias": "displayDate",
           "DataType": "umb://data-type/5046194e4237453ca54715db3a07c4e1",
           "Description": "The date displayed on the story. Leave blank if it's the same day you created this page.",
-          "Mandatory": false,
           "Name": "Display Date",
-          "SortOrder": 1,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 1
         }
       ]
     }
@@ -74,35 +46,29 @@
   "Dependencies": [
     {
       "Udi": "umb://data-type/5046194e4237453ca54715db3a07c4e1",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://data-type/7dbc5c383d3445f09b3bc35f5f348380",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type-container/b0a6bedc9cac475b8ebfbca3bffbce3b",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://template/86c81ee4670c452cacd0cfe3d39420c6",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

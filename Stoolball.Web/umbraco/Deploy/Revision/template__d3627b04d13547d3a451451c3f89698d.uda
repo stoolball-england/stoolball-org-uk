@@ -2,15 +2,13 @@
   "Name": "Team Actions",
   "Alias": "teamActions",
   "File": "umb://template-file/teamActions.cshtml",
-  "Master": null,
   "Udi": "umb://template/d3627b04d13547d3a451451c3f89698d",
   "Dependencies": [
     {
       "Udi": "umb://template-file/teamActions.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

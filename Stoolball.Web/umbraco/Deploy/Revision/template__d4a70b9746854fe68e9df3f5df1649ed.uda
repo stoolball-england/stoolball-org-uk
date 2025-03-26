@@ -2,15 +2,13 @@
   "Name": "Create Knockout Match",
   "Alias": "createKnockoutMatch",
   "File": "umb://template-file/createKnockoutMatch.cshtml",
-  "Master": null,
   "Udi": "umb://template/d4a70b9746854fe68e9df3f5df1649ed",
   "Dependencies": [
     {
       "Udi": "umb://template-file/createKnockoutMatch.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

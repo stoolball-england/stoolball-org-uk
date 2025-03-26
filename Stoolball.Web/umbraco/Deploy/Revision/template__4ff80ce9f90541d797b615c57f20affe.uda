@@ -2,15 +2,13 @@
   "Name": "Create Competition",
   "Alias": "createCompetition",
   "File": "umb://template-file/createCompetition.cshtml",
-  "Master": null,
   "Udi": "umb://template/4ff80ce9f90541d797b615c57f20affe",
   "Dependencies": [
     {
       "Udi": "umb://template-file/createCompetition.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

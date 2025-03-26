@@ -2,15 +2,13 @@
   "Name": "Matches",
   "Alias": "Matches",
   "File": "umb://template-file/Matches.cshtml",
-  "Master": null,
   "Udi": "umb://template/5e205dad9b4548dfb2a452e173ce5655",
   "Dependencies": [
     {
       "Udi": "umb://template-file/Matches.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

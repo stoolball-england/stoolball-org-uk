@@ -2,15 +2,13 @@
   "Name": "Batting Average",
   "Alias": "BattingAverage",
   "File": "umb://template-file/BattingAverage.cshtml",
-  "Master": null,
   "Udi": "umb://template/b1bd5bdd1a6444a5988da308ccff8f9a",
   "Dependencies": [
     {
       "Udi": "umb://template-file/BattingAverage.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

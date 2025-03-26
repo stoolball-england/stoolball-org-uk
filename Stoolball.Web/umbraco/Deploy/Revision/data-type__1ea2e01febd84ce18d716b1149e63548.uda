@@ -1,12 +1,11 @@
 {
   "Name": "Member Picker",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.MemberPicker",
-  "DatabaseType": 1,
+  "DatabaseType": "Nvarchar",
   "Configuration": {},
-  "Parent": null,
   "Udi": "umb://data-type/1ea2e01febd84ce18d716b1149e63548",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

@@ -7,20 +7,11 @@
     "umb://template/4072232af3ee4ffc9d2204bd3f9dcb11",
     "umb://template/eef6ed69b8c84ceabfffe07544ca64f6"
   ],
-  "HistoryCleanup": {
-    "PreventCleanup": false,
-    "KeepAllVersionsNewerThanDays": null,
-    "KeepLatestVersionPerDayForDays": null
-  },
+  "HistoryCleanup": {},
   "Icon": "icon-lock color-blue",
   "Thumbnail": "folder.png",
   "Description": "Reset a member's password",
-  "IsContainer": false,
   "Permissions": {
-    "AllowVaryingByCulture": false,
-    "AllowVaryingBySegment": false,
-    "AllowedAtRoot": false,
-    "IsElementType": false,
     "AllowedChildContentTypes": []
   },
   "Parent": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
@@ -33,7 +24,6 @@
       "Key": "074aebc4-e6a5-4354-aee9-61c79d8abbed",
       "Name": "'Reset password' email",
       "SortOrder": 1,
-      "Type": 0,
       "Alias": "resetPasswordEmail",
       "PropertyTypes": [
         {
@@ -43,14 +33,7 @@
           "Description": "The body of the email. You can use {{NAME}}, {{EMAIL}}, {{TOKEN}} and {{DOMAIN}} to insert values.",
           "Mandatory": true,
           "Name": "Email body",
-          "SortOrder": 1,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 1
         },
         {
           "Key": "50c913d0-083d-42f6-a974-fe027b473a5c",
@@ -58,15 +41,7 @@
           "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
           "Description": "The subject line of the email. You can use {{NAME}} to insert the member's name.",
           "Mandatory": true,
-          "Name": "Email subject",
-          "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "Name": "Email subject"
         }
       ]
     },
@@ -74,7 +49,6 @@
       "Key": "2175d96d-1b9f-4d14-be1f-1409c1688bda",
       "Name": "'Approve member' email (re-sent if member is not approved)",
       "SortOrder": 3,
-      "Type": 0,
       "Alias": "approveMemberEmailReSentIfMemberIsNotApproved",
       "PropertyTypes": [
         {
@@ -84,14 +58,7 @@
           "Description": "The body of the email. You can use {{NAME}}, {{EMAIL}}, {{TOKEN}} and {{DOMAIN}} to insert values.",
           "Mandatory": true,
           "Name": "Email body",
-          "SortOrder": 1,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 1
         },
         {
           "Key": "3aa7ab13-f44f-404f-b5d1-3e75c620dc6f",
@@ -99,15 +66,7 @@
           "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
           "Description": "The subject line of the email. You can use {{NAME}} to insert the member's name.",
           "Mandatory": true,
-          "Name": "Email subject",
-          "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "Name": "Email subject"
         }
       ]
     },
@@ -115,7 +74,6 @@
       "Key": "a6282563-16ff-480a-841d-b82e89a59023",
       "Name": "'Create member' email (sent if no member matches the email address)",
       "SortOrder": 2,
-      "Type": 0,
       "Alias": "createMemberEmailSentIfNoMemberMatchesTheEmailAddress",
       "PropertyTypes": [
         {
@@ -125,14 +83,7 @@
           "Description": "The body of the email. You can use {{EMAIL}} and {{DOMAIN}} to insert values.",
           "Mandatory": true,
           "Name": "Email body",
-          "SortOrder": 1,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 1
         },
         {
           "Key": "9d2c26dc-3976-48f8-aa6f-7f0eb0113f5b",
@@ -140,23 +91,13 @@
           "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
           "Description": "The subject line of the email.",
           "Mandatory": true,
-          "Name": "Email subject",
-          "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "Name": "Email subject"
         }
       ]
     },
     {
       "Key": "b2d32c5a-296e-4243-a1b4-47471e712367",
       "Name": "Page content - Request a password reset",
-      "SortOrder": 0,
-      "Type": 0,
       "Alias": "pageContentRequestAPasswordReset",
       "PropertyTypes": [
         {
@@ -165,15 +106,7 @@
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
           "Description": "Displays instead of the form when a member is logged in. You can use {{NAME}} to insert the member's name.",
           "Mandatory": true,
-          "Name": "Logged in",
-          "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "Name": "Logged in"
         },
         {
           "Key": "ed0022b3-5d4b-4627-80f7-d6dd790d8d0e",
@@ -182,14 +115,7 @@
           "Description": "Displayed when a password reset was requested and, if an member was found, an email was sent. You can use {{EMAIL}} to tell them where we sent the email to.",
           "Mandatory": true,
           "Name": "Password reset requested",
-          "SortOrder": 3,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 3
         },
         {
           "Key": "f8417e21-54e2-4807-b135-4857b3546b6a",
@@ -198,14 +124,7 @@
           "Description": "Label for the form submit button when requesting a password reset.",
           "Mandatory": true,
           "Name": "'Reset password' button",
-          "SortOrder": 2,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 2
         }
       ]
     },
@@ -213,7 +132,6 @@
       "Key": "f5dc18be-f72c-423d-a490-6d55284faaf0",
       "Name": "Page content - Update your password",
       "SortOrder": 4,
-      "Type": 0,
       "Alias": "pageContentUpdateYourPassword",
       "PropertyTypes": [
         {
@@ -222,31 +140,15 @@
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
           "Description": "Displayed when a password reset is requested and the link in the email has expired.",
           "Mandatory": true,
-          "Name": "Password reset token invalid",
-          "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "Name": "Password reset token invalid"
         },
         {
           "Key": "7f7aac66-9a39-48fb-aff5-4ed5f1f8cea4",
           "Alias": "passwordHelp",
           "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
           "Description": "Advice on minimum password complexity requirements.",
-          "Mandatory": false,
           "Name": "Password help",
-          "SortOrder": 1,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 1
         },
         {
           "Key": "a8e15c9b-78d5-496a-9044-79fb6963e7f1",
@@ -255,14 +157,7 @@
           "Description": "Label for the button which appears after the password reset is complete.",
           "Mandatory": true,
           "Name": "'Go back to Home' button",
-          "SortOrder": 5,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 5
         },
         {
           "Key": "cf21a651-86d0-4d51-9afe-cab8e1010196",
@@ -271,14 +166,7 @@
           "Description": "Displayed when the member's password is not saved.",
           "Mandatory": true,
           "Name": "Password reset failed",
-          "SortOrder": 4,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 4
         },
         {
           "Key": "d17016de-7afb-43ba-8b17-54e51df6c72f",
@@ -287,14 +175,7 @@
           "Description": "Displayed after a member successfully resets their password.",
           "Mandatory": true,
           "Name": "Password reset successful",
-          "SortOrder": 3,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 3
         },
         {
           "Key": "d87fc6e9-c734-433e-b4d4-92a110cd941d",
@@ -303,14 +184,7 @@
           "Description": "Label for the form submit button when updating the member's password.",
           "Mandatory": true,
           "Name": "'Update password' button",
-          "SortOrder": 2,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 2
         }
       ]
     }
@@ -320,50 +194,41 @@
   "Dependencies": [
     {
       "Udi": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://data-type/dcd611c7e61140e79072c7eea977a13e",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://template/289a8b84d4584034a788a70fc734316d",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://template/4072232af3ee4ffc9d2204bd3f9dcb11",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://template/eef6ed69b8c84ceabfffe07544ca64f6",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

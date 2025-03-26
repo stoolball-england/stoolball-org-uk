@@ -1,21 +1,11 @@
 {
   "Name": "News Story Settings",
   "Alias": "newsStorySettings",
-  "DefaultTemplate": null,
   "AllowedTemplates": [],
-  "HistoryCleanup": {
-    "PreventCleanup": false,
-    "KeepAllVersionsNewerThanDays": null,
-    "KeepLatestVersionPerDayForDays": null
-  },
+  "HistoryCleanup": {},
   "Icon": "icon-settings color-grey",
   "Thumbnail": "folder.png",
-  "Description": null,
-  "IsContainer": false,
   "Permissions": {
-    "AllowVaryingByCulture": false,
-    "AllowVaryingBySegment": false,
-    "AllowedAtRoot": false,
     "IsElementType": true,
     "AllowedChildContentTypes": []
   },
@@ -25,25 +15,13 @@
     {
       "Key": "813ad4a8-4eab-461f-962a-f5f49c4c2184",
       "Name": "Content",
-      "SortOrder": 0,
-      "Type": 0,
       "Alias": "content",
       "PropertyTypes": [
         {
           "Key": "4dd7510b-c8ac-44d2-b308-9c367298c7bd",
           "Alias": "includeInSummary",
           "DataType": "umb://data-type/92897bc6a5f34ffeae27f2e7e33dda49",
-          "Description": null,
-          "Mandatory": false,
-          "Name": "Include in summary",
-          "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "Name": "Include in summary"
         }
       ]
     }
@@ -53,15 +31,13 @@
   "Dependencies": [
     {
       "Udi": "umb://data-type/92897bc6a5f34ffeae27f2e7e33dda49",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type-container/b0a6bedc9cac475b8ebfbca3bffbce3b",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

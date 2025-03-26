@@ -2,15 +2,13 @@
   "Name": "Reset Password",
   "Alias": "ResetPassword",
   "File": "umb://template-file/ResetPassword.cshtml",
-  "Master": null,
   "Udi": "umb://template/eef6ed69b8c84ceabfffe07544ca64f6",
   "Dependencies": [
     {
       "Udi": "umb://template-file/ResetPassword.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

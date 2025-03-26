@@ -5,20 +5,11 @@
   "AllowedTemplates": [
     "umb://template/8d0a05fab2954537b655c91e25f51a62"
   ],
-  "HistoryCleanup": {
-    "PreventCleanup": false,
-    "KeepAllVersionsNewerThanDays": null,
-    "KeepLatestVersionPerDayForDays": null
-  },
+  "HistoryCleanup": {},
   "Icon": "icon-checkbox color-blue",
   "Thumbnail": "folder.png",
   "Description": "Complete registration of a new member account",
-  "IsContainer": false,
   "Permissions": {
-    "AllowVaryingByCulture": false,
-    "AllowVaryingBySegment": false,
-    "AllowedAtRoot": false,
-    "IsElementType": false,
     "AllowedChildContentTypes": []
   },
   "Parent": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
@@ -30,8 +21,6 @@
     {
       "Key": "b5056add-30c7-4cf9-a4ef-d7ab44e90876",
       "Name": "Page content",
-      "SortOrder": 0,
-      "Type": 0,
       "Alias": "pageContent",
       "PropertyTypes": [
         {
@@ -41,14 +30,7 @@
           "Description": "Displays when approval failed for any reason.",
           "Mandatory": true,
           "Name": "Approval failed",
-          "SortOrder": 1,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "SortOrder": 1
         },
         {
           "Key": "de3c005c-f3f5-48d4-a3d3-e245d2f2029f",
@@ -56,15 +38,7 @@
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
           "Description": "Displays when the member is approved. You can use {{NAME}} to insert the member's name.",
           "Mandatory": true,
-          "Name": "Approval successful",
-          "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false,
-          "LabelOnTop": false,
-          "MemberCanEdit": false,
-          "ViewOnProfile": false,
-          "IsSensitive": false
+          "Name": "Approval successful"
         }
       ]
     }
@@ -74,30 +48,25 @@
   "Dependencies": [
     {
       "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     },
     {
       "Udi": "umb://template/8d0a05fab2954537b655c91e25f51a62",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

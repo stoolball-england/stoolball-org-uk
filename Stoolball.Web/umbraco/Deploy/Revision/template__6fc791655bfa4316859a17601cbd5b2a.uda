@@ -2,15 +2,13 @@
   "Name": "Edit Close of Play",
   "Alias": "editCloseOfPlay",
   "File": "umb://template-file/editCloseOfPlay.cshtml",
-  "Master": null,
   "Udi": "umb://template/6fc791655bfa4316859a17601cbd5b2a",
   "Dependencies": [
     {
       "Udi": "umb://template-file/editCloseOfPlay.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

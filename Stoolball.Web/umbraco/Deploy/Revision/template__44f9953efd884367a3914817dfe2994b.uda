@@ -2,15 +2,13 @@
   "Name": "Player Identity Actions",
   "Alias": "PlayerIdentityActions",
   "File": "umb://template-file/PlayerIdentityActions.cshtml",
-  "Master": null,
   "Udi": "umb://template/44f9953efd884367a3914817dfe2994b",
   "Dependencies": [
     {
       "Udi": "umb://template-file/PlayerIdentityActions.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.2"
+  "__version": "13.2.2"
 }

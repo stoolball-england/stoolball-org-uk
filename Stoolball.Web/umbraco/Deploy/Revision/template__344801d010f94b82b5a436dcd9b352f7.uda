@@ -2,15 +2,13 @@
   "Name": "Economy Rate",
   "Alias": "EconomyRate",
   "File": "umb://template-file/EconomyRate.cshtml",
-  "Master": null,
   "Udi": "umb://template/344801d010f94b82b5a436dcd9b352f7",
   "Dependencies": [
     {
       "Udi": "umb://template-file/EconomyRate.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

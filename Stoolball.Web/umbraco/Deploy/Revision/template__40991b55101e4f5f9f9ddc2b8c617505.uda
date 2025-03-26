@@ -2,15 +2,13 @@
   "Name": "Edit Match Location",
   "Alias": "editMatchLocation",
   "File": "umb://template-file/editMatchLocation.cshtml",
-  "Master": null,
   "Udi": "umb://template/40991b55101e4f5f9f9ddc2b8c617505",
   "Dependencies": [
     {
       "Udi": "umb://template-file/editMatchLocation.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

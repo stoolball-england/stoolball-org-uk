@@ -1,12 +1,10 @@
 {
   "Name": "Image Cropper",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.ImageCropper",
-  "DatabaseType": 0,
   "Configuration": {},
-  "Parent": null,
   "Udi": "umb://data-type/1df9f033e6d4451fb8d2e0cbc50a836f",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

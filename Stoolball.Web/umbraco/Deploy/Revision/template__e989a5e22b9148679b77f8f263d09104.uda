@@ -2,15 +2,13 @@
   "Name": "Edit Players for Team",
   "Alias": "EditPlayersForTeam",
   "File": "umb://template-file/EditPlayersForTeam.cshtml",
-  "Master": null,
   "Udi": "umb://template/e989a5e22b9148679b77f8f263d09104",
   "Dependencies": [
     {
       "Udi": "umb://template-file/EditPlayersForTeam.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.2"
+  "__version": "13.2.2"
 }

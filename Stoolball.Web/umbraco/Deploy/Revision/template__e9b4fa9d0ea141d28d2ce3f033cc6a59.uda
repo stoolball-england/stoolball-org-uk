@@ -2,15 +2,13 @@
   "Name": "Run-Outs",
   "Alias": "RunOuts",
   "File": "umb://template-file/RunOuts.cshtml",
-  "Master": null,
   "Udi": "umb://template/e9b4fa9d0ea141d28d2ce3f033cc6a59",
   "Dependencies": [
     {
       "Udi": "umb://template-file/RunOuts.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

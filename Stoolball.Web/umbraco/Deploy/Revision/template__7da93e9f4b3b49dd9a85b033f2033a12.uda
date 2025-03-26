@@ -2,15 +2,13 @@
   "Name": "Player Batting",
   "Alias": "PlayerBatting",
   "File": "umb://template-file/PlayerBatting.cshtml",
-  "Master": null,
   "Udi": "umb://template/7da93e9f4b3b49dd9a85b033f2033a12",
   "Dependencies": [
     {
       "Udi": "umb://template-file/PlayerBatting.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

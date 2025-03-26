@@ -2,15 +2,13 @@
   "Name": "Tournament",
   "Alias": "tournament",
   "File": "umb://template-file/tournament.cshtml",
-  "Master": null,
   "Udi": "umb://template/975dfe2a53754f208747871a5efb9146",
   "Dependencies": [
     {
       "Udi": "umb://template-file/tournament.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

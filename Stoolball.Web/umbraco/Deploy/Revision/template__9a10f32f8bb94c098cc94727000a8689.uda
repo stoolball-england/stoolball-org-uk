@@ -2,15 +2,13 @@
   "Name": "Season Actions",
   "Alias": "seasonActions",
   "File": "umb://template-file/seasonActions.cshtml",
-  "Master": null,
   "Udi": "umb://template/9a10f32f8bb94c098cc94727000a8689",
   "Dependencies": [
     {
       "Udi": "umb://template-file/seasonActions.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

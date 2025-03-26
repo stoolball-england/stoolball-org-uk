@@ -2,15 +2,13 @@
   "Name": "Create Member",
   "Alias": "CreateMember",
   "File": "umb://template-file/CreateMember.cshtml",
-  "Master": null,
   "Udi": "umb://template/f0485339ac8b45ab8347d716b192422f",
   "Dependencies": [
     {
       "Udi": "umb://template-file/CreateMember.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

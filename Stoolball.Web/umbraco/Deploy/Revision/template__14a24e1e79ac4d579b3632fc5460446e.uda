@@ -2,15 +2,13 @@
   "Name": "Content",
   "Alias": "Content",
   "File": "umb://template-file/Content.cshtml",
-  "Master": null,
   "Udi": "umb://template/14a24e1e79ac4d579b3632fc5460446e",
   "Dependencies": [
     {
       "Udi": "umb://template-file/Content.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

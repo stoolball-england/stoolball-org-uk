@@ -2,15 +2,13 @@
   "Name": "Match Location",
   "Alias": "matchLocation",
   "File": "umb://template-file/matchLocation.cshtml",
-  "Master": null,
   "Udi": "umb://template/bcf47530158d44b980facd6ba373aacb",
   "Dependencies": [
     {
       "Udi": "umb://template-file/matchLocation.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

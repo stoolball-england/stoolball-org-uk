@@ -1,10 +1,9 @@
 {
   "Name": "Blocks",
-  "Alias": null,
+  "Alias": "",
   "ContainedObjectType": "a2cb7800-f571-4787-9638-bc48539a0efb",
-  "Parent": null,
   "Udi": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContainerArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

@@ -1,12 +1,11 @@
 {
   "Name": "Numeric",
-  "Alias": null,
+  "Alias": "",
   "EditorAlias": "Umbraco.Integer",
-  "DatabaseType": 2,
+  "DatabaseType": "Integer",
   "Configuration": {},
-  "Parent": null,
   "Udi": "umb://data-type/2e6d3631066e44b8aec496f09099b2b5",
   "Dependencies": [],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

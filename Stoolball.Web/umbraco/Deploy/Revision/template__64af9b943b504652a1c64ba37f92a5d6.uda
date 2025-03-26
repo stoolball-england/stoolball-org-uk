@@ -2,15 +2,13 @@
   "Name": "Email Address",
   "Alias": "EmailAddress",
   "File": "umb://template-file/EmailAddress.cshtml",
-  "Master": null,
   "Udi": "umb://template/64af9b943b504652a1c64ba37f92a5d6",
   "Dependencies": [
     {
       "Udi": "umb://template-file/EmailAddress.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

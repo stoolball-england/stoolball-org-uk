@@ -2,15 +2,13 @@
   "Name": "News Story",
   "Alias": "NewsStory",
   "File": "umb://template-file/NewsStory.cshtml",
-  "Master": null,
   "Udi": "umb://template/86c81ee4670c452cacd0cfe3d39420c6",
   "Dependencies": [
     {
       "Udi": "umb://template-file/NewsStory.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }

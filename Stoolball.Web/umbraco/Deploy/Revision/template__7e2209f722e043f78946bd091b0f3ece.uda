@@ -2,15 +2,13 @@
   "Name": "Competition Statistics",
   "Alias": "CompetitionStatistics",
   "File": "umb://template-file/CompetitionStatistics.cshtml",
-  "Master": null,
   "Udi": "umb://template/7e2209f722e043f78946bd091b0f3ece",
   "Dependencies": [
     {
       "Udi": "umb://template-file/CompetitionStatistics.cshtml",
-      "Ordering": true,
-      "Mode": 0
+      "Ordering": true
     }
   ],
   "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
-  "__version": "9.4.0"
+  "__version": "13.2.2"
 }
