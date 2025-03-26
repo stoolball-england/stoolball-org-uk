@@ -18,7 +18,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 8.0.x
 
     - name: Restore npm dependencies
       run: npm ci
@@ -71,7 +71,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 8.0.x
 
     - name: Restore dependencies
       run: dotnet restore ./Stoolball.UnitTests/Stoolball.UnitTests.csproj
@@ -100,7 +100,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 8.0.x
 
     - name: Restore dependencies
       run: dotnet restore ./Stoolball.Data.MemoryCache.UnitTests/Stoolball.Data.MemoryCache.UnitTests.csproj
@@ -129,7 +129,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 8.0.x
 
     - name: Restore dependencies
       run: dotnet restore ./Stoolball.Data.SqlServer.UnitTests/Stoolball.Data.SqlServer.UnitTests.csproj
@@ -164,7 +164,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 8.0.x
 
     - name: Restore dependencies
       run: dotnet restore ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj
