@@ -116,7 +116,7 @@ namespace Stoolball.Data.SqlServer
                 // Populate the PlayerIdentities collections of the players with the data that we have
                 foreach (var identity in identities)
                 {
-                    identity.Player!.PlayerIdentities = new PlayerIdentityList(identities.Where(x => x.Player?.PlayerId == identity.Player.PlayerId));
+                    identity.Player!.PlayerIdentities = new PlayerIdentityList(identities.Where(x => x.Player?.PlayerId == identity.Player.PlayerId).Distinct(new PlayerIdentityEqualityComparer()));
                 }
 
                 return identities;
