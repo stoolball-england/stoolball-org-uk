@@ -27,7 +27,7 @@ namespace Stoolball.UnitTests.Matches
         {
             var parser = new MatchesRssQueryStringParser();
 
-            var result = parser.ParseFilterFromQueryString("?format=tweet&today=true");
+            var result = parser.ParseFilterFromQueryString("?today=true");
 
             var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(Constants.UkTimeZone());
             var ukToday = new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date));
@@ -121,24 +121,13 @@ namespace Stoolball.UnitTests.Matches
 
 
         [Fact]
-        public void No_tweet_format_returns_no_match_result_filter()
+        public void No_querystring_returns_no_match_result_filter()
         {
             var parser = new MatchesRssQueryStringParser();
 
             var result = parser.ParseFilterFromQueryString(string.Empty);
 
             Assert.Empty(result.MatchResultTypes);
-        }
-
-        [Fact]
-        public void Tweets_should_only_return_matches_with_an_unknown_result()
-        {
-            var parser = new MatchesRssQueryStringParser();
-
-            var result = parser.ParseFilterFromQueryString("?format=tweet");
-
-            Assert.Single(result.MatchResultTypes);
-            Assert.Null(result.MatchResultTypes.First());
         }
     }
 }

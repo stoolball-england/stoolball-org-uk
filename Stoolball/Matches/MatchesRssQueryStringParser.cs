@@ -17,17 +17,8 @@ namespace Stoolball.Matches
             ParseDateFilter(query, filter);
             ParsePlayerTypeFilter(query, filter);
             ParseMatchTypeFilter(query, filter);
-            ParseMatchResultTypeFilter(query, filter);
 
             return filter;
-        }
-
-        private static void ParseMatchResultTypeFilter(Dictionary<string, StringValues> queryString, MatchFilter filter)
-        {
-            if (queryString.ContainsKey("format") && queryString["format"] == "tweet")
-            {
-                filter.MatchResultTypes.Add(null);
-            }
         }
 
         private static void ParseDateFilter(Dictionary<string, StringValues> queryString, MatchFilter filter)

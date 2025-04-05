@@ -105,7 +105,7 @@ namespace Stoolball.Web.Matches
 
             model.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst);
 
-            return View(Request.Query["format"] == "tweet" ? "MatchTweets" : "MatchesRss", model);
+            return View("MatchesRss", model);
         }
     }
 }

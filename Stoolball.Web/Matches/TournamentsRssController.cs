@@ -98,7 +98,7 @@ namespace Stoolball.Web.Matches
             }
             model.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst);
 
-            return View((Request.Query.ContainsKey("format") && Request.Query["format"] == "tweet") ? "TournamentTweets" : "TournamentsRss", model);
+            return View("TournamentsRss", model);
         }
     }
 }
