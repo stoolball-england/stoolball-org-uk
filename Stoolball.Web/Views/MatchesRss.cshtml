@@ -1,13 +1,15 @@
 ﻿@inherits UmbracoViewPage<MatchListingViewModel>
 @inject IDateTimeFormatter dateTimeFormatter
+@using Microsoft.AspNetCore.Http
 @using Stoolball.Web.Matches.Models
 @using Humanizer
 @using Stoolball.Dates
 @{
     Layout = null;
     Context.Response.ContentType = "application/rss+xml";
+    Context.Response.Headers.Append("Cache-Control", "max-age=86400, public"); // allow any cache for 24 hours
     var canonicalUrl = $"{Context.Request.Scheme}://www.stoolball.org.uk{Context.Request.Path.Value!.Substring(0, Context.Request.Path.Value.Length - 4)}.rss{Context.Request.QueryString.Value}";
-    Context.Response.Headers.Add("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
+    Context.Response.Headers.Append("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
 }<?xml version="1.0" encoding="utf-8" ?>
 <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
 <channel>

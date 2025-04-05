@@ -88,14 +88,9 @@ namespace Stoolball.Web.Matches
                 model.AppliedMatchFilter.MatchLocationIds.Add(location.MatchLocationId!.Value);
             }
 
-            // Remove from date from filter if it's the default, and describe the remainder in the feed title.
-            var clonedFilter = model.AppliedMatchFilter.Clone();
-            if (clonedFilter.FromDate == DateTimeOffset.UtcNow.Date)
-            {
-                clonedFilter.FromDate = null;
-            }
             // Remove to date filter if it's a rolling date
             // (if user has set a specific end date a exactly year in the future unfortunately we'll miss it, but this is only for the description)
+            var clonedFilter = model.AppliedMatchFilter.Clone();
             if (clonedFilter.UntilDate == DateTimeOffset.UtcNow.Date.AddDays(365).AddDays(1).AddSeconds(-1))
             {
                 clonedFilter.UntilDate = null;
@@ -107,10 +102,6 @@ namespace Stoolball.Web.Matches
                 model.Metadata.PageTitle = $"{model.AppliedMatchFilter.PlayerTypes.First().Humanize(LetterCasing.Sentence)} {model.Metadata.PageTitle.ToLower(CultureInfo.CurrentCulture)}";
                 model.Metadata.Description = $"New or updated {model.AppliedMatchFilter.PlayerTypes.First()} stoolball matches on the Stoolball England website";
             }
-
-
-            // TEMP:
-            model.AppliedMatchFilter.FromDate = DateTime.Now.AddYears(-2);
 
             model.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst);
 

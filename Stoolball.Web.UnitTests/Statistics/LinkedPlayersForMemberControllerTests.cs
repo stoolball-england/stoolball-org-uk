@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -38,7 +39,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.Null(((LinkedPlayersViewModel)((ViewResult)result).Model).Player);
+                Assert.Null(((LinkedPlayersViewModel)((ViewResult)result).Model!).Player);
             }
         }
 
@@ -54,7 +55,7 @@ namespace Stoolball.Web.UnitTests.Statistics
 
                 _playerDataSource.Verify(x => x.ReadPlayerByMemberKey(memberKey), Times.Once);
                 _playerDataSource.Verify(x => x.ReadPlayerByRoute(It.IsAny<string>(), null), Times.Never);
-                Assert.Null(((LinkedPlayersViewModel)((ViewResult)result).Model).Player);
+                Assert.Null(((LinkedPlayersViewModel)((ViewResult)result).Model!).Player);
             }
         }
 
@@ -72,7 +73,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.Equal(player2, ((LinkedPlayersViewModel)((ViewResult)result).Model).Player);
+                Assert.Equal(player2, ((LinkedPlayersViewModel)((ViewResult)result).Model!).Player);
             }
         }
 
@@ -83,7 +84,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                var breadcrumbs = ((LinkedPlayersViewModel)((ViewResult)result).Model).Breadcrumbs;
+                var breadcrumbs = ((LinkedPlayersViewModel)((ViewResult)result).Model!).Breadcrumbs;
                 Assert.Equal(2, breadcrumbs.Count);
                 Assert.Equal("Home", breadcrumbs[0].Name);
                 Assert.Equal("My account", breadcrumbs[1].Name);
@@ -97,20 +98,20 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.False(string.IsNullOrWhiteSpace(((LinkedPlayersViewModel)((ViewResult)result).Model).Metadata.PageTitle));
+                Assert.False(string.IsNullOrWhiteSpace(((LinkedPlayersViewModel)((ViewResult)result).Model!).Metadata.PageTitle));
             }
         }
 
         [Fact]
         public async Task Sets_PreferredNextRoute_from_referer_if_removing_domain()
         {
-            Request.Object.Headers.Add("Referer", "https://example.org/from-referer");
+            Request.Object.Headers.Append("Referer", "https://example.org/from-referer");
 
             using (var controller = CreateController())
             {
                 var result = await controller.Index();
 
-                Assert.Equal("/from-referer", ((LinkedPlayersViewModel)((ViewResult)result).Model).PreferredNextRoute);
+                Assert.Equal("/from-referer", ((LinkedPlayersViewModel)((ViewResult)result).Model!).PreferredNextRoute);
             }
         }
 
@@ -121,7 +122,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             {
                 var result = await controller.Index();
 
-                Assert.Equal(Constants.Pages.AccountUrl, ((LinkedPlayersViewModel)((ViewResult)result).Model).PreferredNextRoute);
+                Assert.Equal(Constants.Pages.AccountUrl, ((LinkedPlayersViewModel)((ViewResult)result).Model!).PreferredNextRoute);
             }
         }
     }

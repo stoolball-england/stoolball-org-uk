@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Stoolball.Web.Security
@@ -96,11 +97,11 @@ namespace Stoolball.Web.Security
 
             if (!filterContext.HttpContext.Response.HasStarted && !filterContext.HttpContext.Response.Headers.ContainsKey("Content-Security-Policy"))
             {
-                filterContext.HttpContext.Response.Headers.Add("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, CONNECT_SRC, MANIFEST_SRC, TRUSTED_TYPES, WORKER_SRC, REPORT_URI, REPORT_TO));
+                filterContext.HttpContext.Response.Headers.Append("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, CONNECT_SRC, MANIFEST_SRC, TRUSTED_TYPES, WORKER_SRC, REPORT_URI, REPORT_TO));
             }
             if (!filterContext.HttpContext.Response.HasStarted && !filterContext.HttpContext.Response.Headers.ContainsKey("X-Content-Security-Policy"))
             {
-                filterContext.HttpContext.Response.Headers.Add("X-Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, MANIFEST_SRC, CONNECT_SRC, REPORT_URI));
+                filterContext.HttpContext.Response.Headers.Append("X-Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, MANIFEST_SRC, CONNECT_SRC, REPORT_URI));
             }
         }
 

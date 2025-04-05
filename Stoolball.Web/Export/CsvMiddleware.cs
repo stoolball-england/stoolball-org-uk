@@ -52,8 +52,8 @@ namespace Stoolball.Web.Export
         private static async Task RespondWithFileAsync(HttpResponse response, string path)
         {
             response.ContentType = "text/csv";
-            response.Headers.Add("Cache-Control", "max-age=86400, public"); // 1 day
-            response.Headers.Add("Content-Disposition", "attachment; filename=\"stoolball-england.csv\"");
+            response.Headers.Append("Cache-Control", "max-age=86400, public"); // 1 day
+            response.Headers.Append("Content-Disposition", "attachment; filename=\"stoolball-england.csv\"");
             await response.SendFileAsync(path);
         }
 

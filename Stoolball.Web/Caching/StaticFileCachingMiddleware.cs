@@ -26,7 +26,7 @@ namespace Stoolball.Web.Caching
             {
                 if (new List<string> { ".css", ".js", ".svg", ".gif", ".png", ".jpg", ".ico", ".woff", ".woff2" }.Contains(path.GetFileExtension().ToLowerInvariant()))
                 {
-                    context.Response.Headers.Add("Cache-Control", "public, max-age=31536000");
+                    context.Response.Headers.Append("Cache-Control", "public, max-age=31536000");
                 }
             }
 

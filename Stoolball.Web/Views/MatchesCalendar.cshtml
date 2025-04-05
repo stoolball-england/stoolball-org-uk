@@ -1,13 +1,15 @@
 ﻿@inherits UmbracoViewPage<MatchListingViewModel>
 @inject Stoolball.Dates.IDateTimeFormatter dateTimeFormatter
 @using Constants = Stoolball.Constants
+@using Microsoft.AspNetCore.Http
 @using Stoolball.Web.Matches.Models
 @{
     Layout = null;
     Context.Response.ContentType = "text/calendar; charset=utf-8";
+    Context.Response.Headers.Append("Cache-Control", "max-age=86400, public"); // allow any cache for 24 hours
     var canonicalUrl = new Uri($"https://www.stoolball.org.uk{Context.Request.Path.Value!.Substring(0, Context.Request.Path.Value.Length - 4)}.ics{Context.Request.QueryString.Value}");
-    Context.Response.Headers.Add("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
-    Context.Response.Headers.Add("Content-Disposition", "attachment; filename=stoolball" + Context.Request.Path.Value.Replace('/', '-').Replace("-ics", string.Empty) + ".ics");
+    Context.Response.Headers.Append("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
+    Context.Response.Headers.Append("Content-Disposition", "attachment; filename=stoolball" + Context.Request.Path.Value.Replace('/', '-').Replace("-ics", string.Empty) + ".ics");
 }BEGIN:VCALENDAR
 X-ORIGINAL-URL:@canonicalUrl
 X-WR-CALNAME;CHARSET=UTF-8:@Model.Metadata.PageTitle.Replace(",", @"\,") - Stoolball England
