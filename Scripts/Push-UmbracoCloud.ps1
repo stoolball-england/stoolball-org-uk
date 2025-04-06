@@ -41,7 +41,7 @@ foreach ($folder in $foldersToCopy) {
     Get-ChildItem -Recurse $cloudRoot\src\$folder\*.cs | Remove-Item
 
     robocopy $folderPath $cloudRoot\src\$folder `
-        /IF *.cs *.csproj *.cshtml *.uda *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 *.lic *.sql appsettings.json appsettings.Production.json compilerconfig.json web.release.config `
+        /IF *.cs *.csproj *.cshtml *.uda *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 *.lic *.sql appsettings.json appsettings.Production.json compilerconfig.json web.release.config robots.txt `
         /XF member-group__*.uda *.test.js umbraco-cloud.json `
         /S `
         /XD $folderPath\obj $folderPath\bin $folderPath\node_modules $folderPath\sass $folderPath\App_Data $folderPath\wwwroot\media `
