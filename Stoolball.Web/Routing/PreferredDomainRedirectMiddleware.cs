@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Stoolball.Web.Routing
 {
-    public class BareDomainRedirectMiddleware
+    public class PreferredDomainRedirectMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public BareDomainRedirectMiddleware(RequestDelegate next)
+        public PreferredDomainRedirectMiddleware(RequestDelegate next)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
         }
@@ -19,7 +19,7 @@ namespace Stoolball.Web.Routing
             var domain = context.Request.Host.Host.ToUpperInvariant();
             var path = UriHelper.GetEncodedPathAndQuery(context.Request);
 
-            if (domain == "STOOLBALL.ORG.UK")
+            if (domain == "STOOLBALL.ORG.UK" || domain == "STOOLBALL.CO.UK" || domain == "WWW.STOOLBALL.CO.UK")
             {
                 context.Response.Redirect("https://www.stoolball.org.uk" + path, true);
                 return;

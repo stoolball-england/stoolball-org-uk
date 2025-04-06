@@ -6,7 +6,7 @@ namespace Stoolball.Web.Routing
     {
         public static IApplicationBuilder UseBareDomainRedirect(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<BareDomainRedirectMiddleware>();
+            return builder.UseMiddleware<PreferredDomainRedirectMiddleware>();
         }
     }
 }
