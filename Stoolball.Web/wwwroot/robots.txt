@@ -16,4 +16,6 @@ Disallow: */catches
 Disallow: */run-outs
 Disallow: */add-to-my-statistics
 Disallow: /account
+Disallow: *page=
 Allow: /
+Crawl-delay: 10
