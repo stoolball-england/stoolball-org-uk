@@ -43,6 +43,7 @@ namespace Stoolball.Testing
                 MatchTeamId = Guid.NewGuid(),
                 TeamRole = homeTeamBatsFirst ? TeamRole.Home : TeamRole.Away,
                 Team = teamA,
+                PlayingAsTeamName = teamA.TeamName,
                 WonToss = _randomiser.PositiveIntegerLessThan(2) == 0,
                 BattedFirst = true
             };
@@ -52,6 +53,7 @@ namespace Stoolball.Testing
                 MatchTeamId = Guid.NewGuid(),
                 TeamRole = homeTeamBatsFirst ? TeamRole.Away : TeamRole.Home,
                 Team = teamB,
+                PlayingAsTeamName = teamB.TeamName,
                 WonToss = !teamAInMatch.WonToss,
                 BattedFirst = false
             };

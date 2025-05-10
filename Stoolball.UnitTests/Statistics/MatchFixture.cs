@@ -35,26 +35,29 @@ namespace Stoolball.UnitTests.Statistics
             var seedDataGenerator = new SeedDataGenerator(randomiser, _oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
                 competitionFakerFactory, teamFakerFactory, new ClubFakerFactory(), matchLocationFakerFactory, new SchoolFakerFactory(), new PlayerFakerFactory(), new PlayerIdentityFakerFactory(), playerOfTheMatchAward);
 
-
-            var homeTeam = new TeamInMatch
+            var homeTeam = teamFaker.Generate();
+            var homeTeamInMatch = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = teamFaker.Generate(),
+                Team = homeTeam,
+                PlayingAsTeamName = homeTeam.TeamName,
                 WonToss = true,
                 BattedFirst = true,
                 TeamRole = TeamRole.Home
             };
 
-            var awayTeam = new TeamInMatch
+            var awayTeam = teamFaker.Generate();
+            var awayTeamInMatch = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = teamFaker.Generate(),
+                Team = awayTeam,
+                PlayingAsTeamName = awayTeam.TeamName,
                 WonToss = false,
                 BattedFirst = false,
                 TeamRole = TeamRole.Away
             };
 
-            homeTeam.Team.Club = new Club { ClubId = Guid.NewGuid(), ClubName = "Home club", ClubRoute = "/home-club" };
+            homeTeamInMatch.Team.Club = new Club { ClubId = Guid.NewGuid(), ClubName = "Home club", ClubRoute = "/home-club" };
 
             for (var i = 0; i < 11; i++)
             {
@@ -67,7 +70,7 @@ namespace Stoolball.UnitTests.Statistics
                     },
                     PlayerIdentityId = Guid.NewGuid(),
                     PlayerIdentityName = "Home player identity " + (i + 1),
-                    Team = homeTeam.Team
+                    Team = homeTeamInMatch.Team
                 });
             }
 
@@ -82,7 +85,7 @@ namespace Stoolball.UnitTests.Statistics
                     },
                     PlayerIdentityId = Guid.NewGuid(),
                     PlayerIdentityName = "Away player identity " + (i + 12),
-                    Team = awayTeam.Team
+                    Team = awayTeamInMatch.Team
                 });
             }
 
@@ -132,8 +135,8 @@ namespace Stoolball.UnitTests.Statistics
                 LastPlayerBatsOn = true,
                 PlayersPerTeam = 11,
                 Teams = new List<TeamInMatch> {
-                    homeTeam,
-                    awayTeam
+                    homeTeamInMatch,
+                    awayTeamInMatch
                 },
                 Season = season,
                 MatchInnings = new List<MatchInnings> {
@@ -141,10 +144,10 @@ namespace Stoolball.UnitTests.Statistics
                     {
                         MatchInningsId = Guid.NewGuid(),
                         InningsOrderInMatch = 1,
-                        BattingMatchTeamId = homeTeam.MatchTeamId,
-                        BowlingMatchTeamId = awayTeam.MatchTeamId,
-                        BattingTeam = homeTeam,
-                        BowlingTeam = awayTeam,
+                        BattingMatchTeamId = homeTeamInMatch.MatchTeamId,
+                        BowlingMatchTeamId = awayTeamInMatch.MatchTeamId,
+                        BattingTeam = homeTeamInMatch,
+                        BowlingTeam = awayTeamInMatch,
                         NoBalls = 20,
                         Wides = 15,
                         Byes = 10,
@@ -159,10 +162,10 @@ namespace Stoolball.UnitTests.Statistics
                     {
                         MatchInningsId = Guid.NewGuid(),
                         InningsOrderInMatch = 2,
-                        BattingMatchTeamId = awayTeam.MatchTeamId,
-                        BowlingMatchTeamId = homeTeam.MatchTeamId,
-                        BattingTeam = awayTeam,
-                        BowlingTeam = homeTeam,
+                        BattingMatchTeamId = awayTeamInMatch.MatchTeamId,
+                        BowlingMatchTeamId = homeTeamInMatch.MatchTeamId,
+                        BattingTeam = awayTeamInMatch,
+                        BowlingTeam = homeTeamInMatch,
                         NoBalls = 23,
                         Wides = 12,
                         Byes = 5,
@@ -177,10 +180,10 @@ namespace Stoolball.UnitTests.Statistics
                     {
                         MatchInningsId = Guid.NewGuid(),
                         InningsOrderInMatch = 3,
-                        BattingMatchTeamId = homeTeam.MatchTeamId,
-                        BowlingMatchTeamId = awayTeam.MatchTeamId,
-                        BattingTeam = homeTeam,
-                        BowlingTeam = awayTeam,
+                        BattingMatchTeamId = homeTeamInMatch.MatchTeamId,
+                        BowlingMatchTeamId = awayTeamInMatch.MatchTeamId,
+                        BattingTeam = homeTeamInMatch,
+                        BowlingTeam = awayTeamInMatch,
                         NoBalls = 31,
                         Wides = 2,
                         Byes = 18,
@@ -195,10 +198,10 @@ namespace Stoolball.UnitTests.Statistics
                     {
                         MatchInningsId = Guid.NewGuid(),
                         InningsOrderInMatch = 4,
-                        BattingMatchTeamId = awayTeam.MatchTeamId,
-                        BowlingMatchTeamId = homeTeam.MatchTeamId,
-                        BattingTeam = awayTeam,
-                        BowlingTeam = homeTeam,
+                        BattingMatchTeamId = awayTeamInMatch.MatchTeamId,
+                        BowlingMatchTeamId = homeTeamInMatch.MatchTeamId,
+                        BattingTeam = awayTeamInMatch,
+                        BowlingTeam = homeTeamInMatch,
                         NoBalls = 16,
                         Wides = 12,
                         Byes = 8,

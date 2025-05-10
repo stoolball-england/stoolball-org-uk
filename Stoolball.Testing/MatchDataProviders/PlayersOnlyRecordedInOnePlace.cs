@@ -30,8 +30,8 @@ namespace Stoolball.Testing.MatchDataProviders
             var match = _matchFactory.CreateMatchInThePastWithMinimalDetails();
 
             var teams = _teamFaker.Generate(2);
-            match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = teams[0], TeamRole = TeamRole.Home });
-            match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = teams[1], TeamRole = TeamRole.Away });
+            match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = teams[0], TeamRole = TeamRole.Home, PlayingAsTeamName = teams[0].TeamName });
+            match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = teams[1], TeamRole = TeamRole.Away, PlayingAsTeamName = teams[1].TeamName });
 
             match.MatchInnings[0].BattingMatchTeamId = match.Teams[0].MatchTeamId;
             match.MatchInnings[0].BattingTeam = match.Teams[0];

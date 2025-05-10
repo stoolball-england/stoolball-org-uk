@@ -123,6 +123,7 @@ namespace Stoolball
                     TeamName = teamInMatch.Team?.TeamName,
                     TeamRoute = teamInMatch.Team?.TeamRoute
                 },
+                PlayingAsTeamName = teamInMatch.PlayingAsTeamName,
                 TeamRole = teamInMatch.TeamRole,
                 WonToss = teamInMatch.WonToss,
                 BattedFirst = teamInMatch.BattedFirst

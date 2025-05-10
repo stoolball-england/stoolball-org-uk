@@ -308,13 +308,14 @@ namespace Stoolball.Web.Matches
                 {
                     Team = new Team
                     {
-                        TeamId = new Guid(Request.Form[teamRole.ToString() + "TeamId"])
+                        TeamId = new Guid(Request.Form[teamRole.ToString() + "TeamId"]!)
                     },
                     TeamRole = teamRole
                 };
                 if (Request.Form.ContainsKey(teamRole.ToString() + "TeamName"))
                 {
                     teamInMatch.Team.TeamName = Request.Form[teamRole.ToString() + "TeamName"];
+                    teamInMatch.PlayingAsTeamName = teamInMatch.Team.TeamName;
                 }
                 teamsInTheMatch.Add(teamInMatch);
             }
@@ -325,13 +326,14 @@ namespace Stoolball.Web.Matches
             var hasTeamInRole = teamsInTheMatch.Any(x => x.TeamRole == teamRole);
             if (!hasTeamInRole && Request.Form.ContainsKey(teamRole.ToString() + "TeamId") && !string.IsNullOrEmpty(Request.Form[teamRole.ToString() + "TeamId"]))
             {
-                Guid? postedTeamId = new Guid(Request.Form[teamRole.ToString() + "TeamId"]);
-                var team = teamsInTheSeason.SingleOrDefault(x => x.Team.TeamId == postedTeamId)?.Team;
+                Guid? postedTeamId = new Guid(Request.Form[teamRole.ToString() + "TeamId"]!);
+                var team = teamsInTheSeason.SingleOrDefault(x => x.Team!.TeamId == postedTeamId)?.Team;
                 if (team != null)
                 {
                     teamsInTheMatch.Add(new TeamInMatch
                     {
                         Team = team,
+                        PlayingAsTeamName = team.TeamName,
                         TeamRole = teamRole
                     });
                 }

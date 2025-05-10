@@ -5,10 +5,12 @@ using System.Data.SqlTypes;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using AngleSharp.Text;
 using Dapper;
 using Ganss.Xss;
 using Newtonsoft.Json;
 using Stoolball.Awards;
+using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
 using Stoolball.Matches;
@@ -86,10 +88,7 @@ namespace Stoolball.Data.SqlServer
             _htmlSanitiser.AllowedAtRules.Clear();
         }
 
-        /// <summary>
-        /// Creates a stoolball match
-        /// </summary>
-        public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName)
+        private static void ValidateCreateMatchInputs(Match match, string memberName)
         {
             if (match is null)
             {
@@ -100,6 +99,24 @@ namespace Stoolball.Data.SqlServer
             {
                 throw new ArgumentNullException(nameof(memberName));
             }
+
+            if (match.Teams.Any(t => t.Team?.TeamId is null))
+            {
+                throw new ArgumentException($"{nameof(Match.Teams)} must have a {nameof(Team.TeamId)} for each team", nameof(match));
+            }
+
+            if (match.Season is not null && match.Season.SeasonId is null)
+            {
+                throw new ArgumentException($"{nameof(Match.Season)} must have a {nameof(Season.SeasonId)}", nameof(match));
+            }
+        }
+
+        /// <summary>
+        /// Creates a stoolball match
+        /// </summary>
+        public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName)
+        {
+            ValidateCreateMatchInputs(match, memberName);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -118,15 +135,7 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName, IDbTransaction transaction)
         {
-            if (match is null)
-            {
-                throw new ArgumentNullException(nameof(match));
-            }
-
-            if (string.IsNullOrWhiteSpace(memberName))
-            {
-                throw new ArgumentNullException(nameof(memberName));
-            }
+            ValidateCreateMatchInputs(match, memberName);
 
             if (transaction is null)
             {
@@ -136,9 +145,10 @@ namespace Stoolball.Data.SqlServer
             var auditableMatch = _copier.CreateAuditableCopy(match);
             auditableMatch.MatchId = Guid.NewGuid();
             auditableMatch.UpdateMatchNameAutomatically = string.IsNullOrEmpty(auditableMatch.MatchName);
-            auditableMatch.MatchNotes = _htmlSanitiser.Sanitize(auditableMatch.MatchNotes);
+            if (auditableMatch.MatchNotes is not null) { auditableMatch.MatchNotes = _htmlSanitiser.Sanitize(auditableMatch.MatchNotes); }
             auditableMatch.MemberKey = memberKey;
 
+            // TODO: Tests defined up to here
             await PopulateTeamNames(auditableMatch, transaction).ConfigureAwait(false);
             await UpdateMatchRoute(auditableMatch, string.Empty, transaction).ConfigureAwait(false);
 
@@ -151,9 +161,12 @@ namespace Stoolball.Data.SqlServer
             if (auditableMatch.Season != null && auditableMatch.Season.SeasonId.HasValue)
             {
                 auditableMatch.Season = _copier.CreateAuditableCopy(await _seasonDataSource.ReadSeasonById(auditableMatch.Season.SeasonId.Value, true).ConfigureAwait(false));
-                auditableMatch.PlayersPerTeam = auditableMatch.Season.PlayersPerTeam;
-                auditableMatch.LastPlayerBatsOn = auditableMatch.Season.EnableLastPlayerBatsOn;
-                auditableMatch.EnableBonusOrPenaltyRuns = auditableMatch.Season.EnableBonusOrPenaltyRuns;
+                if (auditableMatch.Season is not null)
+                {
+                    auditableMatch.PlayersPerTeam = auditableMatch.Season.PlayersPerTeam;
+                    auditableMatch.LastPlayerBatsOn = auditableMatch.Season.EnableLastPlayerBatsOn;
+                    auditableMatch.EnableBonusOrPenaltyRuns = auditableMatch.Season.EnableBonusOrPenaltyRuns;
+                }
             }
             auditableMatch.PlayerType = _playerTypeSelector.SelectPlayerType(auditableMatch);
 
@@ -212,7 +225,7 @@ namespace Stoolball.Data.SqlServer
                     {
                         team.MatchTeamId,
                         auditableMatch.MatchId,
-                        team.Team.TeamId,
+                        team.Team!.TeamId,
                         TeamRole = team.TeamRole.ToString()
                     },
                     transaction).ConfigureAwait(false);
@@ -229,7 +242,7 @@ namespace Stoolball.Data.SqlServer
                 }
             }
 
-            var redacted = _copier.CreateRedactedCopy(auditableMatch);
+            var redacted = _copier.CreateRedactedCopy(auditableMatch)!;
             await _auditRepository.CreateAudit(new AuditRecord
             {
                 Action = AuditAction.Create,
@@ -241,7 +254,7 @@ namespace Stoolball.Data.SqlServer
                 AuditDate = DateTime.UtcNow
             }, transaction).ConfigureAwait(false);
 
-            _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.CreateMatch));
+            _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(CreateMatch));
 
             return auditableMatch;
         }

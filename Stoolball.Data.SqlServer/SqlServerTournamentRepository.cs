@@ -779,7 +779,11 @@ namespace Stoolball.Data.SqlServer
                                 OrderInTournament = i + 1,
                                 StartTime = tournament.StartTime.AddMinutes(45 * i),
                                 StartTimeIsKnown = false,
-                                Teams = tournament.Matches[i].Teams.Select(x => new TeamInMatch { Team = tournament.Teams.Single(t => t.TournamentTeamId == x.TournamentTeamId).Team }).ToList()
+                                Teams = tournament.Matches[i].Teams.Select(x => new TeamInMatch
+                                {
+                                    Team = tournament.Teams.Single(t => t.TournamentTeamId == x.TournamentTeamId).Team,
+                                    PlayingAsTeamName = tournament.Teams.Single(t => t.TournamentTeamId == x.TournamentTeamId).Team?.TeamName
+                                }).ToList()
                             };
                             if (match.Teams.Count > 0) { match.Teams[0].TeamRole = TeamRole.Home; }
                             if (match.Teams.Count > 1) { match.Teams[1].TeamRole = TeamRole.Away; }

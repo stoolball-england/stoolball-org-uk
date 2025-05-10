@@ -292,7 +292,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                    new
                    {
                        teamInMatch.MatchTeamId,
-                       teamInMatch.Team.TeamId,
+                       teamInMatch.Team?.TeamId,
                        teamInMatch.PlayingAsTeamName,
                        match.MatchId,
                        TeamRole = teamInMatch.TeamRole.ToString(),

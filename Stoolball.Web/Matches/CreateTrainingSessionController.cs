@@ -68,7 +68,7 @@ namespace Stoolball.Web.Matches
                 var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType);
                 model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
 
-                model.Match.Teams.Add(new TeamInMatch { Team = model.Team });
+                model.Match.Teams.Add(new TeamInMatch { Team = model.Team, PlayingAsTeamName = model.Team.TeamName });
                 model.MatchLocationId = model.Team.MatchLocations.FirstOrDefault()?.MatchLocationId;
                 model.MatchLocationName = model.Team.MatchLocations.FirstOrDefault()?.NameAndLocalityOrTownIfDifferent();
             }

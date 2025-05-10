@@ -156,6 +156,7 @@ namespace Stoolball.Web.Matches
                 model.Match.Teams.Add(new TeamInMatch
                 {
                     Team = new Team { TeamId = model.HomeTeamId, TeamName = model.HomeTeamName },
+                    PlayingAsTeamName = model.HomeTeamName,
                     TeamRole = TeamRole.Home
                 });
             }
@@ -166,6 +167,7 @@ namespace Stoolball.Web.Matches
                 model.Match.Teams.Add(new TeamInMatch
                 {
                     Team = new Team { TeamId = model.AwayTeamId, TeamName = model.AwayTeamName },
+                    PlayingAsTeamName = model.AwayTeamName,
                     TeamRole = TeamRole.Away
                 });
             }
