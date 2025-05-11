@@ -88,7 +88,7 @@ namespace Stoolball.Data.SqlServer
             _htmlSanitiser.AllowedAtRules.Clear();
         }
 
-        private static void ValidateCreateMatchInputs(Match match, string memberName)
+        private static void ValidateCreateUpdateMatchInputs(Match match, string memberName)
         {
             if (match is null)
             {
@@ -100,9 +100,19 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
+            if (match.StartTime < SqlDateTime.MinValue.Value)
+            {
+                throw new ArgumentException($"{nameof(Match.StartTime)} is outside the range supported by SQL Server", nameof(match));
+            }
+
             if (match.Teams.Any(t => t.Team?.TeamId is null))
             {
                 throw new ArgumentException($"{nameof(Match.Teams)} must have a {nameof(Team.TeamId)} for each team", nameof(match));
+            }
+
+            if (match.MatchType == MatchType.TrainingSession && match.Teams.Count > match.Teams.Select(t => t.Team!.TeamId!.Value).Distinct().Count())
+            {
+                throw new ArgumentException($"{nameof(Match.Teams)} must not add the same team to a training session multiple times", nameof(match));
             }
 
             if (match.Season is not null && match.Season.SeasonId is null)
@@ -116,7 +126,7 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName)
         {
-            ValidateCreateMatchInputs(match, memberName);
+            ValidateCreateUpdateMatchInputs(match, memberName);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -135,7 +145,7 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName, IDbTransaction transaction)
         {
-            ValidateCreateMatchInputs(match, memberName);
+            ValidateCreateUpdateMatchInputs(match, memberName);
 
             if (transaction is null)
             {
@@ -148,7 +158,6 @@ namespace Stoolball.Data.SqlServer
             if (auditableMatch.MatchNotes is not null) { auditableMatch.MatchNotes = _htmlSanitiser.Sanitize(auditableMatch.MatchNotes); }
             auditableMatch.MemberKey = memberKey;
 
-            // TODO: Tests defined up to here
             await PopulateTeamNames(auditableMatch, transaction).ConfigureAwait(false);
             await UpdateMatchRoute(auditableMatch, string.Empty, transaction).ConfigureAwait(false);
 
@@ -231,10 +240,14 @@ namespace Stoolball.Data.SqlServer
                     transaction).ConfigureAwait(false);
             }
 
+            auditableMatch.MatchInnings.Clear();
             if (auditableMatch.MatchType != MatchType.TrainingSession)
             {
-                auditableMatch.MatchInnings.Add(_matchInningsFactory.CreateMatchInnings(auditableMatch, homeMatchTeamId, awayMatchTeamId));
-                auditableMatch.MatchInnings.Add(_matchInningsFactory.CreateMatchInnings(auditableMatch, awayMatchTeamId, homeMatchTeamId));
+                var firstInnings = _matchInningsFactory.CreateMatchInnings(auditableMatch, homeMatchTeamId, awayMatchTeamId);
+                if (firstInnings is not null) { auditableMatch.MatchInnings.Add(firstInnings); }
+
+                var secondInnings = _matchInningsFactory.CreateMatchInnings(auditableMatch, awayMatchTeamId, homeMatchTeamId);
+                if (secondInnings is not null) { auditableMatch.MatchInnings.Add(secondInnings); }
 
                 foreach (var innings in auditableMatch.MatchInnings)
                 {
@@ -310,19 +323,21 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         public async Task<Match> UpdateMatch(Match match, Guid memberKey, string memberName)
         {
-            if (match is null)
+            ValidateCreateUpdateMatchInputs(match, memberName);
+
+            if (match.StartTime.UtcDateTime < DateTimeOffset.UtcNow)
             {
-                throw new ArgumentNullException(nameof(match));
+                throw new ArgumentException($"{nameof(Match.StartTime)} cannot be in the past", nameof(match));
             }
 
-            if (string.IsNullOrWhiteSpace(memberName))
+            if (string.IsNullOrWhiteSpace(match.MatchRoute))
             {
-                throw new ArgumentNullException(nameof(memberName));
+                throw new ArgumentException($"{nameof(Match.MatchRoute)} cannot be null or whitespace", nameof(match));
             }
 
             var auditableMatch = _copier.CreateAuditableCopy(match);
             auditableMatch.UpdateMatchNameAutomatically = string.IsNullOrEmpty(auditableMatch.MatchName);
-            auditableMatch.MatchNotes = _htmlSanitiser.Sanitize(auditableMatch.MatchNotes);
+            if (auditableMatch.MatchNotes is not null) { auditableMatch.MatchNotes = _htmlSanitiser.Sanitize(auditableMatch.MatchNotes); }
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -372,7 +387,7 @@ namespace Stoolball.Data.SqlServer
                         // Team added
                         foreach (var team in auditableMatch.Teams)
                         {
-                            if (!currentTeams.Any(x => x.TeamId == team.Team.TeamId))
+                            if (!currentTeams.Any(x => x.TeamId == team.Team!.TeamId))
                             {
                                 team.MatchTeamId = Guid.NewGuid();
                                 await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
@@ -381,7 +396,7 @@ namespace Stoolball.Data.SqlServer
                                     {
                                         team.MatchTeamId,
                                         auditableMatch.MatchId,
-                                        team.Team.TeamId,
+                                        team.Team!.TeamId,
                                         TeamRole = team.TeamRole.ToString()
                                     },
                                     transaction).ConfigureAwait(false);
@@ -389,7 +404,7 @@ namespace Stoolball.Data.SqlServer
                         }
 
                         // Team removed?
-                        foreach (var team in currentTeams.Where(x => !auditableMatch.Teams.Where(t => t.Team.TeamId.HasValue).Select(t => t.Team.TeamId!.Value).Contains(x.TeamId!.Value)))
+                        foreach (var team in currentTeams.Where(x => !auditableMatch.Teams.Select(t => t.Team!.TeamId!.Value).Contains(x.TeamId!.Value)))
                         {
                             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchTeamId = @MatchTeamId", new { team.MatchTeamId }, transaction).ConfigureAwait(false);
                         }
@@ -411,14 +426,15 @@ namespace Stoolball.Data.SqlServer
                                     {
                                         team.MatchTeamId,
                                         auditableMatch.MatchId,
-                                        team.Team.TeamId,
+                                        team.Team!.TeamId,
                                         TeamRole = team.TeamRole.ToString()
                                     },
                                     transaction).ConfigureAwait(false);
                             }
                             // Team changed
-                            else if (currentTeamInRole.TeamId != team.Team.TeamId)
+                            else if (currentTeamInRole.TeamId != team.Team!.TeamId)
                             {
+                                team.MatchTeamId = currentTeamInRole.MatchTeamId;
                                 await connection.ExecuteAsync($"UPDATE {Tables.MatchTeam} SET TeamId = @TeamId WHERE MatchTeamId = @MatchTeamId",
                                 new
                                 {
@@ -458,7 +474,7 @@ namespace Stoolball.Data.SqlServer
 
                     if (match.MatchRoute != auditableMatch.MatchRoute)
                     {
-                        await _redirectsRepository.InsertRedirect(match.MatchRoute, auditableMatch.MatchRoute, null, transaction).ConfigureAwait(false);
+                        await _redirectsRepository.InsertRedirect(match.MatchRoute, auditableMatch.MatchRoute!, null, transaction).ConfigureAwait(false);
                     }
 
                     var redacted = _copier.CreateRedactedCopy(auditableMatch);
@@ -1462,19 +1478,21 @@ namespace Stoolball.Data.SqlServer
                 transaction).ConfigureAwait(false);
         }
 
-        private async Task UpdateMatchRoute(Match match, string routeBeforeUpdate, IDbTransaction transaction)
+        private async Task UpdateMatchRoute(Match match, string? routeBeforeUpdate, IDbTransaction transaction)
         {
             var baseRoute = string.Empty;
             if (!match.UpdateMatchNameAutomatically)
             {
                 baseRoute = match.MatchName;
             }
-            else if (match.Teams.Count > 0)
+            else if (match.Teams.Where(t => !string.IsNullOrWhiteSpace(t.Team?.TeamName)).Count() > 0)
             {
-                baseRoute = string.Join(" ", match.Teams.OrderBy(x => x.TeamRole).Select(x => x.Team.TeamName).Take(2));
+                baseRoute = string.Join(" ", match.Teams.Where(t => !string.IsNullOrWhiteSpace(t.Team?.TeamName)).OrderBy(x => x.TeamRole).Select(x => x.Team!.TeamName).Take(2));
             }
             else if (!string.IsNullOrEmpty(match.MatchName))
             {
+                // Unreachable via CreateMatch or UpdateMatch because it'll always enter the first if block
+                // TODO: UpdateStartOfPlay yet to be determined
                 baseRoute = match.MatchName;
             }
             else
@@ -1482,8 +1500,9 @@ namespace Stoolball.Data.SqlServer
                 baseRoute = "to-be-confirmed";
             }
 
-
             var generatedRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
+            // CreateMatch will always match the first of these two conditions
+            // UpdateMatch will always match the second of these two conditions
             if (string.IsNullOrEmpty(routeBeforeUpdate) || !_routeGenerator.IsMatchingRoute(routeBeforeUpdate, generatedRoute))
             {
                 match.MatchRoute = generatedRoute;
@@ -1504,18 +1523,19 @@ namespace Stoolball.Data.SqlServer
         {
             if (match.Teams.Count > 0)
             {
+                var teamsInMatch = match.Teams.Where(x => x.Team is not null);
                 var teamsWithNames = await transaction.Connection.QueryAsync<Team>($@"SELECT t.TeamId, t.PlayerType, tn.TeamName 
                                                                                     FROM {Tables.Team} AS t INNER JOIN {Tables.TeamVersion} tn ON t.TeamId = tn.TeamId
                                                                                     WHERE t.TeamId IN @TeamIds
                                                                                     AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
-                                                                    new { TeamIds = match.Teams.Select(x => x.Team.TeamId).ToList() },
+                                                                    new { TeamIds = teamsInMatch.Select(x => x.Team!.TeamId).ToList() },
                                                                     transaction
                                                                 ).ConfigureAwait(false);
 
                 // Used in generating the match name
-                foreach (var team in match.Teams)
+                foreach (var team in teamsInMatch)
                 {
-                    team.Team = teamsWithNames.Single(x => x.TeamId == team.Team.TeamId);
+                    team.Team = teamsWithNames.Single(x => x.TeamId == team.Team!.TeamId);
                 }
             }
         }

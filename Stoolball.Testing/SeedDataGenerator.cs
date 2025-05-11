@@ -753,8 +753,6 @@ namespace Stoolball.Testing
 
             testData.MatchInThePastWithMinimalDetails = FindMatchInThePastWithMinimalDetails(testData);
 
-            testData.MatchInTheFutureWithMinimalDetails = FindMatchInTheFutureWithMinimalDetails(testData);
-
             testData.MatchInThePastWithFullDetails = FindMatchInThePastWithFullDetails(testData);
 
             testData.MatchInThePastWithFullDetailsAndTournament = FindMatchInThePastWithFullDetailsAndTournament(testData);
@@ -923,7 +921,8 @@ namespace Stoolball.Testing
             var matchProviders = new BaseMatchDataProvider[]{
                 new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward),
                 new APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(_randomiser, _matchFactory, _bowlingFiguresCalculator),
-                new PlayersOnlyRecordedInOnePlace(_matchFactory, _teamFakerFactory, _playerIdentityFakerFactory, _playerOfTheMatchAward)
+                new PlayersOnlyRecordedInOnePlace(_matchFactory, _teamFakerFactory, _playerIdentityFakerFactory, _playerOfTheMatchAward),
+                new MatchesInTheFuture(_matchFactory, _teamFakerFactory)
             };
             foreach (var provider in matchProviders)
             {
@@ -947,6 +946,8 @@ namespace Stoolball.Testing
                     if (newPlayers.Any()) { testData.Players.AddRange(newPlayers); }
                 }
             }
+
+            testData.MatchInTheFutureWithMinimalDetails = FindMatchInTheFutureWithMinimalDetails(testData);
 
             testData.PlayersWithMultipleIdentities = FindPlayersWithMultipleIdentities(testData);
 
@@ -1238,7 +1239,7 @@ namespace Stoolball.Testing
                                i.BowlingFigures.Any()
                             )
                         )
-                ?? throw new InvalidOperationException($"{nameof(FindMatchInThePastWithFullDetails)} did not find a match.");
+                ?? throw new InvalidOperationException($"{nameof(FindMatchInTheFutureWithMinimalDetails)} did not find a match.");
         }
 
         private static Match FindMatchInThePastWithMinimalDetails(TestData testData)
@@ -1483,10 +1484,7 @@ namespace Stoolball.Testing
             matches.Add(_matchFactory.CreateMatchBetween(teamsWithIdentities[0].team, teamsWithIdentities[0].identities, teamsWithIdentities[0].team, teamsWithIdentities[0].identities, _randomiser.FiftyFiftyChance(), testData, nameof(GenerateMatchData) + "IntraClub"));
 
             // Aim to make these obsolete by recreating everything offered by CreateMatchInThePastWithFullDetails in the generated match data above
-            var matchInTheFutureWithMinimalDetails = _matchFactory.CreateMatchInThePastWithMinimalDetails();
-            matchInTheFutureWithMinimalDetails.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
-            matches.Add(matchInTheFutureWithMinimalDetails);
-            matches.Add(_matchFactory.CreateMatchInThePastWithMinimalDetails());
+            matches.Add(_matchFactory.CreateMatchInThePast(false, testData, nameof(GenerateMatchData)));
             matches.Add(CreateMatchInThePastWithFullDetails(members));
 
             var matchInThePastWithFullDetailsAndTournament = CreateMatchInThePastWithFullDetails(members);

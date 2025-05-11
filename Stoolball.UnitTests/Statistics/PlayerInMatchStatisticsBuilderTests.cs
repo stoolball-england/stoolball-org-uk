@@ -4,7 +4,9 @@ using System.Linq;
 using Moq;
 using Stoolball.Matches;
 using Stoolball.Statistics;
+using Stoolball.Teams;
 using Xunit;
+using Match = Stoolball.Matches.Match;
 
 namespace Stoolball.UnitTests.Statistics
 {
@@ -64,6 +66,73 @@ namespace Stoolball.UnitTests.Statistics
             Assert.Equal(bowlingInnings.Byes, playerRecord.TeamByesConceded);
             Assert.Equal(bowlingInnings.Wickets, playerRecord.TeamWicketsTaken);
         }
+
+        [Fact]
+        public void Throws_ArgumentNullException_if_match_is_null()
+        {
+            Assert.Throws<ArgumentNullException>(() => new PlayerInMatchStatisticsBuilder(Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IOversHelper>()).BuildStatisticsForMatch(null!));
+        }
+
+        [Fact]
+        public void Throws_ArgumentException_if_match_is_training_session()
+        {
+            var match = new Match
+            {
+                MatchId = Guid.NewGuid(),
+                MatchType = MatchType.TrainingSession,
+                StartTime = DateTimeOffset.UtcNow,
+                MatchInnings = [new MatchInnings(), new MatchInnings()],
+                Teams = [
+                    new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = new Team { TeamId = Guid.NewGuid() }, TeamRole = TeamRole.Training },
+                    new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = new Team { TeamId = Guid.NewGuid() }, TeamRole = TeamRole.Training }
+                    ]
+            };
+            Assert.Throws<ArgumentException>(() => new PlayerInMatchStatisticsBuilder(Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IOversHelper>()).BuildStatisticsForMatch(match));
+        }
+
+        [Fact]
+        public void Throws_ArgumentException_if_match_has_no_innings()
+        {
+            var match = new Match
+            {
+                MatchId = Guid.NewGuid(),
+                MatchType = MatchType.LeagueMatch,
+                StartTime = DateTimeOffset.UtcNow,
+                MatchInnings = [],
+                Teams = [
+                    new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = new Team { TeamId = Guid.NewGuid() }, TeamRole = TeamRole.Home },
+                    new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = new Team { TeamId = Guid.NewGuid() }, TeamRole = TeamRole.Away }
+                    ]
+            };
+            Assert.Throws<ArgumentException>(() => new PlayerInMatchStatisticsBuilder(Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IOversHelper>()).BuildStatisticsForMatch(match));
+        }
+
+        [Theory]
+        [InlineData(true, true)]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        public void Throws_ArgumentException_if_match_does_not_have_home_and_away_teams(bool homeMissing, bool awayMissing)
+        {
+            var match = new Match
+            {
+                MatchId = Guid.NewGuid(),
+                MatchType = MatchType.LeagueMatch,
+                StartTime = DateTimeOffset.UtcNow,
+                MatchInnings = []
+            };
+
+            if (!homeMissing)
+            {
+                match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = new Team { TeamId = Guid.NewGuid() }, TeamRole = TeamRole.Home });
+            }
+            if (!awayMissing)
+            {
+                match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = new Team { TeamId = Guid.NewGuid() }, TeamRole = TeamRole.Away });
+            }
+
+            Assert.Throws<ArgumentException>(() => new PlayerInMatchStatisticsBuilder(Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IOversHelper>()).BuildStatisticsForMatch(match));
+        }
+
 
         [Fact]
         public void Each_batter_should_have_one_record_per_innings_pair_with_player_and_match_data()

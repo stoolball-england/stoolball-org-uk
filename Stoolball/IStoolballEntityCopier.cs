@@ -20,8 +20,9 @@ namespace Stoolball
         MatchLocation? CreateAuditableCopy(MatchLocation? matchLocation);
         MatchLocation? CreateRedactedCopy(MatchLocation? matchLocation);
 
-        [return: NotNullIfNotNull("match")]
+        [return: NotNullIfNotNull(nameof(match))]
         Match? CreateAuditableCopy(Match? match);
+        [return: NotNullIfNotNull(nameof(match))]
         Match? CreateRedactedCopy(Match? match);
         MatchInnings? CreateAuditableCopy(MatchInnings? innings);
         MatchAward? CreateAuditableCopy(MatchAward? award);

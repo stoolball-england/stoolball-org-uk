@@ -12,10 +12,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
     {
         public TestData TestData { get; set; }
 
+        internal Randomiser Randomiser { get; set; } = new Randomiser(new Random());
+
         public SqlServerTestDataFixture() : base("StoolballIntegrationTests")
         {
             // Populate seed data so that there's a consistent baseline for each test run
-            var randomiser = new Randomiser(new Random());
             var oversHelper = new OversHelper();
             var bowlingFiguresCalculator = new BowlingFiguresCalculator(oversHelper);
             var playerIdentityFinder = new PlayerIdentityFinder();
@@ -29,7 +30,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var playerIdentityFakerFactory = new PlayerIdentityFakerFactory();
             var playerFakerFactory = new PlayerFakerFactory();
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
-            var randomSeedDataGenerator = new SeedDataGenerator(randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
+            var randomSeedDataGenerator = new SeedDataGenerator(Randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
                 competitionFakerFactory, teamFakerFactory, clubFakerFactory, matchLocationFakerFactory, schoolFakerFactory, playerFakerFactory,
                 playerIdentityFakerFactory, playerOfTheMatchAward);
 

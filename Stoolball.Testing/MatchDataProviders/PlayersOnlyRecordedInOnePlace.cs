@@ -27,7 +27,7 @@ namespace Stoolball.Testing.MatchDataProviders
 
         internal override IEnumerable<Match> CreateMatches(TestData readOnlyTestData)
         {
-            var match = _matchFactory.CreateMatchInThePastWithMinimalDetails();
+            var match = _matchFactory.CreateMatchInThePast(false, readOnlyTestData, nameof(PlayersOnlyRecordedInOnePlace));
 
             var teams = _teamFaker.Generate(2);
             match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), Team = teams[0], TeamRole = TeamRole.Home, PlayingAsTeamName = teams[0].TeamName });

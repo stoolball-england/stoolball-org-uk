@@ -77,8 +77,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = await dataSource.ReadInningsStatistics(filter).ConfigureAwait(false);
 
                 var matchesForTeam = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team!.TeamId).Contains(team.TeamId));
-                var inningsForTeam = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam!.Team!.TeamId == team.TeamId));
-                var inningsForOpposition = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BowlingTeam!.Team!.TeamId == team.TeamId));
+                var inningsForTeam = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam?.Team?.TeamId == team.TeamId));
+                var inningsForOpposition = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BowlingTeam?.Team?.TeamId == team.TeamId));
 
                 AssertInningsStatistics(inningsForTeam, inningsForOpposition, result);
             }
@@ -96,8 +96,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = await dataSource.ReadInningsStatistics(filter).ConfigureAwait(false);
 
                 var matchesForTeam = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team!.TeamRoute).Contains(team.TeamRoute));
-                var inningsForTeam = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam!.Team!.TeamRoute == team.TeamRoute));
-                var inningsForOpposition = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BowlingTeam!.Team!.TeamRoute == team.TeamRoute));
+                var inningsForTeam = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam?.Team?.TeamRoute == team.TeamRoute));
+                var inningsForOpposition = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BowlingTeam?.Team?.TeamRoute == team.TeamRoute));
 
                 AssertInningsStatistics(inningsForTeam, inningsForOpposition, result);
             }
@@ -112,8 +112,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var result = await dataSource.ReadInningsStatistics(filter).ConfigureAwait(false);
 
             var matchesForClub = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team!.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId));
-            var inningsForClub = matchesForClub.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam!.Team!.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId));
-            var inningsForOpposition = matchesForClub.SelectMany(m => m.MatchInnings.Where(x => x.BowlingTeam!.Team!.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId));
+            var inningsForClub = matchesForClub.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId));
+            var inningsForOpposition = matchesForClub.SelectMany(m => m.MatchInnings.Where(x => x.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId));
 
             AssertInningsStatistics(inningsForClub, inningsForOpposition, result);
         }

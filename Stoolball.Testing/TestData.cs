@@ -13,6 +13,7 @@ namespace Stoolball.Testing
 {
     public class TestData
     {
+        private static Random _random = new();
         internal List<MatchAward> Awards { get; set; } = new();
         internal Club? ClubWithMinimalDetails { get; set; }
         internal Club? ClubWithTeamsAndMatchLocation { get; set; }
@@ -52,6 +53,11 @@ namespace Stoolball.Testing
         internal List<MatchListing> MatchListings { get; set; } = new();
         internal List<MatchListing> TournamentMatchListings { get; set; } = new();
         internal List<School> Schools { get; set; } = new();
+
+        internal IEnumerable<Match> MatchesThatCouldHavePlayerStatistics()
+        {
+            return Matches.Where(m => m.MatchType != MatchType.TrainingSession && m.StartTime <= DateTimeOffset.UtcNow);
+        }
 
         internal (PlayerIdentity firstIdentity, PlayerIdentity secondIdentity) AnyTwoIdentitiesFromTheSameTeam()
         {

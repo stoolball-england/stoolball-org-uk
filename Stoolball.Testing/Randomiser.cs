@@ -33,5 +33,16 @@ namespace Stoolball.Testing
         {
             return i % 2 == 0;
         }
+
+        /// <summary>
+        /// Gets a random value from an enum type
+        /// </summary>
+        /// <typeparam name="T">The enum</typeparam>
+        /// <returns>A single enum value</returns>
+        internal T RandomEnum<T>()
+        {
+            var v = Enum.GetValues(typeof(T));
+            return (T)v.GetValue(_random.Next(v.Length))!;
+        }
     }
 }

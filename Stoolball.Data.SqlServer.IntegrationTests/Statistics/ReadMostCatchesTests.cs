@@ -56,7 +56,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = _databaseFixture.TestData.Matches
                 .Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
                 .SelectMany(x => x.MatchInnings)
-                .Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
+                .Where(i => i.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
                 .SelectMany(x => x.PlayerInnings)
                 .Where(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy != null) || (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler != null))
                 .Select(x => x.DismissalType == DismissalType.Caught ? x.DismissedBy.Player.PlayerId : x.Bowler.Player.PlayerId)
@@ -77,7 +77,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = _databaseFixture.TestData.Matches
                 .Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId))
                 .SelectMany(x => x.MatchInnings)
-                .Where(i => i.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
+                .Where(i => i.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId)
                 .SelectMany(x => x.PlayerInnings)
                 .Where(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy != null) || (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler != null))
                 .Select(x => x.DismissalType == DismissalType.Caught ? x.DismissedBy.Player.PlayerId : x.Bowler.Player.PlayerId)
@@ -98,7 +98,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = _databaseFixture.TestData.Matches
                 .Where(x => x.Teams.Select(t => t.Team.TeamRoute).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamRoute))
                 .SelectMany(x => x.MatchInnings)
-                .Where(i => i.BowlingTeam.Team.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute)
+                .Where(i => i.BowlingTeam?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute)
                 .SelectMany(x => x.PlayerInnings)
                 .Where(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy != null) || (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler != null))
                 .Select(x => x.DismissalType == DismissalType.Caught ? x.DismissedBy.Player.PlayerId : x.Bowler.Player.PlayerId)

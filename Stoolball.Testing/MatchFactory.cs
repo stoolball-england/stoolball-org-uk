@@ -19,9 +19,9 @@ namespace Stoolball.Testing
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
         }
 
-        internal Match CreateMatchInThePastWithMinimalDetails()
+        internal Match CreateMatchInThePast(bool addTeams, TestData testData, string routeTag)
         {
-            return new Match
+            var match = new Match
             {
                 MatchId = Guid.NewGuid(),
                 MatchName = "To be confirmed vs To be confirmed",
@@ -31,9 +31,51 @@ namespace Stoolball.Testing
                     new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 1 },
                     new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 2 }
                 },
-                MatchRoute = "/matches/minimal-match-" + Guid.NewGuid(),
+                MatchRoute = $"/matches/minimal-match-{Guid.NewGuid()}-generated-by-{routeTag}",
                 StartTime = new DateTimeOffset(2020, 6, 6, 18, 30, 0, TimeSpan.FromHours(1))
             };
+
+            if (addTeams)
+            {
+                AddTeamToMatch(match, TeamRole.Home, testData);
+                AddTeamToMatch(match, TeamRole.Away, testData);
+            }
+
+            return match;
+        }
+
+        internal Match CreateTrainingSessionInTheFuture(int howManyTeams, TestData testData, string routeTag)
+        {
+            var training = new Match
+            {
+                MatchId = Guid.NewGuid(),
+                MatchName = "Training session",
+                MatchType = MatchType.TrainingSession,
+                MatchRoute = $"/matches/training-session-{Guid.NewGuid()}-generated-by-{routeTag}",
+                StartTime = DateTimeOffset.UtcNow.AddMonths(_randomiser.PositiveIntegerLessThan(30)).UtcToUkTime()
+            };
+
+            for (var i = 0; i < howManyTeams; i++)
+            {
+                AddTeamToMatch(training, TeamRole.Training, testData);
+            }
+
+            return training;
+        }
+
+        private static void AddTeamToMatch(Match match, TeamRole teamRole, TestData testData)
+        {
+            var teamsInMatch = match.Teams.Where(t => t.Team?.TeamId is not null).Select(t => t.Team!.TeamId!.Value);
+            var team = testData.Teams.FirstOrDefault(t => t.TeamId is not null && !teamsInMatch.Contains(t.TeamId.Value));
+            if (team is null) { throw new InvalidOperationException($"No more matching teams in {nameof(CreateTrainingSessionInTheFuture)}"); }
+
+            match.Teams.Add(new TeamInMatch
+            {
+                MatchTeamId = Guid.NewGuid(),
+                TeamRole = teamRole,
+                Team = team,
+                PlayingAsTeamName = team.TeamName
+            });
         }
 
         internal Match CreateMatchBetween(Team teamA, List<PlayerIdentity> teamAPlayers, Team teamB, List<PlayerIdentity> teamBPlayers, bool homeTeamBatsFirst, TestData testData, string routeTag)
@@ -58,8 +100,7 @@ namespace Stoolball.Testing
                 BattedFirst = false
             };
 
-            var match = CreateMatchInThePastWithMinimalDetails();
-            match.MatchRoute = $"{match.MatchRoute}-generated-by-{routeTag}";
+            var match = CreateMatchInThePast(false, testData, routeTag);
             match.Teams.Add(teamAInMatch);
             match.Teams.Add(teamBInMatch);
 

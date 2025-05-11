@@ -94,6 +94,7 @@ namespace Stoolball.Web.Statistics.Admin
                     IncludeMatches = true,
                     IncludeTournamentMatches = true,
                     IncludeTournaments = false,
+                    MatchTypes = [MatchType.FriendlyMatch, MatchType.GroupMatch, MatchType.KnockoutMatch, MatchType.LeagueMatch],
                     UntilDate = DateTime.UtcNow
                 }, MatchSortOrder.MatchDateEarliestFirst));
 

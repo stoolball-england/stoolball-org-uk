@@ -16,6 +16,7 @@ namespace Stoolball.Statistics
             _oversHelper = oversHelper;
         }
 
+        /// <inheritdoc />
         public IEnumerable<PlayerInMatchStatisticsRecord> BuildStatisticsForMatch(Match match)
         {
             if (match is null)
@@ -23,14 +24,19 @@ namespace Stoolball.Statistics
                 throw new ArgumentNullException(nameof(match));
             }
 
+            if (match.MatchType == MatchType.TrainingSession)
+            {
+                throw new ArgumentException($"Match {match.MatchId} is a training session, and player statistics should not be considered.", nameof(match));
+            }
+
             if (match.MatchInnings.Count == 0)
             {
-                throw new ArgumentException($"{nameof(match)} {match.MatchId} must have innings data");
+                throw new ArgumentException($"Match {match.MatchId} must have innings data.", nameof(match));
             }
 
             if (match.Teams.Count != 2)
             {
-                throw new ArgumentException($"{nameof(match)} {match.MatchId} must have a home and away team");
+                throw new ArgumentException($"Match {match.MatchId} must have a home and away team.", nameof(match));
             }
 
             var homeTeam = match.Teams.Single(t => t.TeamRole == TeamRole.Home);
@@ -40,12 +46,12 @@ namespace Stoolball.Statistics
 
             if (homePlayers.Any(x => !x.PlayerIdentityId.HasValue) || awayPlayers.Any(x => !x.PlayerIdentityId.HasValue))
             {
-                throw new ArgumentException($"All player identities in match {match.MatchId} must have a PlayerIdentityId");
+                throw new ArgumentException($"All player identities in match {match.MatchId} must have a PlayerIdentityId.");
             }
 
             if (homePlayers.Any(x => x.Player?.PlayerId == null) || awayPlayers.Any(x => x.Player?.PlayerId == null))
             {
-                throw new ArgumentException($"All player identities in match {match.MatchId} must have a PlayerId. Player identity ");
+                throw new ArgumentException($"All player identities in match {match.MatchId} must have a PlayerId.");
             }
 
             var records = new List<PlayerInMatchStatisticsRecord>();
@@ -59,7 +65,7 @@ namespace Stoolball.Statistics
 
                 if (!innings.BattingMatchTeamId.HasValue)
                 {
-                    throw new ArgumentException($"{nameof(match)} must have the BattingMatchTeamId for each MatchInnings");
+                    throw new ArgumentException($"{nameof(match)} must have the BattingMatchTeamId for each MatchInnings.");
                 }
 
                 var homeTeamIsBatting = innings.BattingMatchTeamId == homeTeam.MatchTeamId;
