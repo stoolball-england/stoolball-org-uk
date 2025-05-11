@@ -100,6 +100,11 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
+            if (match.StartTime < SqlDateTime.MinValue.Value)
+            {
+                throw new ArgumentException($"{nameof(Match.StartTime)} is outside the range supported by SQL Server", nameof(match));
+            }
+
             if (match.Teams.Any(t => t.Team?.TeamId is null))
             {
                 throw new ArgumentException($"{nameof(Match.Teams)} must have a {nameof(Team.TeamId)} for each team", nameof(match));
@@ -148,7 +153,6 @@ namespace Stoolball.Data.SqlServer
             if (auditableMatch.MatchNotes is not null) { auditableMatch.MatchNotes = _htmlSanitiser.Sanitize(auditableMatch.MatchNotes); }
             auditableMatch.MemberKey = memberKey;
 
-            // TODO: Tests defined up to here
             await PopulateTeamNames(auditableMatch, transaction).ConfigureAwait(false);
             await UpdateMatchRoute(auditableMatch, string.Empty, transaction).ConfigureAwait(false);
 
@@ -231,10 +235,14 @@ namespace Stoolball.Data.SqlServer
                     transaction).ConfigureAwait(false);
             }
 
+            auditableMatch.MatchInnings.Clear();
             if (auditableMatch.MatchType != MatchType.TrainingSession)
             {
-                auditableMatch.MatchInnings.Add(_matchInningsFactory.CreateMatchInnings(auditableMatch, homeMatchTeamId, awayMatchTeamId));
-                auditableMatch.MatchInnings.Add(_matchInningsFactory.CreateMatchInnings(auditableMatch, awayMatchTeamId, homeMatchTeamId));
+                var firstInnings = _matchInningsFactory.CreateMatchInnings(auditableMatch, homeMatchTeamId, awayMatchTeamId);
+                if (firstInnings is not null) { auditableMatch.MatchInnings.Add(firstInnings); }
+
+                var secondInnings = _matchInningsFactory.CreateMatchInnings(auditableMatch, awayMatchTeamId, homeMatchTeamId);
+                if (secondInnings is not null) { auditableMatch.MatchInnings.Add(secondInnings); }
 
                 foreach (var innings in auditableMatch.MatchInnings)
                 {
@@ -1469,12 +1477,14 @@ namespace Stoolball.Data.SqlServer
             {
                 baseRoute = match.MatchName;
             }
-            else if (match.Teams.Count > 0)
+            else if (match.Teams.Where(t => !string.IsNullOrWhiteSpace(t.Team?.TeamName)).Count() > 0)
             {
-                baseRoute = string.Join(" ", match.Teams.OrderBy(x => x.TeamRole).Select(x => x.Team.TeamName).Take(2));
+                baseRoute = string.Join(" ", match.Teams.Where(t => !string.IsNullOrWhiteSpace(t.Team?.TeamName)).OrderBy(x => x.TeamRole).Select(x => x.Team!.TeamName).Take(2));
             }
             else if (!string.IsNullOrEmpty(match.MatchName))
             {
+                // Unreachable via CreateMatch because it'll always enter the first if block
+                // TODO: UpdateMatch and UpdateStartOfPlay yet to be determined
                 baseRoute = match.MatchName;
             }
             else
@@ -1482,8 +1492,8 @@ namespace Stoolball.Data.SqlServer
                 baseRoute = "to-be-confirmed";
             }
 
-
             var generatedRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
+            // CreateMatch will always match the first of these two conditions
             if (string.IsNullOrEmpty(routeBeforeUpdate) || !_routeGenerator.IsMatchingRoute(routeBeforeUpdate, generatedRoute))
             {
                 match.MatchRoute = generatedRoute;

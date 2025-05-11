@@ -13,6 +13,7 @@ namespace Stoolball.Testing
 {
     public class TestData
     {
+        private static Random _random = new();
         internal List<MatchAward> Awards { get; set; } = new();
         internal Club? ClubWithMinimalDetails { get; set; }
         internal Club? ClubWithTeamsAndMatchLocation { get; set; }

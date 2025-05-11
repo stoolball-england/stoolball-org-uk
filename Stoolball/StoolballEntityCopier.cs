@@ -184,9 +184,10 @@ namespace Stoolball
                 LastPlayerBatsOn = match.LastPlayerBatsOn,
                 EnableBonusOrPenaltyRuns = match.EnableBonusOrPenaltyRuns,
                 MatchInnings = match.MatchInnings.Select(x => CreateAuditableCopy(x)).OfType<MatchInnings>().ToList(),
-                Awards = match.Awards.Select(x => CreateAuditableCopy(x)).ToList(),
+                Awards = match.Awards.Select(x => CreateAuditableCopy(x)).OfType<MatchAward>().ToList(),
                 MatchNotes = match.MatchNotes,
-                MatchRoute = match.MatchRoute
+                MatchRoute = match.MatchRoute,
+                MemberKey = match.MemberKey
             };
         }
 
