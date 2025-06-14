@@ -28,9 +28,9 @@ namespace Stoolball.Data.Abstractions
         Task<Match> CreateMatch(Match match, Guid memberKey, string memberName, IDbTransaction dbTransaction);
 
         /// <summary>
-        /// Updates a stoolball match
+        /// Updates a stoolball match in the future.
         /// </summary>
-        Task<Match> UpdateMatch(Match match, Guid memberKey, string memberName);
+        Task<Match> UpdateMatchInTheFuture(Match match, Guid memberKey, string memberName);
 
         /// <summary>
         /// Updates details known at the start of play - the location, who won the toss, who is batting, or why cancellation occurred

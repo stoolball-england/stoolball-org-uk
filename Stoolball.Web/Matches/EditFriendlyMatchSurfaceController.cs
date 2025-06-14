@@ -98,7 +98,7 @@ namespace Stoolball.Web.Matches
                 if ((int?)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var updatedMatch = await _matchRepository.UpdateMatchInTheFuture(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 await _cacheClearer.InvalidateCacheForMatch(beforeUpdate, updatedMatch).ConfigureAwait(false);
 
                 return Redirect(updatedMatch.MatchRoute);

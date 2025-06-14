@@ -318,21 +318,19 @@ namespace Stoolball.Data.SqlServer
             public TeamRole TeamRole { get; set; }
         }
 
-        /// <summary>
-        /// Updates a stoolball match
-        /// </summary>
-        public async Task<Match> UpdateMatch(Match match, Guid memberKey, string memberName)
+        ///<inheritdoc/>
+        public async Task<Match> UpdateMatchInTheFuture(Match match, Guid memberKey, string memberName)
         {
             ValidateCreateUpdateMatchInputs(match, memberName);
 
             if (match.StartTime.UtcDateTime < DateTimeOffset.UtcNow)
             {
-                throw new ArgumentException($"{nameof(Match.StartTime)} cannot be in the past", nameof(match));
+                throw new ArgumentException($"{nameof(Match.StartTime)} cannot be in the past.", nameof(match));
             }
 
             if (string.IsNullOrWhiteSpace(match.MatchRoute))
             {
-                throw new ArgumentException($"{nameof(Match.MatchRoute)} cannot be null or whitespace", nameof(match));
+                throw new ArgumentException($"{nameof(Match.MatchRoute)} cannot be null or whitespace.", nameof(match));
             }
 
             var auditableMatch = _copier.CreateAuditableCopy(match);
@@ -344,6 +342,19 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
+                    // Validate that the match is in the future
+                    var matchId = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchId FROM {Tables.Match} WHERE MatchId = @MatchId AND StartTime > @StartTime",
+                        new
+                        {
+                            auditableMatch.MatchId,
+                            StartTime = DateTimeOffset.UtcNow,
+                        }, transaction).ConfigureAwait(false);
+
+                    if (matchId is null)
+                    {
+                        throw new InvalidOperationException($"Match {auditableMatch.MatchId} cannot be in the past.");
+                    }
+
                     await PopulateTeamNames(auditableMatch, transaction).ConfigureAwait(false);
                     await UpdateMatchRoute(auditableMatch, match.MatchRoute, transaction).ConfigureAwait(false);
 
@@ -491,7 +502,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateMatch));
+                    _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateMatchInTheFuture));
                 }
             }
 

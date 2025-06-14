@@ -17,16 +17,16 @@ using static Stoolball.Constants;
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchRepositoryTests
 {
     [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
-    public class UpdateMatchTests : MatchRepositoryTestsBase, IDisposable
+    public class UpdateMatchInTheFutureTests : MatchRepositoryTestsBase, IDisposable
     {
-        public UpdateMatchTests(SqlServerTestDataFixture databaseFixture) : base(databaseFixture) { }
+        public UpdateMatchInTheFutureTests(SqlServerTestDataFixture databaseFixture) : base(databaseFixture) { }
 
         [Fact]
         public async Task Throws_ArgumentNullException_if_match_is_null()
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateMatch(null!, MemberKey, MemberName));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateMatchInTheFuture(null!, MemberKey, MemberName));
         }
 
         [Theory]
@@ -43,11 +43,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             if (expectException)
             {
-                await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatch(match, MemberKey, MemberName));
+                await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName));
             }
             else
             {
-                var exception = await Record.ExceptionAsync(async () => await repo.UpdateMatch(match, MemberKey, MemberName));
+                var exception = await Record.ExceptionAsync(async () => await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName));
                 Assert.Null(exception);
             }
         }
@@ -62,7 +62,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateMatch(match, MemberKey, memberName!));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateMatchInTheFuture(match, MemberKey, memberName!));
         }
 
         [Theory]
@@ -75,7 +75,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             match.StartTime = DateTimeOffset.UtcNow.AddDays(1);
             match.Teams[0].Team = teamIsNull ? null : new Team();
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatch(match, MemberKey, MemberName));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName));
         }
 
         [Fact]
@@ -86,26 +86,36 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             match.StartTime = DateTimeOffset.UtcNow.AddDays(1);
             match.Season!.SeasonId = null;
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatch(match, MemberKey, MemberName));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName));
         }
 
         [Fact]
-        public async Task Throws_ArgumentException_if_match_date_before_SQL_Server_minimum()
+        public async Task Throws_ArgumentException_if_updated_match_date_before_SQL_Server_minimum()
         {
             var repo = CreateRepository();
             var match = CloneValidMatch(DatabaseFixture.TestData.Matches.First());
             match.StartTime = new DateTimeOffset(1750, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatch(match, MemberKey, MemberName));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName));
         }
 
         [Fact]
-        public async Task Throws_ArgumentException_if_match_date_in_the_past()
+        public async Task Throws_ArgumentException_if_updated_match_date_in_the_past()
         {
             var repo = CreateRepository();
             var match = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatch(match, MemberKey, MemberName));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName));
+        }
+
+        [Fact]
+        public async Task Throws_InvalidOperationException_if_match_date_in_the_past_set_to_future()
+        {
+            var repo = CreateRepository();
+            var match = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
+            match.StartTime = DateTimeOffset.UtcNow.AddDays(1);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName));
         }
 
         [Fact]
@@ -117,7 +127,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             var anyExistingTeam = match.Teams.First(t => t.Team is not null).Team;
             match.Teams.Add(new TeamInMatch { Team = anyExistingTeam, TeamRole = TeamRole.Training });
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatch(match, MemberKey, MemberName));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName));
         }
 
         //// TODO: If TeamName is missing, in PopulateTeamNames it doesn't populate PlayingAsTeamName - gets latest teamname as opposed to the one at the time of the match
@@ -128,15 +138,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         public async Task Route_is_based_on_match_name_if_present(bool matchHasTeams)
         {
             var expectedRoute = $"/matches/expected-route-{Guid.NewGuid()}";
-            var match = CloneValidMatch(DatabaseFixture.TestData.Matches.First(m => m.Teams.Any() == matchHasTeams));
-            match.StartTime = DateTime.UtcNow.AddDays(1);
+            var match = CloneValidMatch(DatabaseFixture.TestData.Matches.First(m => m.Teams.Any() == matchHasTeams && m.StartTime > DateTimeOffset.UtcNow));
             match.MatchName = "Match " + Guid.NewGuid().ToString();
 
             RouteGenerator.Setup(x => x.GenerateRoute("/matches", $"{match.MatchName} {match.StartTime.ToString("dMMMyyyy", CultureInfo.CurrentCulture)}", NoiseWords.MatchRoute)).Returns(expectedRoute);
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             Assert.Equal(expectedRoute, updated.MatchRoute);
 
@@ -149,9 +158,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             var expectedRoute = $"/matches/expected-route-{Guid.NewGuid()}";
             var matchToClone = DatabaseFixture.TestData.Matches.First(
                                     m => m.Teams.Any(t => t.Team is not null && t.TeamRole == TeamRole.Home)
-                                    && m.Teams.Any(t => t.Team is not null && t.TeamRole == TeamRole.Away));
+                                    && m.Teams.Any(t => t.Team is not null && t.TeamRole == TeamRole.Away)
+                                    && m.StartTime > DateTimeOffset.UtcNow);
             var match = CloneValidMatch(matchToClone);
-            match.StartTime = DateTimeOffset.UtcNow.AddDays(1);
             match.MatchName = null;
             var awayTeam = matchToClone.Teams.First(t => t.Team is not null && t.TeamRole == TeamRole.Away).Team!;
             var homeTeam = matchToClone.Teams.First(t => t.Team is not null && t.TeamRole == TeamRole.Home).Team!;
@@ -162,7 +171,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             Assert.Equal(expectedRoute, updated.MatchRoute);
 
@@ -184,7 +193,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             Assert.Equal(expectedRoute, updated.MatchRoute);
 
@@ -199,8 +208,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             var match = CloneValidMatch(DatabaseFixture.TestData.Matches.First(
                             m => m.MatchRoute is not null
                             && Regex.IsMatch(m.MatchRoute, "[a-z]$")
-                            && m.MatchRoute != routeInUse));
-            match.StartTime = DateTime.UtcNow.AddDays(1);
+                            && m.MatchRoute != routeInUse
+                            && m.StartTime > DateTimeOffset.UtcNow));
 
             RouteGenerator.Setup(x => x.GenerateRoute("/matches", $"{match.MatchName} {match.StartTime.ToString("dMMMyyyy", CultureInfo.CurrentCulture)}", NoiseWords.MatchRoute)).Returns(routeInUse);
             RouteGenerator.Setup(x => x.IsMatchingRoute(match.MatchRoute!, routeInUse)).Returns(false);
@@ -208,7 +217,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             Assert.Equal(expectedRoute, updated.MatchRoute);
 
@@ -218,8 +227,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task Route_when_unchanged_is_not_incremented()
         {
-            var match = CloneValidMatch(DatabaseFixture.TestData.Matches.First(m => m.MatchRoute is not null));
-            match.StartTime = DateTime.UtcNow.AddDays(1);
+            var match = CloneValidMatch(DatabaseFixture.TestData.Matches.First(m => m.MatchRoute is not null && m.StartTime > DateTimeOffset.UtcNow));
 
             RouteGenerator.Setup(x => x.GenerateRoute("/matches", $"{match.MatchName} {match.StartTime.ToString("dMMMyyyy", CultureInfo.CurrentCulture)}", NoiseWords.MatchRoute)).Returns(match.MatchRoute!);
             RouteGenerator.Setup(x => x.IsMatchingRoute(match.MatchRoute!, match.MatchRoute!)).Returns(true);
@@ -227,7 +235,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             Assert.Equal(match.MatchRoute, updated.MatchRoute);
 
@@ -241,7 +249,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             RedirectsRepository.Verify(x => x.InsertRedirect(match.MatchRoute!, updated.MatchRoute!, null, It.IsAny<IDbTransaction>()));
         }
@@ -268,7 +276,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             Assert.Equal(match.StartTime, updated.StartTime);
             Assert.Equal(match.StartTimeIsKnown, updated.StartTimeIsKnown);
@@ -314,7 +322,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             Assert.Equal(expectedMatchName, updated.MatchName);
 
@@ -340,7 +348,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             await AssertTeamsInMatch(match, expectedNumberOfTeams, updated).ConfigureAwait(false);
         }
@@ -358,7 +366,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             Assert.Equal(expectedNumberOfTeams, updated.Teams.Count);
             foreach (var team in match.Teams)
@@ -400,7 +408,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             await AssertTeamsInMatch(match, expectedNumberOfTeams, updated).ConfigureAwait(false);
 
@@ -478,7 +486,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             await AssertTeamsInMatch(match, expectedNumberOfTeams, updated).ConfigureAwait(false);
 
@@ -522,7 +530,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             await AssertTeamsInMatch(match, expectedNumberOfTeams, updated).ConfigureAwait(false);
 
@@ -537,13 +545,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var repo = CreateRepository();
 
-            var updated = await repo.UpdateMatch(match, MemberKey, MemberName);
+            var updated = await repo.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
             AuditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
             Logger.Verify(x => x.Info(LoggingTemplates.Updated,
                                        It.Is<Stoolball.Matches.Match>(x => x.StartTime.AccurateToTheMinute() == match.StartTime.AccurateToTheMinute()
                                                                         && x.MatchName == match.MatchName),
-                                       MemberName, MemberKey, typeof(SqlServerMatchRepository), nameof(SqlServerMatchRepository.UpdateMatch)));
+                                       MemberName, MemberKey, typeof(SqlServerMatchRepository), nameof(SqlServerMatchRepository.UpdateMatchInTheFuture)));
         }
     }
 }
