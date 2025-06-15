@@ -22,6 +22,7 @@ using Stoolball.SocialMedia;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Account;
+using Stoolball.Web.Account.BackgroundTasks;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
@@ -84,6 +85,7 @@ namespace Stoolball.Web
                 .AddComposers()
                 .AddCsvExport()
                 .AddStatisticsBackgroundTasks()
+                .AddMembersBackgroundTasks()
                 .AddNotificationHandler<MemberDeletingNotification, DisableMemberDeleteNotificationHandler>()
                 .Build();
 #pragma warning restore IDE0022 // Use expression body for methods
