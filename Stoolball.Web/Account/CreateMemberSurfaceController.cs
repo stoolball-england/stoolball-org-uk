@@ -79,7 +79,7 @@ namespace Stoolball.Web.Account
         {
             if (ModelState.ContainsKey("createMemberModel.ConfirmPassword"))
             {
-                ModelState["createMemberModel.ConfirmPassword"].ValidationState = ModelValidationState.Skipped;
+                ModelState["createMemberModel.ConfirmPassword"]!.ValidationState = ModelValidationState.Skipped;
             }
             if (ModelState.IsValid == false || model == null)
             {
@@ -94,13 +94,26 @@ namespace Stoolball.Web.Account
             // they'd approved the request and that was already their registered email address, and don't try to
             // create a member as that would succeed.
             IActionResult baseResult;
+            var registerModel = new RegisterModel
+            {
+                Name = model.Name,
+                Email = model.Email,
+                Password = model.Password,
+                ConfirmPassword = model.ConfirmPassword,
+                Username = model.Username,
+                MemberTypeAlias = model.MemberTypeAlias,
+                MemberProperties = model.MemberProperties,
+                AutomaticLogIn = model.AutomaticLogIn,
+                UsernameIsEmail = model.UsernameIsEmail,
+                RedirectUrl = model.RedirectUrl
+            };
             if (AnotherMemberHasRequestedThisEmailAddress(model.Email))
             {
                 baseResult = WhatUmbracoDoesIfAMemberExistsWithThisEmail(model.Email);
             }
             else
             {
-                baseResult = await _createMemberExecuter.CreateMember(base.HandleRegisterMember, model);
+                baseResult = await _createMemberExecuter.CreateMember(base.HandleRegisterMember, registerModel);
             }
 
             if (NewMemberWasCreated())
@@ -146,7 +159,7 @@ namespace Stoolball.Web.Account
             }
         }
 
-        private async Task SendMemberAlreadyExistsEmail(RegisterModel model)
+        private async Task SendMemberAlreadyExistsEmail(CreateMemberFormData model)
         {
             // Send the 'member already exists' email
             var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
@@ -183,7 +196,7 @@ namespace Stoolball.Web.Account
             return TempData.ContainsKey("FormSuccess") && Convert.ToBoolean(TempData["FormSuccess"], CultureInfo.InvariantCulture) == true;
         }
 
-        private async Task SendActivateNewMemberEmail(RegisterModel model, string token)
+        private async Task SendActivateNewMemberEmail(CreateMemberFormData model, string token)
         {
             var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
             var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(publishedValueFallback, "approveMemberSubject"),
