@@ -21,10 +21,10 @@ namespace Stoolball.Web.Account
 
             var registerModel = new RegisterModel
             {
-                Name = model.Name,
-                Email = model.Email,
-                Password = model.Password,
-                ConfirmPassword = model.ConfirmPassword,
+                Name = model.Name!,
+                Email = model.Email!,
+                Password = model.Password!,
+                ConfirmPassword = model.ConfirmPassword!,
                 Username = model.Username,
                 MemberTypeAlias = model.MemberTypeAlias,
                 MemberProperties = model.MemberProperties,

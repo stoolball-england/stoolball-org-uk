@@ -1,8 +1,8 @@
-using Stoolball.Web.Account;
 using System.ComponentModel.DataAnnotations;
+using Stoolball.Web.Account;
 using Xunit;
 
-namespace Stoolball.Web.Account.Tests
+namespace Stoolball.Web.UnitTests.Account
 {
     public class MemberNameAttributeTests
     {

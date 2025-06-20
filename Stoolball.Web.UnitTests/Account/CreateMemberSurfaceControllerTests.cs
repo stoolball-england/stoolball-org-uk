@@ -58,7 +58,7 @@ namespace Stoolball.Web.UnitTests.Account
                 Mock.Of<IMemberManager>(),
                 MemberService.Object,
                 _memberSignInManager.Object,
-                Mock.Of<IScopeProvider>(),
+                Mock.Of<ICoreScopeProvider>(),
                 _createMemberExecuter.Object,
                 _emailFormatter.Object,
                 _emailSender.Object,
@@ -76,7 +76,7 @@ namespace Stoolball.Web.UnitTests.Account
             SetupPropertyValue(CurrentPage, "memberExistsBody", MEMBER_EXISTS_EMAIL_BODY);
 
             _createMemberExecuter.Setup(x => x.CreateMember(controller.HandleRegisterMember, model))
-                .Callback((Func<RegisterModel, Task<IActionResult>> executeFunction, RegisterModel modelToExecute) =>
+                .Callback((Func<RegisterModel, Task<IActionResult>> executeFunction, CreateMemberFormData modelToExecute) =>
                 {
                     controller.TempData["FormSuccess"] = createMemberSucceeds;
                     if (!string.IsNullOrEmpty(emailFieldError))
@@ -487,7 +487,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Email_matching_requested_email_past_expiry_period_attempts_to_create_member()
         {
-            var model = new CreateMemberFormData();
+            var model = new CreateMemberFormData { Email = "email@example.org" };
 
             var otherMember = new Mock<IMember>();
             var expiryDate = DateTime.Now.AddHours(-12);
@@ -508,13 +508,13 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Other_error_is_added_to_ModelState_and_returns_baseResult()
         {
-            var model = new CreateMemberFormData();
+            var model = new CreateMemberFormData { Email = "test@example.org" };
             using (var controller = CreateController(model, createMemberSucceeds: false, emailFieldError: "Some other error."))
             {
                 var result = await controller.CreateMember(model);
 
                 Assert.True(controller.ModelState.ContainsKey(string.Empty));
-                Assert.Equal("Some other error.", controller.ModelState[string.Empty].Errors[0].ErrorMessage);
+                Assert.Equal("Some other error.", controller.ModelState[string.Empty]?.Errors[0].ErrorMessage);
                 Assert.Equal(_createMemberSuccessResult, result);
             }
         }
@@ -522,8 +522,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public async Task Email_in_TempData_for_view()
         {
-            var model = new CreateMemberFormData();
-            model.Email = "test@example.org";
+            var model = new CreateMemberFormData { Email = "test@example.org" };
             using (var controller = CreateController(model))
             {
                 await controller.CreateMember(model);

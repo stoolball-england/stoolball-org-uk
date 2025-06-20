@@ -53,7 +53,7 @@ namespace Stoolball.Web.Account
             IMemberManager memberManager,
             IMemberService memberService,
             IMemberSignInManager memberSignInManager,
-            IScopeProvider scopeProvider,
+            ICoreScopeProvider scopeProvider,
             ICreateMemberExecuter createMemberExecuter,
             IEmailFormatter emailFormatter,
             IEmailSender emailSender,
@@ -80,7 +80,7 @@ namespace Stoolball.Web.Account
             {
                 ModelState["createMemberModel.ConfirmPassword"]!.ValidationState = ModelValidationState.Skipped;
             }
-            if (ModelState.IsValid == false)
+            if (ModelState.IsValid == false || model is null)
             {
                 return CurrentUmbracoPage();
             }
@@ -94,9 +94,9 @@ namespace Stoolball.Web.Account
             // create a member as that would succeed.
             IActionResult baseResult;
 
-            if (AnotherMemberHasRequestedThisEmailAddress(model.Email))
+            if (AnotherMemberHasRequestedThisEmailAddress(model.Email!))
             {
-                baseResult = WhatUmbracoDoesIfAMemberExistsWithThisEmail(model.Email);
+                baseResult = WhatUmbracoDoesIfAMemberExistsWithThisEmail(model.Email!);
             }
             else
             {
@@ -106,13 +106,14 @@ namespace Stoolball.Web.Account
             if (NewMemberWasCreated())
             {
                 // Get the newly-created member so that we can set an approval token
-                var member = _memberService.GetByEmail(model.Email);
+                var member = _memberService.GetByEmail(model.Email!);
+                if (member is null) { throw new InvalidOperationException($"Member for {model.Email} was created but could not be found."); }
 
                 // Create an account approval token including the id so we can find the member
                 var token = await NewMemberMustAwaitActivation(member);
 
                 // Add to a default group which can be used to assign permissions to all members
-                Services.MemberService.AssignRole(member.Id, Groups.AllMembers);
+                _memberService.AssignRole(member.Id, Groups.AllMembers);
 
                 await SendActivateNewMemberEmail(model, token);
 
@@ -128,7 +129,7 @@ namespace Stoolball.Web.Account
                 var errorMessage = ModelState.Values.Where(x => x.Errors.Count > 0).Select(x => x.Errors[0].ErrorMessage).FirstOrDefault();
                 if (errorMessage == string.Format(UMBRACO_ERROR_IF_MEMBER_EXISTS, model.Email))
                 {
-                    await SendMemberAlreadyExistsEmail(model);
+                    await SendMemberAlreadyExistsEmail(model.Name, model.Email!);
 
                     // Send back the same status regardless for security
                     TempData["FormSuccess"] = true;
@@ -146,7 +147,7 @@ namespace Stoolball.Web.Account
             }
         }
 
-        private async Task SendMemberAlreadyExistsEmail(CreateMemberFormData model)
+        private async Task SendMemberAlreadyExistsEmail(string? name, string email)
         {
             // Send the 'member already exists' email
             var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
@@ -154,11 +155,11 @@ namespace Stoolball.Web.Account
                 CurrentPage.Value<string>(publishedValueFallback, "memberExistsBody"),
                 new Dictionary<string, string>
                 {
-                            {"name", model.Name},
-                            {"email", model.Email},
+                            {"name", name},
+                            {"email", email},
                             {"domain", GetRequestUrlAuthority()}
                 });
-            await _emailSender.SendAsync(new EmailMessage(null, model.Email, subject, body, true), null);
+            await _emailSender.SendAsync(new EmailMessage(null, email, subject, body, true), null);
         }
 
         private IActionResult WhatUmbracoDoesIfAMemberExistsWithThisEmail(string email)
@@ -172,7 +173,7 @@ namespace Stoolball.Web.Account
 
         private bool AnotherMemberHasRequestedThisEmailAddress(string email)
         {
-            var membersRequestingThisEmail = Services.MemberService.GetMembersByPropertyValue("requestedEmail", email?.Trim().ToLowerInvariant(), StringPropertyMatchType.Exact);
+            var membersRequestingThisEmail = _memberService.GetMembersByPropertyValue("requestedEmail", email.Trim().ToLowerInvariant(), StringPropertyMatchType.Exact);
             return membersRequestingThisEmail.Any(x => !_verificationToken.HasExpired(x.GetValue<DateTime>("requestedEmailTokenExpires")));
         }
 
