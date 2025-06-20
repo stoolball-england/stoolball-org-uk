@@ -7,7 +7,7 @@ namespace Stoolball.Web.Account
 {
     public class CreateMemberExecuter : ICreateMemberExecuter
     {
-        public async Task<IActionResult> CreateMember(Func<RegisterModel, Task<IActionResult>> executeFunction, RegisterModel model)
+        public async Task<IActionResult> CreateMember(Func<RegisterModel, Task<IActionResult>> executeFunction, CreateMemberFormData model)
         {
             if (executeFunction is null)
             {
@@ -19,7 +19,21 @@ namespace Stoolball.Web.Account
                 throw new ArgumentNullException(nameof(model));
             }
 
-            return await executeFunction(model);
+            var registerModel = new RegisterModel
+            {
+                Name = model.Name,
+                Email = model.Email,
+                Password = model.Password,
+                ConfirmPassword = model.ConfirmPassword,
+                Username = model.Username,
+                MemberTypeAlias = model.MemberTypeAlias,
+                MemberProperties = model.MemberProperties,
+                AutomaticLogIn = model.AutomaticLogIn,
+                UsernameIsEmail = model.UsernameIsEmail,
+                RedirectUrl = model.RedirectUrl
+            };
+
+            return await executeFunction(registerModel);
         }
     }
 }

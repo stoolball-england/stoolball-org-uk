@@ -25,7 +25,6 @@ using Umbraco.Cms.Infrastructure.Persistence;
 using Umbraco.Cms.Web.Common.Filters;
 using Umbraco.Cms.Web.Common.Security;
 using Umbraco.Cms.Web.Website.Controllers;
-using Umbraco.Cms.Web.Website.Models;
 using Umbraco.Extensions;
 using static Stoolball.Constants;
 
@@ -75,13 +74,13 @@ namespace Stoolball.Web.Account
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<IActionResult> CreateMember([Bind(Prefix = "createMemberModel")] CreateMemberFormData? model)
+        public async Task<IActionResult> CreateMember([Bind(Prefix = "createMemberModel")] CreateMemberFormData model)
         {
             if (ModelState.ContainsKey("createMemberModel.ConfirmPassword"))
             {
                 ModelState["createMemberModel.ConfirmPassword"]!.ValidationState = ModelValidationState.Skipped;
             }
-            if (ModelState.IsValid == false || model == null)
+            if (ModelState.IsValid == false)
             {
                 return CurrentUmbracoPage();
             }
@@ -94,26 +93,14 @@ namespace Stoolball.Web.Account
             // they'd approved the request and that was already their registered email address, and don't try to
             // create a member as that would succeed.
             IActionResult baseResult;
-            var registerModel = new RegisterModel
-            {
-                Name = model.Name,
-                Email = model.Email,
-                Password = model.Password,
-                ConfirmPassword = model.ConfirmPassword,
-                Username = model.Username,
-                MemberTypeAlias = model.MemberTypeAlias,
-                MemberProperties = model.MemberProperties,
-                AutomaticLogIn = model.AutomaticLogIn,
-                UsernameIsEmail = model.UsernameIsEmail,
-                RedirectUrl = model.RedirectUrl
-            };
+
             if (AnotherMemberHasRequestedThisEmailAddress(model.Email))
             {
                 baseResult = WhatUmbracoDoesIfAMemberExistsWithThisEmail(model.Email);
             }
             else
             {
-                baseResult = await _createMemberExecuter.CreateMember(base.HandleRegisterMember, registerModel);
+                baseResult = await _createMemberExecuter.CreateMember(base.HandleRegisterMember, model);
             }
 
             if (NewMemberWasCreated())

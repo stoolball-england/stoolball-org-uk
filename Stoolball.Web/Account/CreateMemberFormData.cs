@@ -15,10 +15,10 @@ namespace Stoolball.Web.Account
             AutomaticLogIn = true;
         }
 
-        //
-        // Summary:
-        //     The members real name
-        [RegularExpression("^((?!tronlink|TRONLINK|TronLink).)*$", ErrorMessage = "You cannot create an account with that name")]
+        /// <summary>
+        /// The member's real name.
+        /// </summary>
+        [MemberName]
         public string? Name { get; set; }
 
         [Required]

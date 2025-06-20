@@ -7,6 +7,6 @@ namespace Stoolball.Web.Account
 {
     public interface ICreateMemberExecuter
     {
-        Task<IActionResult> CreateMember(Func<RegisterModel, Task<IActionResult>> executeFunction, RegisterModel model);
+        Task<IActionResult> CreateMember(Func<RegisterModel, Task<IActionResult>> executeFunction, CreateMemberFormData model);
     }
 }

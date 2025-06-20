@@ -45,7 +45,7 @@ namespace Stoolball.Web.UnitTests.Account
         private const string MEMBER_EXISTS_EMAIL_SUBJECT = "Member exists";
         private const string MEMBER_EXISTS_EMAIL_BODY = "Member exists body";
 
-        private CreateMemberSurfaceController CreateController(RegisterModel model, bool createMemberSucceeds = false, string? emailFieldError = null)
+        private CreateMemberSurfaceController CreateController(CreateMemberFormData model, bool createMemberSucceeds = false, string? emailFieldError = null)
         {
             var controller = new CreateMemberSurfaceController(UmbracoContextAccessor.Object,
                 Mock.Of<IVariationContextAccessor>(),
