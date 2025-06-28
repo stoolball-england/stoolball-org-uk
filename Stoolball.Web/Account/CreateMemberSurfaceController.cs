@@ -131,6 +131,8 @@ namespace Stoolball.Web.Account
                 {
                     await SendMemberAlreadyExistsEmail(model.Name, model.Email!);
 
+                    _logger.Info(LoggingTemplates.MemberAlreadyExists, model.Email?.Length > 8 ? $"********{model.Email.Substring(8)}" : "********", typeof(CreateMemberSurfaceController), nameof(CreateMember));
+
                     // Send back the same status regardless for security
                     TempData["FormSuccess"] = true;
                     return RedirectToCurrentUmbracoPage();
@@ -159,6 +161,7 @@ namespace Stoolball.Web.Account
                             {"email", email},
                             {"domain", GetRequestUrlAuthority()}
                 });
+
             await _emailSender.SendAsync(new EmailMessage(null, email, subject, body, true), null);
         }
 

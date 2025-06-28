@@ -71,15 +71,18 @@ namespace Stoolball
             public const string Deleted = "Deleted {@Entity}. Deleted by {MemberName} {MemberKey} in {Type:l}.{Method:l}.";
             public const string Migrated = "Migrated {@Entity} in {Type:l}.{Method:l}.";
 
-            public const string CreateMember = "Created member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";
+            public const string CreateMember = "Created member {MemberUsername} {MemberKey}. Email sent in {Type:l}.{Method:l}.";
             public const string ApproveMember = "Approved member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";
-            public const string MemberPasswordResetRequested = "Reset password requested for member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";
+            public const string MemberAlreadyExists = "Cannot create member for {Email} because it is already in use. Email sent in {Type:l}.{Method:l}.";
+            public const string MemberPasswordResetRequested = "Reset password requested for member {MemberUsername} {MemberKey}. Email sent in {Type:l}.{Method:l}.";
+            public const string PasswordResetForNonMemberRequested = "Reset password requested for non-member {Email}. Email sent in {Type:l}.{Method:l}.";
             public const string MemberPasswordReset = "Reset password for member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";
             public const string MemberPasswordResetTokenInvalid = "Password reset token invalid {Token} in {Type:l}.{Method:l}.";
             public const string MemberPersonalDetailsUpdated = "Account updated for member {MemberName} {MemberKey} in {Type:l}.{Method:l}.";
-            public const string MemberRequestedEmailAddressAlreadyInUse = "Email address edit to address already in use, requested for member {MemberName} {MemberKey} in {Type:l}.{Method:l}.";
-            public const string MemberRequestedEmailAddress = "Email address edit requested for member {MemberName} {MemberKey} in {Type:l}.{Method:l}.";
+            public const string MemberRequestedEmailAddressAlreadyInUse = "Email address edit to address already in use, requested for member {MemberName} {MemberKey}. Email sent in {Type:l}.{Method:l}.";
+            public const string MemberRequestedEmailAddress = "Email address edit requested for member {MemberName} {MemberKey}. Email sent in {Type:l}.{Method:l}.";
             public const string ConfirmEmailAddress = "Confirmed email address for member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";
+            public const string MemberNotActivatedOrLockedOut = "Member {MemberKey} is not activated or locked out. Email sent in {Type:l}.{Method:l}.";
         }
 
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]

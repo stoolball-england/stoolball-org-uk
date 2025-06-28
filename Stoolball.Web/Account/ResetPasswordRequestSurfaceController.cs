@@ -130,6 +130,8 @@ namespace Stoolball.Web.Account
                     });
                 await _emailSender.SendAsync(new EmailMessage(null, model.Email, sender, body, true), null);
 
+                _logger.Info(LoggingTemplates.PasswordResetForNonMemberRequested, model.Email?.Length > 8 ? $"********{model.Email.Substring(8)}" : "********", typeof(ResetPasswordRequestSurfaceController), nameof(RequestPasswordReset));
+
                 contentModel.ShowPasswordResetRequested = true;
                 return View("ResetPasswordRequest", contentModel);
             }
