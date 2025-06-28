@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Email;
+using Stoolball.Logging;
 using Stoolball.Security;
 using Stoolball.Web.Models;
 using Stoolball.Web.Routing;
@@ -20,23 +21,26 @@ using Umbraco.Cms.Web.Common.Models;
 using Umbraco.Cms.Web.Common.Security;
 using Umbraco.Cms.Web.Website.Controllers;
 using Umbraco.Extensions;
+using static Stoolball.Constants;
 
 namespace Stoolball.Web.Account
 {
     public class LoginMemberSurfaceController : UmbLoginController
     {
+        private readonly ILogger<LoginMemberSurfaceController> _logger;
         private readonly IEmailFormatter _emailFormatter;
         private readonly Umbraco.Cms.Core.Mail.IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
         private readonly IStoolballRouterController _stoolballRouterController;
 
         public LoginMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services,
-            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider,
+            AppCaches appCaches, ILogger<LoginMemberSurfaceController> logger, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider,
             IMemberSignInManager memberSignInManager, IMemberManager memberManager, ITwoFactorLoginService twoFactorLoginService,
             IEmailFormatter emailFormatter, Umbraco.Cms.Core.Mail.IEmailSender emailSender,
             IVerificationToken verificationToken, IStoolballRouterController stoolballRouterController)
             : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider, memberSignInManager, memberManager, twoFactorLoginService)
         {
+            _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
             _emailFormatter = emailFormatter ?? throw new System.ArgumentNullException(nameof(emailFormatter));
             _emailSender = emailSender ?? throw new System.ArgumentNullException(nameof(emailSender));
             _verificationToken = verificationToken ?? throw new System.ArgumentNullException(nameof(verificationToken));
@@ -161,6 +165,8 @@ namespace Stoolball.Web.Account
                 });
 
             await _emailSender.SendAsync(new EmailMessage(null, member.Email, subject, body, true), null);
+
+            _logger.Info(LoggingTemplates.MemberNotActivatedOrLockedOut, member.Key, typeof(CreateMemberSurfaceController), nameof(CreateMember));
         }
 
         /// <summary>

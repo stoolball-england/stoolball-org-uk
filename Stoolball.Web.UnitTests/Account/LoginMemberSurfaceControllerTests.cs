@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using Stoolball.Email;
+using Stoolball.Logging;
 using Stoolball.Security;
 using Stoolball.Web.Account;
 using Stoolball.Web.Models;
@@ -49,6 +50,7 @@ namespace Stoolball.Web.UnitTests.Account
                 Mock.Of<IUmbracoDatabaseFactory>(),
                 services,
                 AppCaches.NoCache,
+                Mock.Of<ILogger<LoginMemberSurfaceController>>(),
                 Mock.Of<IProfilingLogger>(),
                 Mock.Of<IPublishedUrlProvider>(),
                 Mock.Of<IMemberSignInManager>(),
