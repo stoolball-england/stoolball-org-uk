@@ -5,9 +5,11 @@ namespace Stoolball.Web.Matches.Models
     public class EditMatchFormatFormData
     {
         [Display(Name = "Innings in the match")]
+        [Required]
         public int MatchInnings { get; set; }
 
         [Display(Name = "Overs per innings")]
-        public int? Overs { get; set; }
+        [Required]
+        public int Overs { get; set; }
     }
 }

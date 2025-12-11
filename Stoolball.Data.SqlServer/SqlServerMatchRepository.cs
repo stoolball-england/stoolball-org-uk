@@ -544,32 +544,42 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    if (match.MatchInnings[0].OverSets.FirstOrDefault()?.Overs != null)
+                    var currentMatchInnings = await connection.QueryAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+
+                    if (!currentMatchInnings.Any()) { throw new MatchNotFoundException(auditableMatch.MatchId!.Value); }
+
+                    var oversPerSet = auditableMatch.MatchInnings[0].OverSets.FirstOrDefault()?.Overs;
+                    if (oversPerSet is null) { throw new InvalidOperationException($"{nameof(OverSet.Overs)} in first {nameof(OverSet)} of first {nameof(MatchInnings)} cannot be null"); }
+
+                    await connection.ExecuteAsync($"UPDATE {Tables.OverSet} SET Overs = @Overs WHERE MatchInningsId IN @MatchInningsIds",
+                        new
+                        {
+                            Overs = oversPerSet,
+                            MatchInningsIds = auditableMatch.MatchInnings.Select(x => x.MatchInningsId).OfType<Guid>()
+                        },
+                        transaction).ConfigureAwait(false);
+
+                    foreach (var innings in auditableMatch.MatchInnings)
                     {
-                        await connection.ExecuteAsync($"UPDATE {Tables.OverSet} SET Overs = @Overs WHERE MatchInningsId IN @MatchInningsIds",
-                            new
-                            {
-                                match.MatchInnings[0].OverSets[0].Overs,
-                                MatchInningsIds = match.MatchInnings.Select(x => x.MatchInningsId).OfType<Guid>()
-                            },
-                            transaction).ConfigureAwait(false);
+                        foreach (var overSet in innings.OverSets)
+                        {
+                            overSet.Overs = oversPerSet;
+                        }
                     }
 
-                    var currentMatchInnings = await connection.QueryAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { match.MatchId }, transaction).ConfigureAwait(false);
-
-                    var deletedMatchInnings = currentMatchInnings.Where(x => !match.MatchInnings.Select(mi => mi.MatchInningsId).Contains(x));
+                    var deletedMatchInnings = currentMatchInnings.Where(x => !auditableMatch.MatchInnings.Select(mi => mi.MatchInningsId).Contains(x));
                     if (deletedMatchInnings.Any())
                     {
                         await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE MatchInningsId IN @deletedMatchInnings", new { deletedMatchInnings }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings} WHERE MatchInningsId IN @deletedMatchInnings", new { deletedMatchInnings }, transaction).ConfigureAwait(false);
                     }
 
-                    var addedMatchInnings = match.MatchInnings.Where(x => !x.MatchInningsId.HasValue || !currentMatchInnings.Contains(x.MatchInningsId.Value));
+                    var addedMatchInnings = auditableMatch.MatchInnings.Where(x => !x.MatchInningsId.HasValue || !currentMatchInnings.Contains(x.MatchInningsId.Value));
                     if (addedMatchInnings.Any())
                     {
                         foreach (var innings in addedMatchInnings)
                         {
-                            await InsertMatchInnings(match.MatchId.Value, innings, transaction).ConfigureAwait(false);
+                            await InsertMatchInnings(auditableMatch.MatchId!.Value, innings, transaction).ConfigureAwait(false);
                         }
                     }
 

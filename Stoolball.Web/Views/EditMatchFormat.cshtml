@@ -29,7 +29,7 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(m => Model.FormData.Overs, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+                @Html.LabelFor(m => Model.FormData.Overs)
                 @Html.TextBoxFor(m => Model.FormData.Overs, new { @class = "form-control", aria_describedby = "overs-validation", @type = "number", min = (Model.Match.StartTime <= DateTimeOffset.UtcNow ? Model.FormData.Overs : 1) })
                 @Html.ValidationMessageFor(m => Model.FormData.Overs, null, new { id = "overs-validation" })
             </div>

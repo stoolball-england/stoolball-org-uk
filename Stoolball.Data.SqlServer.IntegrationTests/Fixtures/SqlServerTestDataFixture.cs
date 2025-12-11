@@ -29,10 +29,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var schoolFakerFactory = new SchoolFakerFactory();
             var playerIdentityFakerFactory = new PlayerIdentityFakerFactory();
             var playerFakerFactory = new PlayerFakerFactory();
+            var oversetFakerFactory = new OverSetFakerFactory();
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
             var randomSeedDataGenerator = new SeedDataGenerator(Randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
                 competitionFakerFactory, teamFakerFactory, clubFakerFactory, matchLocationFakerFactory, schoolFakerFactory, playerFakerFactory,
-                playerIdentityFakerFactory, playerOfTheMatchAward);
+                playerIdentityFakerFactory, oversetFakerFactory, playerOfTheMatchAward);
 
             Randomizer.Seed = new Random(85437684);
             TestData = randomSeedDataGenerator.GenerateTestData();

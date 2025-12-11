@@ -31,6 +31,7 @@ namespace Stoolball.Testing
         private readonly IFakerFactory<School> _schoolFakerFactory;
         private readonly IFakerFactory<Player> _playerFakerFactory;
         private readonly IFakerFactory<PlayerIdentity> _playerIdentityFakerFactory;
+        private readonly IFakerFactory<OverSet> _oversetFakerFactory;
         private readonly MatchFactory _matchFactory;
         private readonly Faker<Competition> _competitionFaker;
         private readonly Faker<Team> _teamFaker;
@@ -46,7 +47,8 @@ namespace Stoolball.Testing
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
             IFakerFactory<Competition> competitionFakerFactory, IFakerFactory<Team> teamFakerFactory, IFakerFactory<Club> clubFakerFactory,
             IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory,
-            IFakerFactory<Player> playerFakerFactory, IFakerFactory<PlayerIdentity> playerIdentityFakerFactory, Award playerOfTheMatchAward)
+            IFakerFactory<Player> playerFakerFactory, IFakerFactory<PlayerIdentity> playerIdentityFakerFactory,
+            IFakerFactory<OverSet> oversetFakerFactory, Award playerOfTheMatchAward)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
@@ -58,6 +60,7 @@ namespace Stoolball.Testing
             _schoolFakerFactory = schoolFakerFactory ?? throw new ArgumentNullException(nameof(schoolFakerFactory));
             _playerFakerFactory = playerFakerFactory ?? throw new ArgumentNullException(nameof(playerFakerFactory));
             _playerIdentityFakerFactory = playerIdentityFakerFactory ?? throw new ArgumentNullException(nameof(playerIdentityFakerFactory));
+            _oversetFakerFactory = oversetFakerFactory ?? throw new ArgumentNullException(nameof(oversetFakerFactory));
             _competitionFaker = competitionFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(competitionFakerFactory));
             _teamFaker = teamFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(teamFakerFactory));
             _clubFaker = clubFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(clubFakerFactory));
@@ -922,7 +925,7 @@ namespace Stoolball.Testing
                 new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward),
                 new APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(_randomiser, _matchFactory, _bowlingFiguresCalculator),
                 new PlayersOnlyRecordedInOnePlace(_matchFactory, _teamFakerFactory, _playerIdentityFakerFactory, _playerOfTheMatchAward),
-                new MatchesInTheFuture(_matchFactory, _teamFakerFactory)
+                new MatchesInTheFuture(_matchFactory, _teamFakerFactory, _oversetFakerFactory)
             };
             foreach (var provider in matchProviders)
             {

@@ -91,14 +91,7 @@ namespace Stoolball.Web.Matches
                         var battingMatchTeamId = model.Match.MatchInnings.Count % 2 == 0 ? model.Match.MatchInnings[0].BattingMatchTeamId : model.Match.MatchInnings[1].BattingMatchTeamId;
                         var bowlingMatchTeamId = model.Match.MatchInnings.Count % 2 == 1 ? model.Match.MatchInnings[0].BattingMatchTeamId : model.Match.MatchInnings[1].BattingMatchTeamId;
                         var addedInnings = _matchInningsFactory.CreateMatchInnings(model.Match, battingMatchTeamId, bowlingMatchTeamId);
-                        if (postedData.Overs.HasValue)
-                        {
-                            addedInnings.OverSets[0].Overs = postedData.Overs;
-                        }
-                        else
-                        {
-                            addedInnings.OverSets.Clear();
-                        }
+                        addedInnings.OverSets[0].Overs = postedData.Overs;
                         model.Match.MatchInnings.Add(addedInnings);
                     }
                 }

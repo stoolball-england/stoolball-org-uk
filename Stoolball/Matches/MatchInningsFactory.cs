@@ -15,7 +15,7 @@ namespace Stoolball.Matches
             var overSets = match.Tournament?.DefaultOverSets ?? match.Season?.DefaultOverSets;
             if (overSets == null || overSets.Count == 0)
             {
-                overSets = new List<OverSet> { new OverSet { Overs = 12, BallsPerOver = 8 } }; // default if none provided
+                overSets = new List<OverSet> { new OverSet { Overs = Constants.Defaults.OversInOverSet, BallsPerOver = Constants.Defaults.BallsPerOver } }; // default if none provided
             }
             return new MatchInnings
             {

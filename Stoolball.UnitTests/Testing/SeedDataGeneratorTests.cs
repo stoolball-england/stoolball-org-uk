@@ -20,7 +20,8 @@ namespace Stoolball.UnitTests.Testing
         {
             return new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
                             Mock.Of<CompetitionFakerFactory>(), Mock.Of<TeamFakerFactory>(), Mock.Of<ClubFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(),
-                            Mock.Of<SchoolFakerFactory>(), new PlayerFakerFactory(), Mock.Of<PlayerIdentityFakerFactory>(), _playerOfTheMatchAward);
+                            Mock.Of<SchoolFakerFactory>(), new PlayerFakerFactory(), Mock.Of<PlayerIdentityFakerFactory>(),
+                            Mock.Of<OverSetFakerFactory>(), _playerOfTheMatchAward);
         }
 
         [Fact]
@@ -30,7 +31,7 @@ namespace Stoolball.UnitTests.Testing
 
             for (var i = 0; i < _iterations; i++)
             {
-                var overs = generator.CreateOversBowled(generator.GenerateTeams()[0].identities, generator.CreateOverSets());
+                var overs = generator.CreateOversBowled(generator.GenerateTeams()[0].identities, []);
 
                 Assert.Contains(overs, x => x.Bowler != null && x.BallsBowled == null && x.NoBalls == null && x.Wides == null && x.RunsConceded == null);
             }

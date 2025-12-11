@@ -96,6 +96,8 @@ namespace Stoolball
         public static class Defaults
         {
             public const int PageSize = 50;
+            public const int OversInOverSet = 12;
+            public const int BallsPerOver = 8;
         }
 
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
