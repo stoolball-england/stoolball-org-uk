@@ -14,9 +14,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task Delete_match_succeeds()
         {
-            var repo = CreateRepository();
-
-            await repo.DeleteMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!, MemberKey, MemberName).ConfigureAwait(false);
+            await Repository.DeleteMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!, MemberKey, MemberName).ConfigureAwait(false);
 
             using (var connection = DatabaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {

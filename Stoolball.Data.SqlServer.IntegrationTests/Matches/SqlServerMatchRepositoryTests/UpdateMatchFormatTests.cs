@@ -23,9 +23,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task Throws_ArgumentNullException_if_match_is_null()
         {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateMatchFormat(null!, MemberKey, MemberName));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Repository.UpdateMatchFormat(null!, MemberKey, MemberName));
         }
 
         [Theory]
@@ -34,9 +32,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [InlineData("   ")]
         public async Task Throws_ArgumentNullException_if_memberName_is_null_or_whitespace(string? memberName)
         {
-            var repo = CreateRepository();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateMatchFormat(new Stoolball.Matches.Match
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Repository.UpdateMatchFormat(new Stoolball.Matches.Match
             {
                 MatchId = Guid.NewGuid(),
                 StartTime = DateTimeOffset.UtcNow
@@ -46,20 +42,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task Throws_ArgumentException_if_a_match_does_not_have_a_MatchId()
         {
-            var repo = CreateRepository();
             var match = new Stoolball.Matches.Match();
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateMatchFormat(match, MemberKey, MemberName));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await Repository.UpdateMatchFormat(match, MemberKey, MemberName));
         }
 
 
         [Fact]
         public async Task Throws_MatchNotFoundException_for_match_id_that_does_not_exist()
         {
-            var repository = CreateRepository();
-
             await Assert.ThrowsAsync<MatchNotFoundException>(
-                async () => await repository.UpdateMatchFormat(new Stoolball.Matches.Match
+                async () => await Repository.UpdateMatchFormat(new Stoolball.Matches.Match
                 {
                     MatchId = Guid.NewGuid()
                 },
@@ -71,7 +64,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task Throws_InvalidOperationException_if_overs_from_first_overset_is_null()
         {
-            var repository = CreateRepository();
             var matchBefore = CloneValidMatch(DatabaseFixture.TestData.Matches.First(m =>
                 m.StartTime > DateTime.UtcNow &&
                 m.MatchInnings.Count > 2 &&
@@ -80,7 +72,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             matchBefore.MatchInnings[0].OverSets[0].Overs = null;
 
             await Assert.ThrowsAsync<InvalidOperationException>(
-                async () => await repository.UpdateMatchFormat(matchBefore, MemberKey, MemberName).ConfigureAwait(false)
+                async () => await Repository.UpdateMatchFormat(matchBefore, MemberKey, MemberName).ConfigureAwait(false)
                 );
 
         }
@@ -90,7 +82,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [InlineData(20)]
         public async Task Overs_from_first_overset_update_all_oversets_in_the_match(int expectedOvers)
         {
-            var repository = CreateRepository();
             var matchBefore = CloneValidMatch(DatabaseFixture.TestData.Matches.First(m =>
                 m.StartTime > DateTime.UtcNow &&
                 m.MatchInnings.Count > 2 &&
@@ -99,7 +90,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             matchBefore.MatchInnings[0].OverSets[0].Overs = expectedOvers;
 
-            var result = await repository.UpdateMatchFormat(matchBefore, MemberKey, MemberName).ConfigureAwait(false);
+            var result = await Repository.UpdateMatchFormat(matchBefore, MemberKey, MemberName).ConfigureAwait(false);
 
             foreach (var innings in result.MatchInnings)
             {
@@ -124,7 +115,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         public async Task Deleting_match_innings_deletes_innings_and_oversets()
         {
             // NOTE: Controller logic prevents innings being removed after a match has happened, so other data should not exist
-            var repository = CreateRepository();
             var match = CloneValidMatch(DatabaseFixture.TestData.Matches.First(m =>
                 m.StartTime > DateTime.UtcNow &&
                 m.MatchInnings.Count > 2 &&
@@ -135,7 +125,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             match.MatchInnings.RemoveAt(match.MatchInnings.Count - 1);
             match.MatchInnings.RemoveAt(match.MatchInnings.Count - 1);
 
-            var result = await repository.UpdateMatchFormat(match, MemberKey, MemberName).ConfigureAwait(false);
+            var result = await Repository.UpdateMatchFormat(match, MemberKey, MemberName).ConfigureAwait(false);
 
             Assert.Equal(match.MatchInnings.Count, result.MatchInnings.Count);
             foreach (var inningsId in match.MatchInnings.Select(i => i.MatchInningsId))
@@ -155,7 +145,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task Adding_match_innings_inserts_innings_and_oversets()
         {
-            var repository = CreateRepository();
             var matchBefore = CloneValidMatch(DatabaseFixture.TestData.Matches.First(m => m.StartTime > DateTime.UtcNow && m.MatchInnings.Count > 2));
 
             var newInnings1 = new MatchInnings
@@ -181,7 +170,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             matchBefore.MatchInnings.Add(newInnings1);
             matchBefore.MatchInnings.Add(newInnings2);
 
-            var result = await repository.UpdateMatchFormat(matchBefore, MemberKey, MemberName).ConfigureAwait(false);
+            var result = await Repository.UpdateMatchFormat(matchBefore, MemberKey, MemberName).ConfigureAwait(false);
 
             Assert.Equal(matchBefore.MatchInnings.Count, result.MatchInnings.Count);
             var newInningsIds = new Collection<Guid>();
@@ -254,14 +243,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task Audits_and_logs()
         {
-            var repository = CreateRepository();
             var matchBefore = CloneValidMatch(DatabaseFixture.TestData.Matches.First(m =>
                 m.StartTime > DateTime.UtcNow &&
                 m.MatchInnings.Count > 2 &&
                 m.MatchInnings[0].OverSets.Count > 0 &&
                 m.MatchInnings[0].OverSets[0].Overs is not null));
 
-            var _ = await repository.UpdateMatchFormat(matchBefore, MemberKey, MemberName).ConfigureAwait(false);
+            var _ = await Repository.UpdateMatchFormat(matchBefore, MemberKey, MemberName).ConfigureAwait(false);
 
             AuditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
             Logger.Verify(x => x.Info(LoggingTemplates.Updated,

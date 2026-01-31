@@ -69,7 +69,7 @@ namespace Stoolball.Testing
             _playerFaker = playerFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(playerFakerFactory));
             _playerIdentityFaker = playerIdentityFakerFactory?.Create() ?? throw new ArgumentNullException(nameof(playerIdentityFakerFactory));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
-            _matchFactory = new MatchFactory(_randomiser, _playerOfTheMatchAward);
+            _matchFactory = new MatchFactory(_randomiser, _playerOfTheMatchAward, _oversetFakerFactory);
         }
 
         private Club CreateClubWithTeams()
@@ -925,7 +925,8 @@ namespace Stoolball.Testing
                 new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward),
                 new APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(_randomiser, _matchFactory, _bowlingFiguresCalculator),
                 new PlayersOnlyRecordedInOnePlace(_matchFactory, _teamFakerFactory, _playerIdentityFakerFactory, _playerOfTheMatchAward),
-                new MatchesInTheFuture(_matchFactory, _teamFakerFactory, _oversetFakerFactory)
+                new MatchesInTheFuture(_matchFactory, _teamFakerFactory, _oversetFakerFactory),
+                new EveryMatchResultType(_matchFactory)
             };
             foreach (var provider in matchProviders)
             {
@@ -1465,6 +1466,9 @@ namespace Stoolball.Testing
                 {
                     match.Comments = CreateComments(_randomiser.Between(1, 15), members);
                 }
+
+                match.MatchResultType = _randomiser.FiftyFiftyChance() ? new MatchResultType[] { MatchResultType.HomeWin, MatchResultType.AwayWin, MatchResultType.Tie }[_randomiser.PositiveIntegerLessThan(3)] : null;
+
                 matches.Add(match);
             }
 

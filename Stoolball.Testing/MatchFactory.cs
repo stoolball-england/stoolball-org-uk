@@ -5,6 +5,7 @@ using Stoolball.Awards;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Testing.Fakers;
 
 namespace Stoolball.Testing
 {
@@ -12,11 +13,13 @@ namespace Stoolball.Testing
     {
         private readonly Randomiser _randomiser;
         private readonly Award _playerOfTheMatchAward;
+        private readonly IFakerFactory<OverSet> _oversetFakerFactory;
 
-        internal MatchFactory(Randomiser randomiser, Award playerOfTheMatchAward)
+        internal MatchFactory(Randomiser randomiser, Award playerOfTheMatchAward, IFakerFactory<OverSet> oversetFakerFactory)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
+            _oversetFakerFactory = oversetFakerFactory ?? throw new ArgumentNullException(nameof(oversetFakerFactory));
         }
 
         internal Match CreateMatchInThePast(bool addTeams, TestData testData, string routeTag)
@@ -25,11 +28,12 @@ namespace Stoolball.Testing
             {
                 MatchId = Guid.NewGuid(),
                 MatchName = "To be confirmed vs To be confirmed",
+                UpdateMatchNameAutomatically = _randomiser.FiftyFiftyChance(),
                 MatchType = MatchType.KnockoutMatch,
                 MatchInnings = new List<MatchInnings>
                 {
-                    new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 1 },
-                    new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 2 }
+                    new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 1, OverSets = _oversetFakerFactory.Create().Generate(2).ToList() },
+                    new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 2, OverSets = _oversetFakerFactory.Create().Generate(2).ToList() }
                 },
                 MatchRoute = $"/matches/minimal-match-{Guid.NewGuid()}-generated-by-{routeTag}",
                 StartTime = new DateTimeOffset(2020, 6, 6, 18, 30, 0, TimeSpan.FromHours(1))
@@ -39,6 +43,7 @@ namespace Stoolball.Testing
             {
                 AddTeamToMatch(match, TeamRole.Home, testData);
                 AddTeamToMatch(match, TeamRole.Away, testData);
+                match.SetBattedFirst(match.Teams[_randomiser.PositiveIntegerLessThan(2)].MatchTeamId!.Value);
             }
 
             return match;

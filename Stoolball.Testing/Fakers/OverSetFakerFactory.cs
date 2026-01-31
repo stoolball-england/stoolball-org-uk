@@ -8,9 +8,11 @@ namespace Stoolball.Testing.Fakers
     {
         public Faker<OverSet> Create()
         {
+            var overSetNumber = 1;
+
             return new Faker<OverSet>()
                  .RuleFor(x => x.OverSetId, () => Guid.NewGuid())
-                 .RuleFor(x => x.OverSetNumber, faker => faker.UniqueIndex + 1)
+                 .RuleFor(x => x.OverSetNumber, faker => overSetNumber++)
                  .RuleFor(x => x.Overs, faker => faker.Random.Int(8, 15))
                  .RuleFor(x => x.BallsPerOver, faker => faker.Random.Int(6, 10));
         }

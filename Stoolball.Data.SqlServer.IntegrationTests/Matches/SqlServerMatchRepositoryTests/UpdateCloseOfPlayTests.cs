@@ -17,15 +17,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
     [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class UpdateCloseOfPlayTests : MatchRepositoryTestsBase, IDisposable
     {
-        public UpdateCloseOfPlayTests(SqlServerTestDataFixture databaseFixture) : base(databaseFixture) { }
+        private const string UPDATED_MATCH_NAME = "Updated match name";
+
+        public UpdateCloseOfPlayTests(SqlServerTestDataFixture databaseFixture) : base(databaseFixture)
+        {
+            MatchNameBuilder.Setup(x => x.BuildMatchName(It.IsAny<Stoolball.Matches.Match>())).Returns(UPDATED_MATCH_NAME);
+        }
 
         [Fact]
         public async Task UpdateCloseOfPlay_throws_MatchNotFoundException_for_match_id_that_does_not_exist()
         {
-            var repository = CreateRepository();
-
             await Assert.ThrowsAsync<MatchNotFoundException>(
-                async () => await repository.UpdateCloseOfPlay(new Stoolball.Matches.Match
+                async () => await Repository.UpdateCloseOfPlay(new Stoolball.Matches.Match
                 {
                     MatchId = Guid.NewGuid(),
                     Awards = new List<MatchAward>
@@ -44,10 +47,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task UpdateCloseOfPlay_throws_AwardNotFoundException_for_match_award_award_name_that_does_not_exist()
         {
-            var repository = CreateRepository();
-
             await Assert.ThrowsAsync<AwardNotFoundException>(
-                async () => await repository.UpdateCloseOfPlay(new Stoolball.Matches.Match
+                async () => await Repository.UpdateCloseOfPlay(new Stoolball.Matches.Match
                 {
                     MatchId = DatabaseFixture.TestData.Matches[0].MatchId,
                     Awards = new List<MatchAward>
@@ -68,16 +69,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [InlineData(false)]
         public async Task UpdateCloseOfPlay_updates_or_preserves_match_name_depending_on_saved_setting(bool updateMatchName)
         {
-            var repository = CreateRepository();
-
             var matchToUpdate = DatabaseFixture.TestData.Matches.First(x => x.UpdateMatchNameAutomatically == updateMatchName);
             var nameBefore = matchToUpdate.MatchName;
-            var nameAfter = "Updated match name";
-            MatchNameBuilder.Setup(x => x.BuildMatchName(It.Is<Stoolball.Matches.Match>(m => m.MatchId == matchToUpdate.MatchId))).Returns(nameAfter);
 
-            var result = await repository.UpdateCloseOfPlay(matchToUpdate, MemberKey, MemberName).ConfigureAwait(false);
+            var result = await Repository.UpdateCloseOfPlay(matchToUpdate, MemberKey, MemberName).ConfigureAwait(false);
 
-            Assert.Equal(updateMatchName ? nameAfter : nameBefore, result.MatchName);
+            Assert.Equal(updateMatchName ? UPDATED_MATCH_NAME : nameBefore, result.MatchName);
 
             using (var connection = DatabaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -88,21 +85,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
                         matchToUpdate.MatchId
                     }).ConfigureAwait(false);
 
-                Assert.Equal(updateMatchName ? nameAfter : nameBefore, savedMatchName);
+                Assert.Equal(updateMatchName ? UPDATED_MATCH_NAME : nameBefore, savedMatchName);
             }
         }
 
         [Fact]
         public async Task UpdateCloseOfPlay_saves_match_result()
         {
-            var repository = CreateRepository();
-
             var modifiedMatch = CloneValidMatch(DatabaseFixture.TestData.Matches.First(x => x.UpdateMatchNameAutomatically == false));
             var matchResultBefore = modifiedMatch.MatchResultType;
             var matchResultAfter = matchResultBefore == MatchResultType.HomeWin ? MatchResultType.AwayWin : MatchResultType.HomeWin;
             modifiedMatch.MatchResultType = matchResultAfter;
 
-            var result = await repository.UpdateCloseOfPlay(modifiedMatch, MemberKey, MemberName).ConfigureAwait(false);
+            var result = await Repository.UpdateCloseOfPlay(modifiedMatch, MemberKey, MemberName).ConfigureAwait(false);
 
             Assert.Equal(matchResultAfter, result.MatchResultType);
 
@@ -122,14 +117,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task UpdateCloseOfPlay_updates_existing_award()
         {
-            var repository = CreateRepository();
-
             // If you change the award or the player identity, that's probably a different award. Only changing the reason is definitely the same award.
             var modifiedMatch = CloneValidMatch(DatabaseFixture.TestData.Matches.First(x => x.Awards.Count > 0));
             var modifiedAward = modifiedMatch.Awards[0];
             modifiedAward.Reason += Guid.NewGuid().ToString();
 
-            var result = await repository.UpdateCloseOfPlay(modifiedMatch, MemberKey, MemberName).ConfigureAwait(false);
+            var result = await Repository.UpdateCloseOfPlay(modifiedMatch, MemberKey, MemberName).ConfigureAwait(false);
 
             Assert.Equal(modifiedMatch.Awards.Count, result.Awards.Count);
             Assert.Equal(modifiedAward.AwardedToId, result.Awards[0].AwardedToId);
@@ -161,13 +154,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task UpdateCloseOfPlay_adds_new_award()
         {
-            var repository = CreateRepository();
-
             var matchToUpdate = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             AddOneNewAward(matchToUpdate);
             var newAward = matchToUpdate.Awards.Last();
 
-            var result = await repository.UpdateCloseOfPlay(matchToUpdate, MemberKey, MemberName).ConfigureAwait(false);
+            var result = await Repository.UpdateCloseOfPlay(matchToUpdate, MemberKey, MemberName).ConfigureAwait(false);
 
             foreach (var award in matchToUpdate.Awards)
             {
@@ -208,14 +199,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task UpdateCloseOfPlay_deletes_removed_award()
         {
-            var repository = CreateRepository();
-
             var matchToUpdate = DatabaseFixture.TestData.Matches.First(m => m.Awards.Count > 1);
             var copyOfMatch = CloneValidMatch(matchToUpdate);
             var awardToRemove = copyOfMatch.Awards[0];
             copyOfMatch.Awards.Remove(awardToRemove);
 
-            var result = await repository.UpdateCloseOfPlay(copyOfMatch, MemberKey, MemberName).ConfigureAwait(false);
+            var result = await Repository.UpdateCloseOfPlay(copyOfMatch, MemberKey, MemberName).ConfigureAwait(false);
 
             Assert.Equal(copyOfMatch.Awards.Count, result.Awards.Count);
 
@@ -245,12 +234,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task UpdateCloseOfPlay_updates_player_statistics()
         {
-            var repository = CreateRepository(StatisticsRepository.Object);
-
             var matchToUpdate = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             AddOneNewAward(matchToUpdate);
 
-            _ = await repository.UpdateCloseOfPlay(matchToUpdate, MemberKey, MemberName).ConfigureAwait(false);
+            _ = await Repository.UpdateCloseOfPlay(matchToUpdate, MemberKey, MemberName).ConfigureAwait(false);
 
             StatisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbTransaction>()), Times.Once());
         }
@@ -259,7 +246,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         public async Task UpdateCloseOfPlay_deletes_obsolete_players()
         {
             // This should take place async to avoid timeouts updating the match. Consider what would happen if the player were used again before the async update.
-            var repository = CreateRepository();
+            var repository = CreateRepository(new SqlServerStatisticsRepository(PlayerRepository));
 
             // Find a player identity who we only record that player (with any identity) as having won an award once
             var awardWinners = DatabaseFixture.TestData.Matches.SelectMany(m => m.Awards.Select(aw => aw.PlayerIdentity).OfType<PlayerIdentity>()).ToList();

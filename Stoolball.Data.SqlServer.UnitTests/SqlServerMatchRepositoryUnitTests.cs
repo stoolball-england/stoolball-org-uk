@@ -80,20 +80,33 @@ namespace Stoolball.Data.SqlServer.UnitTests
 
         private static Matches.Match CreateValidMatch()
         {
+            var teamA = new TeamInMatch
+            {
+                Team = new Team
+                {
+                    TeamId = Guid.NewGuid(),
+                    TeamName = "Example team A"
+                },
+                TeamRole = TeamRole.Home
+            };
+            var teamB = new TeamInMatch
+            {
+                Team = new Team
+                {
+                    TeamId = Guid.NewGuid(),
+                    TeamName = "Example team B"
+                },
+                TeamRole = TeamRole.Away
+            };
             return new Matches.Match
             {
                 MatchId = Guid.NewGuid(),
+                MatchType = MatchType.LeagueMatch,
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings {
                         MatchInningsId = Guid.NewGuid(),
-                        BattingTeam = new TeamInMatch
-                        {
-                            Team = new Team { TeamId = Guid.NewGuid() }
-                        },
-                        BowlingTeam = new TeamInMatch
-                        {
-                            Team = new Team { TeamId = Guid.NewGuid() }
-                        },
+                        BattingTeam = teamA,
+                        BowlingTeam = teamB,
                         OverSets = new List<OverSet>
                         {
                             new OverSet()
@@ -107,9 +120,218 @@ namespace Stoolball.Data.SqlServer.UnitTests
                             new PlayerInnings{ Batter = new PlayerIdentity() }
                         }
                     }
-                }
+                },
+                Teams = new List<TeamInMatch> { teamA, teamB }
             };
         }
+
+        [Fact]
+        public async Task UpdateStartOfPlay_throws_ArgumentNullException_if_match_is_null()
+        {
+            var repository = CreateRepository();
+
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await repository.UpdateStartOfPlay(
+                    new Matches.Match(),
+                    Guid.NewGuid(),
+                    "Member name").ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task UpdateStartOfPlay_throws_ArgumentException_if_matchId_is_null()
+        {
+            var repository = CreateRepository();
+
+            var match = CreateValidMatch();
+            match.MatchId = null;
+
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await repository.UpdateStartOfPlay(
+                    match,
+                    Guid.NewGuid(),
+                    "Member name").ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task UpdateStartOfPlay_throws_ArgumentException_if_match_is_training_session()
+        {
+            var repository = CreateRepository();
+
+            var match = CreateValidMatch();
+            match.MatchType = MatchType.TrainingSession;
+
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await repository.UpdateStartOfPlay(
+                    match,
+                    Guid.NewGuid(),
+                    "Member name").ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+#nullable disable
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task UpdateStartOfPlay_throws_ArgumentException_if_memberName_is_null_or_empty(string? memberName)
+        {
+            var repository = CreateRepository();
+
+            var match = CreateValidMatch();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(
+             async () => await repository.UpdateStartOfPlay(
+                 match,
+                 Guid.NewGuid(),
+                 memberName).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+#nullable enable
+
+        [Fact]
+        public async Task UpdateStartOfPlay_throws_ArgumentException_for_team_with_no_team_id()
+        {
+            var repository = CreateRepository();
+
+            var match = CreateValidMatch();
+            match.Teams[0].Team!.TeamId = null;
+
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await repository.UpdateStartOfPlay(
+                    match,
+                     Guid.NewGuid(),
+                    "Member name"
+                ).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task UpdateStartOfPlay_throws_ArgumentException_for_team_with_no_team_name()
+        {
+            var repository = CreateRepository();
+
+            var match = CreateValidMatch();
+            match.Teams[0].Team!.TeamName = null;
+
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await repository.UpdateStartOfPlay(
+                    match,
+                     Guid.NewGuid(),
+                    "Member name"
+                ).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(3)]
+        public async Task UpdateStartOfPlay_throws_ArgumentException_for_match_without_two_teams(int howManyTeams)
+        {
+            var repository = CreateRepository();
+
+            var match = CreateValidMatch();
+            match.Teams.Clear();
+            foreach (var innings in match.MatchInnings)
+            {
+                innings.BattingTeam = null;
+                innings.BowlingTeam = null;
+            }
+
+            for (var i = 0; i < howManyTeams; i++)
+            {
+                match.Teams.Add(new TeamInMatch
+                {
+                    Team = new Team { TeamId = Guid.NewGuid() },
+                    TeamRole = i == 0 ? TeamRole.Home : TeamRole.Away
+                });
+            }
+
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await repository.UpdateStartOfPlay(
+                    match,
+                     Guid.NewGuid(),
+                    "Member name"
+                ).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Theory]
+        [InlineData(TeamRole.Home)]
+        [InlineData(TeamRole.Away)]
+        public async Task UpdateStartOfPlay_throws_ArgumentException_for_no_team_in_role(TeamRole onlyRole)
+        {
+            var repository = CreateRepository();
+
+            var match = CreateValidMatch();
+            foreach (var team in match.Teams)
+            {
+                team.TeamRole = onlyRole;
+            }
+
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await repository.UpdateStartOfPlay(
+                    match,
+                     Guid.NewGuid(),
+                    "Member name"
+                ).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Theory]
+        // These results are not valid at the start of play, only at the close of play
+        [InlineData(MatchResultType.HomeWin)]
+        [InlineData(MatchResultType.AwayWin)]
+        [InlineData(MatchResultType.Tie)]
+        public async Task UpdateStartOfPlay_throws_ArgumentException_for_invalid_match_result(MatchResultType matchResult)
+        {
+            var repository = CreateRepository();
+            var match = CreateValidMatch();
+            match.MatchResultType = matchResult;
+
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await repository.UpdateStartOfPlay(
+                    match,
+                    Guid.NewGuid(),
+                    "Member name"
+                ).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task UpdateStartOfPlay_throws_ArgumentException_if_InningsOrderIsKnown_but_BattedFirst_is_not_exactly_one_team(bool battedFirst)
+        {
+            var repository = CreateRepository();
+
+            var match = CreateValidMatch();
+            match.InningsOrderIsKnown = true;
+            foreach (var team in match.Teams)
+            {
+                team.BattedFirst = battedFirst;
+            }
+
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await repository.UpdateStartOfPlay(
+                    match,
+                     Guid.NewGuid(),
+                    "Member name"
+                ).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task UpdateStartOfPlay_audits_and_logs()
+        {
+            var repository = CreateRepository();
+            var memberKey = Guid.NewGuid();
+            var memberName = "Member name";
+            var match = CreateValidMatch();
+
+            _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _transaction.Object, null, null)).ReturnsAsync(match);
+
+            await repository.UpdateStartOfPlay(match, memberKey, memberName).ConfigureAwait(false);
+
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _transaction.Object), Times.Once);
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<Matches.Match>(), memberName, memberKey, typeof(SqlServerMatchRepository), nameof(SqlServerMatchRepository.UpdateStartOfPlay)), Times.Once);
+        }
+
 
 #nullable disable
         [Fact]

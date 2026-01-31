@@ -29,15 +29,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [InlineData(true, true, true, true)]
         public async Task UpdateBattingScorecard_inserts_new_player_innings(bool hasFielder, bool hasBowler, bool hasRuns, bool hasBallsFaced)
         {
-            var repository = CreateRepository();
-
             var match = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             var possibleBatters = DatabaseFixture.TestData.PlayerIdentities.Where(x => x.Team!.TeamId == match.MatchInnings[0].BattingTeam!.Team!.TeamId);
             var possibleFielders = DatabaseFixture.TestData.PlayerIdentities.Where(x => x.Team!.TeamId == match.MatchInnings[0].BowlingTeam!.Team!.TeamId);
 
             var playerInnings = AddOneNewPlayerInnings(match.MatchInnings[0].PlayerInnings, possibleBatters, possibleFielders, hasFielder, hasBowler, hasRuns, hasBallsFaced);
 
-            var returnedInnings = await repository.UpdateBattingScorecard(match, match.MatchInnings[0].MatchInningsId!.Value, MemberKey, MemberName).ConfigureAwait(false);
+            var returnedInnings = await Repository.UpdateBattingScorecard(match, match.MatchInnings[0].MatchInningsId!.Value, MemberKey, MemberName).ConfigureAwait(false);
 
             Assert.Equal(match.MatchInnings[0].PlayerInnings.Count, returnedInnings.PlayerInnings.Count);
             Assert.Equal(1, returnedInnings.PlayerInnings.Count(x =>
@@ -100,7 +98,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [InlineData(false, false, false, false, false, true)]
         public async Task UpdateBattingScorecard_updates_player_innings_previously_added(bool batterHasChanged, bool dismissalTypeHasChanged, bool fielderHasChanged, bool bowlerHasChanged, bool runsScoredHasChanged, bool ballsFacedHasChanged)
         {
-            var repository = CreateRepository();
             var modifiedMatch = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
             var modifiedPlayerInnings = modifiedInnings.PlayerInnings.Last();
@@ -132,7 +129,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             if (runsScoredHasChanged) { modifiedPlayerInnings.RunsScored = modifiedPlayerInnings.RunsScored.HasValue ? modifiedPlayerInnings.RunsScored + 1 : 60; }
             if (ballsFacedHasChanged) { modifiedPlayerInnings.BallsFaced = modifiedPlayerInnings.BallsFaced.HasValue ? modifiedPlayerInnings.BallsFaced + 1 : 70; }
 
-            var result = await repository.UpdateBattingScorecard(
+            var result = await Repository.UpdateBattingScorecard(
                     modifiedMatch,
                     modifiedInnings.MatchInningsId!.Value,
                     MemberKey,
@@ -163,7 +160,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task UpdateBattingScorecard_deletes_player_innings_removed_from_scorecard()
         {
-            var repository = CreateRepository();
+            var repository = CreateRepository(new SqlServerStatisticsRepository(PlayerRepository));
 
             var modifiedMatch = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
@@ -192,12 +189,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task UpdateBattingScorecard_unchanged_player_innings_are_retained()
         {
-            var repository = CreateRepository();
-
             var match = DatabaseFixture.TestData.MatchInThePastWithFullDetails!;
             var innings = match.MatchInnings.First(x => x.PlayerInnings.Count > 0);
 
-            var result = await repository.UpdateBattingScorecard(
+            var result = await Repository.UpdateBattingScorecard(
                     match,
                     innings.MatchInningsId!.Value,
                     MemberKey,
@@ -263,8 +258,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
         private async Task TestUpdateExtrasAndFinalScore(int? byes, int? wides, int? noBalls, int? bonus, int? runs, int? wickets, Stoolball.Matches.Match clonedMatch, MatchInnings innings)
         {
-            var repository = CreateRepository();
-
             innings.Byes = byes;
             innings.Wides = wides;
             innings.NoBalls = noBalls;
@@ -272,7 +265,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             innings.Runs = runs;
             innings.Wickets = wickets;
 
-            var returnedInnings = await repository.UpdateBattingScorecard(clonedMatch, innings.MatchInningsId!.Value, MemberKey, MemberName).ConfigureAwait(false);
+            var returnedInnings = await Repository.UpdateBattingScorecard(clonedMatch, innings.MatchInningsId!.Value, MemberKey, MemberName).ConfigureAwait(false);
 
             Assert.NotNull(returnedInnings);
             Assert.Equal(innings.MatchInningsId, returnedInnings.MatchInningsId);
@@ -310,7 +303,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [InlineData(1)]
         public async Task UpdateBattingScorecard_updates_players_per_team_for_match(int numberOfInningsComparedToPlayersPerTeam)
         {
-            var repository = CreateRepository();
+            var repository = CreateRepository(new SqlServerStatisticsRepository(PlayerRepository));
 
             var match = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             var possibleBatters = DatabaseFixture.TestData.PlayerIdentities.Where(x => x.Team!.TeamId == match.MatchInnings[0].BattingTeam!.Team!.TeamId);
@@ -367,7 +360,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             bool byesHasChanged, bool widesHasChanged, bool noBallsHasChanged, bool bonusHasChanged, bool teamRunsHasChanged, bool teamWicketsHasChanged
             )
         {
-            var repository = CreateRepository(StatisticsRepository.Object);
             var modifiedMatch = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedMatchInnings = modifiedMatch.MatchInnings[0];
             var modifiedPlayerInnings = modifiedMatchInnings.PlayerInnings.Last();
@@ -409,7 +401,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
                 if (teamWicketsHasChanged) { modifiedMatchInnings.Wickets = modifiedMatchInnings.Wickets.HasValue ? modifiedMatchInnings.Wickets + 1 : 9; }
             }
 
-            _ = await repository.UpdateBattingScorecard(modifiedMatch, modifiedMatchInnings.MatchInningsId!.Value, MemberKey, MemberName).ConfigureAwait(false);
+            _ = await Repository.UpdateBattingScorecard(modifiedMatch, modifiedMatchInnings.MatchInningsId!.Value, MemberKey, MemberName).ConfigureAwait(false);
 
             StatisticsRepository.Verify(x => x.UpdateBowlingFigures(It.Is<MatchInnings>(mi => mi.MatchInningsId == modifiedMatchInnings.MatchInningsId), MemberKey, MemberName, It.IsAny<IDbTransaction>()), bowlerHasChanged ? Times.Once() : Times.Never());
             StatisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbTransaction>()), anythingHasChanged ? Times.Once() : Times.Never());
@@ -419,7 +411,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         public async Task UpdateBattingScorecard_deletes_obsolete_player_removed_as_a_batter()
         {
             // This should take place async to avoid timeouts updating the match. Consider what would happen if the player were used again before the async update.
-            var repository = CreateRepository();
+            var repository = CreateRepository(new SqlServerStatisticsRepository(PlayerRepository));
 
             // Find a player identity who we only record as having batted once
             var matchInnings = DatabaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings);
@@ -468,7 +460,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         public async Task UpdateBattingScorecard_deletes_obsolete_player_removed_as_a_fielder()
         {
             // This should take place async to avoid timeouts updating the match. Consider what would happen if the player were used again before the async update.
-            var repository = CreateRepository();
+            var repository = CreateRepository(new SqlServerStatisticsRepository(PlayerRepository));
 
             // Find a player identity who we only record as having fielded once
             var matchInnings = DatabaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings);
@@ -517,7 +509,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         public async Task UpdateBattingScorecard_deletes_obsolete_player_removed_as_a_bowler()
         {
             // This should take place async to avoid timeouts updating the match. Consider what would happen if the player were used again before the async update.
-            var repository = CreateRepository();
+            var repository = CreateRepository(new SqlServerStatisticsRepository(PlayerRepository));
 
             // Find a player identity who we only record as having taken a wicket once
             var matchInnings = DatabaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings);

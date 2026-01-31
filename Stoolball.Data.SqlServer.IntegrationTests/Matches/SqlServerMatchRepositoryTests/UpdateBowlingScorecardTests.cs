@@ -20,8 +20,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task UpdateBowlingScorecard_inserts_new_overs_and_extends_the_final_overset()
         {
-            var repository = CreateRepository();
-
             var modifiedMatch = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
 
@@ -38,7 +36,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             }
             while (totalOvers <= totalOversInOversets);
 
-            var result = await repository.UpdateBowlingScorecard(
+            var result = await Repository.UpdateBowlingScorecard(
                     modifiedMatch,
                     modifiedInnings.MatchInningsId!.Value,
                     MemberKey,
@@ -76,8 +74,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [InlineData(false, false, false, false, false)]
         public async Task UpdateBowlingScorecard_updates_overs_previously_added(bool bowlerHasChanged, bool ballsBowledHasChanged, bool widesHasChanged, bool noBallsHasChanged, bool runsConcededHasChanged)
         {
-            var repository = CreateRepository();
-
             var modifiedMatch = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
             var modifiedOver = modifiedInnings.OversBowled.Last();
@@ -90,7 +86,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             if (noBallsHasChanged) { modifiedOver.NoBalls = modifiedOver.NoBalls.HasValue ? modifiedOver.NoBalls + 1 : 5; }
             if (runsConcededHasChanged) { modifiedOver.RunsConceded = modifiedOver.RunsConceded.HasValue ? modifiedOver.RunsConceded + 1 : 12; }
 
-            var result = await repository.UpdateBowlingScorecard(
+            var result = await Repository.UpdateBowlingScorecard(
                     modifiedMatch,
                     modifiedInnings.MatchInningsId!.Value,
                     MemberKey,
@@ -117,15 +113,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task UpdateBowlingScorecard_deletes_overs_removed_from_scorecard()
         {
-            var repository = CreateRepository();
-
             var modifiedMatch = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
 
             var overToRemove = modifiedInnings.OversBowled.Last();
             modifiedInnings.OversBowled.Remove(overToRemove);
 
-            var result = await repository.UpdateBowlingScorecard(
+            var result = await Repository.UpdateBowlingScorecard(
                     modifiedMatch,
                     modifiedInnings.MatchInningsId!.Value,
                     MemberKey,
@@ -146,12 +140,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [Fact]
         public async Task UpdateBowlingScorecard_retains_unchanged_overs()
         {
-            var repository = CreateRepository();
-
             var match = DatabaseFixture.TestData.MatchInThePastWithFullDetails!;
             var innings = match.MatchInnings.First(x => x.OversBowled.Count > 0);
 
-            var result = await repository.UpdateBowlingScorecard(
+            var result = await Repository.UpdateBowlingScorecard(
                     match,
                     innings.MatchInningsId!.Value,
                     MemberKey,
@@ -194,8 +186,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         [InlineData(false)]
         public async Task UpdateBowlingScorecard_updates_bowling_figures_and_player_statistics_if_bowling_has_changed(bool bowlingHasChanged)
         {
-            var repository = CreateRepository(StatisticsRepository.Object);
-
             var modifiedMatch = CloneValidMatch(DatabaseFixture.TestData.MatchInThePastWithFullDetails!);
             var modifiedInnings = modifiedMatch.MatchInnings[0];
 
@@ -204,7 +194,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
                 AddOneNewBowlingOver(modifiedInnings);
             }
 
-            _ = await repository.UpdateBowlingScorecard(
+            _ = await Repository.UpdateBowlingScorecard(
                     modifiedMatch,
                     modifiedInnings.MatchInningsId!.Value,
                     MemberKey,
@@ -218,7 +208,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         public async Task UpdateBowlingScorecard_deletes_obsolete_players()
         {
             // This should take place async to avoid timeouts updating the match. Consider what would happen if the player were used again before the async update.
-            var repository = CreateRepository();
+            var repository = CreateRepository(new SqlServerStatisticsRepository(PlayerRepository));
 
             // Find a player identity who we only record as having bowled one over
             var matchInnings = DatabaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings);

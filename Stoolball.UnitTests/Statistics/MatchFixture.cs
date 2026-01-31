@@ -33,7 +33,8 @@ namespace Stoolball.UnitTests.Statistics
             var matchLocationFakerFactory = new MatchLocationFakerFactory();
             var matchLocationFaker = matchLocationFakerFactory.Create();
             var seedDataGenerator = new SeedDataGenerator(randomiser, _oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                competitionFakerFactory, teamFakerFactory, new ClubFakerFactory(), matchLocationFakerFactory, new SchoolFakerFactory(), new PlayerFakerFactory(), new PlayerIdentityFakerFactory(), playerOfTheMatchAward);
+                competitionFakerFactory, teamFakerFactory, new ClubFakerFactory(), matchLocationFakerFactory, new SchoolFakerFactory(),
+                new PlayerFakerFactory(), new PlayerIdentityFakerFactory(), new OverSetFakerFactory(), playerOfTheMatchAward);
 
             var homeTeam = teamFaker.Generate();
             var homeTeamInMatch = new TeamInMatch

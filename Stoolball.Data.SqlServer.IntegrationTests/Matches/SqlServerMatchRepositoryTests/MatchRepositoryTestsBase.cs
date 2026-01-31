@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Transactions;
 using Dapper;
@@ -9,6 +11,7 @@ using Stoolball.Data.Abstractions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Matches;
+using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Statistics;
@@ -22,6 +25,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
     {
         protected SqlServerTestDataFixture DatabaseFixture { get; init; }
         protected TransactionScope Scope { get; init; }
+        protected SqlServerMatchRepository Repository => CreateRepository(StatisticsRepository.Object);
         protected Mock<IAuditRepository> AuditRepository { get; init; } = new();
         protected Mock<ILogger<SqlServerMatchRepository>> Logger { get; init; } = new();
         protected Mock<IRouteGenerator> RouteGenerator { get; init; } = new();
@@ -64,7 +68,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
                 );
 
         }
-        protected SqlServerMatchRepository CreateRepository(IStatisticsRepository? statisticsRepository = null)
+        protected SqlServerMatchRepository CreateRepository(IStatisticsRepository statisticsRepository)
         {
             var oversHelper = new OversHelper();
 
@@ -82,7 +86,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
                             new BattingScorecardComparer(),
                             PlayerRepository,
                             DataRedactor.Object,
-                            statisticsRepository ?? new SqlServerStatisticsRepository(PlayerRepository),
+                            statisticsRepository,
                             oversHelper,
                             new PlayerInMatchStatisticsBuilder(new PlayerIdentityFinder(), oversHelper),
                             MatchInningsFactory.Object,
@@ -96,11 +100,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             {
                 MatchId = matchToCopy.MatchId,
                 MatchName = matchToCopy.MatchName,
+                MatchLocation = matchToCopy.MatchLocation is not null ? new MatchLocation
+                {
+                    MatchLocationId = matchToCopy.MatchLocation!.MatchLocationId
+                } : null,
                 StartTime = matchToCopy.StartTime,
                 PlayersPerTeam = matchToCopy.PlayersPerTeam,
                 MatchType = matchToCopy.MatchType,
                 MatchResultType = matchToCopy.MatchResultType,
                 MatchRoute = matchToCopy.MatchRoute,
+                UpdateMatchNameAutomatically = matchToCopy.UpdateMatchNameAutomatically,
             };
 
             foreach (var teamInMatch in matchToCopy.Teams)
@@ -221,6 +230,49 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             return match;
         }
 
+        protected async Task TestThatRouteGetsNumericSuffixIfRouteHasChangedAndNewRouteInUse(Func<Stoolball.Matches.Match, Task<Stoolball.Matches.Match>> methodToTest, Func<Stoolball.Matches.Match, bool> additionalMatchFilter)
+        {
+            var routeInUse = DatabaseFixture.TestData.Matches.First(m => m.MatchRoute is not null && Regex.IsMatch(m.MatchRoute, "[a-z]$")).MatchRoute!;
+            var expectedRoute = $"/matches/expected-route-{Guid.NewGuid()}-1";
+            var match = CloneValidMatch(DatabaseFixture.TestData.Matches.First(
+                            m => m.MatchRoute is not null
+                            && Regex.IsMatch(m.MatchRoute, "[a-z]$")
+                            && m.MatchRoute != routeInUse
+                            && m.Teams.Any(t => t.TeamRole == TeamRole.Home)
+                            && m.Teams.Any(t => t.TeamRole == TeamRole.Away)
+                            && m.UpdateMatchNameAutomatically == false
+                            && additionalMatchFilter(m)));
+
+            RouteGenerator.Setup(x => x.GenerateRoute("/matches", $"{match.MatchName} {match.StartTime.ToString("dMMMyyyy", CultureInfo.CurrentCulture)}", NoiseWords.MatchRoute)).Returns(routeInUse);
+            RouteGenerator.Setup(x => x.IsMatchingRoute(match.MatchRoute!, routeInUse)).Returns(false);
+            RouteGenerator.Setup(x => x.IncrementRoute(routeInUse)).Returns(expectedRoute);
+
+            var updated = await methodToTest(match);
+
+            Assert.Equal(expectedRoute, updated.MatchRoute);
+
+            await AssertMatchRouteSaved(updated.MatchId, updated.MatchRoute).ConfigureAwait(false);
+        }
+
+        protected async Task TestThatRouteWhenUnchangedIsNotIncremented(Func<Stoolball.Matches.Match, Task<Stoolball.Matches.Match>> methodToTest, Func<Stoolball.Matches.Match, bool> additionalMatchFilter)
+        {
+            var match = CloneValidMatch(DatabaseFixture.TestData.Matches.First(m => m.MatchRoute is not null &&
+                                                                                    m.Teams.Any(t => t.TeamRole == TeamRole.Home) &&
+                                                                                    m.Teams.Any(t => t.TeamRole == TeamRole.Away) &&
+                                                                                    m.UpdateMatchNameAutomatically == false &&
+                                                                                    additionalMatchFilter(m)));
+
+            RouteGenerator.Setup(x => x.GenerateRoute("/matches", $"{match.MatchName} {match.StartTime.ToString("dMMMyyyy", CultureInfo.CurrentCulture)}", NoiseWords.MatchRoute)).Returns(match.MatchRoute!);
+            RouteGenerator.Setup(x => x.IsMatchingRoute(match.MatchRoute!, match.MatchRoute!)).Returns(true);
+            RouteGenerator.Verify(x => x.IncrementRoute(It.IsAny<string>()), Times.Never);
+
+            var updated = await methodToTest(match);
+
+            Assert.Equal(match.MatchRoute, updated.MatchRoute);
+
+            await AssertMatchRouteSaved(updated.MatchId, updated.MatchRoute).ConfigureAwait(false);
+        }
+
         protected async Task AssertMatchRouteSaved(Guid? matchId, string? expectedRoute)
         {
             Assert.NotNull(matchId);
@@ -236,5 +288,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         }
 
         public void Dispose() => Scope.Dispose();
+
     }
 }

@@ -127,6 +127,29 @@ namespace Stoolball.Matches
         }
 
         /// <summary>
+        /// Sets the team that batted first, and updates the batting and bowling teams for each innings.
+        /// </summary>
+        /// <param name="matchTeamIdOfTeamBattingFirst"></param>
+        /// <exception cref="InvalidOperationException">Thrown if <c>matchTeamIdOfTeamBattingFirst</c> is not found, or there is no team in the opposite team role.</exception>
+        public void SetBattedFirst(Guid matchTeamIdOfTeamBattingFirst)
+        {
+            var matchTeamBattingFirst = Teams.FirstOrDefault(x => x.MatchTeamId == matchTeamIdOfTeamBattingFirst);
+            if (matchTeamBattingFirst is null) { throw new InvalidOperationException($"{nameof(matchTeamIdOfTeamBattingFirst)} not found."); }
+
+            var matchTeamBattingSecond = Teams.SingleOrDefault(x => x.TeamRole != matchTeamBattingFirst.TeamRole);
+            if (matchTeamBattingSecond is null) { throw new InvalidOperationException($"No team found in the opposite role to {matchTeamBattingFirst.TeamRole}."); }
+
+            matchTeamBattingFirst.BattedFirst = true;
+            foreach (var innings in MatchInnings)
+            {
+                innings.BattingTeam = innings.InningsOrderInMatch % 2 == 1 ? matchTeamBattingFirst : matchTeamBattingSecond;
+                innings.BattingMatchTeamId = innings.InningsOrderInMatch % 2 == 1 ? matchTeamBattingFirst.MatchTeamId : matchTeamBattingSecond.MatchTeamId;
+                innings.BowlingTeam = innings.InningsOrderInMatch % 2 == 0 ? matchTeamBattingFirst : matchTeamBattingSecond;
+                innings.BowlingMatchTeamId = innings.InningsOrderInMatch % 2 == 0 ? matchTeamBattingFirst.MatchTeamId : matchTeamBattingSecond.MatchTeamId;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the unique identifier of the member who owns the match
         /// </summary>
         public Guid? MemberKey { get; set; }

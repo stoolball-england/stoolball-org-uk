@@ -619,9 +619,55 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentException($"{nameof(match)} must have a MatchId");
             }
 
+            if (match.MatchType == MatchType.TrainingSession)
+            {
+                throw new ArgumentException($"{nameof(match)} cannot be a {nameof(MatchType.TrainingSession)}");
+            }
+
             if (string.IsNullOrWhiteSpace(memberName))
             {
                 throw new ArgumentNullException(nameof(memberName));
+            }
+
+            var battedFirstCount = 0;
+
+            if (match.Teams is null || match.Teams.Count != 2)
+            {
+                throw new ArgumentException($"{nameof(Match.Teams)} must have exactly two teams", nameof(match));
+            }
+
+            if (!match.Teams.Any(t => t.TeamRole == TeamRole.Home))
+            {
+                throw new ArgumentException($"{nameof(Match.Teams)} must have a team with the {TeamRole.Home} role", nameof(match));
+            }
+
+            if (!match.Teams.Any(t => t.TeamRole == TeamRole.Away))
+            {
+                throw new ArgumentException($"{nameof(Match.Teams)} must have a team with the {TeamRole.Away} role", nameof(match));
+            }
+
+            foreach (var team in match.Teams)
+            {
+                if (team.Team?.TeamId is null)
+                {
+                    throw new ArgumentException($"{nameof(Match.Teams)} must have a {nameof(Team.TeamId)} for each team", nameof(match));
+                }
+                if (string.IsNullOrWhiteSpace(team.Team?.TeamName))
+                {
+                    throw new ArgumentException($"{nameof(Match.Teams)} must have a {nameof(Team.TeamName)} for each team", nameof(match));
+                }
+                if (team.BattedFirst == true) { battedFirstCount++; }
+            }
+
+            if (match.InningsOrderIsKnown && battedFirstCount != 1)
+            {
+                throw new ArgumentException("Exactly one team must be marked as having batted first if the innings order is known", nameof(match));
+            }
+
+            List<MatchResultType> matchCompletedResults = [MatchResultType.HomeWin, MatchResultType.AwayWin, MatchResultType.Tie];
+            if (match.MatchResultType is not null && matchCompletedResults.Contains(match.MatchResultType.Value))
+            {
+                throw new ArgumentException(string.Format("Cannot set a match result type of {0} at the start of play", match.MatchResultType.ToString()), nameof(match));
             }
 
             var auditableMatch = _copier.CreateAuditableCopy(match);
@@ -631,12 +677,14 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var beforeUpdate = await connection.QuerySingleAsync<Match>(
+                    var beforeUpdate = await _dapperWrapper.QuerySingleOrDefaultAsync<Match>(
                         $@"SELECT MatchResultType, UpdateMatchNameAutomatically, MatchName, MatchRoute, StartTime
                             FROM {Tables.Match} 
                             WHERE MatchId = @MatchId",
                         new { auditableMatch.MatchId },
                         transaction).ConfigureAwait(false);
+
+                    if (beforeUpdate is null) { throw new MatchNotFoundException(auditableMatch.MatchId!.Value); }
 
                     auditableMatch.StartTime = beforeUpdate.StartTime;
                     auditableMatch.MatchName = beforeUpdate.MatchName;
@@ -645,7 +693,7 @@ namespace Stoolball.Data.SqlServer
                     await UpdateMatchRoute(auditableMatch, beforeUpdate.MatchRoute, transaction).ConfigureAwait(false);
 
                     if (!auditableMatch.MatchResultType.HasValue && beforeUpdate.MatchResultType.HasValue &&
-                        new List<MatchResultType> { MatchResultType.HomeWin, MatchResultType.AwayWin, MatchResultType.Tie }.Contains(beforeUpdate.MatchResultType.Value))
+                        matchCompletedResults.Contains(beforeUpdate.MatchResultType.Value))
                     {
                         // don't update result type because we've only submitted "match went ahead" and the result is already recorded, 
                         // therefore also don't update match name
@@ -674,7 +722,7 @@ namespace Stoolball.Data.SqlServer
                             auditableMatch.MatchName = beforeUpdate.MatchName;
                         }
 
-                        await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET
+                        await _dapperWrapper.ExecuteAsync($@"UPDATE {Tables.Match} SET
                                 MatchName = @MatchName,                                
                                 MatchLocationId = @MatchLocationId, 
                                 InningsOrderIsKnown = @InningsOrderIsKnown, 
@@ -696,7 +744,7 @@ namespace Stoolball.Data.SqlServer
                     {
                         if (team.MatchTeamId.HasValue)
                         {
-                            await connection.ExecuteAsync($"UPDATE {Tables.MatchTeam} SET WonToss = @WonToss WHERE MatchTeamId = @MatchTeamId",
+                            await _dapperWrapper.ExecuteAsync($"UPDATE {Tables.MatchTeam} SET WonToss = @WonToss WHERE MatchTeamId = @MatchTeamId",
                             new
                             {
                                 team.WonToss,
@@ -707,14 +755,14 @@ namespace Stoolball.Data.SqlServer
                         else
                         {
                             team.MatchTeamId = Guid.NewGuid();
-                            await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
+                            await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
                                     (MatchTeamId, MatchId, TeamId, TeamRole, WonToss)
                                      VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole, @WonToss)",
                                  new
                                  {
                                      team.MatchTeamId,
                                      auditableMatch.MatchId,
-                                     team.Team.TeamId,
+                                     team.Team?.TeamId,
                                      team.TeamRole,
                                      team.WonToss
                                  },
@@ -728,13 +776,13 @@ namespace Stoolball.Data.SqlServer
                             var evenInnings = auditableMatch.MatchInnings.Where(x => x.InningsOrderInMatch % 2 == 0);
                             if (team.TeamRole == TeamRole.Home)
                             {
-                                await InsertMatchTeamIdIntoMatchInnings(transaction, team.MatchTeamId.Value, oddInnings.Select(x => x.MatchInningsId), evenInnings.Select(x => x.MatchInningsId)).ConfigureAwait(false);
+                                await InsertMatchTeamIdIntoMatchInnings(_dapperWrapper, transaction, team.MatchTeamId.Value, oddInnings.Select(x => x.MatchInningsId), evenInnings.Select(x => x.MatchInningsId)).ConfigureAwait(false);
                                 foreach (var innings in oddInnings) { innings.BattingMatchTeamId = team.MatchTeamId; }
                                 foreach (var innings in evenInnings) { innings.BowlingMatchTeamId = team.MatchTeamId; }
                             }
                             else if (team.TeamRole == TeamRole.Away)
                             {
-                                await InsertMatchTeamIdIntoMatchInnings(transaction, team.MatchTeamId.Value, evenInnings.Select(x => x.MatchInningsId), oddInnings.Select(x => x.MatchInningsId)).ConfigureAwait(false);
+                                await InsertMatchTeamIdIntoMatchInnings(_dapperWrapper, transaction, team.MatchTeamId.Value, evenInnings.Select(x => x.MatchInningsId), oddInnings.Select(x => x.MatchInningsId)).ConfigureAwait(false);
                                 foreach (var innings in evenInnings) { innings.BattingMatchTeamId = team.MatchTeamId; }
                                 foreach (var innings in oddInnings) { innings.BowlingMatchTeamId = team.MatchTeamId; }
                             }
@@ -760,7 +808,7 @@ namespace Stoolball.Data.SqlServer
 
                         foreach (var innings in auditableMatch.MatchInnings)
                         {
-                            await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET
+                            await _dapperWrapper.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET
                                 InningsOrderInMatch = @InningsOrderInMatch
                                 WHERE MatchInningsId = @MatchInningsId",
                                 new
@@ -774,7 +822,7 @@ namespace Stoolball.Data.SqlServer
 
                     if (beforeUpdate.MatchRoute != auditableMatch.MatchRoute)
                     {
-                        await _redirectsRepository.InsertRedirect(beforeUpdate.MatchRoute, auditableMatch.MatchRoute, null, transaction).ConfigureAwait(false);
+                        await _redirectsRepository.InsertRedirect(beforeUpdate.MatchRoute!, auditableMatch.MatchRoute!, null, transaction).ConfigureAwait(false);
                     }
 
                     var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
@@ -1478,9 +1526,9 @@ namespace Stoolball.Data.SqlServer
             return auditableMatch;
         }
 
-        private static async Task InsertMatchTeamIdIntoMatchInnings(IDbTransaction transaction, Guid matchTeamId, IEnumerable<Guid?> battingInnings, IEnumerable<Guid?> bowlingInnings)
+        private static async Task InsertMatchTeamIdIntoMatchInnings(IDapperWrapper dapperWrapper, IDbTransaction transaction, Guid matchTeamId, IEnumerable<Guid?> battingInnings, IEnumerable<Guid?> bowlingInnings)
         {
-            await transaction.Connection.ExecuteAsync(
+            await dapperWrapper.ExecuteAsync(
                 $"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = @MatchTeamId WHERE MatchInningsId IN @MatchInningsIds",
                 new
                 {
@@ -1489,7 +1537,7 @@ namespace Stoolball.Data.SqlServer
                 },
                 transaction).ConfigureAwait(false);
 
-            await transaction.Connection.ExecuteAsync(
+            await dapperWrapper.ExecuteAsync(
                 $"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = @MatchTeamId WHERE MatchInningsId IN @MatchInningsIds",
                 new
                 {
@@ -1513,7 +1561,7 @@ namespace Stoolball.Data.SqlServer
             else if (!string.IsNullOrEmpty(match.MatchName))
             {
                 // Unreachable via CreateMatch or UpdateMatch because it'll always enter the first if block
-                // TODO: UpdateStartOfPlay yet to be determined
+                // Unreachable via UpdateStartOfPlay because it'll always have teams with names
                 baseRoute = match.MatchName;
             }
             else
@@ -1530,7 +1578,7 @@ namespace Stoolball.Data.SqlServer
                 int count;
                 do
                 {
-                    count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Match} WHERE MatchRoute = @MatchRoute", new { match.MatchRoute }, transaction).ConfigureAwait(false);
+                    count = await _dapperWrapper.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Match} WHERE MatchRoute = @MatchRoute", new { match.MatchRoute }, transaction).ConfigureAwait(false);
                     if (count > 0)
                     {
                         match.MatchRoute = _routeGenerator.IncrementRoute(match.MatchRoute);
