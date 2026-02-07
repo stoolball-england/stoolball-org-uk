@@ -1,0 +1,11 @@
+﻿global using System.Data;
+global using Dapper;
+global using Moq;
+global using Stoolball.Competitions;
+global using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
+global using Stoolball.Logging;
+global using Stoolball.Matches;
+global using Xunit;
+global using static Stoolball.Constants;
+global using Match = Stoolball.Matches.Match;
+global using MatchType = Stoolball.Matches.MatchType;

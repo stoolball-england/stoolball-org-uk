@@ -16,5 +16,19 @@ namespace Stoolball.Competitions
         [Required]
         [Display(Name = "Points for away team")]
         public int AwayPoints { get; set; }
+
+        /// <summary>
+        /// Creates a copy of this <c>PointsRule</c>.
+        /// </summary>
+        public PointsRule Clone()
+        {
+            return new PointsRule
+            {
+                PointsRuleId = PointsRuleId,
+                MatchResultType = MatchResultType,
+                HomePoints = HomePoints,
+                AwayPoints = AwayPoints
+            };
+        }
     }
 }

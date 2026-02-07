@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Moq;
-using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
-using Stoolball.Matches;
+﻿using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Testing;
-using Xunit;
-using Match = Stoolball.Matches.Match;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 {

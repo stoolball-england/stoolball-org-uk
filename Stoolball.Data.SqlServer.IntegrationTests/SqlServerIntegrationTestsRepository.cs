@@ -1,18 +1,11 @@
-﻿using System;
-using System.Data;
-using System.Globalization;
-using System.Linq;
-using Dapper;
+﻿using System.Globalization;
 using Stoolball.Awards;
 using Stoolball.Clubs;
-using Stoolball.Competitions;
-using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests
 {

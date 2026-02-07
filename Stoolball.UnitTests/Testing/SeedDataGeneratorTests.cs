@@ -19,7 +19,7 @@ namespace Stoolball.UnitTests.Testing
         private SeedDataGenerator CreateGenerator()
         {
             return new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
-                            Mock.Of<CompetitionFakerFactory>(), Mock.Of<TeamFakerFactory>(), Mock.Of<ClubFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(),
+                            Mock.Of<CompetitionFakerFactory>(), Mock.Of<SeasonFakerFactory>(), Mock.Of<TeamFakerFactory>(), Mock.Of<ClubFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(),
                             Mock.Of<SchoolFakerFactory>(), new PlayerFakerFactory(), Mock.Of<PlayerIdentityFakerFactory>(),
                             Mock.Of<OverSetFakerFactory>(), _playerOfTheMatchAward);
         }

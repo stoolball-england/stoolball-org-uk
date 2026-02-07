@@ -1,5 +1,4 @@
-﻿using System;
-using Bogus;
+﻿using Bogus;
 using Stoolball.Awards;
 using Stoolball.Matches;
 using Stoolball.Statistics;
@@ -14,6 +13,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
         internal Randomiser Randomiser { get; set; } = new Randomiser(new Random());
 
+        internal OverSetFakerFactory OverSetFakerFactory { get; set; } = new();
+
         public SqlServerTestDataFixture() : base("StoolballIntegrationTests")
         {
             // Populate seed data so that there's a consistent baseline for each test run
@@ -23,17 +24,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var matchFinder = new MatchFinder();
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
             var competitionFakerFactory = new CompetitionFakerFactory();
+            var seasonFakerFactory = new SeasonFakerFactory();
             var teamFakerFactory = new TeamFakerFactory();
             var clubFakerFactory = new ClubFakerFactory();
             var matchLocationFakerFactory = new MatchLocationFakerFactory();
             var schoolFakerFactory = new SchoolFakerFactory();
             var playerIdentityFakerFactory = new PlayerIdentityFakerFactory();
             var playerFakerFactory = new PlayerFakerFactory();
-            var oversetFakerFactory = new OverSetFakerFactory();
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
             var randomSeedDataGenerator = new SeedDataGenerator(Randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                competitionFakerFactory, teamFakerFactory, clubFakerFactory, matchLocationFakerFactory, schoolFakerFactory, playerFakerFactory,
-                playerIdentityFakerFactory, oversetFakerFactory, playerOfTheMatchAward);
+                competitionFakerFactory, seasonFakerFactory, teamFakerFactory, clubFakerFactory, matchLocationFakerFactory, schoolFakerFactory,
+                playerFakerFactory, playerIdentityFakerFactory, OverSetFakerFactory, playerOfTheMatchAward);
 
             Randomizer.Seed = new Random(85437684);
             TestData = randomSeedDataGenerator.GenerateTestData();

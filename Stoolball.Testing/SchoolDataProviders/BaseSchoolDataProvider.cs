@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Stoolball.Schools;
 
-namespace Stoolball.Testing.PlayerDataProviders
+namespace Stoolball.Testing.SchoolDataProviders
 {
     internal abstract class BaseSchoolDataProvider
     {

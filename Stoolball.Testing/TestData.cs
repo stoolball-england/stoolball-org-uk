@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
-using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Schools;
 using Stoolball.Statistics;
@@ -37,6 +36,7 @@ namespace Stoolball.Testing
         internal List<Competition> Competitions { get; set; } = new();
         internal List<Player> PlayersWithMultipleIdentities { get; set; } = new();
         internal MatchLocation? MatchLocationWithFullDetails { get; set; }
+        internal Competition? CompetitionWithNoSeasons { get; set; }
         internal Competition? CompetitionWithFullDetails { get; set; }
         internal List<Season> Seasons { get; set; } = new();
         internal Season? SeasonWithMinimalDetails { get; set; }

@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bogus;
+﻿using System.Linq;
 using Humanizer;
 using Stoolball.Awards;
 using Stoolball.Clubs;
 using Stoolball.Comments;
-using Stoolball.Competitions;
 using Stoolball.Logging;
-using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Schools;
 using Stoolball.Statistics;
-using Stoolball.Teams;
+using Stoolball.Testing.CompetitionDataProviders;
 using Stoolball.Testing.Fakers;
 using Stoolball.Testing.MatchDataProviders;
 using Stoolball.Testing.PlayerDataProviders;
@@ -26,6 +21,8 @@ namespace Stoolball.Testing
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly IPlayerIdentityFinder _playerIdentityFinder;
         private readonly IMatchFinder _matchFinder;
+        private readonly IFakerFactory<Competition> _competitionFakerFactory;
+        private readonly IFakerFactory<Season> _seasonFakerFactory;
         private readonly IFakerFactory<Team> _teamFakerFactory;
         private readonly IFakerFactory<MatchLocation> _matchLocationFakerFactory;
         private readonly IFakerFactory<School> _schoolFakerFactory;
@@ -45,7 +42,7 @@ namespace Stoolball.Testing
 
         internal SeedDataGenerator(Randomiser randomiser, IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator,
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
-            IFakerFactory<Competition> competitionFakerFactory, IFakerFactory<Team> teamFakerFactory, IFakerFactory<Club> clubFakerFactory,
+            IFakerFactory<Competition> competitionFakerFactory, IFakerFactory<Season> seasonFakerFactory, IFakerFactory<Team> teamFakerFactory, IFakerFactory<Club> clubFakerFactory,
             IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory,
             IFakerFactory<Player> playerFakerFactory, IFakerFactory<PlayerIdentity> playerIdentityFakerFactory,
             IFakerFactory<OverSet> oversetFakerFactory, Award playerOfTheMatchAward)
@@ -55,6 +52,8 @@ namespace Stoolball.Testing
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
             _matchFinder = matchFinder ?? throw new ArgumentNullException(nameof(matchFinder));
+            _competitionFakerFactory = competitionFakerFactory ?? throw new ArgumentNullException(nameof(competitionFakerFactory));
+            _seasonFakerFactory = seasonFakerFactory ?? throw new ArgumentNullException(nameof(seasonFakerFactory));
             _teamFakerFactory = teamFakerFactory ?? throw new ArgumentNullException(nameof(teamFakerFactory));
             _matchLocationFakerFactory = matchLocationFakerFactory ?? throw new ArgumentNullException(nameof(matchLocationFakerFactory));
             _schoolFakerFactory = schoolFakerFactory ?? throw new ArgumentNullException(nameof(schoolFakerFactory));
@@ -132,6 +131,9 @@ namespace Stoolball.Testing
                     CreateSeasonWithMinimalDetails(competition,2020,2021),
                     CreateSeasonWithMinimalDetails(competition,2020,2020)
                 };
+            competition.Seasons[1].MatchTypes = [MatchType.LeagueMatch, MatchType.KnockoutMatch]; // matches a specific test in UpdateSeasonTests
+            competition.Seasons[2].MatchTypes = [MatchType.LeagueMatch, MatchType.FriendlyMatch, MatchType.KnockoutMatch, MatchType.TrainingSession, MatchType.GroupMatch]; // every type
+
             return competition;
         }
 
@@ -175,7 +177,14 @@ namespace Stoolball.Testing
                 },
                 PointsRules = new List<PointsRule> {
                     new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.HomeWin, HomePoints=2, AwayPoints = 0 },
-                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.AwayWin, HomePoints=0, AwayPoints = 2 }
+                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.AwayWin, HomePoints=0, AwayPoints = 2 },
+                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.Tie, HomePoints=1, AwayPoints = 1 },
+                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.Cancelled, HomePoints=1, AwayPoints =1 },
+                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.Postponed, HomePoints=0, AwayPoints = 0 },
+                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.AbandonedDuringPlayAndCancelled, HomePoints=1, AwayPoints =1 },
+                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.AbandonedDuringPlayAndPostponed, HomePoints=0, AwayPoints = 0 },
+                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.AwayWinByForfeit, HomePoints=0, AwayPoints =2 },
+                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.HomeWinByForfeit, HomePoints=2, AwayPoints =0 }
                 },
                 PointsAdjustments = new List<PointsAdjustment>
                 {
@@ -890,12 +899,21 @@ namespace Stoolball.Testing
             testData.MatchLocationWithFullDetails = testData.MatchLocations.First(x => x.Teams.Any());
             testData.MatchLocationWithMinimalDetails = testData.MatchLocations.First(x => !x.Teams.Any());
 
+            var competitionWithOneSeasonWithPointsRules = _competitionFaker.Generate();
+            competitionWithOneSeasonWithPointsRules.Seasons.Add(CreateSeasonWithFullDetails(competitionWithOneSeasonWithPointsRules,
+                                                                                            2020, 2020,
+                                                                                            poolOfTeamsWithPlayers[_randomiser.Between(0, poolOfTeamsWithPlayers.Count - 1)].team,
+                                                                                            poolOfTeamsWithPlayers[_randomiser.Between(0, poolOfTeamsWithPlayers.Count - 1)].team));
+
             testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
                 .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
                 .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season?.Competition))
                 .Union(new[] { _competitionFaker.Generate() })
+                .Union(new[] { competitionWithOneSeasonWithPointsRules })
+                .Union(CreateCompetitionsFromDataProviders(testData))
                 .OfType<Competition>()
                 .Distinct(new CompetitionEqualityComparer()).ToList();
+            testData.CompetitionWithNoSeasons = testData.Competitions.First(x => !x.Seasons.Any());
             testData.CompetitionWithMinimalDetails = testData.Competitions.First(x =>
                 !x.Seasons.Any() &&
                 string.IsNullOrEmpty(x.Introduction) &&
@@ -992,6 +1010,24 @@ namespace Stoolball.Testing
             return testData;
         }
 
+        private IEnumerable<Competition> CreateCompetitionsFromDataProviders(TestData testData)
+        {
+            var competitions = new List<Competition>();
+            var competitionProviders = new BaseCompetitionDataProvider[]{
+                new CompetitionWithTeamsAndOverSetsInSeasonProvider(_competitionFakerFactory, _seasonFakerFactory, _teamFakerFactory, _oversetFakerFactory)
+            };
+            foreach (var provider in competitionProviders)
+            {
+                var competitionsFromProvider = provider.CreateCompetitions(testData);
+                foreach (var competition in competitionsFromProvider)
+                {
+                    competitions.Add(competition);
+                }
+            }
+
+            return competitions;
+        }
+
         /// <summary>
         /// Ensure that calculated properties are populated. Must not change any source data or relationships.
         /// </summary>
@@ -1045,11 +1081,13 @@ namespace Stoolball.Testing
             // Add teams created to support other objects
             var teamsFromPlayers = testData.Players.SelectMany(p => p.PlayerIdentities).Where(pi => pi.Team is not null).Select(pi => pi.Team).OfType<Team>();
             var teamsFromSchools = testData.Schools.SelectMany(x => x.Teams);
+            var teamsFromSeasons = testData.Seasons.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
 
             var teamComparer = new TeamEqualityComparer();
             testData.Teams = testData.Teams
                             .Union(teamsFromPlayers, teamComparer)
                             .Union(teamsFromSchools, teamComparer)
+                            .Union(teamsFromSeasons, teamComparer)
                             .ToList();
 
             // Add match locations created to support other objects

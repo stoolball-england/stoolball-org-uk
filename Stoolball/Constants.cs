@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Stoolball.Competitions;
+using Stoolball.Matches;
 
 namespace Stoolball
 {
@@ -98,6 +100,21 @@ namespace Stoolball
             public const int PageSize = 50;
             public const int OversInOverSet = 12;
             public const int BallsPerOver = 8;
+            public static IEnumerable<PointsRule> PointsRules = [
+                                new PointsRule{ MatchResultType = MatchResultType.HomeWin, HomePoints = 2, AwayPoints = 0 },
+                                new PointsRule{ MatchResultType = MatchResultType.AwayWin, HomePoints = 0, AwayPoints = 2 },
+                                new PointsRule{ MatchResultType = MatchResultType.HomeWinByForfeit, HomePoints = 2, AwayPoints = 0 },
+                                new PointsRule { MatchResultType = MatchResultType.AwayWinByForfeit, HomePoints = 0, AwayPoints = 2 },
+                                new PointsRule { MatchResultType = MatchResultType.Tie, HomePoints = 1, AwayPoints = 1 },
+                                new PointsRule { MatchResultType = MatchResultType.Cancelled, HomePoints = 1, AwayPoints = 1 },
+                                new PointsRule { MatchResultType = MatchResultType.AbandonedDuringPlayAndCancelled, HomePoints = 1, AwayPoints = 1 }
+                            ];
+            public static class ResultsTable
+            {
+                public const ResultsTableType TableType = ResultsTableType.None;
+                public const bool EnableRunsScored = false;
+                public const bool EnableRunsConceded = false;
+            }
         }
 
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]

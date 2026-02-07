@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
 using Stoolball.Logging;
-using Stoolball.Matches;
 using Stoolball.Teams;
 using static Stoolball.Constants;
 
@@ -69,6 +68,16 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(season));
             }
 
+            if (season.Competition?.CompetitionId is null)
+            {
+                throw new ArgumentException($"{nameof(season.Competition.CompetitionId)} cannot be null", nameof(season));
+            }
+
+            if (memberKey == default)
+            {
+                throw new ArgumentNullException(nameof(memberKey));
+            }
+
             if (string.IsNullOrWhiteSpace(memberName))
             {
                 throw new ArgumentNullException(nameof(memberName));
@@ -76,15 +85,15 @@ namespace Stoolball.Data.SqlServer
 
             var auditableSeason = _copier.CreateAuditableCopy(season);
             auditableSeason.SeasonId = Guid.NewGuid();
-            auditableSeason.Introduction = _htmlSanitiser.Sanitize(auditableSeason.Introduction);
-            auditableSeason.Results = _htmlSanitiser.Sanitize(auditableSeason.Results);
+            auditableSeason.Introduction = auditableSeason.Introduction is not null ? _htmlSanitiser.Sanitize(auditableSeason.Introduction) : null;
+            auditableSeason.Results = auditableSeason.Results is not null ? _htmlSanitiser.Sanitize(auditableSeason.Results) : null;
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    auditableSeason.SeasonRoute = $"{auditableSeason.Competition.CompetitionRoute}/{auditableSeason.FromYear}";
+                    auditableSeason.SeasonRoute = $"{auditableSeason.Competition!.CompetitionRoute}/{auditableSeason.FromYear}";
                     if (auditableSeason.UntilYear > auditableSeason.FromYear)
                     {
                         auditableSeason.SeasonRoute = $"{auditableSeason.SeasonRoute}-{auditableSeason.UntilYear.ToString(CultureInfo.InvariantCulture).Substring(2)}";
@@ -98,6 +107,19 @@ namespace Stoolball.Data.SqlServer
                             auditableSeason.Competition.CompetitionId,
                             auditableSeason.FromYear
                         }, transaction).ConfigureAwait(false);
+
+                    if (previousSeason is not null)
+                    {
+                        auditableSeason.ResultsTableType = previousSeason.ResultsTableType;
+                        auditableSeason.EnableRunsScored = previousSeason.EnableRunsScored;
+                        auditableSeason.EnableRunsConceded = previousSeason.EnableRunsConceded;
+                    }
+                    else
+                    {
+                        auditableSeason.ResultsTableType = Defaults.ResultsTable.TableType;
+                        auditableSeason.EnableRunsScored = Defaults.ResultsTable.EnableRunsScored;
+                        auditableSeason.EnableRunsConceded = Defaults.ResultsTable.EnableRunsConceded;
+                    }
 
                     await connection.ExecuteAsync(
                         $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, EnableBonusOrPenaltyRuns,
@@ -116,9 +138,9 @@ namespace Stoolball.Data.SqlServer
                             auditableSeason.EnableBonusOrPenaltyRuns,
                             auditableSeason.PlayersPerTeam,
                             auditableSeason.EnableLastPlayerBatsOn,
-                            ResultsTableType = previousSeason?.ResultsTableType.ToString() ?? ResultsTableType.None.ToString(),
-                            EnableRunsScored = previousSeason?.EnableRunsScored ?? false,
-                            EnableRunsConceded = previousSeason?.EnableRunsConceded ?? false,
+                            ResultsTableType = auditableSeason.ResultsTableType.ToString(),
+                            auditableSeason.EnableRunsScored,
+                            auditableSeason.EnableRunsConceded,
                             auditableSeason.Results,
                             auditableSeason.SeasonRoute
                         }, transaction).ConfigureAwait(false);
@@ -153,15 +175,7 @@ namespace Stoolball.Data.SqlServer
                     // If there are none, start with some default points rules
                     if (auditableSeason.PointsRules.Count == 0)
                     {
-                        auditableSeason.PointsRules.AddRange(new PointsRule[] {
-                                new PointsRule{ MatchResultType = MatchResultType.HomeWin, HomePoints = 2, AwayPoints = 0 },
-                                new PointsRule{ MatchResultType = MatchResultType.AwayWin, HomePoints = 0, AwayPoints = 2 },
-                                new PointsRule{ MatchResultType = MatchResultType.HomeWinByForfeit, HomePoints = 2, AwayPoints = 0 },
-                                new PointsRule{ MatchResultType = MatchResultType.AwayWinByForfeit, HomePoints = 0, AwayPoints = 2 },
-                                new PointsRule{ MatchResultType = MatchResultType.Tie, HomePoints = 1, AwayPoints = 1 },
-                                new PointsRule{ MatchResultType = MatchResultType.Cancelled, HomePoints = 1, AwayPoints = 1 },
-                                new PointsRule{ MatchResultType = MatchResultType.AbandonedDuringPlayAndCancelled, HomePoints = 1, AwayPoints = 1 }
-                            });
+                        auditableSeason.PointsRules.AddRange(Defaults.PointsRules);
                     }
 
                     foreach (var pointsRule in auditableSeason.PointsRules)
@@ -182,6 +196,7 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     // Copy teams from the most recent season, where the teams did not withdraw and were still active in the season being added
+                    auditableSeason.Teams.Clear();
                     if (previousSeason != null)
                     {
                         var teamIds = await connection.QueryAsync<Guid>(
@@ -192,17 +207,17 @@ namespace Stoolball.Data.SqlServer
                                 WHERE st.SeasonId = @SeasonId
                                 AND 
                                 st.WithdrawnDate IS NULL
-                                AND (tv.UntilDate IS NULL OR tv.UntilDate <= @FromDate)",
+                                AND (tv.UntilDate IS NULL OR tv.UntilDate >= @FromDate)",
                             new
                             {
                                 previousSeason.SeasonId,
-                                FromDate = new DateTime(auditableSeason.FromYear, 12, 31).ToUniversalTime()
+                                FromDate = new DateTime(auditableSeason.FromYear, 1, 1).ToUniversalTime()
                             },
                             transaction).ConfigureAwait(false);
 
                         foreach (var teamId in teamIds)
                         {
-                            auditableSeason.Teams.Add(new TeamInSeason { Team = new Team { TeamId = teamId } });
+                            auditableSeason.Teams.Add(new TeamInSeason { Team = new Team { TeamId = teamId }, Season = new Season { SeasonId = auditableSeason.SeasonId } });
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.SeasonTeam} 
                                 (SeasonTeamId, SeasonId, TeamId)
                                 VALUES (@SeasonTeamId, @SeasonId, @TeamId)",
@@ -241,7 +256,7 @@ namespace Stoolball.Data.SqlServer
         {
             for (var i = 0; i < auditableSeason.DefaultOverSets.Count; i++)
             {
-                auditableSeason.DefaultOverSets[i].OverSetId = Guid.NewGuid();
+                auditableSeason.DefaultOverSets[i].OverSetId = auditableSeason.DefaultOverSets[i].OverSetId ?? Guid.NewGuid();
                 await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, SeasonId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @SeasonId, @OverSetNumber, @Overs, @BallsPerOver)",
                     new
                     {
@@ -266,14 +281,19 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(season));
             }
 
+            if (memberKey == default)
+            {
+                throw new ArgumentNullException(nameof(memberKey));
+            }
+
             if (string.IsNullOrWhiteSpace(memberName))
             {
                 throw new ArgumentNullException(nameof(memberName));
             }
 
             var auditableSeason = _copier.CreateAuditableCopy(season);
-            auditableSeason.Introduction = _htmlSanitiser.Sanitize(auditableSeason.Introduction);
-            auditableSeason.Results = _htmlSanitiser.Sanitize(auditableSeason.Results);
+            auditableSeason.Introduction = auditableSeason.Introduction is not null ? _htmlSanitiser.Sanitize(auditableSeason.Introduction) : null;
+            auditableSeason.Results = auditableSeason.Results is not null ? _htmlSanitiser.Sanitize(auditableSeason.Results) : null;
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -360,13 +380,17 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(season));
             }
 
+            if (memberKey == default)
+            {
+                throw new ArgumentNullException(nameof(memberKey));
+            }
+
             if (string.IsNullOrWhiteSpace(memberName))
             {
                 throw new ArgumentNullException(nameof(memberName));
             }
 
             var auditableSeason = _copier.CreateAuditableCopy(season);
-            auditableSeason.Results = _htmlSanitiser.Sanitize(auditableSeason.Results);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -434,6 +458,11 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(season));
             }
 
+            if (memberKey == default)
+            {
+                throw new ArgumentNullException(nameof(memberKey));
+            }
+
             if (string.IsNullOrWhiteSpace(memberName))
             {
                 throw new ArgumentNullException(nameof(memberName));
@@ -491,6 +520,16 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(season));
             }
 
+            if (memberKey == default)
+            {
+                throw new ArgumentNullException(nameof(memberKey));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException($"'{nameof(memberName)}' cannot be null or whitespace", nameof(memberName));
+            }
+
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
@@ -511,9 +550,14 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(seasons));
             }
 
+            if (memberKey == default)
+            {
+                throw new ArgumentNullException(nameof(memberKey));
+            }
+
             if (string.IsNullOrWhiteSpace(memberName))
             {
-                throw new ArgumentException($"'{nameof(memberName)}' cannot be null or whitespace", nameof(memberName));
+                throw new ArgumentNullException($"'{nameof(memberName)}' cannot be null or whitespace", nameof(memberName));
             }
 
             if (transaction is null)
@@ -551,7 +595,7 @@ namespace Stoolball.Data.SqlServer
                     AuditDate = DateTime.UtcNow
                 }, transaction).ConfigureAwait(false);
 
-                _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteSeason));
+                _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteSeasons));
             }
         }
     }

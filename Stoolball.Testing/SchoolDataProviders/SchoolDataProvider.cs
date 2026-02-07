@@ -6,7 +6,6 @@ using Stoolball.MatchLocations;
 using Stoolball.Schools;
 using Stoolball.Teams;
 using Stoolball.Testing.Fakers;
-using Stoolball.Testing.PlayerDataProviders;
 
 namespace Stoolball.Testing.SchoolDataProviders
 {
