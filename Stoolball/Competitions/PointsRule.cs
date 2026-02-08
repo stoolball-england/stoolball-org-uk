@@ -4,7 +4,7 @@ using Stoolball.Matches;
 
 namespace Stoolball.Competitions
 {
-    public class PointsRule
+    public class PointsRule : ICloneable
     {
         public Guid PointsRuleId { get; set; }
         public MatchResultType MatchResultType { get; set; }
@@ -20,15 +20,11 @@ namespace Stoolball.Competitions
         /// <summary>
         /// Creates a copy of this <c>PointsRule</c>.
         /// </summary>
-        public PointsRule Clone()
-        {
-            return new PointsRule
-            {
-                PointsRuleId = PointsRuleId,
-                MatchResultType = MatchResultType,
-                HomePoints = HomePoints,
-                AwayPoints = AwayPoints
-            };
-        }
+        public PointsRule Clone() => (PointsRule)MemberwiseClone();
+
+        /// <summary>
+        /// Creates a copy of this <c>PointsRule</c>.
+        /// </summary>
+        object ICloneable.Clone() => Clone();
     }
 }

@@ -341,7 +341,7 @@ namespace Stoolball
                 TournamentLocation = tournament.TournamentLocation != null ? new MatchLocation { MatchLocationId = tournament.TournamentLocation.MatchLocationId } : null,
                 PlayerType = tournament.PlayerType,
                 PlayersPerTeam = tournament.PlayersPerTeam,
-                DefaultOverSets = tournament.DefaultOverSets,
+                DefaultOverSets = tournament.DefaultOverSets.Select(o => o.Clone()).ToList(),
                 QualificationType = tournament.QualificationType,
                 SpacesInTournament = tournament.SpacesInTournament,
                 MaximumTeamsInTournament = tournament.MaximumTeamsInTournament,
@@ -359,7 +359,8 @@ namespace Stoolball
             {
                 TournamentTeamId = x.TournamentTeamId,
                 Team = x.Team != null ? new Team { TeamId = x.Team.TeamId, TeamName = x.Team.TeamName } : null,
-                TeamRole = x.TeamRole
+                TeamRole = x.TeamRole,
+                PlayingAsTeamName = x.PlayingAsTeamName
             }).ToList();
         }
 

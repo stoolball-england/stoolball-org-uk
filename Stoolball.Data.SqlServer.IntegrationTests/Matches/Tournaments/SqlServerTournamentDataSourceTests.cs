@@ -6,7 +6,7 @@ using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Routing;
 using Xunit;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
+namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
 {
     [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class SqlServerTournamentDataSourceTests
