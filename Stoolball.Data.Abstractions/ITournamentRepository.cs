@@ -24,7 +24,7 @@ namespace Stoolball.Data.Abstractions
         /// <summary>
         /// Updates the seasons a stoolball tournament is listed in
         /// </summary>
-        Task<Tournament> UpdateSeasons(Tournament tournament, Guid memberKey, string memberUsername, string memberName);
+        Task<Tournament> UpdateSeasons(Tournament tournament, Guid memberKey, string memberName);
 
         /// <summary>
         /// Updates the matches in a stoolball tournament

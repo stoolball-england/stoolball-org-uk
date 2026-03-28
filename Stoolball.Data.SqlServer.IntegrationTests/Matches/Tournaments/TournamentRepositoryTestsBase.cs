@@ -26,6 +26,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
         protected StoolballEntityCopier Copier { get; init; } = new(new DataRedactor());
 
         protected Guid MemberKey { get; init; }
+        protected string MemberUsername { get; init; }
         protected string MemberName { get; init; }
 
         public TournamentRepositoryTestsBase(SqlServerTestDataFixture databaseFixture)
@@ -35,6 +36,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
 
             MemberKey = DatabaseFixture.TestData.Members[0].Key;
             MemberName = DatabaseFixture.TestData.Members[0].Name;
+            MemberUsername = DatabaseFixture.TestData.Members[0].Username();
 
             HtmlSanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
             HtmlSanitizer.Setup(x => x.AllowedAttributes).Returns(new HashSet<string>());

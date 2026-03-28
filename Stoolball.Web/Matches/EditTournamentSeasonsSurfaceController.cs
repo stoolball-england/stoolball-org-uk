@@ -70,8 +70,8 @@ namespace Stoolball.Web.Matches
 
             if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTournament])
             {
-                var currentMember = await _memberManager.GetCurrentMemberAsync();
-                var updatedTournament = await _tournamentRepository.UpdateSeasons(model.Tournament, currentMember.Key, currentMember.UserName, currentMember.Name).ConfigureAwait(false);
+                var currentMember = (await _memberManager.GetCurrentMemberAsync().ConfigureAwait(false))!;
+                var updatedTournament = await _tournamentRepository.UpdateSeasons(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 await _cacheClearer.InvalidateCacheForTournament(beforeUpdate, updatedTournament).ConfigureAwait(false);
             }
 

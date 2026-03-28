@@ -722,6 +722,10 @@ namespace Stoolball.Testing
             testData.TournamentInTheFutureWithMinimalDetails.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
             testData.Tournaments.Add(testData.TournamentInTheFutureWithMinimalDetails);
 
+            var tournamentInTheFutureWithSeasons = _tournamentFactory.CreateTournamentInThePastWithFullDetailsExceptMatches(_competitionFaker, _teamFaker, _matchLocationFaker, _oversetFactory.CreateFaker(), testData.Members);
+            tournamentInTheFutureWithSeasons.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
+            testData.Tournaments.Add(tournamentInTheFutureWithSeasons);
+
             testData.ClubWithMinimalDetails = _clubFaker.Generate();
 
             var clubWithOneActiveTeam = _clubFaker.Generate();

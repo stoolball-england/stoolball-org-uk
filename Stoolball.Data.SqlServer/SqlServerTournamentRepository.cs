@@ -499,9 +499,14 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(tournament));
             }
 
+            if (memberKey == default)
+            {
+                throw new ArgumentNullException(nameof(memberKey));
+            }
+
             if (string.IsNullOrWhiteSpace(memberUsername))
             {
-                throw new ArgumentException($"'{nameof(memberUsername)}' cannot be null or whitespace", nameof(memberUsername));
+                throw new ArgumentNullException($"'{nameof(memberUsername)}' cannot be null or whitespace", nameof(memberUsername));
             }
 
             if (string.IsNullOrWhiteSpace(memberName))
@@ -643,16 +648,16 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Updates the seasons a stoolball tournament is listed in
         /// </summary>
-        public async Task<Tournament> UpdateSeasons(Tournament tournament, Guid memberKey, string memberUsername, string memberName)
+        public async Task<Tournament> UpdateSeasons(Tournament tournament, Guid memberKey, string memberName)
         {
             if (tournament is null)
             {
                 throw new ArgumentNullException(nameof(tournament));
             }
 
-            if (string.IsNullOrWhiteSpace(memberUsername))
+            if (memberKey == default)
             {
-                throw new ArgumentException($"'{nameof(memberUsername)}' cannot be null or whitespace", nameof(memberUsername));
+                throw new ArgumentNullException(nameof(memberKey));
             }
 
             if (string.IsNullOrWhiteSpace(memberName))
@@ -729,9 +734,14 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(tournament));
             }
 
+            if (memberKey == default)
+            {
+                throw new ArgumentNullException(nameof(memberKey));
+            }
+
             if (string.IsNullOrWhiteSpace(memberUsername))
             {
-                throw new ArgumentException($"'{nameof(memberUsername)}' cannot be null or whitespace", nameof(memberUsername));
+                throw new ArgumentNullException($"'{nameof(memberUsername)}' cannot be null or whitespace", nameof(memberUsername));
             }
 
             if (string.IsNullOrWhiteSpace(memberName))
