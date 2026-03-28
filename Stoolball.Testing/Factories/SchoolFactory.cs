@@ -1,13 +1,8 @@
-﻿using System;
-using Bogus;
-using Humanizer;
-using Stoolball.Schools;
-
-namespace Stoolball.Testing.Fakers
+﻿namespace Stoolball.Testing.Factories
 {
-    public class SchoolFakerFactory : IFakerFactory<School>
+    public class SchoolFactory
     {
-        public Faker<School> Create()
+        public Faker<School> CreateFaker()
         {
             return new Faker<School>()
                             .RuleFor(x => x.SchoolId, () => Guid.NewGuid())

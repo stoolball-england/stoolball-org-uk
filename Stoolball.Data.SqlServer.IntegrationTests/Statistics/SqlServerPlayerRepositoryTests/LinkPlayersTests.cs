@@ -1,22 +1,12 @@
-﻿using System;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
-using Dapper;
-using Moq;
+﻿using System.Transactions;
 using Newtonsoft.Json;
 using Stoolball.Data.Abstractions;
 using Stoolball.Data.Abstractions.Models;
-using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Data.SqlServer.IntegrationTests.Redirects;
-using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Statistics;
 using Stoolball.Testing;
-using Xunit;
 using static Dapper.SqlMapper;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRepositoryTests
 {
@@ -154,11 +144,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var repo = CreateRepository();
 
             var currentMember = _testData.AnyMemberLinkedToPlayer();
-            var targetPlayer = _testData.AnyPlayerLinkedToMemberWithOnlyOneIdentity(p => p.MemberKey != currentMember.memberKey && _testData.Players.Any(p2 => p2.MemberKey is null && p2.IsOnTheSameTeamAs(p)));
+            var targetPlayer = _testData.AnyPlayerLinkedToMemberWithOnlyOneIdentity(p => p.MemberKey != currentMember.Key && _testData.Players.Any(p2 => p2.MemberKey is null && p2.IsOnTheSameTeamAs(p)));
             var playerToLink = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => p.IsOnTheSameTeamAs(targetPlayer));
             SetupMocksForLinkPlayerIdentity(targetPlayer, playerToLink);
 
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, currentMember.memberKey, currentMember.memberName).ConfigureAwait(false));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, currentMember.Key, currentMember.Name).ConfigureAwait(false));
         }
 
         [Fact]
@@ -167,11 +157,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var repo = CreateRepository();
 
             var currentMember = _testData.AnyMemberLinkedToPlayer();
-            var targetPlayer = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => _testData.Players.Any(p2 => p2.MemberKey.HasValue && p2.MemberKey != currentMember.memberKey && p2.PlayerIdentities.Count == 1 && p2.IsOnTheSameTeamAs(p))); ;
-            var playerToLink = _testData.AnyPlayerLinkedToMemberWithOnlyOneIdentity(p => p.MemberKey != currentMember.memberKey && p.IsOnTheSameTeamAs(targetPlayer));
+            var targetPlayer = _testData.AnyPlayerNotLinkedToMemberWithOnlyOneIdentity(p => _testData.Players.Any(p2 => p2.MemberKey.HasValue && p2.MemberKey != currentMember.Key && p2.PlayerIdentities.Count == 1 && p2.IsOnTheSameTeamAs(p))); ;
+            var playerToLink = _testData.AnyPlayerLinkedToMemberWithOnlyOneIdentity(p => p.MemberKey != currentMember.Key && p.IsOnTheSameTeamAs(targetPlayer));
             SetupMocksForLinkPlayerIdentity(targetPlayer, playerToLink);
 
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, currentMember.memberKey, currentMember.memberName));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, currentMember.Key, currentMember.Name));
         }
         #endregion
 
@@ -230,7 +220,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            var movedIdentityResult = await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, member.memberKey, member.memberName);
+            var movedIdentityResult = await repo.LinkPlayers(targetPlayer.PlayerId!.Value, playerToLink.PlayerId!.Value, PlayerIdentityLinkedBy.Team, member.Key, member.Name);
             await repo.ProcessAsyncUpdatesForPlayers();
 
             await AssertMergedPlayers(targetPlayer, playerToLink, movedIdentityResult, false);
@@ -268,7 +258,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            await repo.LinkPlayers(player1.PlayerId!.Value, player2.PlayerId!.Value, PlayerIdentityLinkedBy.Team, member.memberKey, member.memberName).ConfigureAwait(false);
+            await repo.LinkPlayers(player1.PlayerId!.Value, player2.PlayerId!.Value, PlayerIdentityLinkedBy.Team, member.Key, member.Name).ConfigureAwait(false);
 
             _redirectsRepository.VerifyPlayerIsRedirected(player1.PlayerRoute!, player2.PlayerRoute!);
         }
@@ -284,16 +274,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var member = _testData.AnyMemberNotLinkedToPlayer();
 
             var repo = CreateRepository();
-            await repo.LinkPlayers(player1.PlayerId!.Value, player2.PlayerId!.Value, PlayerIdentityLinkedBy.Team, member.memberKey, member.memberName).ConfigureAwait(false);
+            await repo.LinkPlayers(player1.PlayerId!.Value, player2.PlayerId!.Value, PlayerIdentityLinkedBy.Team, member.Key, member.Name).ConfigureAwait(false);
 
             // audits and logs delete of original player and update of target player
             _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri!.ToString().EndsWith(player1.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
-            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayers)));
+            _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), member.Name, member.Key, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayers)));
 
             var deletedPlayer = new Player { PlayerId = player2.PlayerId, PlayerRoute = player2.PlayerRoute };
             deletedPlayer.PlayerIdentities.Add(new PlayerIdentity { PlayerIdentityId = player2.PlayerIdentities[0].PlayerIdentityId });
             _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Delete && x.EntityUri!.ToString().EndsWith(player2.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
-            _logger.Verify(x => x.Info(LoggingTemplates.Deleted, JsonConvert.SerializeObject(deletedPlayer), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayers)));
+            _logger.Verify(x => x.Info(LoggingTemplates.Deleted, JsonConvert.SerializeObject(deletedPlayer), member.Name, member.Key, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayers)));
         }
 
         #endregion

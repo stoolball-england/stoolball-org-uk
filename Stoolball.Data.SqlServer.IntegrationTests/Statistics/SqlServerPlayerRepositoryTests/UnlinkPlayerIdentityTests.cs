@@ -1,19 +1,9 @@
-﻿using System;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
-using Dapper;
-using Moq;
+﻿using System.Transactions;
 using Stoolball.Data.Abstractions;
-using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
-using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Statistics;
 using Stoolball.Testing;
-using Xunit;
 using static Dapper.SqlMapper;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRepositoryTests
 {
@@ -225,10 +215,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
 
             var repo = CreateRepository();
 
-            await repo.UnlinkPlayerIdentity(playerIdentity.PlayerIdentityId!.Value, member.memberKey, member.memberName);
+            await repo.UnlinkPlayerIdentity(playerIdentity.PlayerIdentityId!.Value, member.Key, member.Name);
 
             _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
-            _logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<string>(), member.memberName, member.memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.UnlinkPlayerIdentity)));
+            _logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<string>(), member.Name, member.Key, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.UnlinkPlayerIdentity)));
         }
     }
 }

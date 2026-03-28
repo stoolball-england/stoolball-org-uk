@@ -1,12 +1,8 @@
-﻿using System;
-using Bogus;
-using Stoolball.Matches;
-
-namespace Stoolball.Testing.Fakers
+﻿namespace Stoolball.Testing.Factories
 {
-    public class OverSetFakerFactory : IFakerFactory<OverSet>
+    public class OverSetFactory
     {
-        public Faker<OverSet> Create()
+        public Faker<OverSet> CreateFaker()
         {
             var overSetNumber = 1;
 

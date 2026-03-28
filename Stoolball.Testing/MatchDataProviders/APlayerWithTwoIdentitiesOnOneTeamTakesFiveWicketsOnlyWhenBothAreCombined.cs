@@ -4,6 +4,7 @@ using System.Linq;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Testing.Factories;
 
 namespace Stoolball.Testing.MatchDataProviders
 {

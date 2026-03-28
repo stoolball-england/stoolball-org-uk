@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Stoolball.Clubs;
-using Stoolball.Competitions;
 using Stoolball.MatchLocations;
 using Stoolball.Schools;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 
 namespace Stoolball.Testing
 {
@@ -41,7 +37,7 @@ namespace Stoolball.Testing
         internal List<Season> Seasons { get; set; } = new();
         internal Season? SeasonWithMinimalDetails { get; set; }
         internal Season? SeasonWithFullDetails { get; set; }
-        internal List<(Guid memberKey, string memberName)> Members { get; set; } = new();
+        internal List<UmbracoMember> Members { get; set; } = new();
         internal Match? MatchInThePastWithMinimalDetails { get; set; }
         internal Match? MatchInTheFutureWithMinimalDetails { get; set; }
         internal Match? MatchInThePastWithFullDetails { get; set; }
@@ -129,39 +125,39 @@ namespace Stoolball.Testing
             return Players.First(x => !x.MemberKey.HasValue && x.PlayerIdentities.Count > 1 && additionalCriteria(x));
         }
 
-        internal (Guid memberKey, string memberName) AnyMemberLinkedToPlayer(Func<(Guid, string), bool>? additionalCriteria = null)
+        internal UmbracoMember AnyMemberLinkedToPlayer(Func<UmbracoMember, bool>? additionalCriteria = null)
         {
             additionalCriteria = additionalCriteria ?? (x => true);
-            return Members.First(x => Players.Any(p => p.MemberKey == x.memberKey) && additionalCriteria(x));
+            return Members.First(x => Players.Any(p => p.MemberKey == x.Key) && additionalCriteria(x));
         }
 
-        internal (Guid memberKey, string memberName) AnyMemberLinkedToPlayerWithOnlyOneIdentity(Func<(Guid, string), bool>? additionalCriteria = null)
+        internal UmbracoMember AnyMemberLinkedToPlayerWithOnlyOneIdentity(Func<UmbracoMember, bool>? additionalCriteria = null)
         {
             additionalCriteria = additionalCriteria ?? (x => true);
-            return Members.First(x => Players.Any(p => p.MemberKey == x.memberKey && p.PlayerIdentities.Count == 1) && additionalCriteria(x));
+            return Members.First(x => Players.Any(p => p.MemberKey == x.Key && p.PlayerIdentities.Count == 1) && additionalCriteria(x));
         }
 
-        internal (Guid memberKey, string memberName) AnyMemberLinkedToPlayerWithMultipleIdentities(Func<(Guid, string), bool>? additionalCriteria = null)
+        internal UmbracoMember AnyMemberLinkedToPlayerWithMultipleIdentities(Func<UmbracoMember, bool>? additionalCriteria = null)
         {
             additionalCriteria = additionalCriteria ?? (x => true);
-            return Members.First(x => Players.Any(p => p.MemberKey == x.memberKey && p.PlayerIdentities.Count > 1) && additionalCriteria(x));
+            return Members.First(x => Players.Any(p => p.MemberKey == x.Key && p.PlayerIdentities.Count > 1) && additionalCriteria(x));
         }
 
-        internal (Guid memberKey, string memberName) AnyMemberNotLinkedToPlayer(Func<(Guid, string), bool>? additionalCriteria = null)
+        internal UmbracoMember AnyMemberNotLinkedToPlayer(Func<UmbracoMember, bool>? additionalCriteria = null)
         {
             additionalCriteria = additionalCriteria ?? (x => true);
-            return Members.First(x => !Players.Any(p => p.MemberKey == x.memberKey) && additionalCriteria(x));
+            return Members.First(x => !Players.Any(p => p.MemberKey == x.Key) && additionalCriteria(x));
         }
-        internal (Guid memberKey, string memberName) AnyMemberNotLinkedToPlayerWithOnlyOneIdentity(Func<(Guid, string), bool>? additionalCriteria = null)
+        internal UmbracoMember AnyMemberNotLinkedToPlayerWithOnlyOneIdentity(Func<UmbracoMember, bool>? additionalCriteria = null)
         {
             additionalCriteria = additionalCriteria ?? (x => true);
-            return Members.First(x => !Players.Any(p => p.MemberKey == x.memberKey && p.PlayerIdentities.Count == 1) && additionalCriteria(x));
+            return Members.First(x => !Players.Any(p => p.MemberKey == x.Key && p.PlayerIdentities.Count == 1) && additionalCriteria(x));
         }
 
-        internal (Guid memberKey, string memberName) AnyMemberNotLinkedToPlayerWithMultipleIdentities(Func<(Guid, string), bool>? additionalCriteria = null)
+        internal UmbracoMember AnyMemberNotLinkedToPlayerWithMultipleIdentities(Func<UmbracoMember, bool>? additionalCriteria = null)
         {
             additionalCriteria = additionalCriteria ?? (x => true);
-            return Members.First(x => !Players.Any(p => p.MemberKey == x.memberKey && p.PlayerIdentities.Count > 1) && additionalCriteria(x));
+            return Members.First(x => !Players.Any(p => p.MemberKey == x.Key && p.PlayerIdentities.Count > 1) && additionalCriteria(x));
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Stoolball.Matches;
+using Stoolball.Testing.Factories;
 using Match = Stoolball.Matches.Match;
 
 namespace Stoolball.Testing.MatchDataProviders

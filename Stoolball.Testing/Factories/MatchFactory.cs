@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Stoolball.Awards;
-using Stoolball.Matches;
-using Stoolball.Statistics;
-using Stoolball.Teams;
-using Stoolball.Testing.Fakers;
+﻿using Stoolball.Awards;
 
-namespace Stoolball.Testing
+namespace Stoolball.Testing.Factories
 {
     internal class MatchFactory
     {
         private readonly Randomiser _randomiser;
         private readonly Award _playerOfTheMatchAward;
-        private readonly IFakerFactory<OverSet> _oversetFakerFactory;
+        private readonly OverSetFactory _oversetFactory;
 
-        internal MatchFactory(Randomiser randomiser, Award playerOfTheMatchAward, IFakerFactory<OverSet> oversetFakerFactory)
+        internal MatchFactory(Randomiser randomiser, Award playerOfTheMatchAward, OverSetFactory oversetFactory)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
-            _oversetFakerFactory = oversetFakerFactory ?? throw new ArgumentNullException(nameof(oversetFakerFactory));
+            _oversetFactory = oversetFactory ?? throw new ArgumentNullException(nameof(oversetFactory));
         }
 
         internal Match CreateMatchInThePast(bool addTeams, TestData testData, string routeTag)
@@ -32,8 +25,8 @@ namespace Stoolball.Testing
                 MatchType = MatchType.KnockoutMatch,
                 MatchInnings = new List<MatchInnings>
                 {
-                    new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 1, OverSets = _oversetFakerFactory.Create().Generate(2).ToList() },
-                    new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 2, OverSets = _oversetFakerFactory.Create().Generate(2).ToList() }
+                    new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 1, OverSets = _oversetFactory.CreateFaker().Generate(2).ToList() },
+                    new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 2, OverSets = _oversetFactory.CreateFaker().Generate(2).ToList() }
                 },
                 MatchRoute = $"/matches/minimal-match-{Guid.NewGuid()}-generated-by-{routeTag}",
                 StartTime = new DateTimeOffset(2020, 6, 6, 18, 30, 0, TimeSpan.FromHours(1))

@@ -5,6 +5,7 @@ using Humanizer;
 using Stoolball.Awards;
 using Stoolball.Matches;
 using Stoolball.Statistics;
+using Stoolball.Testing.Factories;
 
 namespace Stoolball.Testing.MatchDataProviders
 {

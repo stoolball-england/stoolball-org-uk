@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Stoolball.Testing
+﻿namespace Stoolball.Testing
 {
-    public class MemberEqualityComparer : EqualityComparer<(Guid memberId, string)>
+    public class MemberEqualityComparer : EqualityComparer<UmbracoMember>
     {
-        public override bool Equals((Guid memberId, string) x, (Guid memberId, string) y)
+        public override bool Equals(UmbracoMember? x, UmbracoMember? y)
         {
-            return x.memberId == y.memberId;
+            return x?.Key == y?.Key;
         }
 
-        public override int GetHashCode((Guid, string) obj)
+        public override int GetHashCode(UmbracoMember obj)
         {
             return base.GetHashCode();
         }

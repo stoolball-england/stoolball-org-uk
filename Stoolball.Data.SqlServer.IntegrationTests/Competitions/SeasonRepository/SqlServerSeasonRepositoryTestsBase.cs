@@ -24,8 +24,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions.SeasonRepositor
         public SqlServerSeasonRepositoryTestsBase(SqlServerTestDataFixture databaseFixture)
         {
             DatabaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
-            MemberKey = DatabaseFixture.TestData.Members[0].memberKey;
-            MemberName = DatabaseFixture.TestData.Members[0].memberName;
+            MemberKey = DatabaseFixture.TestData.Members[0].Key;
+            MemberName = DatabaseFixture.TestData.Members[0].Name;
 
             _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }

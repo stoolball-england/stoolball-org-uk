@@ -1,9 +1,8 @@
 ﻿using Bogus;
 using Stoolball.Awards;
-using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Testing;
-using Stoolball.Testing.Fakers;
+using Stoolball.Testing.Factories;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
@@ -13,7 +12,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
         internal Randomiser Randomiser { get; set; } = new Randomiser(new Random());
 
-        internal OverSetFakerFactory OverSetFakerFactory { get; set; } = new();
+        internal OverSetFactory OverSetFakerFactory { get; set; } = new();
 
         public SqlServerTestDataFixture() : base("StoolballIntegrationTests")
         {
@@ -23,18 +22,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var playerIdentityFinder = new PlayerIdentityFinder();
             var matchFinder = new MatchFinder();
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
-            var competitionFakerFactory = new CompetitionFakerFactory();
-            var seasonFakerFactory = new SeasonFakerFactory();
-            var teamFakerFactory = new TeamFakerFactory();
-            var clubFakerFactory = new ClubFakerFactory();
-            var matchLocationFakerFactory = new MatchLocationFakerFactory();
-            var schoolFakerFactory = new SchoolFakerFactory();
-            var playerIdentityFakerFactory = new PlayerIdentityFakerFactory();
-            var playerFakerFactory = new PlayerFakerFactory();
+            var competitionFactory = new CompetitionFactory();
+            var seasonFactory = new SeasonFactory();
+            var teamFactory = new TeamFactory();
+            var clubFactory = new ClubFactory();
+            var commentFactory = new CommentFactory();
+            var tournamentFactory = new TournamentFactory(seasonFactory, commentFactory);
+            var matchLocationFactory = new MatchLocationFactory();
+            var schoolFactory = new SchoolFactory();
+            var playerFakerFactory = new PlayerFactory();
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
             var randomSeedDataGenerator = new SeedDataGenerator(Randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                competitionFakerFactory, seasonFakerFactory, teamFakerFactory, clubFakerFactory, matchLocationFakerFactory, schoolFakerFactory,
-                playerFakerFactory, playerIdentityFakerFactory, OverSetFakerFactory, playerOfTheMatchAward);
+                competitionFactory, seasonFactory, teamFactory, clubFactory, tournamentFactory, matchLocationFactory, schoolFactory,
+                playerFakerFactory, OverSetFakerFactory, commentFactory, playerOfTheMatchAward);
 
             Randomizer.Seed = new Random(85437684);
             TestData = randomSeedDataGenerator.GenerateTestData();

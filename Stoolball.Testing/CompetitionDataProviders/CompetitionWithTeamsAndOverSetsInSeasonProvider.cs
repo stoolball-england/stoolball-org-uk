@@ -1,25 +1,22 @@
-﻿using System.Linq;
-using Stoolball.Testing.Fakers;
-using Stoolball.Testing.PlayerDataProviders;
+﻿using Stoolball.Testing.PlayerDataProviders;
 
 namespace Stoolball.Testing.CompetitionDataProviders
 {
-    internal class CompetitionWithTeamsAndOverSetsInSeasonProvider(IFakerFactory<Competition> _competitionFakerFactory,
-                                                        IFakerFactory<Season> _seasonFakerFactory,
-                                                        IFakerFactory<Team> _teamFakerFactory,
-                                                        IFakerFactory<OverSet> _overSetFakerFactory) : BaseCompetitionDataProvider
+    internal class CompetitionWithTeamsAndOverSetsInSeasonProvider(CompetitionFactory _competitionFactory,
+                                                        SeasonFactory _seasonFactory,
+                                                        TeamFactory _teamFactory,
+                                                        OverSetFactory _overSetFactory) : BaseCompetitionDataProvider
     {
         internal override IEnumerable<Competition> CreateCompetitions(TestData readOnlyTestData)
         {
-            var competition = _competitionFakerFactory.Create().Generate();
-            var season = _seasonFakerFactory.Create().Generate();
-            season.Competition = competition;
+            var competition = _competitionFactory.CreateFaker().Generate();
+            var season = _seasonFactory.CreateFaker(competition).Generate();
             competition.Seasons.Add(season);
 
-            var overSets = _overSetFakerFactory.Create().Generate(4);
+            var overSets = _overSetFactory.CreateFaker().Generate(4);
             season.DefaultOverSets.AddRange(overSets);
 
-            var teams = _teamFakerFactory.Create().Generate(3);
+            var teams = _teamFactory.CreateFaker().Generate(3);
             season.Teams.AddRange(teams.Select(t => new TeamInSeason { Team = t, Season = season }));
 
             // Ensure one team withdrew from the season

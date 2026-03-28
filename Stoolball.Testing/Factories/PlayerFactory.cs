@@ -1,13 +1,15 @@
-﻿using System;
-using Bogus;
-using Humanizer;
-using Stoolball.Statistics;
-
-namespace Stoolball.Testing.Fakers
+﻿namespace Stoolball.Testing.Factories
 {
-    public class PlayerIdentityFakerFactory : IFakerFactory<PlayerIdentity>
+    public class PlayerFactory
     {
-        public Faker<PlayerIdentity> Create()
+        public Faker<Player> CreatePlayerFaker()
+        {
+            return new Faker<Player>()
+                 .RuleFor(x => x.PlayerId, () => Guid.NewGuid())
+                 .RuleFor(x => x.PlayerRoute, faker => "/players/" + Guid.NewGuid());
+        }
+
+        public Faker<PlayerIdentity> CreatePlayerIdentityFaker()
         {
             return new Faker<PlayerIdentity>()
                  .RuleFor(x => x.PlayerIdentityId, () => Guid.NewGuid())

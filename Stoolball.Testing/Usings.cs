@@ -1,7 +1,14 @@
 ﻿global using System;
 global using System.Collections.Generic;
+global using System.Linq;
 global using Bogus;
+global using Humanizer;
+global using Stoolball.Clubs;
 global using Stoolball.Competitions;
 global using Stoolball.Matches;
+global using Stoolball.MatchLocations;
+global using Stoolball.Schools;
+global using Stoolball.Statistics;
 global using Stoolball.Teams;
+global using Stoolball.Testing.Factories;
 global using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;

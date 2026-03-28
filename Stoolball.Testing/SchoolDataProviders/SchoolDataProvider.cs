@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bogus;
-using Stoolball.MatchLocations;
-using Stoolball.Schools;
-using Stoolball.Teams;
-using Stoolball.Testing.Fakers;
-
-namespace Stoolball.Testing.SchoolDataProviders
+﻿namespace Stoolball.Testing.SchoolDataProviders
 {
-    internal class SchoolDataProvider(IFakerFactory<School> _schoolFakerFactory, IFakerFactory<Team> _teamFakerFactory, IFakerFactory<MatchLocation> _matchLocationFakerFactory) : BaseSchoolDataProvider
+    internal class SchoolDataProvider(SchoolFactory _schoolFactory, TeamFactory _teamFactory, MatchLocationFactory _matchLocationFactory) : BaseSchoolDataProvider
     {
         internal override IEnumerable<School> CreateSchools()
         {
             // Create schools data, with extra separate teams and locations
-            var schoolFaker = _schoolFakerFactory.Create();
+            var schoolFaker = _schoolFactory.CreateFaker();
             var schools = schoolFaker.Generate(20);
 
-            CreateSchoolTeamsForSchools(schools, _teamFakerFactory.Create, _matchLocationFakerFactory.Create);
+            CreateSchoolTeamsForSchools(schools, _teamFactory.CreateFaker, _matchLocationFactory.CreateFaker);
 
             return schools;
         }

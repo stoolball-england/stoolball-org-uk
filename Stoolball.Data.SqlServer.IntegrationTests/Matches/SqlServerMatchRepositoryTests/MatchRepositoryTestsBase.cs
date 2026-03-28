@@ -1,23 +1,12 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Transactions;
-using Dapper;
-using Moq;
-using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
-using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
-using Stoolball.Logging;
-using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
-using Xunit;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchRepositoryTests
 {
@@ -47,8 +36,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             DatabaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
             Scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            MemberKey = DatabaseFixture.TestData.Members[0].memberKey;
-            MemberName = DatabaseFixture.TestData.Members[0].memberName;
+            MemberKey = DatabaseFixture.TestData.Members[0].Key;
+            MemberName = DatabaseFixture.TestData.Members[0].Name;
 
             Copier = new StoolballEntityCopier(DataRedactor.Object);
 

@@ -225,7 +225,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions.SeasonRepositor
                 Competition = competition,
                 FromYear = fromYear,
                 UntilYear = fromYear,
-                DefaultOverSets = DatabaseFixture.OverSetFakerFactory.Create().GenerateBetween(2, 5)
+                DefaultOverSets = DatabaseFixture.OverSetFakerFactory.CreateFaker().GenerateBetween(2, 5)
             };
 
             var result = await Repository.CreateSeason(season, MemberKey, MemberName).ConfigureAwait(false);

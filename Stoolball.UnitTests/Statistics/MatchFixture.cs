@@ -6,7 +6,7 @@ using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing;
-using Stoolball.Testing.Fakers;
+using Stoolball.Testing.Factories;
 
 namespace Stoolball.UnitTests.Statistics
 {
@@ -26,16 +26,18 @@ namespace Stoolball.UnitTests.Statistics
             var playerIdentityFinder = new PlayerIdentityFinder();
             var matchFinder = new MatchFinder();
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
-            var teamFakerFactory = new TeamFakerFactory();
-            var teamFaker = teamFakerFactory.Create();
-            var competitionFakerFactory = new CompetitionFakerFactory();
-            var competitionFaker = competitionFakerFactory.Create();
-            var seasonFakerFactory = new SeasonFakerFactory();
-            var matchLocationFakerFactory = new MatchLocationFakerFactory();
-            var matchLocationFaker = matchLocationFakerFactory.Create();
+            var teamFakerFactory = new TeamFactory();
+            var teamFaker = teamFakerFactory.CreateFaker();
+            var competitionFakerFactory = new CompetitionFactory();
+            var competitionFaker = competitionFakerFactory.CreateFaker();
+            var seasonFactory = new SeasonFactory();
+            var matchLocationFakerFactory = new MatchLocationFactory();
+            var commentFactory = new CommentFactory();
+            var tournamentFactory = new TournamentFactory(seasonFactory, commentFactory);
+            var matchLocationFaker = matchLocationFakerFactory.CreateFaker();
             var seedDataGenerator = new SeedDataGenerator(randomiser, _oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                competitionFakerFactory, seasonFakerFactory, teamFakerFactory, new ClubFakerFactory(), matchLocationFakerFactory, new SchoolFakerFactory(),
-                new PlayerFakerFactory(), new PlayerIdentityFakerFactory(), new OverSetFakerFactory(), playerOfTheMatchAward);
+                competitionFakerFactory, seasonFactory, teamFakerFactory, new ClubFactory(), tournamentFactory, matchLocationFakerFactory, new SchoolFactory(),
+                new PlayerFactory(), new OverSetFactory(), commentFactory, playerOfTheMatchAward);
 
             var homeTeam = teamFaker.Generate();
             var homeTeamInMatch = new TeamInMatch

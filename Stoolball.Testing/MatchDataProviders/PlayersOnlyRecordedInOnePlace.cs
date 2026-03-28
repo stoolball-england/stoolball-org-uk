@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bogus;
-using Stoolball.Awards;
-using Stoolball.Matches;
-using Stoolball.Statistics;
-using Stoolball.Teams;
-using Stoolball.Testing.Fakers;
+﻿using Stoolball.Awards;
 
 namespace Stoolball.Testing.MatchDataProviders
 {
@@ -17,12 +9,12 @@ namespace Stoolball.Testing.MatchDataProviders
         private readonly Faker<Team> _teamFaker;
         private readonly Faker<PlayerIdentity> _playerIdentityFaker;
 
-        public PlayersOnlyRecordedInOnePlace(MatchFactory matchFactory, IFakerFactory<Team> teamFakerFactory, IFakerFactory<PlayerIdentity> playerIdentityFakerFactory, Award playerOfTheMatchAward)
+        public PlayersOnlyRecordedInOnePlace(MatchFactory matchFactory, TeamFactory teamFactory, PlayerFactory playerFactory, Award playerOfTheMatchAward)
         {
             _matchFactory = matchFactory ?? throw new System.ArgumentNullException(nameof(matchFactory));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
-            _teamFaker = teamFakerFactory.Create();
-            _playerIdentityFaker = playerIdentityFakerFactory.Create();
+            _teamFaker = teamFactory.CreateFaker();
+            _playerIdentityFaker = playerFactory.CreatePlayerIdentityFaker();
         }
 
         internal override IEnumerable<Match> CreateMatches(TestData readOnlyTestData)

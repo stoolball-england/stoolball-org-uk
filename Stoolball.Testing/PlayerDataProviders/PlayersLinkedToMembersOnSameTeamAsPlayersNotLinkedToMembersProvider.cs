@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Bogus;
-using Stoolball.Statistics;
-using Stoolball.Teams;
-using Stoolball.Testing.Fakers;
-
-namespace Stoolball.Testing.PlayerDataProviders
+﻿namespace Stoolball.Testing.PlayerDataProviders
 {
-    internal class PlayersLinkedToMembersOnSameTeamAsPlayersNotLinkedToMembersProvider(IFakerFactory<Team> teamFakerFactory, IFakerFactory<Player> playerFakerFactory, IFakerFactory<PlayerIdentity> playerIdentityFakerFactory) : BasePlayerDataProvider
+    internal class PlayersLinkedToMembersOnSameTeamAsPlayersNotLinkedToMembersProvider(TeamFactory teamFactory, PlayerFactory playerFactory) : BasePlayerDataProvider
     {
-        private readonly Faker<Team> _teamFaker = teamFakerFactory.Create();
-        private readonly Faker<Player> _playerFaker = playerFakerFactory.Create();
-        private readonly Faker<PlayerIdentity> _playerIdentityFaker = playerIdentityFakerFactory.Create();
+        private readonly Faker<Team> _teamFaker = teamFactory.CreateFaker();
+        private readonly Faker<Player> _playerFaker = playerFactory.CreatePlayerFaker();
+        private readonly Faker<PlayerIdentity> _playerIdentityFaker = playerFactory.CreatePlayerIdentityFaker();
 
         internal override IEnumerable<Player> CreatePlayers(TestData readOnlyTestData)
         {

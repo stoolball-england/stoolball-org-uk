@@ -1,13 +1,9 @@
-﻿using System;
-using Bogus;
-using Humanizer;
-using Stoolball.Clubs;
-
-namespace Stoolball.Testing.Fakers
+﻿
+namespace Stoolball.Testing.Factories
 {
-    public class ClubFakerFactory : IFakerFactory<Club>
+    public class ClubFactory
     {
-        public Faker<Club> Create()
+        public Faker<Club> CreateFaker()
         {
             return new Faker<Club>()
                     .RuleFor(x => x.ClubId, () => Guid.NewGuid())

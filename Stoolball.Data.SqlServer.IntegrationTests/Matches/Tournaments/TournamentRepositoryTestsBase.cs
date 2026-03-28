@@ -33,8 +33,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
             DatabaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
             Scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            MemberKey = DatabaseFixture.TestData.Members[0].memberKey;
-            MemberName = DatabaseFixture.TestData.Members[0].memberName;
+            MemberKey = DatabaseFixture.TestData.Members[0].Key;
+            MemberName = DatabaseFixture.TestData.Members[0].Name;
 
             HtmlSanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
             HtmlSanitizer.Setup(x => x.AllowedAttributes).Returns(new HashSet<string>());

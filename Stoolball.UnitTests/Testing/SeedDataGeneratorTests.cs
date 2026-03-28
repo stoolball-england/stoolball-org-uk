@@ -5,7 +5,7 @@ using Stoolball.Awards;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Testing;
-using Stoolball.Testing.Fakers;
+using Stoolball.Testing.Factories;
 using Xunit;
 
 namespace Stoolball.UnitTests.Testing
@@ -19,9 +19,11 @@ namespace Stoolball.UnitTests.Testing
         private SeedDataGenerator CreateGenerator()
         {
             return new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
-                            Mock.Of<CompetitionFakerFactory>(), Mock.Of<SeasonFakerFactory>(), Mock.Of<TeamFakerFactory>(), Mock.Of<ClubFakerFactory>(), Mock.Of<MatchLocationFakerFactory>(),
-                            Mock.Of<SchoolFakerFactory>(), new PlayerFakerFactory(), Mock.Of<PlayerIdentityFakerFactory>(),
-                            Mock.Of<OverSetFakerFactory>(), _playerOfTheMatchAward);
+                            Mock.Of<CompetitionFactory>(), Mock.Of<SeasonFactory>(), Mock.Of<TeamFactory>(), Mock.Of<ClubFactory>(),
+                            new Mock<TournamentFactory>(Mock.Of<SeasonFactory>(), Mock.Of<CommentFactory>()).Object,
+                            Mock.Of<MatchLocationFactory>(),
+                            Mock.Of<SchoolFactory>(), new PlayerFactory(),
+                            Mock.Of<OverSetFactory>(), Mock.Of<CommentFactory>(), _playerOfTheMatchAward);
         }
 
         [Fact]

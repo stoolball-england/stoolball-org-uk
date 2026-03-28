@@ -1,8 +1,7 @@
 ﻿using Stoolball.Awards;
-using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Testing;
-using Stoolball.Testing.Fakers;
+using Stoolball.Testing.Factories;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
@@ -22,9 +21,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var matchFinder = new MatchFinder();
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
+            var seasonFactory = new SeasonFactory();
+            var commentFactory = new CommentFactory();
             var seedDataGenerator = new SeedDataGenerator(randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                new CompetitionFakerFactory(), new SeasonFakerFactory(), new TeamFakerFactory(), new ClubFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory(),
-                new PlayerFakerFactory(), new PlayerIdentityFakerFactory(), new OverSetFakerFactory(), playerOfTheMatchAward);
+                new CompetitionFactory(), seasonFactory, new TeamFactory(), new ClubFactory(), new TournamentFactory(seasonFactory, commentFactory), new MatchLocationFactory(), new SchoolFactory(),
+                new PlayerFactory(), new OverSetFactory(), commentFactory, playerOfTheMatchAward);
             TestData = seedDataGenerator.GenerateTestData();
             PlayerWithFifthAndSixthBowlingFiguresTheSame = ForceFifthAndSixthBowlingFiguresToBeTheSame(TestData);
             PlayerWithFifthAndSixthInningsTheSame = ForceFifthAndSixthPlayerInningsToBeTheSame(TestData, bowlingFiguresCalculator);

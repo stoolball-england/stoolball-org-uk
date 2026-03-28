@@ -1,13 +1,8 @@
-﻿using System;
-using Bogus;
-using Humanizer;
-using Stoolball.Competitions;
-
-namespace Stoolball.Testing.Fakers
+﻿namespace Stoolball.Testing.Factories
 {
-    public class CompetitionFakerFactory : IFakerFactory<Competition>
+    public class CompetitionFactory
     {
-        public Faker<Competition> Create()
+        public Faker<Competition> CreateFaker()
         {
             return new Faker<Competition>()
                     .RuleFor(x => x.CompetitionId, () => Guid.NewGuid())

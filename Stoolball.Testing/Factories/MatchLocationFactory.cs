@@ -1,13 +1,8 @@
-﻿using System;
-using Bogus;
-using Humanizer;
-using Stoolball.MatchLocations;
-
-namespace Stoolball.Testing.Fakers
+﻿namespace Stoolball.Testing.Factories
 {
-    public class MatchLocationFakerFactory : IFakerFactory<MatchLocation>
+    public class MatchLocationFactory
     {
-        public Faker<MatchLocation> Create()
+        public Faker<MatchLocation> CreateFaker()
         {
             Func<string?, int, string?> maxLength = (string? text, int max) => text != null && text.Length > max ? text.Substring(0, max) : text;
 
