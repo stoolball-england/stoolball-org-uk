@@ -297,7 +297,7 @@ namespace Stoolball.Data.SqlServer
                 var results = await connection.QueryAsync<PlayerIdentity, Player, Team, Club, PlayerIdentity>(
                     $@"SELECT pi.PlayerIdentityId, pi.PlayerIdentityName, pi.RouteSegment,
                               pi.PlayerId, pi.PlayerRoute,
-                              t.TeamId, tv.TeamName, t.TeamRoute,
+                              t.TeamId, tv.TeamName, t.TeamRoute, t.MemberGroupName,
                               c.ClubId, cv.ClubName, c.ClubRoute
                        FROM {Views.PlayerIdentity} pi INNER JOIN {Tables.Team} t ON pi.TeamId = t.TeamId 
                        INNER JOIN {Tables.TeamVersion} tv ON t.TeamId = tv.TeamId

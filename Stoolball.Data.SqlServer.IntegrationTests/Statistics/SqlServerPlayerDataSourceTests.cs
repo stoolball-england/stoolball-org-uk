@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Moq;
-using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
-using Stoolball.Matches;
+﻿using System.Globalization;
 using Stoolball.Routing;
 using Stoolball.Statistics;
 using Stoolball.Testing;
-using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 {
@@ -768,6 +760,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Assert.Equal(identity.Team.TeamId, result.Team!.TeamId);
                 Assert.Equal(identity.Team.TeamName, result.Team!.TeamName);
                 Assert.Equal(identity.Team.TeamRoute, result.Team!.TeamRoute);
+                Assert.Equal(identity.Team.MemberGroupName, result.Team!.MemberGroupName);
                 Assert.Equal(identity.Team.Club?.ClubId, result.Team.Club?.ClubId);
                 Assert.Equal(identity.Team.Club?.ClubName, result.Team.Club?.ClubName);
                 Assert.Equal(identity.Team.Club?.ClubRoute, result.Team.Club?.ClubRoute);
