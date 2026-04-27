@@ -1,9 +1,8 @@
 ﻿
 
 using System.Transactions;
-using AngleSharp.Css.Dom;
-using Ganss.Xss;
 using Stoolball.Data.Abstractions;
+using Stoolball.Html;
 using Stoolball.Routing;
 using Stoolball.Security;
 
@@ -23,6 +22,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
         protected Mock<ITeamRepository> TeamRepository { get; init; } = new();
         protected Mock<IMatchRepository> MatchRepository { get; init; } = new();
         protected Mock<IHtmlSanitizer> HtmlSanitizer { get; init; } = new();
+        protected Mock<IMemberGroupHelper> MemberGroupHelper { get; init; } = new();
         protected StoolballEntityCopier Copier { get; init; } = new(new DataRedactor());
 
         protected Guid MemberKey { get; init; }
@@ -37,11 +37,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
             MemberKey = DatabaseFixture.TestData.Members[0].Key;
             MemberName = DatabaseFixture.TestData.Members[0].Name;
             MemberUsername = DatabaseFixture.TestData.Members[0].Username();
-
-            HtmlSanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
-            HtmlSanitizer.Setup(x => x.AllowedAttributes).Returns(new HashSet<string>());
-            HtmlSanitizer.Setup(x => x.AllowedCssProperties).Returns(new HashSet<string>());
-            HtmlSanitizer.Setup(x => x.AllowedAtRules).Returns(new HashSet<CssRuleType>());
+            MemberGroupHelper.Setup(x => x.CreateOrFindGroup("team", It.IsAny<string>(), NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
         }
 
         private SqlServerTournamentRepository CreateRepository()
@@ -53,7 +49,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
                 Logger.Object,
                 RouteGenerator.Object,
                 RedirectsRepository.Object,
-                TeamRepository.Object,
+                new SqlServerTeamRepository(
+                    DatabaseFixture.ConnectionFactory,
+                    AuditRepository.Object,
+                    Mock.Of<ILogger<SqlServerTeamRepository>>(),
+                    RouteGenerator.Object,
+                    RedirectsRepository.Object,
+                    MemberGroupHelper.Object,
+                    HtmlSanitizer.Object,
+                    Copier,
+                    Mock.Of<IUrlFormatter>(),
+                    Mock.Of<ISocialMediaAccountFormatter>()),
                 MatchRepository.Object,
                 HtmlSanitizer.Object,
                 Copier);

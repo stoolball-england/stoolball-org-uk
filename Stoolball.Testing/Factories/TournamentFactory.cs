@@ -1,6 +1,13 @@
 ﻿namespace Stoolball.Testing.Factories
 {
-    public class TournamentFactory(SeasonFactory _seasonFactory, CommentFactory _commentFactory)
+    public class TournamentFactory(
+        CompetitionFactory _competitionFactory,
+        SeasonFactory _seasonFactory,
+        TeamFactory _teamFactory,
+        MatchLocationFactory _matchLocationFactory,
+        OverSetFactory _oversetFactory,
+        UmbracoMemberFactory _memberFactory,
+        CommentFactory _commentFactory)
     {
         public Faker<Tournament> CreateFaker()
         {
@@ -12,18 +19,17 @@
                     .RuleFor(x => x.MemberKey, () => Guid.NewGuid());
         }
 
-        public Tournament CreateTournamentInThePastWithFullDetailsExceptMatches(
-            Faker<Competition> _competitionFaker,
-            Faker<Team> _teamFaker,
-            Faker<MatchLocation> _matchLocationFaker,
-            Faker<OverSet> _overSetFaker,
-            List<UmbracoMember> members)
+        public Tournament CreateTournamentInThePastWithFullDetailsExceptMatches()
         {
-            var competitions = _competitionFaker.Generate(2);
+            var competitions = _competitionFactory.CreateFaker().Generate(2);
             var season1 = _seasonFactory.CreateFaker(competitions[0]).Generate();
             var season2 = _seasonFactory.CreateFaker(competitions[1]).Generate();
             season2.FromYear = season1.FromYear;
             season2.UntilYear = season1.UntilYear;
+
+            var teamFaker = _teamFactory.CreateFaker();
+            var matchLocationFaker = _matchLocationFactory.CreateFaker();
+            var oversetFaker = _oversetFactory.CreateFaker();
 
             var tournament = new Tournament
             {
@@ -42,21 +48,21 @@
                 Teams = [
                     new TeamInTournament {
                         TournamentTeamId = Guid.NewGuid(),
-                        Team = _teamFaker.Generate()
+                        Team = teamFaker.Generate()
                     },
                     new TeamInTournament {
                         TournamentTeamId = Guid.NewGuid(),
-                        Team = _teamFaker.Generate()
+                        Team = teamFaker.Generate()
                     },
                     new TeamInTournament {
                         TournamentTeamId = Guid.NewGuid(),
-                        Team = _teamFaker.Generate()
+                        Team = teamFaker.Generate()
                     }
                 ],
-                TournamentLocation = _matchLocationFaker.Generate(),
-                DefaultOverSets = [_overSetFaker.Generate()],
+                TournamentLocation = matchLocationFaker.Generate(),
+                DefaultOverSets = [oversetFaker.Generate()],
                 Seasons = [season1, season2],
-                Comments = _commentFactory.CreateFaker(members).Generate(10)
+                Comments = _commentFactory.CreateFaker(_memberFactory.CreateFaker().Generate(5)).Generate(10)
             };
             foreach (var season in tournament.Seasons)
             {

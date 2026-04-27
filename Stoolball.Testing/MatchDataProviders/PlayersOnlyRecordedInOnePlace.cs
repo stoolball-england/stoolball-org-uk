@@ -5,16 +5,16 @@ namespace Stoolball.Testing.MatchDataProviders
     internal class PlayersOnlyRecordedInOnePlace : BaseMatchDataProvider
     {
         private readonly MatchFactory _matchFactory;
+        private readonly PlayerFactory _playerFactory;
         private readonly Award _playerOfTheMatchAward;
         private readonly Faker<Team> _teamFaker;
-        private readonly Faker<PlayerIdentity> _playerIdentityFaker;
 
         public PlayersOnlyRecordedInOnePlace(MatchFactory matchFactory, TeamFactory teamFactory, PlayerFactory playerFactory, Award playerOfTheMatchAward)
         {
             _matchFactory = matchFactory ?? throw new System.ArgumentNullException(nameof(matchFactory));
+            _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
             _teamFaker = teamFactory.CreateFaker();
-            _playerIdentityFaker = playerFactory.CreatePlayerIdentityFaker();
         }
 
         internal override IEnumerable<Match> CreateMatches(TestData readOnlyTestData)
@@ -35,8 +35,8 @@ namespace Stoolball.Testing.MatchDataProviders
             match.MatchInnings[1].BattingMatchTeamId = match.Teams[1].MatchTeamId;
             match.MatchInnings[1].BattingTeam = match.Teams[1];
 
-            var bowler = _playerIdentityFaker.Generate();
-            bowler.Team = match.Teams[1].Team;
+            var fieldingTeamPlayerFaker = _playerFactory.CreatePlayerIdentityFaker(match.Teams[1].Team!);
+            var bowler = fieldingTeamPlayerFaker.Generate();
             match.MatchInnings[0].OversBowled.Add(new Over
             {
                 OverId = Guid.NewGuid(),
@@ -47,8 +47,8 @@ namespace Stoolball.Testing.MatchDataProviders
             });
 
             // When removing a single identity, it's important that code can cope with another player innings that has minimal data.
-            var batterBefore = _playerIdentityFaker.Generate(1).First();
-            batterBefore.Team = match.Teams[0].Team;
+            var battingTeamPlayerFaker = _playerFactory.CreatePlayerIdentityFaker(match.Teams[0].Team!);
+            var batterBefore = battingTeamPlayerFaker.Generate(1).First();
             match.MatchInnings[0].PlayerInnings.Add(new PlayerInnings
             {
                 PlayerInningsId = Guid.NewGuid(),
@@ -58,23 +58,19 @@ namespace Stoolball.Testing.MatchDataProviders
                 RunsScored = 50
             });
 
-            var batterFielderBowler = _playerIdentityFaker.Generate(3);
-            batterFielderBowler[0].Team = match.Teams[0].Team;
-            batterFielderBowler[1].Team = match.Teams[1].Team;
-            batterFielderBowler[2].Team = match.Teams[1].Team;
             match.MatchInnings[0].PlayerInnings.Add(new PlayerInnings
             {
                 PlayerInningsId = Guid.NewGuid(),
                 BattingPosition = 1,
-                Batter = batterFielderBowler[0],
+                Batter = battingTeamPlayerFaker.Generate(),
                 DismissalType = DismissalType.Caught,
-                DismissedBy = batterFielderBowler[1],
-                Bowler = batterFielderBowler[2],
+                DismissedBy = fieldingTeamPlayerFaker.Generate(),
+                Bowler = fieldingTeamPlayerFaker.Generate(),
                 RunsScored = 50,
                 BallsFaced = 60
             });
 
-            var batterAfter = _playerIdentityFaker.Generate(1).First();
+            var batterAfter = battingTeamPlayerFaker.Generate();
             batterAfter.Team = match.Teams[0].Team;
             match.MatchInnings[0].PlayerInnings.Add(new PlayerInnings
             {
@@ -84,8 +80,7 @@ namespace Stoolball.Testing.MatchDataProviders
                 DismissalType = DismissalType.DidNotBat
             });
 
-            var awardWinner = _playerIdentityFaker.Generate(1)[0];
-            awardWinner.Team = match.Teams[0].Team;
+            var awardWinner = battingTeamPlayerFaker.Generate();
             match.Awards.Add(new MatchAward
             {
                 AwardedToId = Guid.NewGuid(),
@@ -93,7 +88,7 @@ namespace Stoolball.Testing.MatchDataProviders
                 PlayerIdentity = awardWinner
             });
 
-            return new[] { match };
+            return [match];
         }
     }
 }

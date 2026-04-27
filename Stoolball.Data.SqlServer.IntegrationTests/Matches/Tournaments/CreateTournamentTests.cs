@@ -1,5 +1,4 @@
 ﻿using Stoolball.MatchLocations;
-using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
 {
@@ -32,7 +31,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
             };
 
             var sanitizedNotes = tournament.TournamentNotes.Replace("<h1>", string.Empty).Replace("</h1>", string.Empty);
-            HtmlSanitizer.Setup(x => x.Sanitize(tournament.TournamentNotes, string.Empty, null)).Returns(sanitizedNotes);
+            HtmlSanitizer.Setup(x => x.Sanitize(tournament.TournamentNotes)).Returns(sanitizedNotes);
 
             var createdTournament = await Repository.CreateTournament(tournament, tournament.MemberKey.Value, MemberName).ConfigureAwait(false);
 

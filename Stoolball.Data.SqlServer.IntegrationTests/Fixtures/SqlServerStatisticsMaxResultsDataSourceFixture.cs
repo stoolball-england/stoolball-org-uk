@@ -21,11 +21,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var matchFinder = new MatchFinder();
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
+            var competitionFactory = new CompetitionFactory();
             var seasonFactory = new SeasonFactory();
             var commentFactory = new CommentFactory();
+            var teamFactory = new TeamFactory();
+            var matchLocationFactory = new MatchLocationFactory();
+            var oversetFactory = new OverSetFactory();
+            var memberFactory = new UmbracoMemberFactory();
+            var tournamentFactory = new TournamentFactory(competitionFactory, seasonFactory, teamFactory, matchLocationFactory, oversetFactory, memberFactory, commentFactory);
             var seedDataGenerator = new SeedDataGenerator(randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                new CompetitionFactory(), seasonFactory, new TeamFactory(), new ClubFactory(), new TournamentFactory(seasonFactory, commentFactory), new MatchLocationFactory(), new SchoolFactory(),
-                new PlayerFactory(), new OverSetFactory(), commentFactory, playerOfTheMatchAward);
+                competitionFactory, seasonFactory, teamFactory, new ClubFactory(), tournamentFactory, matchLocationFactory, new SchoolFactory(),
+                new PlayerFactory(), oversetFactory, memberFactory, commentFactory, playerOfTheMatchAward);
             TestData = seedDataGenerator.GenerateTestData();
             PlayerWithFifthAndSixthBowlingFiguresTheSame = ForceFifthAndSixthBowlingFiguresToBeTheSame(TestData);
             PlayerWithFifthAndSixthInningsTheSame = ForceFifthAndSixthPlayerInningsToBeTheSame(TestData, bowlingFiguresCalculator);

@@ -26,18 +26,20 @@ namespace Stoolball.UnitTests.Statistics
             var playerIdentityFinder = new PlayerIdentityFinder();
             var matchFinder = new MatchFinder();
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
-            var teamFakerFactory = new TeamFactory();
-            var teamFaker = teamFakerFactory.CreateFaker();
-            var competitionFakerFactory = new CompetitionFactory();
-            var competitionFaker = competitionFakerFactory.CreateFaker();
+            var teamFactory = new TeamFactory();
+            var teamFaker = teamFactory.CreateFaker();
+            var competitionFactory = new CompetitionFactory();
+            var competitionFaker = competitionFactory.CreateFaker();
             var seasonFactory = new SeasonFactory();
-            var matchLocationFakerFactory = new MatchLocationFactory();
+            var matchLocationFactory = new MatchLocationFactory();
             var commentFactory = new CommentFactory();
-            var tournamentFactory = new TournamentFactory(seasonFactory, commentFactory);
-            var matchLocationFaker = matchLocationFakerFactory.CreateFaker();
+            var oversetFactory = new OverSetFactory();
+            var memberFactory = new UmbracoMemberFactory();
+            var tournamentFactory = new TournamentFactory(competitionFactory, seasonFactory, teamFactory, matchLocationFactory, oversetFactory, memberFactory, commentFactory);
+            var matchLocationFaker = matchLocationFactory.CreateFaker();
             var seedDataGenerator = new SeedDataGenerator(randomiser, _oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                competitionFakerFactory, seasonFactory, teamFakerFactory, new ClubFactory(), tournamentFactory, matchLocationFakerFactory, new SchoolFactory(),
-                new PlayerFactory(), new OverSetFactory(), commentFactory, playerOfTheMatchAward);
+                competitionFactory, seasonFactory, teamFactory, new ClubFactory(), tournamentFactory, matchLocationFactory, new SchoolFactory(),
+                new PlayerFactory(), oversetFactory, memberFactory, commentFactory, playerOfTheMatchAward);
 
             var homeTeam = teamFaker.Generate();
             var homeTeamInMatch = new TeamInMatch
@@ -93,10 +95,11 @@ namespace Stoolball.UnitTests.Statistics
                 });
             }
 
-            var firstInningsOverSets = seedDataGenerator.CreateOverSets();
-            var secondInningsOverSets = seedDataGenerator.CreateOverSets();
-            var thirdInningsOverSets = seedDataGenerator.CreateOverSets();
-            var fourthInningsOverSets = seedDataGenerator.CreateOverSets();
+            var oversetFaker = oversetFactory.CreateFaker();
+            var firstInningsOverSets = oversetFaker.Generate(1);
+            var secondInningsOverSets = oversetFaker.Generate(1);
+            var thirdInningsOverSets = oversetFaker.Generate(1);
+            var fourthInningsOverSets = oversetFaker.Generate(1);
 
             var competition = competitionFaker.Generate();
             var season = seedDataGenerator.CreateSeasonWithMinimalDetails(competition, 2020, 2020);

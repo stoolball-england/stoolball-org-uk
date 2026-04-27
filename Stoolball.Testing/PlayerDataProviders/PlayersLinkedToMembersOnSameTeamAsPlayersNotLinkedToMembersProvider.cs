@@ -1,10 +1,9 @@
 ﻿namespace Stoolball.Testing.PlayerDataProviders
 {
-    internal class PlayersLinkedToMembersOnSameTeamAsPlayersNotLinkedToMembersProvider(TeamFactory teamFactory, PlayerFactory playerFactory) : BasePlayerDataProvider
+    internal class PlayersLinkedToMembersOnSameTeamAsPlayersNotLinkedToMembersProvider(TeamFactory _teamFactory, PlayerFactory _playerFactory) : BasePlayerDataProvider
     {
-        private readonly Faker<Team> _teamFaker = teamFactory.CreateFaker();
-        private readonly Faker<Player> _playerFaker = playerFactory.CreatePlayerFaker();
-        private readonly Faker<PlayerIdentity> _playerIdentityFaker = playerFactory.CreatePlayerIdentityFaker();
+        private readonly Faker<Team> _teamFaker = _teamFactory.CreateFaker();
+        private readonly Faker<Player> _playerFaker = _playerFactory.CreatePlayerFaker();
 
         internal override IEnumerable<Player> CreatePlayers(TestData readOnlyTestData)
         {
@@ -29,7 +28,7 @@
         private Player CreatePlayer(int identities, Team team, bool isLinkedToMember)
         {
             var player = _playerFaker.Generate();
-            player.PlayerIdentities.AddRange(_playerIdentityFaker.Generate(identities));
+            player.PlayerIdentities.AddRange(_playerFactory.CreatePlayerIdentityFaker(team).Generate(identities));
             if (isLinkedToMember)
             {
                 player.MemberKey = Guid.NewGuid();
@@ -38,7 +37,6 @@
             foreach (var identity in player.PlayerIdentities)
             {
                 identity.Player = player;
-                identity.Team = team;
                 identity.LinkedBy = isLinkedToMember ? PlayerIdentityLinkedBy.Member : PlayerIdentityLinkedBy.Team;
             }
 

@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using Stoolball.MatchLocations;
-using Stoolball.Teams;
 using Stoolball.Testing;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
@@ -43,7 +42,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
                                                                  It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(expectedRoute));
 
             var sanitizedNotes = tournament.TournamentNotes + "xxx";
-            HtmlSanitizer.Setup(x => x.Sanitize(tournament.TournamentNotes, string.Empty, null)).Returns(sanitizedNotes);
+            HtmlSanitizer.Setup(x => x.Sanitize(tournament.TournamentNotes)).Returns(sanitizedNotes);
 
             var updatedTournament = await Repository.UpdateTournament(tournament, MemberKey, MemberName);
 

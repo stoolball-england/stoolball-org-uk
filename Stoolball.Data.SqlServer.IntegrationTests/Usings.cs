@@ -5,6 +5,8 @@ global using Stoolball.Competitions;
 global using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 global using Stoolball.Logging;
 global using Stoolball.Matches;
+global using Stoolball.MatchLocations;
+global using Stoolball.Teams;
 global using Xunit;
 global using static Stoolball.Constants;
 global using Match = Stoolball.Matches.Match;

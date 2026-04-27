@@ -23,7 +23,7 @@ namespace Stoolball.UnitTests.Testing
                             new Mock<TournamentFactory>(Mock.Of<SeasonFactory>(), Mock.Of<CommentFactory>()).Object,
                             Mock.Of<MatchLocationFactory>(),
                             Mock.Of<SchoolFactory>(), new PlayerFactory(),
-                            Mock.Of<OverSetFactory>(), Mock.Of<CommentFactory>(), _playerOfTheMatchAward);
+                            Mock.Of<OverSetFactory>(), Mock.Of<UmbracoMemberFactory>(), Mock.Of<CommentFactory>(), _playerOfTheMatchAward);
         }
 
         [Fact]

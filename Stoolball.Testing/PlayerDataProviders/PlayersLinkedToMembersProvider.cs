@@ -1,10 +1,9 @@
 ﻿namespace Stoolball.Testing.PlayerDataProviders
 {
-    internal class PlayersLinkedToMembersProvider(TeamFactory teamFactory, PlayerFactory playerFactory) : BasePlayerDataProvider
+    internal class PlayersLinkedToMembersProvider(TeamFactory _teamFactory, PlayerFactory _playerFactory) : BasePlayerDataProvider
     {
-        private readonly Faker<Team> _teamFaker = teamFactory.CreateFaker();
-        private readonly Faker<Player> _playerFaker = playerFactory.CreatePlayerFaker();
-        private readonly Faker<PlayerIdentity> _playerIdentityFaker = playerFactory.CreatePlayerIdentityFaker();
+        private readonly Faker<Team> _teamFaker = _teamFactory.CreateFaker();
+        private readonly Faker<Player> _playerFaker = _playerFactory.CreatePlayerFaker();
 
         internal override IEnumerable<Player> CreatePlayers(TestData readOnlyTestData)
         {
@@ -12,26 +11,25 @@
 
             // two players with only one identity, on the same team, and both linked to a member
             var players = _playerFaker.Generate(2);
-            var identities = _playerIdentityFaker.Generate(3);
+            var playerIdentityFaker = _playerFactory.CreatePlayerIdentityFaker(team);
+            var identities = playerIdentityFaker.Generate(3);
 
             for (var i = 0; i < 2; i++)
             {
                 players[i].PlayerIdentities.Add(identities[i]);
                 identities[i].Player = players[i];
-                identities[i].Team = team;
                 identities[i].LinkedBy = PlayerIdentityLinkedBy.Member;
                 players[i].MemberKey = Guid.NewGuid();
             }
 
             // another player on the same team, with two identities both linked by member
             var playerWithTwoIdentitiesLinkedByMember = _playerFaker.Generate();
-            playerWithTwoIdentitiesLinkedByMember.PlayerIdentities.AddRange(_playerIdentityFaker.Generate(2));
+            playerWithTwoIdentitiesLinkedByMember.PlayerIdentities.AddRange(playerIdentityFaker.Generate(2));
             playerWithTwoIdentitiesLinkedByMember.MemberKey = Guid.NewGuid();
 
             foreach (var identity in playerWithTwoIdentitiesLinkedByMember.PlayerIdentities)
             {
                 identity.Player = playerWithTwoIdentitiesLinkedByMember;
-                identity.Team = team;
                 identity.LinkedBy = PlayerIdentityLinkedBy.Member;
             }
             players.Add(playerWithTwoIdentitiesLinkedByMember);
@@ -40,20 +38,17 @@
             var playerWithoutMember = _playerFaker.Generate();
             playerWithoutMember.PlayerIdentities.Add(identities[2]);
             identities[2].Player = playerWithoutMember;
-            identities[2].Team = team;
             players.Add(playerWithoutMember);
 
             // another player on the same team, with two identities but only one linked by member
             var playerWithTwoIdentitiesOneLinkedByMember = _playerFaker.Generate();
-            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities.AddRange(_playerIdentityFaker.Generate(2));
+            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities.AddRange(playerIdentityFaker.Generate(2));
             playerWithTwoIdentitiesOneLinkedByMember.MemberKey = Guid.NewGuid();
 
             playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[0].Player = playerWithTwoIdentitiesOneLinkedByMember;
-            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[0].Team = team;
             playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.Member;
 
             playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[1].Player = playerWithTwoIdentitiesOneLinkedByMember;
-            playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[1].Team = team;
             playerWithTwoIdentitiesOneLinkedByMember.PlayerIdentities[1].LinkedBy = PlayerIdentityLinkedBy.Team;
 
             players.Add(playerWithTwoIdentitiesOneLinkedByMember);

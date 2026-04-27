@@ -12,7 +12,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
         internal Randomiser Randomiser { get; set; } = new Randomiser(new Random());
 
-        internal OverSetFactory OverSetFakerFactory { get; set; } = new();
+        internal OverSetFactory OverSetFactory { get; set; } = new();
 
         public SqlServerTestDataFixture() : base("StoolballIntegrationTests")
         {
@@ -27,14 +27,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var teamFactory = new TeamFactory();
             var clubFactory = new ClubFactory();
             var commentFactory = new CommentFactory();
-            var tournamentFactory = new TournamentFactory(seasonFactory, commentFactory);
             var matchLocationFactory = new MatchLocationFactory();
+            var memberFactory = new UmbracoMemberFactory();
+            var tournamentFactory = new TournamentFactory(competitionFactory, seasonFactory, teamFactory, matchLocationFactory, OverSetFactory, memberFactory, commentFactory);
             var schoolFactory = new SchoolFactory();
             var playerFakerFactory = new PlayerFactory();
             var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
             var randomSeedDataGenerator = new SeedDataGenerator(Randomiser, oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
                 competitionFactory, seasonFactory, teamFactory, clubFactory, tournamentFactory, matchLocationFactory, schoolFactory,
-                playerFakerFactory, OverSetFakerFactory, commentFactory, playerOfTheMatchAward);
+                playerFakerFactory, OverSetFactory, memberFactory, commentFactory, playerOfTheMatchAward);
 
             Randomizer.Seed = new Random(85437684);
             TestData = randomSeedDataGenerator.GenerateTestData();

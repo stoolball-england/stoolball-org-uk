@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using AngleSharp.Css.Dom;
-using Ganss.Xss;
 using Moq;
 using Stoolball.Data.Abstractions;
+using Stoolball.Html;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Routing;
@@ -33,11 +31,6 @@ namespace Stoolball.Data.SqlServer.UnitTests
         {
             _connectionFactory.Setup(x => x.CreateDatabaseConnection()).Returns(_databaseConnection.Object);
             _databaseConnection.Setup(x => x.BeginTransaction()).Returns(_databaseTransaction.Object);
-
-            _htmlSanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
-            _htmlSanitizer.Setup(x => x.AllowedAttributes).Returns(new HashSet<string>());
-            _htmlSanitizer.Setup(x => x.AllowedCssProperties).Returns(new HashSet<string>());
-            _htmlSanitizer.Setup(x => x.AllowedAtRules).Returns(new HashSet<CssRuleType>());
         }
 
         private SqlServerTournamentRepository CreateRepository()

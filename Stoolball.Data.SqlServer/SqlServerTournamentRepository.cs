@@ -4,9 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Ganss.Xss;
 using Newtonsoft.Json;
 using Stoolball.Data.Abstractions;
+using Stoolball.Html;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Routing;
@@ -44,20 +44,6 @@ namespace Stoolball.Data.SqlServer
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
             _stoolballEntityCopier = stoolballEntityCopier ?? throw new ArgumentNullException(nameof(stoolballEntityCopier));
-            _htmlSanitiser.AllowedTags.Clear();
-            _htmlSanitiser.AllowedTags.Add("p");
-            _htmlSanitiser.AllowedTags.Add("h2");
-            _htmlSanitiser.AllowedTags.Add("strong");
-            _htmlSanitiser.AllowedTags.Add("em");
-            _htmlSanitiser.AllowedTags.Add("ul");
-            _htmlSanitiser.AllowedTags.Add("ol");
-            _htmlSanitiser.AllowedTags.Add("li");
-            _htmlSanitiser.AllowedTags.Add("a");
-            _htmlSanitiser.AllowedTags.Add("br");
-            _htmlSanitiser.AllowedAttributes.Clear();
-            _htmlSanitiser.AllowedAttributes.Add("href");
-            _htmlSanitiser.AllowedCssProperties.Clear();
-            _htmlSanitiser.AllowedAtRules.Clear();
         }
 
         /// <summary>
@@ -499,6 +485,19 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(tournament));
             }
 
+            foreach (var team in tournament.Teams)
+            {
+                if (team.Team is null)
+                {
+                    throw new ArgumentException($"The {nameof(team.Team)} property cannot be null", nameof(tournament));
+                }
+            }
+
+            if (tournament.MaximumTeamsInTournament.HasValue && tournament.MaximumTeamsInTournament < 3)
+            {
+                throw new ArgumentException($"{nameof(tournament.MaximumTeamsInTournament)} must be at least 3, or null", nameof(tournament));
+            }
+
             if (memberKey == default)
             {
                 throw new ArgumentNullException(nameof(memberKey));
@@ -518,6 +517,10 @@ namespace Stoolball.Data.SqlServer
             if (auditableTournament.MaximumTeamsInTournament.HasValue)
             {
                 auditableTournament.SpacesInTournament = auditableTournament.MaximumTeamsInTournament - auditableTournament.Teams.Count >= 0 ? auditableTournament.MaximumTeamsInTournament - auditableTournament.Teams.Count : 0;
+            }
+            else
+            {
+                auditableTournament.SpacesInTournament = null;
             }
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
@@ -544,14 +547,18 @@ namespace Stoolball.Data.SqlServer
 
                     foreach (var team in auditableTournament.Teams)
                     {
-                        var currentTeam = currentTeams.SingleOrDefault(x => x.TeamId == team.Team.TeamId);
+                        var currentTeam = currentTeams.SingleOrDefault(x => x.TeamId == team.Team!.TeamId);
 
                         // Team added
-                        if (currentTeam == null)
+                        if (currentTeam is null)
                         {
-                            var existingTeamId = await connection.ExecuteScalarAsync<Guid?>($"SELECT TeamId FROM {Tables.Team} WHERE TeamId = @TeamId", new { team.Team.TeamId }, transaction).ConfigureAwait(false);
+                            Guid? existingTeamId = null;
+                            if (team.Team!.TeamId is not null)
+                            {
+                                existingTeamId = await connection.ExecuteScalarAsync<Guid?>($"SELECT TeamId FROM {Tables.Team} WHERE TeamId = @TeamId", new { team.Team.TeamId }, transaction).ConfigureAwait(false);
+                            }
 
-                            if (existingTeamId == null)
+                            if (existingTeamId is null)
                             {
                                 team.Team.TeamType = TeamType.Transient;
                                 team.Team.TeamRoute = auditableTournament.TournamentRoute;
@@ -576,15 +583,18 @@ namespace Stoolball.Data.SqlServer
                                 _logger.Info(LoggingTemplates.Created, team, memberName, memberKey, GetType(), nameof(UpdateTeams));
                             }
 
+
+                            team.TournamentTeamId = Guid.NewGuid();
+                            team.TeamRole = TournamentTeamRole.Confirmed;
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
                                     (TournamentTeamId, TournamentId, TeamId, TeamRole) 
                                     VALUES (@TournamentTeamId, @TournamentId, @TeamId, @TeamRole)",
                                     new
                                     {
-                                        TournamentTeamId = Guid.NewGuid(),
+                                        team.TournamentTeamId,
                                         auditableTournament.TournamentId,
                                         team.Team.TeamId,
-                                        TeamRole = TournamentTeamRole.Confirmed.ToString()
+                                        TeamRole = team.TeamRole.ToString()
                                     },
                                     transaction).ConfigureAwait(false);
                         }

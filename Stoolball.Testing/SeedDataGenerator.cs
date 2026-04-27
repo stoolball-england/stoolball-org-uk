@@ -20,6 +20,7 @@ namespace Stoolball.Testing
         private readonly SchoolFactory _schoolFactory;
         private readonly PlayerFactory _playerFactory;
         private readonly OverSetFactory _oversetFactory;
+        private readonly UmbracoMemberFactory _memberFactory;
         private readonly CommentFactory _commentFactory;
         private readonly MatchFactory _matchFactory;
         private readonly TournamentFactory _tournamentFactory;
@@ -27,9 +28,7 @@ namespace Stoolball.Testing
         private readonly Faker<Team> _teamFaker;
         private readonly Faker<Club> _clubFaker;
         private readonly Faker<MatchLocation> _matchLocationFaker;
-        private readonly Faker<School> _schoolFaker;
         private readonly Faker<Player> _playerFaker;
-        private readonly Faker<PlayerIdentity> _playerIdentityFaker;
         private readonly Award _playerOfTheMatchAward;
         private readonly IOversHelper _oversHelper;
 
@@ -37,7 +36,7 @@ namespace Stoolball.Testing
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
             CompetitionFactory competitionFactory, SeasonFactory seasonFactory, TeamFactory teamFactory, ClubFactory clubFactory,
             TournamentFactory tournamentFactory, MatchLocationFactory matchLocationFactory, SchoolFactory schoolFactory,
-            PlayerFactory playerFactory, OverSetFactory oversetFactory, CommentFactory commentFactory, Award playerOfTheMatchAward)
+            PlayerFactory playerFactory, OverSetFactory oversetFactory, UmbracoMemberFactory memberFactory, CommentFactory commentFactory, Award playerOfTheMatchAward)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
@@ -52,14 +51,13 @@ namespace Stoolball.Testing
             _schoolFactory = schoolFactory ?? throw new ArgumentNullException(nameof(schoolFactory));
             _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
             _oversetFactory = oversetFactory ?? throw new ArgumentNullException(nameof(oversetFactory));
+            _memberFactory = memberFactory ?? throw new ArgumentNullException(nameof(memberFactory));
             _commentFactory = commentFactory ?? throw new ArgumentNullException(nameof(commentFactory));
             _competitionFaker = competitionFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(competitionFactory));
             _teamFaker = teamFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(teamFactory));
             _clubFaker = clubFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(clubFactory));
             _matchLocationFaker = matchLocationFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(matchLocationFactory));
-            _schoolFaker = schoolFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(schoolFactory));
             _playerFaker = playerFactory?.CreatePlayerFaker() ?? throw new ArgumentNullException(nameof(playerFactory));
-            _playerIdentityFaker = playerFactory?.CreatePlayerIdentityFaker() ?? throw new ArgumentNullException(nameof(playerFactory));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
             _matchFactory = new MatchFactory(_randomiser, _playerOfTheMatchAward, _oversetFactory);
         }
@@ -139,7 +137,7 @@ namespace Stoolball.Testing
                 FromYear = fromYear,
                 UntilYear = untilYear,
                 SeasonRoute = competition?.CompetitionRoute + "/" + fromYear + "-" + untilYear,
-                DefaultOverSets = CreateOverSets(),
+                DefaultOverSets = _oversetFactory.CreateFaker().Generate(1),
                 MatchTypes = new List<MatchType> { MatchType.LeagueMatch, MatchType.FriendlyMatch }
             };
         }
@@ -153,7 +151,7 @@ namespace Stoolball.Testing
                 FromYear = fromYear,
                 UntilYear = untilYear,
                 SeasonRoute = competition?.CompetitionRoute + "/" + fromYear + "-" + untilYear,
-                DefaultOverSets = CreateOverSets(),
+                DefaultOverSets = _oversetFactory.CreateFaker().Generate(1),
                 MatchTypes = new List<MatchType> { MatchType.LeagueMatch, MatchType.FriendlyMatch },
                 EnableBonusOrPenaltyRuns = true,
                 EnableLastPlayerBatsOn = true,
@@ -335,10 +333,11 @@ namespace Stoolball.Testing
             }
             ;
 
-            var firstInningsOverSets = CreateOverSets();
-            var secondInningsOverSets = CreateOverSets();
-            var thirdInningsOverSets = CreateOverSets();
-            var fourthInningsOverSets = CreateOverSets();
+            var oversetFaker = _oversetFactory.CreateFaker();
+            var firstInningsOverSets = oversetFaker.Generate(1);
+            var secondInningsOverSets = oversetFaker.Generate(1);
+            var thirdInningsOverSets = oversetFaker.Generate(1);
+            var fourthInningsOverSets = oversetFaker.Generate(1);
 
             var competition = _competitionFaker.Generate();
             var season = CreateSeasonWithMinimalDetails(competition, 2020, 2020);
@@ -471,22 +470,6 @@ namespace Stoolball.Testing
             return match;
         }
 
-        private List<UmbracoMember> CreateMembers()
-        {
-            return new List<UmbracoMember> {
-                new UmbracoMember { Key = Guid.NewGuid(), Name =  "Jane Smith" },
-                new UmbracoMember { Key = Guid.NewGuid(), Name = "Joe Bloggs" },
-                new UmbracoMember { Key = Guid.NewGuid(), Name = "George Jones" },
-                new UmbracoMember { Key = Guid.NewGuid(), Name = "Jo Bloggs" },
-                new UmbracoMember { Key = Guid.NewGuid(), Name = "John Doe" },
-            };
-        }
-
-        internal List<OverSet> CreateOverSets()
-        {
-            return new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
-        }
-
         private static List<PlayerInnings> CreateBattingScorecard(PlayerIdentity[] battingTeam, PlayerIdentity[] bowlingTeam)
         {
             return new List<PlayerInnings>{
@@ -614,7 +597,7 @@ namespace Stoolball.Testing
             for (var i = 0; i < 5; i++)
             {
                 var team = _randomiser.IsEven(i) ? CreateTeamWithFullDetails($"Team {i + 1}") : _teamFaker.Generate();
-                poolOfTeams.Add((team, CreatePlayerIdentitiesForTeam(team, $"{team.TeamName} pool player")));
+                poolOfTeams.Add((team, CreatePlayerIdentitiesForTeam(team)));
                 if (_randomiser.IsEven(i))
                 {
                     poolOfTeams[poolOfTeams.Count - 1].team.Club = _clubFaker.Generate();
@@ -689,7 +672,7 @@ namespace Stoolball.Testing
             testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
             for (var i = 0; i < 10; i++)
             {
-                var tournament = _tournamentFactory.CreateTournamentInThePastWithFullDetailsExceptMatches(_competitionFaker, _teamFaker, _matchLocationFaker, _oversetFactory.CreateFaker(), testData.Members);
+                var tournament = _tournamentFactory.CreateTournamentInThePastWithFullDetailsExceptMatches();
                 if (testData.TournamentInThePastWithFullDetails == null) { testData.TournamentInThePastWithFullDetails = tournament; }
                 testData.Tournaments.Add(tournament);
 
@@ -702,6 +685,9 @@ namespace Stoolball.Testing
                 tournament2.Comments = _commentFactory.CreateFaker(testData.Members).Generate(i);
                 testData.Tournaments.Add(tournament2);
             }
+
+            var membersFromTournamentComments = testData.Tournaments.SelectMany(x => x.Comments).Select(x => new UmbracoMember { Key = x.MemberKey, Name = x.MemberName ?? "No name" });
+            testData.Members.AddRange(membersFromTournamentComments.Where(m => !testData.Members.Select(mem => mem.Key).Contains(m.Key)));
 
             testData.TournamentInThePastWithFullDetails!.History.AddRange(new[] { new AuditRecord {
                     Action = AuditAction.Create,
@@ -722,7 +708,7 @@ namespace Stoolball.Testing
             testData.TournamentInTheFutureWithMinimalDetails.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
             testData.Tournaments.Add(testData.TournamentInTheFutureWithMinimalDetails);
 
-            var tournamentInTheFutureWithSeasons = _tournamentFactory.CreateTournamentInThePastWithFullDetailsExceptMatches(_competitionFaker, _teamFaker, _matchLocationFaker, _oversetFactory.CreateFaker(), testData.Members);
+            var tournamentInTheFutureWithSeasons = _tournamentFactory.CreateTournamentInThePastWithFullDetailsExceptMatches();
             tournamentInTheFutureWithSeasons.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
             testData.Tournaments.Add(tournamentInTheFutureWithSeasons);
 
@@ -779,24 +765,49 @@ namespace Stoolball.Testing
             );
             if (testData.TeamWithFullDetails == null) { throw new InvalidOperationException($"{nameof(testData.TeamWithFullDetails)} not found"); }
 
-            testData.TournamentInThePastWithFullDetails.Teams.Add(new TeamInTournament
-            {
-                TournamentTeamId = Guid.NewGuid(),
-                Team = testData.TeamWithFullDetails,
-                TeamRole = TournamentTeamRole.Confirmed
-            });
+            var transientTeamForTournament = _teamFaker.Generate();
+            transientTeamForTournament.TeamType = TeamType.Transient;
+            testData.Teams.Add(transientTeamForTournament);
+
+            testData.TournamentInThePastWithFullDetails.Teams.AddRange([
+                new TeamInTournament
+                {
+                    TournamentTeamId = Guid.NewGuid(),
+                    Team = testData.TeamWithFullDetails,
+                    TeamRole = TournamentTeamRole.Confirmed
+                },
+                new TeamInTournament{
+                    TournamentTeamId = Guid.NewGuid(),
+                    Team = transientTeamForTournament,
+                    TeamRole = TournamentTeamRole.Confirmed
+                }
+            ]);
 
             var matchOrderInTournament = 1;
             foreach (var teamInTournament in testData.TournamentInThePastWithFullDetails.Teams)
             {
                 // Create a tournament match where the fully-detailed team plays everyone including themselves
-                var matchInTournament = _matchFactory.CreateMatchBetween(testData.TeamWithFullDetails, new List<PlayerIdentity>(), teamInTournament.Team, new List<PlayerIdentity>(), true, testData, nameof(GenerateTestData) + "TournamentMatch");
+                var teamAPlayers = testData.PlayerIdentities.Where(pi => pi.Team!.TeamId == testData.TeamWithFullDetails.TeamId).ToList();
+                var teamBPlayers = testData.PlayerIdentities.Where(pi => pi.Team!.TeamId == teamInTournament.Team!.TeamId).ToList();
+
+                var matchInTournament = _matchFactory.CreateMatchBetween(
+                    testData.TeamWithFullDetails,
+                    teamAPlayers.Any() ? teamAPlayers : _playerFactory.CreatePlayerIdentityFaker(testData.TeamWithFullDetails).Generate(11),
+                    teamInTournament.Team!,
+                    teamBPlayers.Any() ? teamBPlayers : _playerFactory.CreatePlayerIdentityFaker(teamInTournament.Team!).Generate(11),
+                    true, testData, nameof(GenerateTestData) + "TournamentMatch");
                 matchInTournament.Tournament = testData.TournamentInThePastWithFullDetails;
                 matchInTournament.OrderInTournament = matchOrderInTournament;
                 matchInTournament.StartTime = testData.TournamentInThePastWithFullDetails.StartTime.AddMinutes((matchOrderInTournament - 1) * 45);
                 matchInTournament.Season = null;
                 matchInTournament.MatchLocation = testData.TournamentInThePastWithFullDetails.TournamentLocation;
                 matchInTournament.PlayersPerTeam = testData.TournamentInThePastWithFullDetails.PlayersPerTeam;
+
+                foreach (var matchInnings in matchInTournament.MatchInnings)
+                {
+                    matchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(matchInnings);
+                }
+
                 matchOrderInTournament++;
                 testData.Matches.Add(matchInTournament);
                 testData.TournamentInThePastWithFullDetails.Matches.Add(new MatchInTournament
@@ -804,6 +815,21 @@ namespace Stoolball.Testing
                     MatchId = matchInTournament.MatchId,
                     MatchName = matchInTournament.MatchName,
                     Teams = new List<TeamInTournament> { testData.TournamentInThePastWithFullDetails.Teams.Single(x => x.Team?.TeamId == testData.TeamWithFullDetails.TeamId), teamInTournament }
+                });
+            }
+
+            // Make sure at least one match in the tournament has an award
+            if (!testData.Matches.Any(m => m.Tournament == testData.TournamentInThePastWithFullDetails && m.Awards.Any()))
+            {
+                var matchInFullTournament = testData.Matches.First(m => m.Tournament == testData.TournamentInThePastWithFullDetails
+                                                                    && m.Teams.Any(t => t.Team?.TeamId == testData.TeamWithFullDetails.TeamId)
+                                                                        );
+                matchInFullTournament.Awards.Add(new MatchAward
+                {
+                    AwardedToId = Guid.NewGuid(),
+                    Award = _playerOfTheMatchAward,
+                    PlayerIdentity = testData.PlayerIdentities.First(pi => matchInFullTournament.Teams.Select(t => t.Team!.TeamId).Contains(pi.Team?.TeamId)),
+                    Reason = "Outstanding performance in the match"
                 });
             }
 
@@ -1371,7 +1397,7 @@ namespace Stoolball.Testing
 
         internal List<Match> GenerateMatchData(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
         {
-            var members = CreateMembers();
+            var members = _memberFactory.CreateFaker().Generate(5);
 
             // Randomly assign at least two players from each team a second identity - one on the same team, one on a different team.
             // This ensure we always have lots of teams with multiple identities for the same player for both scenarios.
@@ -1571,15 +1597,14 @@ namespace Stoolball.Testing
             return match;
         }
 
-        private List<PlayerIdentity> CreatePlayerIdentitiesForTeam(Team team, string playerName)
+        private List<PlayerIdentity> CreatePlayerIdentitiesForTeam(Team team)
         {
             var poolOfPlayers = new List<PlayerIdentity>();
             for (var i = 0; i < 8; i++)
             {
                 var player = _playerFaker.Generate();
-                var playerIdentity = _playerIdentityFaker.Generate();
+                var playerIdentity = _playerFactory.CreatePlayerIdentityFaker(team).Generate();
                 playerIdentity.Player = player;
-                playerIdentity.Team = team;
                 player.PlayerIdentities.Add(playerIdentity);
                 poolOfPlayers.Add(playerIdentity);
             }
