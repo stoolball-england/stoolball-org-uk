@@ -44,7 +44,7 @@ namespace Stoolball.Web.Matches
 
             if (tournament.MemberKey == currentMember.Key) { return true; }
 
-            return await memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
+            return await memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.PowerUsers }, null);
         }
 
         /// <inheritdoc/>

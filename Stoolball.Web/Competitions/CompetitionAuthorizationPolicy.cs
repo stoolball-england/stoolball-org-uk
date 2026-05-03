@@ -49,7 +49,7 @@ namespace Stoolball.Web.Competitions
             if (!string.IsNullOrEmpty(competition.MemberGroupName))
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                members.AddRange(_memberService.GetMembersInRole(competition.MemberGroupName).Where(x => x.Username != currentMember?.UserName).Select(x => x.Name));
+                members.AddRange(_memberService.GetMembersInRole(competition.MemberGroupName).Where(x => x.Username != currentMember?.UserName).Select(x => x.Name).OfType<string>());
             }
             return members;
         }
@@ -63,17 +63,18 @@ namespace Stoolball.Web.Competitions
             }
 
             var authorizations = new Dictionary<AuthorizedAction, bool>();
-            authorizations[AuthorizedAction.CreateCompetition] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
+            authorizations[AuthorizedAction.CreateCompetition] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.PowerUsers, Groups.AllMembers }, null);
             authorizations[AuthorizedAction.DeleteCompetition] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
             if (!string.IsNullOrEmpty(competition.MemberGroupName))
             {
                 var groups = AuthorizedGroupNames(competition);
                 groups.Add(Groups.Administrators);
+                groups.Add(Groups.PowerUsers);
                 authorizations[AuthorizedAction.EditCompetition] = await _memberManager.IsMemberAuthorizedAsync(null, groups, null);
             }
             else
             {
-                authorizations[AuthorizedAction.EditCompetition] = authorizations[AuthorizedAction.DeleteCompetition];
+                authorizations[AuthorizedAction.EditCompetition] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.PowerUsers }, null);
             }
             return authorizations;
         }

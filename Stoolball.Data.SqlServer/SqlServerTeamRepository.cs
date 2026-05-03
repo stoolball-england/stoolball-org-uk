@@ -138,7 +138,7 @@ namespace Stoolball.Data.SqlServer
             auditableTeam.MemberGroupName = group.Name;
 
             // Assign the member to the group unless they're already admin
-            if (!(await _memberGroupHelper.MemberIsAdministrator(memberUsername)))
+            if (!(await _memberGroupHelper.MemberIsAdministratorOrPowerUser(memberUsername)))
             {
                 _memberGroupHelper.AssignRole(memberUsername, group.Name);
             }

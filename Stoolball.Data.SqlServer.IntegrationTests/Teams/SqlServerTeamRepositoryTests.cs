@@ -321,7 +321,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 _sanitizer.Verify(x => x.Sanitize(originalPublicContact));
                 Assert.Equal(sanitisedPublicContact, teamResult.PublicContactDetails);
 
-                _memberGroupHelper.Verify(x => x.MemberIsAdministrator(userName), Times.Once);
+                _memberGroupHelper.Verify(x => x.MemberIsAdministratorOrPowerUser(userName), Times.Once);
                 _memberGroupHelper.Verify(x => x.AssignRole(userName, group.Name), Times.Once);
                 Assert.Equal(group.Key, teamResult.MemberGroupKey);
                 Assert.Equal(group.Name, teamResult.MemberGroupName);

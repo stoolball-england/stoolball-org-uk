@@ -85,7 +85,7 @@ namespace Stoolball.Web.MatchLocations
 
                 // Assign the current member to the group unless they're already admin
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                if (!await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null))
+                if (!await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.PowerUsers, Groups.Administrators }, null))
                 {
                     Services.MemberService.AssignRole(currentMember.Id, group!.Name);
                 }

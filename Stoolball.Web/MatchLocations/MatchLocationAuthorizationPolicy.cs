@@ -49,7 +49,7 @@ namespace Stoolball.Web.MatchLocations
             if (!string.IsNullOrEmpty(matchLocation.MemberGroupName))
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                members.AddRange(_memberService.GetMembersInRole(matchLocation.MemberGroupName).Where(x => x.Username != currentMember?.UserName).Select(x => x.Name));
+                members.AddRange(_memberService.GetMembersInRole(matchLocation.MemberGroupName).Where(x => x.Username != currentMember?.UserName).Select(x => x.Name).OfType<string>());
             }
             return members;
         }
@@ -63,17 +63,18 @@ namespace Stoolball.Web.MatchLocations
             }
 
             var authorizations = new Dictionary<AuthorizedAction, bool>();
-            authorizations[AuthorizedAction.CreateMatchLocation] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
+            authorizations[AuthorizedAction.CreateMatchLocation] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.PowerUsers, Groups.AllMembers }, null);
             authorizations[AuthorizedAction.DeleteMatchLocation] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
             if (!string.IsNullOrEmpty(matchLocation.MemberGroupName))
             {
                 var groups = AuthorizedGroupNames(matchLocation);
                 groups.Add(Groups.Administrators);
+                groups.Add(Groups.PowerUsers);
                 authorizations[AuthorizedAction.EditMatchLocation] = await _memberManager.IsMemberAuthorizedAsync(null, groups, null);
             }
             else
             {
-                authorizations[AuthorizedAction.EditMatchLocation] = authorizations[AuthorizedAction.DeleteMatchLocation];
+                authorizations[AuthorizedAction.EditMatchLocation] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.PowerUsers }, null);
             }
             return authorizations;
         }

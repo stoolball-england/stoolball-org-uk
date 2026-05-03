@@ -49,6 +49,7 @@ namespace Stoolball
         public static class Groups
         {
             public const string Administrators = "Administrators";
+            public const string PowerUsers = "Power Users";
             public const string AllMembers = "All Members";
         }
 

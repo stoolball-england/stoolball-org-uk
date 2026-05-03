@@ -49,7 +49,7 @@ namespace Stoolball.Web.Clubs
             if (!string.IsNullOrEmpty(club.MemberGroupName))
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
-                members.AddRange(_memberService.GetMembersInRole(club.MemberGroupName).Where(x => x.Username != currentMember?.UserName).Select(x => x.Name));
+                members.AddRange(_memberService.GetMembersInRole(club.MemberGroupName).Where(x => x.Username != currentMember?.UserName).Select(x => x.Name).OfType<string>());
             }
             return members;
         }
@@ -63,17 +63,18 @@ namespace Stoolball.Web.Clubs
             }
 
             var authorizations = new Dictionary<AuthorizedAction, bool>();
-            authorizations[AuthorizedAction.CreateClub] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
+            authorizations[AuthorizedAction.CreateClub] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.PowerUsers, Groups.AllMembers }, null);
             authorizations[AuthorizedAction.DeleteClub] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null);
             if (!string.IsNullOrEmpty(club.MemberGroupName))
             {
                 var groups = AuthorizedGroupNames(club);
                 groups.Add(Groups.Administrators);
+                groups.Add(Groups.PowerUsers);
                 authorizations[AuthorizedAction.EditClub] = await _memberManager.IsMemberAuthorizedAsync(null, groups, null);
             }
             else
             {
-                authorizations[AuthorizedAction.EditClub] = authorizations[AuthorizedAction.DeleteClub];
+                authorizations[AuthorizedAction.EditClub] = await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.PowerUsers }, null);
             }
             return authorizations;
         }

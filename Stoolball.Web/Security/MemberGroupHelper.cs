@@ -52,12 +52,12 @@ namespace Stoolball.Web.Security
             return new SecurityGroup { Key = group!.Key, Name = group.Name };
         }
 
-        public async Task<bool> MemberIsAdministrator(string username)
+        public async Task<bool> MemberIsAdministratorOrPowerUser(string username)
         {
             var member = await _memberManager.FindByNameAsync(username);
             if (string.IsNullOrEmpty(username)) { return false; }
             if (member == null) { return false; }
-            return (await _memberManager.GetRolesAsync(member)).Any(x => x.ToUpperInvariant() == Groups.Administrators.ToUpperInvariant());
+            return (await _memberManager.GetRolesAsync(member)).Any(x => x.ToUpperInvariant() == Groups.Administrators.ToUpperInvariant() || x.ToUpperInvariant() == Groups.PowerUsers.ToUpperInvariant());
         }
 
         public void AssignRole(string username, string roleName)

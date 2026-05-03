@@ -46,7 +46,7 @@ namespace Stoolball.Web.Matches
             if (match.MemberKeys().Contains(currentMember.Key)) { return true; }
 
             var allowedGroups = new List<string>(match.MemberGroupNames());
-            allowedGroups.AddRange(new[] { Groups.Administrators });
+            allowedGroups.AddRange(new[] { Groups.Administrators, Groups.PowerUsers });
 
             return await memberManager.IsMemberAuthorizedAsync(null, allowedGroups, null);
         }
@@ -69,7 +69,7 @@ namespace Stoolball.Web.Matches
             var currentMember = await _memberManager.GetCurrentMemberAsync();
             foreach (var groupName in match.MemberGroupNames())
             {
-                members.AddRange(_memberService.GetMembersInRole(groupName).Where(x => x.Username != currentMember?.UserName && !members.Contains(x.Name)).Select(x => x.Name));
+                members.AddRange(_memberService.GetMembersInRole(groupName).Where(x => x.Username != currentMember?.UserName && !members.Contains(x.Name)).Select(x => x.Name).OfType<string>());
             }
             foreach (var memberKey in match.MemberKeys())
             {

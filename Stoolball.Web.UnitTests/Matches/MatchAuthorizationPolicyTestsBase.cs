@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Stoolball.Security;
@@ -93,7 +92,7 @@ namespace Stoolball.Web.UnitTests.Matches
         [Theory]
         [InlineData(nameof(EditAction))]
         [InlineData(nameof(DeleteAction))]
-        public async Task IsAuthorized_action_returns_true_when_member_is_administrator(string actionPropertyName)
+        public async Task IsAuthorized_action_returns_true_when_member_is_power_user_or_administrator(string actionPropertyName)
         {
             var policy = CreatePolicy();
             var creatorKey = Guid.NewGuid();
@@ -103,7 +102,7 @@ namespace Stoolball.Web.UnitTests.Matches
             var action = GetActionByPropertyName(actionPropertyName);
 
             MemberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult<MemberIdentityUser?>(currentMember));
-            MemberManager.Setup(x => x.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null))
+            MemberManager.Setup(x => x.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators, Groups.PowerUsers }, null))
                 .Returns(Task.FromResult(true));
 
             var result = await policy.IsAuthorized(entity);
@@ -114,7 +113,7 @@ namespace Stoolball.Web.UnitTests.Matches
         [Theory]
         [InlineData(nameof(EditAction))]
         [InlineData(nameof(DeleteAction))]
-        public async Task IsAuthorized_action_returns_false_when_not_creator_and_not_administrator(string actionPropertyName)
+        public async Task IsAuthorized_action_returns_false_when_not_creator_not_power_user_and_not_administrator(string actionPropertyName)
         {
             var policy = CreatePolicy();
             var creatorKey = Guid.NewGuid();
@@ -124,7 +123,7 @@ namespace Stoolball.Web.UnitTests.Matches
             var action = GetActionByPropertyName(actionPropertyName);
 
             MemberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult<MemberIdentityUser?>(currentMember));
-            MemberManager.Setup(x => x.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null))
+            MemberManager.Setup(x => x.IsMemberAuthorizedAsync(null, new[] { Groups.PowerUsers, Groups.Administrators }, null))
                 .Returns(Task.FromResult(false));
 
             var result = await policy.IsAuthorized(entity);
