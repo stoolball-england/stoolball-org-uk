@@ -128,7 +128,7 @@
     <PackageReference Include="SolarCalculator" Version="3.1.0" />
     <PackageReference Include="Umbraco.Cloud.Identity.Cms" Version="13.2.1" />
     <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="13.0.1" />
-    <PackageReference Include="Umbraco.Cms" Version="13.9.3" />
+    <PackageReference Include="Umbraco.Cms" Version="13.12.1" />
     <PackageReference Include="Umbraco.Deploy.Cloud" Version="13.2.2" />
     <PackageReference Include="Umbraco.Deploy.Contrib" Version="13.2.0" />
     <PackageReference Include="Umbraco.Forms" Version="13.9.6" />
