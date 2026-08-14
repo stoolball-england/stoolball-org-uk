@@ -239,7 +239,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
         [Fact]
         public async Task Transient_team_removed_deletes_tournament_data_and_team()
         {
-            var tournament = Copier.CreateAuditableCopy(FindTournamentWithMatchDataForTeam(TeamType.Transient));
+            var tournament = Copier.CreateAuditableCopy(FindTournamentWithMatchDataForTeam(TeamType.Transient))!;
+
+            var team = FindTeamWithMatchData(tournament, TeamType.Transient);
 
             throw new NotImplementedException();
 
@@ -284,10 +286,34 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
                                   && t.Teams.Any(t => t.Team?.TeamType == teamType));
         }
 
+        private TeamInTournament FindTeamWithMatchData(Tournament tournament, TeamType teamType)
+        {
+            return tournament.Teams.First(t => t.Team?.TeamType == teamType
+                                            && tournament.Matches.Any(tm => DatabaseFixture.TestData.Matches.SingleOrDefault(m => m.MatchId == tm.MatchId
+                                                                                                            && m.Awards.Any(aw => aw.PlayerIdentity?.Team?.TeamId == t.Team.TeamId)
+                                                                                                            && m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.Batter?.Team?.TeamId == t.Team.TeamId))
+                                                                                                            && m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.DismissedBy?.Team?.TeamId == t.Team.TeamId
+                                                                                                                                                                || pi.Bowler?.Team?.TeamId == t.Team.TeamId)
+                                                                                                                                     && mi.OversBowled.Any(o => o.Bowler?.Team?.TeamId == t.Team.TeamId)
+                                                                                                                                     && mi.BowlingFigures.Any(bf => bf.Bowler?.Team?.TeamId == t.Team.TeamId))
+                                                                                                            ) is not null));
+        }
+
         [Fact]
         public async Task Existing_team_removed_deletes_tournament_data_but_not_team()
         {
-            var tournament = Copier.CreateAuditableCopy(FindTournamentWithMatchDataForTeam(TeamType.Regular));
+            // Arrange
+            var tournament = Copier.CreateAuditableCopy(FindTournamentWithMatchDataForTeam(TeamType.Regular))!;
+
+            var team = FindTeamWithMatchData(tournament, TeamType.Regular);
+
+            tournament.Teams.Remove(team);
+
+            // Act
+            var result = await Repository.UpdateTeams(tournament, MemberKey, MemberUsername, MemberName).ConfigureAwait(false);
+
+            // Assert
+            Assert.NotNull(result);
 
             throw new NotImplementedException();
 
