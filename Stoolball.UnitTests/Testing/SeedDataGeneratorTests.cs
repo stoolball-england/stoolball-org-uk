@@ -18,12 +18,19 @@ namespace Stoolball.UnitTests.Testing
         private readonly Award _playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
         private SeedDataGenerator CreateGenerator()
         {
+            var competitionFactory = Mock.Of<CompetitionFactory>();
+            var seasonFactory = Mock.Of<SeasonFactory>();
+            var teamFactory = Mock.Of<TeamFactory>();
+            var matchLocationFactory = Mock.Of<MatchLocationFactory>();
+            var oversetFactory = Mock.Of<OverSetFactory>();
+            var memberFactory = Mock.Of<UmbracoMemberFactory>();
+            var commentFactory = Mock.Of<CommentFactory>();
             return new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
-                            Mock.Of<CompetitionFactory>(), Mock.Of<SeasonFactory>(), Mock.Of<TeamFactory>(), Mock.Of<ClubFactory>(),
-                            new Mock<TournamentFactory>(Mock.Of<SeasonFactory>(), Mock.Of<CommentFactory>()).Object,
-                            Mock.Of<MatchLocationFactory>(),
+                            competitionFactory, seasonFactory, teamFactory, Mock.Of<ClubFactory>(),
+                            new Mock<TournamentFactory>(competitionFactory, seasonFactory, teamFactory, matchLocationFactory, oversetFactory, memberFactory, commentFactory).Object,
+                            matchLocationFactory,
                             Mock.Of<SchoolFactory>(), new PlayerFactory(),
-                            Mock.Of<OverSetFactory>(), Mock.Of<UmbracoMemberFactory>(), Mock.Of<CommentFactory>(), _playerOfTheMatchAward);
+                            oversetFactory, memberFactory, commentFactory, _playerOfTheMatchAward);
         }
 
         [Fact]

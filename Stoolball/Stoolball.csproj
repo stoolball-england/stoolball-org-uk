@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.64" />
-    <PackageReference Include="HtmlSanitizer" Version="8.1.870" />
+    <PackageReference Include="HtmlSanitizer" Version="9.2.995" />
     <PackageReference Include="Humanizer.Core" Version="2.8.26" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.8" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
