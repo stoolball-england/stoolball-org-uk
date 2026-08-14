@@ -42,8 +42,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Umbraco.Cms.Core" Version="13.14.0" />
-    <PackageReference Include="Umbraco.Cms.Infrastructure" Version="13.14.0" />
+    <PackageReference Include="Umbraco.Cms.Core" Version="13.16.0" />
+    <PackageReference Include="Umbraco.Cms.Infrastructure" Version="13.16.0" />
   </ItemGroup>
 
   <ItemGroup>
