@@ -33,6 +33,7 @@
     <EmbeddedResource Include="043_Delete_Obsolete_Players\Clean_Existing_Data.sql" />
     <EmbeddedResource Include="043_Delete_Obsolete_Players\vw_Stoolball_PlayerIdentity.sql" />
     <EmbeddedResource Include="043_Delete_Obsolete_Players\usp_Player_Async_Update.sql" />
+    <EmbeddedResource Include="045_Nullable_Opposition_Statistics\Make_Opposition_Columns_Nullable.sql" />
     <EmbeddedResource Include="044_Add_PlayerIdentity_LinkedBy\StoolballPlayerIdentity_PopulateLinkedBy.sql" />
     <EmbeddedResource Include="044_Add_PlayerIdentity_LinkedBy\vw_Stoolball_PlayerIdentity.sql" />
   </ItemGroup>
