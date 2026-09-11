@@ -358,7 +358,7 @@ namespace Stoolball
             return teams.Select(x => new TeamInTournament
             {
                 TournamentTeamId = x.TournamentTeamId,
-                Team = x.Team != null ? new Team { TeamId = x.Team.TeamId, TeamName = x.Team.TeamName } : null,
+                Team = x.Team != null ? new Team { TeamId = x.Team.TeamId, TeamName = x.Team.TeamName, TeamType = x.Team.TeamType } : null,
                 TeamRole = x.TeamRole,
                 PlayingAsTeamName = x.PlayingAsTeamName
             }).ToList();

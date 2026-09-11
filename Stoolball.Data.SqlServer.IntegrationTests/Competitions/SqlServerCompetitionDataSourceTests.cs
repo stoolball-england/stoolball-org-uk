@@ -1,12 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Moq;
-using Stoolball.Competitions;
-using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
-using Stoolball.Navigation;
+﻿using Stoolball.Navigation;
 using Stoolball.Routing;
-using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 {
@@ -130,18 +123,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         [Fact]
         public async Task Read_competition_by_route_returns_match_types()
         {
+            var comp = _databaseFixture.TestData.CompetitionWithFullDetails!;
             var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithFullDetails!.CompetitionRoute!, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithFullDetails!.CompetitionRoute!);
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(comp.CompetitionRoute!, "competitions")).Returns(comp.CompetitionRoute!);
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute!).ConfigureAwait(false);
+            var result = await competitionDataSource.ReadCompetitionByRoute(comp.CompetitionRoute!).ConfigureAwait(false);
 
             Assert.NotNull(result);
-            for (var season = 0; season < _databaseFixture.TestData.CompetitionWithFullDetails.Seasons.Count; season++)
+            for (var season = 0; season < comp.Seasons.Count; season++)
             {
-                for (var matchType = 0; matchType < _databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].MatchTypes.Count; matchType++)
+                var matchTypesInSeason = comp.Seasons[season].MatchTypes;
+                for (var matchType = 0; matchType < matchTypesInSeason.Count; matchType++)
                 {
-                    Assert.Contains(_databaseFixture.TestData.CompetitionWithFullDetails.Seasons[season].MatchTypes[matchType], result!.Seasons[season].MatchTypes);
+                    Assert.Contains(matchTypesInSeason[matchType], result!.Seasons[season].MatchTypes);
                 }
             }
         }

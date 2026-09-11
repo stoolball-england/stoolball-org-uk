@@ -41,6 +41,7 @@ namespace Stoolball.Testing.MatchDataProviders
             {
                 OverId = Guid.NewGuid(),
                 OverNumber = 1,
+                OverSet = match.MatchInnings[0].OverSets[0],
                 Bowler = bowler,
                 BallsBowled = 8,
                 RunsConceded = 10
