@@ -17,12 +17,13 @@ namespace Stoolball.Matches
             }
 
             // First strategy, look at the teams playing the match
-            if (match.Teams.Count > 0)
+            var teamPlayerTypes = match.Teams.Where(x => x.Team != null).Select(x => x.Team!.PlayerType).Distinct().ToList();
+            if (teamPlayerTypes.Count > 0)
             {
-                return SelectPlayerTypeHelper(match.Teams.Where(x => x.Team != null).Select(x => x.Team!.PlayerType).Distinct().ToList());
+                return SelectPlayerTypeHelper(teamPlayerTypes);
             }
 
-            // Second strategy, if no teams it could be a cup match where the teams will be known later?
+            // Second strategy, if no teams (or no team data loaded) it could be a cup match where the teams will be known later?
             // Look at the player types of the season it's in
             if (match.Season != null && match.Season.Competition != null)
             {
