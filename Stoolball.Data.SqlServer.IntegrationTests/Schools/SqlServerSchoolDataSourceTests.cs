@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Moq;
+using Stoolball;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Navigation;
 using Stoolball.Routing;
@@ -246,34 +247,34 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Schools
         }
 
         [Fact]
-        public async Task Read_schools_subsorts_by_name()
+        public async Task Read_schools_subsorts_by_comparable_name()
         {
             var schoolDataSource = new SqlServerSchoolDataSource(_databaseFixture.ConnectionFactory, Mock.Of<IRouteNormaliser>());
 
             var results = await schoolDataSource.ReadSchools(null).ConfigureAwait(false);
 
             // Active teams
-            var sortedResults = new List<string>(results.Where(x => x.IsActive()).Select(x => x.SchoolName));
-            sortedResults.Sort();
+            var sortedResults = new List<string>(results.Where(x => x.IsActive()).Select(x => x.ComparableName()));
+            sortedResults.Sort(StringComparer.Ordinal);
             var queue = new Queue<string>(sortedResults);
 
             foreach (var result in results)
             {
                 if (!result.IsActive()) { continue; }
 
-                Assert.Equal(queue.Dequeue(), result.SchoolName);
+                Assert.Equal(queue.Dequeue(), result.ComparableName());
             }
 
             // Then inactive teams
-            sortedResults = new List<string>(results.Where(x => !x.IsActive()).Select(x => x.SchoolName));
-            sortedResults.Sort();
+            sortedResults = new List<string>(results.Where(x => !x.IsActive()).Select(x => x.ComparableName()));
+            sortedResults.Sort(StringComparer.Ordinal);
             queue = new Queue<string>(sortedResults);
 
             foreach (var result in results)
             {
                 if (result.IsActive()) { continue; }
 
-                Assert.Equal(queue.Dequeue(), result.SchoolName);
+                Assert.Equal(queue.Dequeue(), result.ComparableName());
             }
         }
 
