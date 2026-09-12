@@ -40,7 +40,7 @@ namespace Stoolball.UnitTests.Testing
 
             for (var i = 0; i < _iterations; i++)
             {
-                var overs = generator.CreateOversBowled(generator.GenerateTeams()[0].identities, []);
+                var overs = generator.CreateOversBowled(generator.GenerateTeams()[0].identities, [new OverSet { OverSetNumber = 1, Overs = 5, BallsPerOver = 8 }]);
 
                 Assert.Contains(overs, x => x.Bowler != null && x.BallsBowled == null && x.NoBalls == null && x.Wides == null && x.RunsConceded == null);
             }
