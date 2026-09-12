@@ -172,7 +172,7 @@ namespace Stoolball
                 UpdateMatchNameAutomatically = match.UpdateMatchNameAutomatically,
                 MatchType = match.MatchType,
                 PlayerType = match.PlayerType,
-                Tournament = match.Tournament != null ? new Tournament { TournamentId = match.Tournament.TournamentId } : null,
+                Tournament = match.Tournament != null ? new Tournament { TournamentId = match.Tournament.TournamentId, PlayerType = match.Tournament.PlayerType } : null,
                 MatchResultType = match.MatchResultType,
                 Teams = match.Teams.Select(x => CreateAuditableCopy(x)).OfType<TeamInMatch>().ToList(),
                 MatchLocation = match.MatchLocation != null ? new MatchLocation { MatchLocationId = match.MatchLocation.MatchLocationId } : null,

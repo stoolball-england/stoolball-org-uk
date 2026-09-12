@@ -380,7 +380,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
         {
             var tournament = Copier.CreateAuditableCopy(DatabaseFixture.TestData.Tournaments.First())!;
 
-            var result = await Repository.UpdateTeams(tournament, MemberKey, MemberUsername, MemberName).ConfigureAwait(false);
+            _ = await Repository.UpdateTeams(tournament, MemberKey, MemberUsername, MemberName).ConfigureAwait(false);
 
             AuditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), It.IsAny<IDbTransaction>()), Times.Once);
             Logger.Verify(x => x.Info(LoggingTemplates.Updated, It.Is<Tournament>(t => t.TournamentId == tournament.TournamentId), MemberName, MemberKey, typeof(SqlServerTournamentRepository), nameof(SqlServerTournamentRepository.UpdateTeams)));

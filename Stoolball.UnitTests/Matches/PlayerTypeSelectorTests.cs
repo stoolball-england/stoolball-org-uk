@@ -163,9 +163,6 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Match_with_a_JuniorMixed_team_and_a_single_sex_junior_team_defaults_to_JuniorMixed()
         {
-            // A team already typed JuniorMixed isn't treated as PlayerType.Mixed by the helper,
-            // so this combination also falls through to the JuniorMixed default rather than
-            // being caught by the explicit "mixed" check.
             var match = new Match
             {
                 Teams = new List<TeamInMatch>
@@ -226,6 +223,81 @@ namespace Stoolball.UnitTests.Matches
             var result = _selector.SelectPlayerType(match);
 
             Assert.Equal(PlayerType.Mixed, result);
+        }
+
+        [Theory]
+        [InlineData(PlayerType.Mixed)]
+        [InlineData(PlayerType.Ladies)]
+        [InlineData(PlayerType.Men)]
+        [InlineData(PlayerType.JuniorMixed)]
+        [InlineData(PlayerType.JuniorGirls)]
+        [InlineData(PlayerType.JuniorBoys)]
+        public void Match_with_a_tournament_returns_the_tournaments_player_type(PlayerType playerType)
+        {
+            var match = new Match
+            {
+                Tournament = new Tournament { PlayerType = playerType },
+                Teams = new List<TeamInMatch>()
+            };
+
+            var result = _selector.SelectPlayerType(match);
+
+            Assert.Equal(playerType, result);
+        }
+
+        [Fact]
+        public void Match_with_a_tournament_ignores_the_teams_player_types()
+        {
+            // The tournament's player type takes priority over working it out from the teams,
+            // because a tournament match may involve teams that don't reflect the tournament as a whole.
+            var match = new Match
+            {
+                Tournament = new Tournament { PlayerType = PlayerType.Ladies },
+                Teams = new List<TeamInMatch>
+                {
+                    new TeamInMatch { Team = new Team { PlayerType = PlayerType.Men } },
+                    new TeamInMatch { Team = new Team { PlayerType = PlayerType.JuniorBoys } }
+                }
+            };
+
+            var result = _selector.SelectPlayerType(match);
+
+            Assert.Equal(PlayerType.Ladies, result);
+        }
+
+        [Fact]
+        public void Match_with_a_tournament_ignores_the_season_player_type()
+        {
+            var match = new Match
+            {
+                Tournament = new Tournament { PlayerType = PlayerType.JuniorGirls },
+                Teams = new List<TeamInMatch>(),
+                Season = new Season
+                {
+                    Competition = new Competition { PlayerType = PlayerType.Men }
+                }
+            };
+
+            var result = _selector.SelectPlayerType(match);
+
+            Assert.Equal(PlayerType.JuniorGirls, result);
+        }
+
+        [Fact]
+        public void Match_with_no_tournament_falls_back_to_the_teams_player_type()
+        {
+            var match = new Match
+            {
+                Tournament = null,
+                Teams = new List<TeamInMatch>
+                {
+                    new TeamInMatch { Team = new Team { PlayerType = PlayerType.Men } }
+                }
+            };
+
+            var result = _selector.SelectPlayerType(match);
+
+            Assert.Equal(PlayerType.Men, result);
         }
     }
 }

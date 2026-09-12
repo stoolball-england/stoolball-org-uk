@@ -7,11 +7,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Text;
 using Dapper;
-using Ganss.Xss;
 using Newtonsoft.Json;
 using Stoolball.Awards;
 using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
+using Stoolball.Html;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Routing;
@@ -72,20 +72,6 @@ namespace Stoolball.Data.SqlServer
             _matchInningsFactory = matchInningsFactory ?? throw new ArgumentNullException(nameof(matchInningsFactory));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _copier = copier ?? throw new ArgumentNullException(nameof(copier));
-            _htmlSanitiser.AllowedTags.Clear();
-            _htmlSanitiser.AllowedTags.Add("p");
-            _htmlSanitiser.AllowedTags.Add("h2");
-            _htmlSanitiser.AllowedTags.Add("strong");
-            _htmlSanitiser.AllowedTags.Add("em");
-            _htmlSanitiser.AllowedTags.Add("ul");
-            _htmlSanitiser.AllowedTags.Add("ol");
-            _htmlSanitiser.AllowedTags.Add("li");
-            _htmlSanitiser.AllowedTags.Add("a");
-            _htmlSanitiser.AllowedTags.Add("br");
-            _htmlSanitiser.AllowedAttributes.Clear();
-            _htmlSanitiser.AllowedAttributes.Add("href");
-            _htmlSanitiser.AllowedCssProperties.Clear();
-            _htmlSanitiser.AllowedAtRules.Clear();
         }
 
         private static void ValidateCreateUpdateMatchInputs(Match match, string memberName)
@@ -229,13 +215,14 @@ namespace Stoolball.Data.SqlServer
                 team.MatchTeamId = matchTeamId;
 
                 await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
-								(MatchTeamId, MatchId, TeamId, TeamRole) VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole)",
+								(MatchTeamId, MatchId, TeamId, TeamRole, PlayingAsTeamName) VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole, @PlayingAsTeamName)",
                     new
                     {
                         team.MatchTeamId,
                         auditableMatch.MatchId,
                         team.Team!.TeamId,
-                        TeamRole = team.TeamRole.ToString()
+                        TeamRole = team.TeamRole.ToString(),
+                        team.PlayingAsTeamName
                     },
                     transaction).ConfigureAwait(false);
             }

@@ -765,8 +765,8 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var currentMatchesInTournament = await connection.QueryAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId", new { tournament.TournamentId }, transaction).ConfigureAwait(false);
-                    var deletedMatches = currentMatchesInTournament.Where(x => !tournament.Matches.Where(m => m.MatchId.HasValue).Select(m => m.MatchId!.Value).Contains(x));
+                    var currentMatchesInTournament = await connection.QueryAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
+                    var deletedMatches = currentMatchesInTournament.Where(x => !auditableTournament.Matches.Where(m => m.MatchId.HasValue).Select(m => m.MatchId!.Value).Contains(x));
                     if (deletedMatches.Any())
                     {
                         foreach (var match in deletedMatches)
@@ -775,41 +775,40 @@ namespace Stoolball.Data.SqlServer
                         }
                     }
 
-                    for (var i = 0; i < tournament.Matches.Count; i++)
+                    for (var i = 0; i < auditableTournament.Matches.Count; i++)
                     {
-                        if (tournament.Matches[i].MatchId.HasValue)
-                        {
-                            _ = await connection.ExecuteAsync($"UPDATE {Tables.Match} SET OrderInTournament = @OrderInTournament WHERE MatchId = @MatchId",
-                                new
-                                {
-                                    OrderInTournament = i + 1,
-                                    MatchId = tournament.Matches[i].MatchId!.Value
-                                },
-                                transaction).ConfigureAwait(false);
-                        }
-                        else
+                        if (!auditableTournament.Matches[i].MatchId.HasValue)
                         {
                             var match = new Match
                             {
                                 MatchType = MatchType.GroupMatch,
-                                Tournament = tournament,
-                                PlayerType = tournament.PlayerType,
-                                PlayersPerTeam = tournament.PlayersPerTeam,
-                                MatchLocation = tournament.TournamentLocation,
+                                Tournament = auditableTournament,
+                                PlayersPerTeam = auditableTournament.PlayersPerTeam,
+                                MatchLocation = auditableTournament.TournamentLocation,
                                 OrderInTournament = i + 1,
-                                StartTime = tournament.StartTime.AddMinutes(45 * i),
+                                StartTime = auditableTournament.StartTime.AddMinutes(45 * i),
                                 StartTimeIsKnown = false,
-                                Teams = tournament.Matches[i].Teams.Select(x => new TeamInMatch
+                                Teams = auditableTournament.Matches[i].Teams.Select(x => new TeamInMatch
                                 {
-                                    Team = tournament.Teams.Single(t => t.TournamentTeamId == x.TournamentTeamId).Team,
-                                    PlayingAsTeamName = tournament.Teams.Single(t => t.TournamentTeamId == x.TournamentTeamId).Team?.TeamName
+                                    Team = auditableTournament.Teams.Single(t => t.TournamentTeamId == x.TournamentTeamId).Team,
+                                    PlayingAsTeamName = auditableTournament.Teams.Single(t => t.TournamentTeamId == x.TournamentTeamId).Team?.TeamName
                                 }).ToList()
                             };
                             if (match.Teams.Count > 0) { match.Teams[0].TeamRole = TeamRole.Home; }
                             if (match.Teams.Count > 1) { match.Teams[1].TeamRole = TeamRole.Away; }
 
-                            _ = await _matchRepository.CreateMatch(match, memberKey, memberName, transaction).ConfigureAwait(false);
+                            var createdMatch = await _matchRepository.CreateMatch(match, memberKey, memberName, transaction).ConfigureAwait(false);
+                            auditableTournament.Matches[i].MatchId = createdMatch.MatchId;
+                            auditableTournament.Matches[i].MatchName = createdMatch.MatchName;
                         }
+
+                        _ = await connection.ExecuteAsync($"UPDATE {Tables.Match} SET OrderInTournament = @OrderInTournament WHERE MatchId = @MatchId",
+                            new
+                            {
+                                OrderInTournament = i + 1,
+                                MatchId = auditableTournament.Matches[i].MatchId!.Value
+                            },
+                            transaction).ConfigureAwait(false);
                     }
 
                     var redacted = _stoolballEntityCopier.CreateRedactedCopy(auditableTournament);

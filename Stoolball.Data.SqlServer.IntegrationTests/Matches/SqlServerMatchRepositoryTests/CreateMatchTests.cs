@@ -1,19 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Dapper;
-using Moq;
-using Stoolball.Competitions;
-using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
-using Stoolball.Logging;
-using Stoolball.Matches;
-using Stoolball.Teams;
+﻿using System.Text.RegularExpressions;
 using Stoolball.Testing;
-using Xunit;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchRepositoryTests
 {
@@ -419,7 +405,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
                     },
                     new TeamInMatch {
                         Team = DatabaseFixture.TestData.Teams[1],
-                        TeamRole = teamRole2
+                        TeamRole = teamRole2,
+                        PlayingAsTeamName = "Testing Flyers"
                     }
                 ]
             };
@@ -433,27 +420,27 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
                     t.MatchTeamId.HasValue
                     && t.Team?.TeamId == team.Team!.TeamId
                     && t.TeamRole == team.TeamRole
+                    && t.PlayingAsTeamName == team.PlayingAsTeamName
                     && t.BattedFirst is null
                     && t.WonToss is null);
             }
 
             using (var connection = DatabaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var saved = (await connection.QueryAsync<(Guid TeamId, string TeamRole, bool? WonToss, Guid? WinnerOfMatchId)>(
-                    $"SELECT TeamId, TeamRole, WonToss, WinnerOfMatchId FROM {Tables.MatchTeam} WHERE MatchId = @MatchId", new { created.MatchId }).ConfigureAwait(false)).ToList();
+                var saved = (await connection.QueryAsync<(Guid TeamId, string TeamRole, bool? WonToss, Guid? WinnerOfMatchId, string PlayingAsTeamName)>(
+                    $"SELECT TeamId, TeamRole, WonToss, WinnerOfMatchId, PlayingAsTeamName FROM {Tables.MatchTeam} WHERE MatchId = @MatchId", new { created.MatchId }).ConfigureAwait(false)).ToList();
                 Assert.Equal(match.Teams.Count, saved.Count);
                 foreach (var team in match.Teams)
                 {
                     Assert.Contains(saved, t =>
                         t.TeamId == team.Team!.TeamId
                         && t.TeamRole == team.TeamRole.ToString()
+                        && t.PlayingAsTeamName == team.PlayingAsTeamName
                         && t.WonToss is null
                         && t.WinnerOfMatchId is null);
                 }
             }
         }
-
-        // TODO: Adds_teams will need to test PlayingAsTeamName
 
         [Theory]
         [InlineData(MatchType.FriendlyMatch, true)]
