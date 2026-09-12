@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using AngleSharp.Css.Dom;
-using Ganss.Xss;
 using Moq;
 using Stoolball.Awards;
 using Stoolball.Data.Abstractions;
+using Stoolball.Html;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Routing;
@@ -46,11 +45,6 @@ namespace Stoolball.Data.SqlServer.UnitTests
         {
             _connectionFactory.Setup(x => x.CreateDatabaseConnection()).Returns(_databaseConnection.Object);
             _databaseConnection.Setup(x => x.BeginTransaction()).Returns(_transaction.Object);
-
-            _sanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
-            _sanitizer.Setup(x => x.AllowedAttributes).Returns(new HashSet<string>());
-            _sanitizer.Setup(x => x.AllowedCssProperties).Returns(new HashSet<string>());
-            _sanitizer.Setup(x => x.AllowedAtRules).Returns(new HashSet<CssRuleType>());
         }
 
         private SqlServerMatchRepository CreateRepository()

@@ -21,9 +21,15 @@ namespace Stoolball.Testing.MatchDataProviders
             var matchInTheFutureWithoutTeams = _matchFactory.CreateMatchInThePast(false, readOnlyTestData, nameof(MatchesInTheFuture));
             matchInTheFutureWithoutTeams.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
 
-            // Minimal match with teams
+            // Minimal match with teams, with UpdateMatchNameAutomatically fixed rather than random 
             var matchInTheFutureWithTeams = _matchFactory.CreateMatchInThePast(true, readOnlyTestData, nameof(MatchesInTheFuture));
             matchInTheFutureWithTeams.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
+            matchInTheFutureWithTeams.UpdateMatchNameAutomatically = false;
+
+            // Another minimal match with teams, covering the other value of UpdateMatchNameAutomatically
+            var anotherMatchInTheFutureWithTeams = _matchFactory.CreateMatchInThePast(true, readOnlyTestData, nameof(MatchesInTheFuture));
+            anotherMatchInTheFutureWithTeams.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
+            anotherMatchInTheFutureWithTeams.UpdateMatchNameAutomatically = true;
 
             // Two-innings match with no teams
             var twoInningsMatchInTheFutureWithoutTeams = _matchFactory.CreateMatchInThePast(false, readOnlyTestData, nameof(MatchesInTheFuture));
@@ -63,6 +69,7 @@ namespace Stoolball.Testing.MatchDataProviders
             return [
                 matchInTheFutureWithoutTeams,
                 matchInTheFutureWithTeams,
+                anotherMatchInTheFutureWithTeams,
                 twoInningsMatchInTheFutureWithoutTeams,
                 twoInningsMatchInTheFutureWithTeams,
                 trainingSession

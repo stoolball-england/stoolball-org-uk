@@ -1,17 +1,5 @@
-﻿using System;
-using System.Data;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Moq;
-using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
-using Stoolball.Logging;
-using Stoolball.Matches;
-using Stoolball.Teams;
+﻿using System.Globalization;
 using Stoolball.Testing;
-using Xunit;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchRepositoryTests
 {
