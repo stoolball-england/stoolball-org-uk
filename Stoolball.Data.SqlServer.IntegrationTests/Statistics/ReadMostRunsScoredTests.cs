@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using Moq;
 using Stoolball.Data.Abstractions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
@@ -14,17 +15,21 @@ using Xunit;
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 {
     [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
-    public class ReadMostRunsScoredTests
+    public class ReadMostRunsScoredTests : IDisposable
     {
         private readonly SqlServerTestDataFixture _databaseFixture;
         private readonly Mock<IStatisticsQueryBuilder> _queryBuilder = new();
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
         private readonly TestDataQueryHelper _queryHelper = new();
+        private readonly TransactionScope _scope;
 
         public ReadMostRunsScoredTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
+            _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
+
+        public void Dispose() => _scope.Dispose();
 
         [Fact]
         public async Task Read_total_players_with_runs_scored_supports_no_filter()
@@ -754,6 +759,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_most_runs_returns_results_equal_to_max_with_max_results_filter()
         {
+            await ForceFifthAndSixthMostRunsToBeTheSame().ConfigureAwait(false);
+
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue }, MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
             _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((string.Empty, new Dictionary<string, object>()));
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
@@ -768,6 +775,41 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             for (var i = 4; i < results.Count; i++)
             {
                 Assert.Equal(fifthValue, results[i].Result?.Total);
+            }
+        }
+
+        /// <summary>
+        /// Finds the players with the 5th and 6th highest total runs scored in the shared test data, then updates the
+        /// pre-computed statistics in the database so their totals match, letting us test retrieving a top five plus any
+        /// equal results. The update only happens inside this test's transaction, so it's rolled back afterwards and the
+        /// shared test data seen by other tests is untouched.
+        /// </summary>
+        private async Task ForceFifthAndSixthMostRunsToBeTheSame()
+        {
+            var allPlayers = _databaseFixture.TestData.Players.Select(x => new
+            {
+                Player = x,
+                Runs = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
+                                       .SelectMany(m => m.MatchInnings)
+                                       .SelectMany(mi => mi.PlayerInnings)
+                                       .Where(pi => pi.Batter!.Player!.PlayerId == x.PlayerId)
+                                       .Sum(pi => pi.RunsScored)
+            }).OrderByDescending(x => x.Runs).ToList();
+
+            var differenceBetweenFifthAndSixth = allPlayers[4].Runs - allPlayers[5].Runs;
+            var anyInningsByPlayerSix = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
+                                       .SelectMany(m => m.MatchInnings)
+                                       .SelectMany(mi => mi.PlayerInnings)
+                                       .First(pi => pi.Batter!.Player!.PlayerId == allPlayers[5].Player.PlayerId && pi.RunsScored.HasValue);
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                await connection.ExecuteAsync(
+                    $@"UPDATE {Tables.PlayerInMatchStatistics}
+                       SET RunsScored = RunsScored + @Difference
+                       WHERE PlayerInningsId = @PlayerInningsId",
+                    new { Difference = differenceBetweenFifthAndSixth, anyInningsByPlayerSix.PlayerInningsId }).ConfigureAwait(false);
             }
         }
     }
