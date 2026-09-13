@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using Stoolball.Awards;
 using Stoolball.Clubs;
 using Stoolball.Matches;
@@ -17,29 +18,16 @@ namespace Stoolball.UnitTests.Statistics
         public List<PlayerIdentity> HomePlayers { get; } = new List<PlayerIdentity>();
         public List<PlayerIdentity> AwayPlayers { get; } = new List<PlayerIdentity>();
 
-        private readonly OversHelper _oversHelper = new OversHelper();
-
         public MatchFixture()
         {
-            var randomiser = new Randomiser(new Random());
-            var bowlingFiguresCalculator = new BowlingFiguresCalculator(_oversHelper);
-            var playerIdentityFinder = new PlayerIdentityFinder();
-            var matchFinder = new MatchFinder();
-            var playerOfTheMatchAward = new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" };
-            var teamFactory = new TeamFactory();
-            var teamFaker = teamFactory.CreateFaker();
-            var competitionFactory = new CompetitionFactory();
-            var competitionFaker = competitionFactory.CreateFaker();
-            var seasonFactory = new SeasonFactory();
-            var matchLocationFactory = new MatchLocationFactory();
-            var commentFactory = new CommentFactory();
-            var oversetFactory = new OverSetFactory();
-            var memberFactory = new UmbracoMemberFactory();
-            var tournamentFactory = new TournamentFactory(competitionFactory, seasonFactory, teamFactory, matchLocationFactory, oversetFactory, memberFactory, commentFactory);
-            var matchLocationFaker = matchLocationFactory.CreateFaker();
-            var seedDataGenerator = new SeedDataGenerator(randomiser, _oversHelper, bowlingFiguresCalculator, playerIdentityFinder, matchFinder,
-                competitionFactory, seasonFactory, teamFactory, new ClubFactory(), tournamentFactory, matchLocationFactory, new SchoolFactory(),
-                new PlayerFactory(), oversetFactory, memberFactory, commentFactory, playerOfTheMatchAward);
+            using var serviceProvider = new ServiceCollection().AddSeedDataGenerator().BuildServiceProvider();
+
+            var bowlingFiguresCalculator = serviceProvider.GetRequiredService<IBowlingFiguresCalculator>();
+            var teamFaker = serviceProvider.GetRequiredService<TeamFactory>().CreateFaker();
+            var competitionFaker = serviceProvider.GetRequiredService<CompetitionFactory>().CreateFaker();
+            var oversetFactory = serviceProvider.GetRequiredService<OverSetFactory>();
+            var matchLocationFaker = serviceProvider.GetRequiredService<MatchLocationFactory>().CreateFaker();
+            var seedDataGenerator = serviceProvider.GetRequiredService<SeedDataGenerator>();
 
             var homeTeam = teamFaker.Generate();
             var homeTeamInMatch = new TeamInMatch
