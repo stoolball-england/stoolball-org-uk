@@ -1,41 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Moq;
-using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
-using Stoolball.Matches;
+using System.Transactions;
 using Stoolball.Statistics;
-using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 {
-    [Collection(IntegrationTestConstants.StatisticsMaxResultsDataSourceIntegrationTestCollection)]
-    public class ReadPlayerInningsMaxResultsTests
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
+    public class ReadPlayerInningsMaxResultsTests : IDisposable
     {
-        private readonly SqlServerStatisticsMaxResultsDataSourceFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
+        private readonly TransactionScope _scope;
 
-        public ReadPlayerInningsMaxResultsTests(SqlServerStatisticsMaxResultsDataSourceFixture databaseFixture)
+        public ReadPlayerInningsMaxResultsTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
+            _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
+
+        public void Dispose() => _scope.Dispose();
 
         [Fact]
         public async Task Read_player_innings_with_MaxResultsAllowingExtraResultsIfValuesAreEqual_returns_results_equal_to_the_max()
         {
+            var (player, playerInnings) = await ForceFifthAndSixthPlayerInningsToBeTheSame().ConfigureAwait(false);
+
             var filter = new StatisticsFilter
             {
                 MaxResultsAllowingExtraResultsIfValuesAreEqual = 5,
-                Player = _databaseFixture.PlayerWithFifthAndSixthInningsTheSame
+                Player = player
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND PlayerId = @PlayerId", new Dictionary<string, object> { { "PlayerId", _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerId! } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND PlayerId = @PlayerId", new Dictionary<string, object> { { "PlayerId", player.PlayerId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var results = (await dataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
-            var allExpectedResults = _databaseFixture.TestData.PlayerInnings
-                .Where(x => x.Batter.Player.PlayerId == _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerId && x.RunsScored.HasValue)
+            var allExpectedResults = playerInnings
                 .OrderByDescending(x => x.RunsScored).ThenBy(x => StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(x.DismissalType));
 
             var expected = new List<PlayerInnings>();
@@ -61,6 +59,88 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Assert.Equal(expectedInnings.BallsFaced, result.Result.BallsFaced);
             }
             Assert.Equal(results[4].Result.RunsScored, results[5].Result.RunsScored);
+        }
+
+        /// <summary>
+        /// Finds a player with at least six qualifying innings in the shared test data, then updates the pre-computed statistics
+        /// for those innings in the database so that the sixth-best score matches the fifth, letting us test retrieving a top five
+        /// plus any equal results. The update only happens inside this test's transaction, so it's rolled back afterwards and the
+        /// shared test data seen by other tests is untouched.
+        /// </summary>
+        private async Task<(Player Player, List<PlayerInnings> PlayerInnings)> ForceFifthAndSixthPlayerInningsToBeTheSame()
+        {
+            var originalInningsInOrder = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
+                .SelectMany(m => m.MatchInnings)
+                .SelectMany(mi => mi.PlayerInnings)
+                .Where(i => i.DismissalType != DismissalType.DidNotBat && i.DismissalType != DismissalType.TimedOut && i.RunsScored.HasValue)
+                .GroupBy(i => i.Batter!.Player!.PlayerId)
+                .First(g => g.Count() > 5)
+                .OrderByDescending(i => i.RunsScored)
+                .ToList();
+
+            var player = originalInningsInOrder[0].Batter!.Player!;
+
+            // Clone the innings so we can compute new values without mutating the shared fixture's cached test data,
+            // which is reused by many other tests.
+            var playerInnings = originalInningsInOrder.Select(i => new PlayerInnings
+            {
+                PlayerInningsId = i.PlayerInningsId,
+                RunsScored = i.RunsScored,
+                DismissalType = i.DismissalType,
+                BallsFaced = i.BallsFaced
+            }).ToList();
+
+            // Make the sixth innings the same as the fifth, including anything that might affect the out/not out status.
+            playerInnings[5].DismissalType = playerInnings[4].DismissalType;
+            playerInnings[5].RunsScored = playerInnings[4].RunsScored;
+            playerInnings[5].BallsFaced = playerInnings[4].BallsFaced;
+
+            // The assertion expects the fifth and sixth innings to be the same, but to be different than any that come before or
+            // after in the result set. So make sure those others are different.
+
+            // Step 1: Make room below if required
+            if (playerInnings.Count > 6 && playerInnings[5].RunsScored == 0)
+            {
+                playerInnings[4].RunsScored++;
+                playerInnings[5].RunsScored++;
+            }
+
+            // Step 2: Ensure earlier scores are higher
+            for (var i = 0; i < 4; i++)
+            {
+                if (playerInnings[i].RunsScored == playerInnings[4].RunsScored)
+                {
+                    playerInnings[i].RunsScored++;
+                }
+            }
+
+            // Step 3: Ensure later scores are lower, but not below 0
+            for (var i = 6; i < playerInnings.Count; i++)
+            {
+                playerInnings[i].RunsScored = playerInnings[i].RunsScored > 0 ? playerInnings[i].RunsScored - 1 : 0;
+            }
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                foreach (var innings in playerInnings)
+                {
+                    await connection.ExecuteAsync(
+                        $@"UPDATE {Tables.PlayerInMatchStatistics}
+                           SET RunsScored = @RunsScored, BallsFaced = @BallsFaced, DismissalType = @DismissalType, PlayerWasDismissed = @PlayerWasDismissed
+                           WHERE PlayerInningsId = @PlayerInningsId",
+                        new
+                        {
+                            innings.RunsScored,
+                            innings.BallsFaced,
+                            innings.DismissalType,
+                            PlayerWasDismissed = StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(innings.DismissalType),
+                            innings.PlayerInningsId
+                        }).ConfigureAwait(false);
+                }
+            }
+
+            return (player, playerInnings);
         }
     }
 }
