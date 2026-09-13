@@ -743,7 +743,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         /// </summary>
         private async Task ForceFifthAndSixthMostWicketsToBeTheSame()
         {
-            var allPlayers = _databaseFixture.TestData.Players.Select(x => new
+            // Only players who've actually taken a wicket appear in the ReadMostWickets results at all, so the
+            // 5th/6th place we pick to force a tie between must come from that same subset - not from every
+            // player, some of whom never bowled (or never took a wicket) and would never be a real 6th place.
+            var playersWithWickets = _databaseFixture.TestData.Players.Select(x => new
             {
                 Player = x,
                 Wickets = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
@@ -751,13 +754,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                        .SelectMany(mi => mi.BowlingFigures)
                                        .Where(bf => bf.Bowler!.Player!.PlayerId == x.PlayerId)
                                        .Sum(bf => bf.Wickets)
-            }).OrderByDescending(x => x.Wickets).ToList();
+            }).Where(x => x.Wickets > 0).OrderByDescending(x => x.Wickets).ToList();
 
-            var differenceBetweenFifthAndSixth = allPlayers[4].Wickets - allPlayers[5].Wickets;
+            var differenceBetweenFifthAndSixth = playersWithWickets[4].Wickets - playersWithWickets[5].Wickets;
             var anyBowlingFiguresByPlayerSix = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
                                        .SelectMany(m => m.MatchInnings)
                                        .SelectMany(mi => mi.BowlingFigures)
-                                       .First(bf => bf.Bowler!.Player!.PlayerId == allPlayers[5].Player.PlayerId);
+                                       .First(bf => bf.Bowler!.Player!.PlayerId == playersWithWickets[5].Player.PlayerId);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
