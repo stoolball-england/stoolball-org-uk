@@ -54,6 +54,8 @@ namespace Stoolball.Testing
             services.AddSingleton<BaseMatchDataProvider>(sp => new MatchesInTheFuture(
                 sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<OverSetFactory>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new EveryMatchResultType(sp.GetRequiredService<MatchFactory>()));
+            services.AddSingleton<BaseMatchDataProvider>(sp => new FiveWicketHaul(
+                sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
 
             services.AddSingleton<BaseCompetitionDataProvider>(sp => new CompetitionWithTeamsAndOverSetsInSeasonProvider(
                 sp.GetRequiredService<CompetitionFactory>(), sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<OverSetFactory>()));

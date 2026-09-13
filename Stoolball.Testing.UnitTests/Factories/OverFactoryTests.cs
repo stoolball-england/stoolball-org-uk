@@ -4,7 +4,7 @@ using Stoolball.Matches;
 using Stoolball.Testing.Factories;
 using Xunit;
 
-namespace Stoolball.UnitTests.Testing.Factories
+namespace Stoolball.Testing.UnitTests.Factories
 {
     public class OverFactoryTests
     {

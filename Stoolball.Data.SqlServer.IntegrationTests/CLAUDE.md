@@ -97,27 +97,6 @@ has, whether a location exists, etc. varies from run to run even when Bogus's fa
 are seeded. This is a deliberate fuzzing device: it exercises combinations you didn't think
 to write down explicitly, and it will occasionally turn up cases the code doesn't handle.
 
-The pattern for writing a fuzz-style test is: run generation N times with **no fixed seed**,
-and assert an invariant holds on every iteration. See
-`Stoolball.UnitTests\Testing\SeedDataGeneratorTests.cs`:
-
-```csharp
-// Run each test enough times to be confident random data generation always matches the test
-private const int _iterations = 10;
-
-[Fact]
-public void Five_wicket_haul_exists()
-{
-    var generator = CreateGenerator();
-    for (var i = 0; i < _iterations; i++)
-    {
-        var teams = generator.GenerateTeams();
-        var innings = generator.GenerateMatchData(new TestData(), teams).SelectMany(x => x.MatchInnings);
-        Assert.True(innings.Any(x => /* invariant under test */));
-    }
-}
-```
-
 Other examples of the same unseeded-random idea: `ListOfStringExtensions.ChangeCaseAndSometimesTrimOneEnd`
 and `DateRangeGenerator.SelectDateRangeToTest` (both use their own unseeded `new Random()`).
 
@@ -125,9 +104,11 @@ and `DateRangeGenerator.SelectDateRangeToTest` (both use their own unseeded `new
 into a permanent, named regression test. Usually that means: pin the specific shape of data
 that broke things using a factory's optional parameters (see §4) or a new `*DataProvider`
 scenario (see §5), so the case is covered every run without depending on randomly rolling it
-again. There should always be at least one provider/test in the suite that runs with a
-genuinely unseeded `Random`/`Randomiser`, so new edge cases keep surfacing over time — don't
-accidentally seed away the last one.
+again — a provider should construct its edge case deterministically rather than iterating and
+hoping, the way `FiveWicketHaul` guarantees a five-wicket haul on every call instead of
+relying on chance. There should always be at least one provider/test in the suite that runs
+with a genuinely unseeded `Random`/`Randomiser`, so new edge cases keep surfacing over time — don't accidentally seed away
+the last one.
 
 ## 4. Factories: the preferred building block (not SeedDataGenerator)
 
@@ -210,11 +191,15 @@ one, whereas a factory delegate can call `new` directly since it's compiled into
 **When adding a new test scenario:** prefer extending an existing factory with optional
 parameters, or adding a new provider, over adding another private method to
 `SeedDataGenerator`. When you extract an existing private method out of `SeedDataGenerator`
-into a factory or provider, move its unit test coverage with it (see
-`Stoolball.UnitTests\Testing\Factories\OverFactoryTests.cs` for the pattern) and delete the
-superseded test from `SeedDataGeneratorTests.cs`. Over time `SeedDataGenerator` should keep
-shrinking down toward pure orchestration: calling factories/providers and assembling
-`TestData`.
+into a factory or provider, move its unit test coverage with it and delete the superseded
+test. Tests for `Stoolball.Testing` itself (factories and `Base*DataProvider` scenarios) live
+in the dedicated `Stoolball.Testing.UnitTests` project, mirroring the folder they came
+from — e.g. `Stoolball.Testing.UnitTests\Factories\OverFactoryTests.cs` and
+`Stoolball.Testing.UnitTests\MatchDataProviders\FiveWicketHaulTests.cs` next to
+`FiveWicketHaul` — not `Stoolball.UnitTests`, which is for the `Stoolball` assembly. If
+extracting the last test out of a file leaves it empty, delete the file entirely rather than
+leaving it empty. Over time `SeedDataGenerator` should keep shrinking down toward pure
+orchestration: calling factories/providers and assembling `TestData`.
 
 ## 5. Wiring a new Factory or Provider into DI
 
@@ -314,9 +299,15 @@ Stoolball.Testing\          (references Bogus; kept out of production projects)
   ServiceCollectionExtensions.cs   AddSeedDataGenerator() DI registration
   TestData.cs                the generated-data bag exposed to tests
   Randomiser.cs, DateRangeGenerator.cs   unseeded randomness helpers (§3)
+
+Stoolball.Testing.UnitTests\  unit tests for the Stoolball.Testing assembly (mirrors its folders)
+  Factories\                 e.g. OverFactoryTests.cs
+  MatchDataProviders\        e.g. FiveWicketHaulTests.cs
 ```
 
 A new Factory or Provider goes in `Stoolball.Testing`, gets a unit test in
-`Stoolball.UnitTests\Testing\Factories\` (or the matching `*DataProviders` folder), and is
-registered in `ServiceCollectionExtensions.AddSeedDataGenerator` if `SeedDataGenerator` or a
-test fixture needs to resolve it directly.
+`Stoolball.Testing.UnitTests\Factories\` (or the matching `*DataProviders` folder — the
+dedicated project for testing the `Stoolball.Testing` assembly itself, kept separate from
+`Stoolball.UnitTests`, which tests the `Stoolball` assembly), and is registered in
+`ServiceCollectionExtensions.AddSeedDataGenerator` if `SeedDataGenerator` or a test fixture
+needs to resolve it directly.

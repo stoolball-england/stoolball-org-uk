@@ -1431,15 +1431,6 @@ namespace Stoolball.Testing
                 matches.Add(match);
             }
 
-            // Pick any innings and create a five-wicket haul for someone
-            var inningsWithFiveWicketHaul = matches.SelectMany(x => x.MatchInnings).Where(x => x.PlayerInnings.Any(pi => pi.Bowler != null)).First();
-            var bowlerWithFiveWicketHaul = inningsWithFiveWicketHaul.PlayerInnings.First(x => x.Bowler != null).Bowler;
-            for (var i = 0; i < _randomiser.Between(5, 6); i++)
-            {
-                inningsWithFiveWicketHaul.PlayerInnings[i].DismissalType = StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER[_randomiser.PositiveIntegerLessThan(StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Count)];
-                inningsWithFiveWicketHaul.PlayerInnings[i].Bowler = bowlerWithFiveWicketHaul;
-            }
-
             matches.Add(CreateMatchWithTeamScoresButNoPlayerData(testData, teamsWithIdentities));
 
             matches.Add(CreateMatchWithFieldingByMultipleIdentities(testData, teamsWithIdentities));
