@@ -445,12 +445,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                            WHERE MatchLocationId IS NOT NULL AND homeTeam.ClubId IS NOT NULL",
                            transaction: transaction).ConfigureAwait(false)).AsList();
 
-                    var playerData = (await connection.QueryAsync<(Guid playerId, Guid playerIdentityId)>(
-                        $"SELECT TOP 12 PlayerId, PlayerIdentityId FROM {Tables.PlayerIdentity}", transaction: transaction).ConfigureAwait(false)).AsList();
+                    var playerData = (await connection.QueryAsync<(Guid playerId, Guid playerIdentityId, string playerIdentityName, string playerRoute)>(
+                        $@"SELECT TOP 12 pi.PlayerId, pi.PlayerIdentityId, pi.PlayerIdentityName, p.PlayerRoute
+                           FROM {Tables.PlayerIdentity} pi INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId",
+                           transaction: transaction).ConfigureAwait(false)).AsList();
 
                     var playerInningsData = (await connection.QueryAsync<Guid>($"SELECT TOP 3 PlayerInningsId FROM {Tables.PlayerInnings}", transaction: transaction).ConfigureAwait(false)).AsList();
 
                     var statisticsRecords = new List<PlayerInMatchStatisticsRecord>(3);
+                    var expectedFielderIdentities = new List<(string bowledByName, string bowledByRoute, string caughtByName, string caughtByRoute, string runOutByName, string runOutByRoute)>(3);
                     for (var i = 0; i < 3; i++)
                     {
                         var uniqueString = Guid.NewGuid().ToString();
@@ -500,13 +503,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                             WonMatch = isEven ? 0 : 1,
                             WonToss = isEven,
                         });
+
+                        expectedFielderIdentities.Add((
+                            playerData[playerIndex + 1].playerIdentityName, playerData[playerIndex + 1].playerRoute,
+                            playerData[playerIndex + 2].playerIdentityName, playerData[playerIndex + 2].playerRoute,
+                            playerData[playerIndex + 3].playerIdentityName, playerData[playerIndex + 3].playerRoute));
                     }
 
                     await repo.UpdatePlayerStatistics(statisticsRecords, connection, transaction).ConfigureAwait(false);
 
-                    foreach (var record in statisticsRecords)
+                    for (var i = 0; i < statisticsRecords.Count; i++)
                     {
-                        var count = await transaction.Connection.QuerySingleAsync<int>(@$"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} 
+                        var record = statisticsRecords[i];
+                        var expectedFielders = expectedFielderIdentities[i];
+                        var count = await transaction.Connection.QuerySingleAsync<int>(@$"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics}
                                 WHERE PlayerId = @PlayerId
                                 AND PlayerIdentityId = @PlayerIdentityId
                                 AND MatchId = @MatchId
@@ -523,8 +533,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                 AND PlayerInningsNumber = @PlayerInningsNumber
                                 AND BattingPosition = @BattingPosition
                                 AND BowledByPlayerIdentityId = @BowledByPlayerIdentityId
+                                AND BowledByPlayerIdentityName = @BowledByName
+                                AND BowledByPlayerRoute = @BowledByRoute
                                 AND CaughtByPlayerIdentityId = @CaughtByPlayerIdentityId
+                                AND CaughtByPlayerIdentityName = @CaughtByName
+                                AND CaughtByPlayerRoute = @CaughtByRoute
                                 AND RunOutByPlayerIdentityId = @RunOutByPlayerIdentityId
+                                AND RunOutByPlayerIdentityName = @RunOutByName
+                                AND RunOutByPlayerRoute = @RunOutByRoute
                                 AND DismissalType = @DismissalType
                                 AND RunsScored = @RunsScored
                                 AND BallsFaced = @BallsFaced
@@ -565,8 +581,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                     record.PlayerInningsNumber,
                                     record.BattingPosition,
                                     record.BowledByPlayerIdentityId,
+                                    BowledByName = expectedFielders.bowledByName,
+                                    BowledByRoute = expectedFielders.bowledByRoute,
                                     record.CaughtByPlayerIdentityId,
+                                    CaughtByName = expectedFielders.caughtByName,
+                                    CaughtByRoute = expectedFielders.caughtByRoute,
                                     record.RunOutByPlayerIdentityId,
+                                    RunOutByName = expectedFielders.runOutByName,
+                                    RunOutByRoute = expectedFielders.runOutByRoute,
                                     record.DismissalType,
                                     record.RunsScored,
                                     record.BallsFaced,
