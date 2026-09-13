@@ -5,7 +5,11 @@ using Stoolball.Awards;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Testing;
+using Stoolball.Testing.CompetitionDataProviders;
 using Stoolball.Testing.Factories;
+using Stoolball.Testing.MatchDataProviders;
+using Stoolball.Testing.PlayerDataProviders;
+using Stoolball.Testing.SchoolDataProviders;
 using Xunit;
 
 namespace Stoolball.UnitTests.Testing
@@ -26,12 +30,16 @@ namespace Stoolball.UnitTests.Testing
             var memberFactory = Mock.Of<UmbracoMemberFactory>();
             var commentFactory = Mock.Of<CommentFactory>();
             var overFactory = new OverFactory(Mock.Of<IOversHelper>());
+            var matchFactory = new MatchFactory(_randomiser, _playerOfTheMatchAward, oversetFactory);
             return new SeedDataGenerator(_randomiser, overFactory, Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
                             competitionFactory, seasonFactory, teamFactory, Mock.Of<ClubFactory>(),
                             new Mock<TournamentFactory>(competitionFactory, seasonFactory, teamFactory, matchLocationFactory, oversetFactory, memberFactory, commentFactory).Object,
                             matchLocationFactory,
                             Mock.Of<SchoolFactory>(), new PlayerFactory(),
-                            oversetFactory, memberFactory, commentFactory, _playerOfTheMatchAward);
+                            oversetFactory, memberFactory, commentFactory, _playerOfTheMatchAward,
+                            matchFactory,
+                            Enumerable.Empty<BaseMatchDataProvider>(), Enumerable.Empty<BaseCompetitionDataProvider>(),
+                            Enumerable.Empty<BasePlayerDataProvider>(), Enumerable.Empty<BaseSchoolDataProvider>());
         }
 
         [Fact]

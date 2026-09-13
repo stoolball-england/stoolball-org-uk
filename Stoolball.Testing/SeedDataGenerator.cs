@@ -23,6 +23,10 @@ namespace Stoolball.Testing
         private readonly UmbracoMemberFactory _memberFactory;
         private readonly CommentFactory _commentFactory;
         private readonly MatchFactory _matchFactory;
+        private readonly IEnumerable<BaseMatchDataProvider> _matchDataProviders;
+        private readonly IEnumerable<BaseCompetitionDataProvider> _competitionDataProviders;
+        private readonly IEnumerable<BasePlayerDataProvider> _playerDataProviders;
+        private readonly IEnumerable<BaseSchoolDataProvider> _schoolDataProviders;
         private readonly TournamentFactory _tournamentFactory;
         private readonly Faker<Competition> _competitionFaker;
         private readonly Faker<Team> _teamFaker;
@@ -36,7 +40,9 @@ namespace Stoolball.Testing
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
             CompetitionFactory competitionFactory, SeasonFactory seasonFactory, TeamFactory teamFactory, ClubFactory clubFactory,
             TournamentFactory tournamentFactory, MatchLocationFactory matchLocationFactory, SchoolFactory schoolFactory,
-            PlayerFactory playerFactory, OverSetFactory oversetFactory, UmbracoMemberFactory memberFactory, CommentFactory commentFactory, Award playerOfTheMatchAward)
+            PlayerFactory playerFactory, OverSetFactory oversetFactory, UmbracoMemberFactory memberFactory, CommentFactory commentFactory, Award playerOfTheMatchAward,
+            MatchFactory matchFactory, IEnumerable<BaseMatchDataProvider> matchDataProviders, IEnumerable<BaseCompetitionDataProvider> competitionDataProviders,
+            IEnumerable<BasePlayerDataProvider> playerDataProviders, IEnumerable<BaseSchoolDataProvider> schoolDataProviders)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _overFactory = overFactory ?? throw new ArgumentNullException(nameof(overFactory));
@@ -59,7 +65,11 @@ namespace Stoolball.Testing
             _matchLocationFaker = matchLocationFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(matchLocationFactory));
             _playerFaker = playerFactory?.CreatePlayerFaker() ?? throw new ArgumentNullException(nameof(playerFactory));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
-            _matchFactory = new MatchFactory(_randomiser, _playerOfTheMatchAward, _oversetFactory);
+            _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
+            _matchDataProviders = matchDataProviders ?? throw new ArgumentNullException(nameof(matchDataProviders));
+            _competitionDataProviders = competitionDataProviders ?? throw new ArgumentNullException(nameof(competitionDataProviders));
+            _playerDataProviders = playerDataProviders ?? throw new ArgumentNullException(nameof(playerDataProviders));
+            _schoolDataProviders = schoolDataProviders ?? throw new ArgumentNullException(nameof(schoolDataProviders));
         }
 
         private Club CreateClubWithTeams()
@@ -863,14 +873,7 @@ namespace Stoolball.Testing
             testData.PlayerIdentities = playerIdentitiesInMatches.ToList();
             testData.Players = testData.PlayerIdentities.Select(x => x.Player).OfType<Player>().Distinct(playerComparer).ToList();
 
-            var matchProviders = new BaseMatchDataProvider[]{
-                new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward),
-                new APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(_randomiser, _matchFactory, _bowlingFiguresCalculator),
-                new PlayersOnlyRecordedInOnePlace(_matchFactory, _teamFactory, _playerFactory, _playerOfTheMatchAward),
-                new MatchesInTheFuture(_matchFactory, _teamFactory, _oversetFactory),
-                new EveryMatchResultType(_matchFactory)
-            };
-            foreach (var provider in matchProviders)
+            foreach (var provider in _matchDataProviders)
             {
                 var matchesFromProvider = provider.CreateMatches(testData);
                 foreach (var match in matchesFromProvider)
@@ -937,10 +940,7 @@ namespace Stoolball.Testing
         private IEnumerable<Competition> CreateCompetitionsFromDataProviders(TestData testData)
         {
             var competitions = new List<Competition>();
-            var competitionProviders = new BaseCompetitionDataProvider[]{
-                new CompetitionWithTeamsAndOverSetsInSeasonProvider(_competitionFactory, _seasonFactory, _teamFactory, _oversetFactory)
-            };
-            foreach (var provider in competitionProviders)
+            foreach (var provider in _competitionDataProviders)
             {
                 var competitionsFromProvider = provider.CreateCompetitions(testData);
                 foreach (var competition in competitionsFromProvider)
@@ -1066,11 +1066,8 @@ namespace Stoolball.Testing
 
         private List<School> CreateTestDataFromSchoolProviders(TestData testData)
         {
-            var providers = new BaseSchoolDataProvider[]{
-                new SchoolDataProvider(_schoolFactory, _teamFactory, _matchLocationFactory)
-            };
             var schools = new List<School>();
-            foreach (var provider in providers)
+            foreach (var provider in _schoolDataProviders)
             {
                 schools.AddRange(provider.CreateSchools());
             }
@@ -1079,13 +1076,8 @@ namespace Stoolball.Testing
 
         private List<Player> CreateTestDataFromPlayerProviders(TestData testData)
         {
-            var providers = new BasePlayerDataProvider[]{
-                new PlayersLinkedToMembersProvider(_teamFactory, _playerFactory),
-                new PlayersNotLinkedToMembersProvider(_teamFactory, _playerFactory),
-                new PlayersLinkedToMembersOnSameTeamAsPlayersNotLinkedToMembersProvider(_teamFactory, _playerFactory)
-            };
             var players = new List<Player>();
-            foreach (var provider in providers)
+            foreach (var provider in _playerDataProviders)
             {
                 players.AddRange(provider.CreatePlayers(testData));
             }

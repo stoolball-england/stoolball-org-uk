@@ -179,21 +179,33 @@ originally did everything. **New test data generation should not be added to it.
 - **"Faker"** is the informal name for the `Faker<T>` a factory's `CreateFaker(...)` returns —
   there isn't a separate `*Faker` class type, `*Factory` is the class, its output is the faker.
 
-Providers are still invoked from `SeedDataGenerator.GenerateTestData()` as plain arrays
-(not resolved via DI, since each scenario needs a different combination of constructor
-arguments per call):
+Each concrete provider is registered against its `Base*DataProvider`
+type in `ServiceCollectionExtensions.AddSeedDataGenerator`, and `SeedDataGenerator` takes
+`IEnumerable<BaseMatchDataProvider>` (and the Competition/Player/School equivalents) as constructor
+parameters, so it just iterates whatever DI hands it:
 
 ```csharp
-var matchProviders = new BaseMatchDataProvider[]{
-    new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(_randomiser, _matchFactory, _bowlingFiguresCalculator, _playerOfTheMatchAward),
-    new MatchesInTheFuture(_matchFactory, _teamFactory, _oversetFactory),
-    new EveryMatchResultType(_matchFactory)
-};
-foreach (var provider in matchProviders)
+// ServiceCollectionExtensions.cs — one AddSingleton<TBase>(...) call per provider
+services.AddSingleton<BaseMatchDataProvider>(sp => new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(
+    sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(), sp.GetRequiredService<Award>()));
+services.AddSingleton<BaseMatchDataProvider>(sp => new MatchesInTheFuture(
+    sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<OverSetFactory>()));
+services.AddSingleton<BaseMatchDataProvider>(sp => new EveryMatchResultType(sp.GetRequiredService<MatchFactory>()));
+```
+
+```csharp
+// SeedDataGenerator.cs — injected, not built inline
+foreach (var provider in _matchDataProviders)
 {
     foreach (var match in provider.CreateMatches(testData)) { testData.Matches.Add(match); ... }
 }
 ```
+
+A factory delegate (`sp => new XxxProvider(...)`) is used for each registration, rather than the
+plain `services.AddSingleton<BaseMatchDataProvider, XxxProvider>()` form, because these provider
+classes (and their primary constructors) are `internal` — `AddSingleton<TService, TImplementation>()`
+relies on reflection over public constructors to build the instance, which fails for a non-public
+one, whereas a factory delegate can call `new` directly since it's compiled into the same assembly.
 
 **When adding a new test scenario:** prefer extending an existing factory with optional
 parameters, or adding a new provider, over adding another private method to
@@ -237,8 +249,18 @@ var randomSeedDataGenerator = serviceProvider.GetRequiredService<SeedDataGenerat
 To add a brand-new Factory: add `services.AddSingleton<NewFactory>();` in
 `AddSeedDataGenerator`, and if `SeedDataGenerator` needs it directly, add it to
 `SeedDataGenerator`'s constructor and to the `sp.GetRequiredService<NewFactory>()` call
-above. Providers are constructed inline where they're used (see §4) rather than registered
-here, since each call site needs a different subset of factories.
+above.
+
+To add a brand-new Provider: register it in `AddSeedDataGenerator` against its `Base*DataProvider`
+type, using a factory delegate rather than the bare `AddSingleton<TService, TImplementation>()` form
+(see §4 for why):
+
+```csharp
+services.AddSingleton<BaseMatchDataProvider>(sp => new MyNewProvider(sp.GetRequiredService<MatchFactory>()));
+```
+
+It's then included automatically wherever `SeedDataGenerator` (or a test) resolves
+`IEnumerable<BaseMatchDataProvider>` — no separate wiring needed at the call site.
 
 ## 6. Populate TestData properties/collections *after* generation finishes
 
