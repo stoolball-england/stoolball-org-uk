@@ -58,6 +58,12 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new PlentyOfRunOutsAndCatches(
                 sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
+            services.AddSingleton<BaseMatchDataProvider>(sp => new TeamScoresButNoPlayerData(
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>()));
+            services.AddSingleton<BaseMatchDataProvider>(sp => new FieldingByMultipleIdentities(
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
+            services.AddSingleton<BaseMatchDataProvider>(sp => new DifferentTeamsWhereSomeonePlaysOnBothTeams(
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
 
             services.AddSingleton<BaseCompetitionDataProvider>(sp => new CompetitionWithTeamsAndOverSetsInSeasonProvider(
                 sp.GetRequiredService<CompetitionFactory>(), sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<OverSetFactory>()));

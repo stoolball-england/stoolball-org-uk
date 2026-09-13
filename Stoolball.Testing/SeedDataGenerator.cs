@@ -1282,12 +1282,6 @@ namespace Stoolball.Testing
                 matches.Add(match);
             }
 
-            matches.Add(CreateMatchWithTeamScoresButNoPlayerData(testData, teamsWithIdentities));
-
-            matches.Add(CreateMatchWithFieldingByMultipleIdentities(testData, teamsWithIdentities));
-
-            matches.Add(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams(testData, teamsWithIdentities));
-
             // Ensure there's always an intra-club match to test
             matches.Add(_matchFactory.CreateMatchBetween(teamsWithIdentities[0].team, teamsWithIdentities[0].identities, teamsWithIdentities[0].team, teamsWithIdentities[0].identities, _randomiser.FiftyFiftyChance(), testData, nameof(GenerateMatchData) + "IntraClub"));
 
@@ -1309,112 +1303,6 @@ namespace Stoolball.Testing
             return matches;
         }
 
-
-        private Match CreateMatchWithTeamScoresButNoPlayerData(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
-        {
-            var anyTeam1 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
-            var anyTeam2 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
-            var match = _matchFactory.CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, _randomiser.FiftyFiftyChance(), testData, nameof(CreateMatchWithTeamScoresButNoPlayerData));
-
-            // remove any generated player data
-            foreach (var innings in match.MatchInnings)
-            {
-                innings.PlayerInnings.Clear();
-                innings.OversBowled.Clear();
-                innings.BowlingFigures.Clear();
-            }
-            match.Awards.Clear();
-
-            // add team scores for the first and second innings - these must be included in team score averages but will be missing from player data
-            match.MatchInnings[0].Byes = 3;
-            match.MatchInnings[0].Wides = 5;
-            match.MatchInnings[0].NoBalls = 7;
-            match.MatchInnings[0].BonusOrPenaltyRuns = 1;
-            match.MatchInnings[0].Runs = 123;
-            match.MatchInnings[0].Wickets = 6;
-
-            match.MatchInnings[1].Byes = 2;
-            match.MatchInnings[1].Wides = 4;
-            match.MatchInnings[1].NoBalls = 6;
-            match.MatchInnings[1].BonusOrPenaltyRuns = 2;
-            match.MatchInnings[1].Runs = 144;
-            match.MatchInnings[1].Wickets = 3;
-
-            return match;
-        }
-
-        private Match CreateMatchWithFieldingByMultipleIdentities(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
-        {
-            var anyTeam1 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
-            var anyTeam2 = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
-            var match = _matchFactory.CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, _randomiser.FiftyFiftyChance(), testData, nameof(CreateMatchWithFieldingByMultipleIdentities));
-
-            // in the first innings a fielder should take catches under multiple identities
-            var firstInnings = match.MatchInnings[0];
-            var firstInningsIdentities = firstInnings.BowlingTeam!.Team!.TeamId == anyTeam1.team.TeamId ? anyTeam1.identities : anyTeam2.identities;
-
-            var catcherWithMultipleIdentities = firstInningsIdentities.FirstOrDefault(x => firstInningsIdentities.Count(p => p.Player!.PlayerId == x.Player!.PlayerId) > 1)?.Player!.PlayerId;
-            if (catcherWithMultipleIdentities.HasValue)
-            {
-                var catcherIdentities = firstInningsIdentities.Where(x => x.Player!.PlayerId == catcherWithMultipleIdentities).ToList();
-
-                for (var i = 0; i < 6; i++)
-                {
-                    if (i % 2 == 0)
-                    {
-                        firstInnings.PlayerInnings[i].DismissalType = DismissalType.Caught;
-                        firstInnings.PlayerInnings[i].DismissedBy = catcherIdentities[0];
-                    }
-                    else
-                    {
-                        firstInnings.PlayerInnings[i].DismissalType = DismissalType.CaughtAndBowled;
-                        firstInnings.PlayerInnings[i].DismissedBy = null;
-                        firstInnings.PlayerInnings[i].Bowler = catcherIdentities[1];
-                    }
-                }
-            }
-
-            // in the second innings a fielder should complete run-outs under multiple identities
-            var secondInnings = match.MatchInnings[1];
-            var secondInningsIdentities = secondInnings.BowlingTeam.Team!.TeamId == anyTeam1.team.TeamId ? anyTeam1.identities : anyTeam2.identities;
-
-            var fielderWithMultipleIdentities = secondInningsIdentities.FirstOrDefault(x => secondInningsIdentities.Count(p => p.Player.PlayerId == x.Player.PlayerId) > 1)?.Player.PlayerId;
-            if (fielderWithMultipleIdentities.HasValue)
-            {
-                var fielderIdentities = secondInningsIdentities.Where(x => x.Player.PlayerId == fielderWithMultipleIdentities).ToList();
-
-                for (var i = 0; i < 6; i++)
-                {
-                    secondInnings.PlayerInnings[i].DismissalType = DismissalType.RunOut;
-                    secondInnings.PlayerInnings[i].DismissedBy = fielderIdentities[i % 2];
-                    secondInnings.PlayerInnings[i].Bowler = null;
-                }
-            }
-
-            return match;
-        }
-
-        private Match CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
-        {
-            // Ensure there's always a match to test where someone swaps sides during the innings (eg a batter is loaned as a fielder and takes a wicket)
-
-            // 1. Find any player with identities on two teams
-            var anyPlayerWithIdentitiesOnMultipleTeams = teamsWithIdentities.SelectMany(x => x.identities)
-                .GroupBy(x => x.Player!.PlayerId, x => x, (playerId, playerIdentities) => new Player { PlayerId = playerId, PlayerRoute = $"/players/{playerId}", PlayerIdentities = new PlayerIdentityList(playerIdentities) })
-                .Where(x => x.PlayerIdentities.Select(t => t.Team!.TeamId!.Value).Distinct().Count() > 1)
-                .First();
-
-            // 2. Create a match between those teams
-            var teamsForPlayer = teamsWithIdentities.Where(t => anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.Select(x => x.Team!.TeamId).Contains(t.team.TeamId)).ToList();
-            var match = _matchFactory.CreateMatchBetween(teamsForPlayer[0].team, teamsForPlayer[0].identities, teamsForPlayer[1].team, teamsForPlayer[1].identities, _randomiser.FiftyFiftyChance(), testData, nameof(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams));
-
-            // 3. We know they'll be recorded as a batter in both innings. Ensure they take a wicket too.
-            var wicketTaken = match.MatchInnings.First().PlayerInnings.First();
-            wicketTaken.DismissalType = DismissalType.CaughtAndBowled;
-            wicketTaken.Bowler = anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.First(x => x.Team!.TeamId == match.MatchInnings.First().BowlingTeam!.Team!.TeamId);
-
-            return match;
-        }
 
         private List<PlayerIdentity> CreatePlayerIdentitiesForTeam(Team team)
         {
