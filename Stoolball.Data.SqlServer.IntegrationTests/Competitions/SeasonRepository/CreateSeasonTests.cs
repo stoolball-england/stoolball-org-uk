@@ -454,7 +454,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions.SeasonRepositor
 
             _ = await Repository.CreateSeason(season, MemberKey, MemberName);
 
-            AuditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            AuditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             Logger.Verify(x => x.Info(LoggingTemplates.Created,
                                        It.Is<Season>(x => x.Competition!.CompetitionId == season.Competition.CompetitionId
                                                                         && x.FromYear == season.FromYear

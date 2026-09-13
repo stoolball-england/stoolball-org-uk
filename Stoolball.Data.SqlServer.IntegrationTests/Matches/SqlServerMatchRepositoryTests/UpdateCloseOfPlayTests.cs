@@ -239,7 +239,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             _ = await Repository.UpdateCloseOfPlay(matchToUpdate, MemberKey, MemberName).ConfigureAwait(false);
 
-            StatisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbTransaction>()), Times.Once());
+            StatisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once());
         }
 
         [Fact]

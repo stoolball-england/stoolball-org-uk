@@ -24,9 +24,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         }
 
         [Fact]
-        public async Task Throws_ArgumentNullException_if_transaction_is_null()
+        public async Task Throws_ArgumentNullException_if_connection_is_null()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Repository.CreateMatch(new Stoolball.Matches.Match { StartTime = DateTimeOffset.UtcNow }, MemberKey, MemberName, null!));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Repository.CreateMatch(new Stoolball.Matches.Match { StartTime = DateTimeOffset.UtcNow }, MemberKey, MemberName, null!, Mock.Of<IDbTransaction>()));
         }
 
         [Theory]
@@ -592,7 +592,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var created = await Repository.CreateMatch(match, MemberKey, MemberName);
 
-            AuditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            AuditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             Logger.Verify(x => x.Info(LoggingTemplates.Created,
                                        It.Is<Stoolball.Matches.Match>(x => x.StartTime.AccurateToTheMinute() == match.StartTime.AccurateToTheMinute()
                                                                         && x.MatchName == match.MatchName),

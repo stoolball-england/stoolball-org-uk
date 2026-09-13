@@ -17,20 +17,20 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         /// <param name="audit">The audit details to record</param>
         /// <param name="transaction">The transaction to audit</param>
-        public async Task<AuditRecord> CreateAudit(AuditRecord audit, IDbTransaction transaction)
+        public async Task<AuditRecord> CreateAudit(AuditRecord audit, IDbConnection connection, IDbTransaction? transaction)
         {
             if (audit is null)
             {
                 throw new ArgumentNullException(nameof(audit));
             }
 
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
             audit.AuditId = Guid.NewGuid();
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.Audit} 
+            await connection.ExecuteAsync($@"INSERT INTO {Tables.Audit}
                         ([AuditId], [MemberKey], [ActorName], [Action], [EntityUri], [State], [RedactedState], [AuditDate]) 
                         VALUES (@AuditId, @MemberKey, @ActorName, @Action, @EntityUri, @State, @RedactedState, @AuditDate)",
                 new

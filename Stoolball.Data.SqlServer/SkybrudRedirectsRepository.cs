@@ -8,17 +8,17 @@ namespace Stoolball.Data.SqlServer
 {
     public class SkybrudRedirectsRepository : IRedirectsRepository
     {
-        public async Task DeleteRedirectsByDestinationPrefix(string destinationPrefix, IDbTransaction transaction)
+        public async Task DeleteRedirectsByDestinationPrefix(string destinationPrefix, IDbConnection connection, IDbTransaction? transaction)
         {
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
-            await transaction.Connection.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}%'", null, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}%'", null, transaction).ConfigureAwait(false);
         }
 
-        public async Task InsertRedirect(string originalRoute, string revisedRoute, string? routeSuffix, IDbTransaction transaction)
+        public async Task InsertRedirect(string originalRoute, string revisedRoute, string? routeSuffix, IDbConnection connection, IDbTransaction? transaction)
         {
             if (string.IsNullOrEmpty(originalRoute))
             {
@@ -30,12 +30,12 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentException($"'{nameof(revisedRoute)}' cannot be null or empty", nameof(revisedRoute));
             }
 
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
-            await transaction.Connection.ExecuteAsync($@"SET IDENTITY_INSERT SkybrudRedirects ON;
+            await connection.ExecuteAsync($@"SET IDENTITY_INSERT SkybrudRedirects ON;
                             INSERT INTO SkybrudRedirects 
 							([Id], [Key], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
 							 [DestinationUrl], [Created], [Updated], [IsPermanent], [ForwardQueryString], [DestinationQuery], [DestinationFragment], [DestinationCulture])

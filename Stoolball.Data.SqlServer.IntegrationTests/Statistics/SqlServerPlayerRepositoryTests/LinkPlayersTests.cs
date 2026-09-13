@@ -277,12 +277,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             await repo.LinkPlayers(player1.PlayerId!.Value, player2.PlayerId!.Value, PlayerIdentityLinkedBy.Team, member.Key, member.Name).ConfigureAwait(false);
 
             // audits and logs delete of original player and update of target player
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri!.ToString().EndsWith(player1.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri!.ToString().EndsWith(player1.PlayerId.ToString()!)), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), member.Name, member.Key, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayers)));
 
             var deletedPlayer = new Player { PlayerId = player2.PlayerId, PlayerRoute = player2.PlayerRoute };
             deletedPlayer.PlayerIdentities.Add(new PlayerIdentity { PlayerIdentityId = player2.PlayerIdentities[0].PlayerIdentityId });
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Delete && x.EntityUri!.ToString().EndsWith(player2.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Delete && x.EntityUri!.ToString().EndsWith(player2.PlayerId.ToString()!)), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Deleted, JsonConvert.SerializeObject(deletedPlayer), member.Name, member.Key, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayers)));
         }
 

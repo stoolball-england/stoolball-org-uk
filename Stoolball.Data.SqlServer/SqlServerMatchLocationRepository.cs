@@ -60,7 +60,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     auditableMatchLocation.MatchLocationRoute = await _routeGenerator.GenerateUniqueRoute(
                         "/locations", auditableMatchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute,
@@ -102,9 +102,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableMatchLocation),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(CreateMatchLocation));
                 }
@@ -134,7 +134,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     auditableMatchLocation.MatchLocationRoute = await _routeGenerator.GenerateUniqueRoute(
                         matchLocation.MatchLocationRoute,
@@ -186,14 +186,14 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableMatchLocation),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
                     if (matchLocation.MatchLocationRoute != auditableMatchLocation.MatchLocationRoute)
                     {
-                        await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, auditableMatchLocation.MatchLocationRoute, null, transaction).ConfigureAwait(false);
+                        await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, auditableMatchLocation.MatchLocationRoute, null, connection, transaction).ConfigureAwait(false);
                     }
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateMatchLocation));
                 }
@@ -216,7 +216,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     await connection.ExecuteAsync($@"UPDATE {Tables.PlayerInMatchStatistics} SET MatchLocationId = NULL WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"UPDATE {Tables.Tournament} SET MatchLocationId = NULL WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
@@ -236,11 +236,11 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableMatchLocation),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableMatchLocation.MatchLocationRoute, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableMatchLocation.MatchLocationRoute, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteMatchLocation));
                 }

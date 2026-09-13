@@ -189,7 +189,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var updated = await Repository.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
-            RedirectsRepository.Verify(x => x.InsertRedirect(match.MatchRoute!, updated.MatchRoute!, null, It.IsAny<IDbTransaction>()));
+            RedirectsRepository.Verify(x => x.InsertRedirect(match.MatchRoute!, updated.MatchRoute!, null, It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()));
         }
 
         [Theory]
@@ -469,7 +469,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var updated = await Repository.UpdateMatchInTheFuture(match, MemberKey, MemberName);
 
-            AuditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            AuditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             Logger.Verify(x => x.Info(LoggingTemplates.Updated,
                                        It.Is<Stoolball.Matches.Match>(x => x.StartTime.AccurateToTheMinute() == match.StartTime.AccurateToTheMinute()
                                                                         && x.MatchName == match.MatchName),

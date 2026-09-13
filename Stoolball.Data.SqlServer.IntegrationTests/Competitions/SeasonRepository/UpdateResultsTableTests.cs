@@ -101,7 +101,7 @@
 
             _ = await Repository.UpdateResultsTable(season, MemberKey, MemberName);
 
-            AuditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.EntityUri == season.EntityUri), It.IsAny<IDbTransaction>()), Times.Once);
+            AuditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.EntityUri == season.EntityUri), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             Logger.Verify(x => x.Info(LoggingTemplates.Updated,
                                        It.Is<Season>(x => x.Competition!.CompetitionId == season.Competition!.CompetitionId
                                                                         && x.FromYear == season.FromYear

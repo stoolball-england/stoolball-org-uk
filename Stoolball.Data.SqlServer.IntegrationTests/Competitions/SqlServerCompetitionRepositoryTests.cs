@@ -297,7 +297,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var created = await repo.CreateCompetition(location, memberKey, memberName).ConfigureAwait(false);
 
             _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerCompetitionRepository), nameof(SqlServerCompetitionRepository.CreateCompetition)));
         }
 
@@ -562,7 +562,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var updated = await repo.UpdateCompetition(competition, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
             _routeGenerator.Verify(x => x.GenerateUniqueRoute(competition.CompetitionRoute, "/competitions", auditable.CompetitionName, NoiseWords.CompetitionRoute, It.IsAny<Func<string, Task<int>>>()), Times.Once);
-            _redirectsRepository.Verify(x => x.InsertRedirect(competition.CompetitionRoute, updatedRoute, null, It.IsAny<IDbTransaction>()), Times.Once);
+            _redirectsRepository.Verify(x => x.InsertRedirect(competition.CompetitionRoute, updatedRoute, null, It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
         }
 
         [Fact]
@@ -591,7 +591,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 {
                     Assert.Matches("^" + updatedRoute.Replace("/", @"\/") + @"\/[0-9]{4}(-[0-9]{2,4})?$", route);
 
-                    _redirectsRepository.Verify(x => x.InsertRedirect(competition.CompetitionRoute + route.Substring(route.LastIndexOf("/", StringComparison.OrdinalIgnoreCase)), route, null, It.IsAny<IDbTransaction>()), Times.Once);
+                    _redirectsRepository.Verify(x => x.InsertRedirect(competition.CompetitionRoute + route.Substring(route.LastIndexOf("/", StringComparison.OrdinalIgnoreCase)), route, null, It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
                 }
             }
         }
@@ -616,7 +616,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var updated = await repo.UpdateCompetition(competition, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
+            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Never);
         }
 
         [Fact]
@@ -647,7 +647,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var updated = await repo.UpdateCompetition(location, memberKey, memberName).ConfigureAwait(false);
 
             _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerCompetitionRepository), nameof(SqlServerCompetitionRepository.UpdateCompetition)));
         }
 

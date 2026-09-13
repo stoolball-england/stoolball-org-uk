@@ -15,7 +15,7 @@ namespace Stoolball.Data.Abstractions
         /// <summary>
         /// Deletes a stoolball match
         /// </summary>
-        Task DeleteMatch(Match match, Guid memberKey, string memberName, IDbTransaction transaction);
+        Task DeleteMatch(Match match, Guid memberKey, string memberName, IDbConnection connection, IDbTransaction? transaction);
 
         /// <summary>
         /// Creates a stoolball match
@@ -25,7 +25,7 @@ namespace Stoolball.Data.Abstractions
         /// <summary>
         /// Creates a stoolball match
         /// </summary>
-        Task<Match> CreateMatch(Match match, Guid memberKey, string memberName, IDbTransaction dbTransaction);
+        Task<Match> CreateMatch(Match match, Guid memberKey, string memberName, IDbConnection connection, IDbTransaction? dbTransaction);
 
         /// <summary>
         /// Updates a stoolball match in the future.

@@ -318,11 +318,11 @@ namespace Stoolball.Data.SqlServer.UnitTests
             var memberName = "Member name";
             var match = CreateValidMatch();
 
-            _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _transaction.Object, null, null)).ReturnsAsync(match);
+            _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _databaseConnection.Object, _transaction.Object, null, null)).ReturnsAsync(match);
 
             await repository.UpdateStartOfPlay(match, memberKey, memberName).ConfigureAwait(false);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _transaction.Object), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _databaseConnection.Object, _transaction.Object), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<Matches.Match>(), memberName, memberKey, typeof(SqlServerMatchRepository), nameof(SqlServerMatchRepository.UpdateStartOfPlay)), Times.Once);
         }
 
@@ -431,7 +431,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
             var memberName = "Member name";
             var match = CreateValidMatch();
 
-            _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _transaction.Object, null, null)).ReturnsAsync(match);
+            _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _databaseConnection.Object, _transaction.Object, null, null)).ReturnsAsync(match);
             var comparison = new BattingScorecardComparison();
             comparison.PlayerInningsUnchanged.AddRange(match.MatchInnings[0].PlayerInnings);
             comparison.PlayerInningsChanged.Add((comparison.PlayerInningsUnchanged.Last(), comparison.PlayerInningsUnchanged.Last()));
@@ -440,7 +440,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
 
             await repository.UpdateBattingScorecard(match, match.MatchInnings[0].MatchInningsId!.Value, memberKey, memberName).ConfigureAwait(false);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _transaction.Object), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _databaseConnection.Object, _transaction.Object), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<MatchInnings>(), memberName, memberKey, typeof(SqlServerMatchRepository), nameof(SqlServerMatchRepository.UpdateBattingScorecard)), Times.Once);
         }
 
@@ -531,8 +531,8 @@ namespace Stoolball.Data.SqlServer.UnitTests
             var memberName = "Member name";
             var match = CreateValidMatch();
 
-            _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _transaction.Object, null, null)).ReturnsAsync(match);
-            _dapperWrapper.Setup(x => x.QueryAsync<OverSet>(It.IsAny<string>(), It.IsAny<object>(), _transaction.Object)).ReturnsAsync(match.MatchInnings[0].OverSets);
+            _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _databaseConnection.Object, _transaction.Object, null, null)).ReturnsAsync(match);
+            _dapperWrapper.Setup(x => x.QueryAsync<OverSet>(It.IsAny<string>(), It.IsAny<object>(), _databaseConnection.Object, _transaction.Object)).ReturnsAsync(match.MatchInnings[0].OverSets);
             var comparison = new BowlingScorecardComparison();
             comparison.OversUnchanged.AddRange(match.MatchInnings[0].OversBowled);
             comparison.OversChanged.Add((comparison.OversUnchanged.Last(), comparison.OversUnchanged.Last()));
@@ -541,7 +541,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
 
             await repository.UpdateBowlingScorecard(match, match.MatchInnings[0].MatchInningsId!.Value, memberKey, memberName).ConfigureAwait(false);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _transaction.Object), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _databaseConnection.Object, _transaction.Object), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<MatchInnings>(), memberName, memberKey, typeof(SqlServerMatchRepository), nameof(SqlServerMatchRepository.UpdateBowlingScorecard)), Times.Once);
         }
 
@@ -701,11 +701,11 @@ namespace Stoolball.Data.SqlServer.UnitTests
             var memberName = "Member name";
             var match = new Matches.Match { MatchId = Guid.NewGuid() };
 
-            _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _transaction.Object, null, null)).ReturnsAsync(match);
+            _dapperWrapper.Setup(x => x.QuerySingleOrDefaultAsync<Matches.Match>(It.IsAny<string>(), It.IsAny<object>(), _databaseConnection.Object, _transaction.Object, null, null)).ReturnsAsync(match);
 
             await repository.UpdateCloseOfPlay(new Matches.Match { MatchId = Guid.NewGuid() }, memberKey, memberName).ConfigureAwait(false);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _transaction.Object), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _databaseConnection.Object, _transaction.Object), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<Matches.Match>(), memberName, memberKey, typeof(SqlServerMatchRepository), nameof(SqlServerMatchRepository.UpdateCloseOfPlay)), Times.Once);
         }
     }

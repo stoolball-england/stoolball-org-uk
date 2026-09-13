@@ -29,11 +29,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
 #nullable disable
         [Fact]
-        public async Task DeleteBowlingFigures_throws_ArgumentNullException_if_transaction_is_null()
+        public async Task DeleteBowlingFigures_throws_ArgumentNullException_if_connection_is_null()
         {
             var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.DeleteBowlingFigures(Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.DeleteBowlingFigures(Guid.NewGuid(), null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 #nullable enable
 
@@ -49,7 +49,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     var matchInningsId = await connection.QuerySingleAsync<Guid>($"SELECT TOP 1 MatchInningsId FROM {Tables.BowlingFigures}", transaction: transaction).ConfigureAwait(false);
 
-                    await repo.DeleteBowlingFigures(matchInningsId, transaction).ConfigureAwait(false);
+                    await repo.DeleteBowlingFigures(matchInningsId, connection, transaction).ConfigureAwait(false);
 
                     var count = await connection.QuerySingleAsync<int>($"SELECT COUNT(*) FROM {Tables.BowlingFigures} WHERE MatchInningsId = @matchInningsId", new { matchInningsId }, transaction).ConfigureAwait(false);
 
@@ -66,7 +66,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(null, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(null, Guid.NewGuid(), "Member name", Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(new MatchInnings(), Guid.NewGuid(), null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(new MatchInnings(), Guid.NewGuid(), null, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 #nullable enable
 
@@ -83,16 +83,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(new MatchInnings(), Guid.NewGuid(), string.Empty, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(new MatchInnings(), Guid.NewGuid(), string.Empty, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
 #nullable disable
         [Fact]
-        public async Task UpdateBowlingFigures_throws_ArgumentNullException_if_transaction_is_null()
+        public async Task UpdateBowlingFigures_throws_ArgumentNullException_if_connection_is_null()
         {
             var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(new MatchInnings(), Guid.NewGuid(), "Member name", null).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdateBowlingFigures(new MatchInnings(), Guid.NewGuid(), "Member name", null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 #nullable enable
 
@@ -111,7 +111,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateBowlingFigures(innings, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.UpdateBowlingFigures(innings, Guid.NewGuid(), "Member name", Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
 
         }
 
@@ -139,13 +139,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     var memberName = "Member name";
 
                     var playerRepo = new Mock<IPlayerRepository>();
-                    playerRepo.Setup(x => x.CreateOrMatchPlayerIdentity(innings.BowlingFigures[0].Bowler, memberKey, memberName, transaction)).Returns(Task.FromResult(innings.BowlingFigures[0].Bowler));
+                    playerRepo.Setup(x => x.CreateOrMatchPlayerIdentity(innings.BowlingFigures[0].Bowler, memberKey, memberName, connection, transaction)).Returns(Task.FromResult(innings.BowlingFigures[0].Bowler));
 
                     var statisticsRepo = new SqlServerStatisticsRepository(playerRepo.Object);
 
-                    _ = statisticsRepo.UpdateBowlingFigures(innings, memberKey, memberName, transaction).ConfigureAwait(false);
+                    _ = statisticsRepo.UpdateBowlingFigures(innings, memberKey, memberName, connection, transaction).ConfigureAwait(false);
 
-                    playerRepo.Verify(x => x.CreateOrMatchPlayerIdentity(innings.BowlingFigures[0].Bowler, memberKey, memberName, transaction), Times.Once);
+                    playerRepo.Verify(x => x.CreateOrMatchPlayerIdentity(innings.BowlingFigures[0].Bowler, memberKey, memberName, connection, transaction), Times.Once);
 
                     transaction.Rollback();
                 }
@@ -183,11 +183,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     var memberName = "Member name";
 
                     var playerRepo = new Mock<IPlayerRepository>();
-                    playerRepo.Setup(x => x.CreateOrMatchPlayerIdentity(innings.BowlingFigures[0].Bowler, memberKey, memberName, transaction)).Returns(Task.FromResult(innings.BowlingFigures[0].Bowler));
+                    playerRepo.Setup(x => x.CreateOrMatchPlayerIdentity(innings.BowlingFigures[0].Bowler, memberKey, memberName, connection, transaction)).Returns(Task.FromResult(innings.BowlingFigures[0].Bowler));
 
                     var statisticsRepo = new SqlServerStatisticsRepository(playerRepo.Object);
 
-                    var results = await statisticsRepo.UpdateBowlingFigures(innings, memberKey, memberName, transaction).ConfigureAwait(false);
+                    var results = await statisticsRepo.UpdateBowlingFigures(innings, memberKey, memberName, connection, transaction).ConfigureAwait(false);
 
                     var count = await connection.ExecuteScalarAsync<int>(@$"SELECT COUNT(*) FROM {Tables.BowlingFigures} 
                                         WHERE BowlingFiguresId = @BowlingFiguresId
@@ -226,11 +226,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
 #nullable disable
         [Fact]
-        public async Task DeletePlayerStatistics_throws_ArgumentNullException_if_transaction_is_null()
+        public async Task DeletePlayerStatistics_throws_ArgumentNullException_if_connection_is_null()
         {
             var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.DeletePlayerStatistics(Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.DeletePlayerStatistics(Guid.NewGuid(), null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 #nullable enable
 
@@ -246,7 +246,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     var matchId = await connection.QuerySingleAsync<Guid>($"SELECT TOP 1 MatchId FROM {Tables.PlayerInMatchStatistics}", transaction: transaction).ConfigureAwait(false);
 
-                    await repo.DeletePlayerStatistics(matchId, transaction).ConfigureAwait(false);
+                    await repo.DeletePlayerStatistics(matchId, connection, transaction).ConfigureAwait(false);
 
                     var count = await connection.QuerySingleAsync<int>($"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} WHERE MatchId = @matchId", new { matchId }, transaction).ConfigureAwait(false);
 
@@ -263,15 +263,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdatePlayerStatistics(null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdatePlayerStatistics(null, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task UpdatePlayerStatistics_throws_ArgumentNullException_if_transaction_is_null()
+        public async Task UpdatePlayerStatistics_throws_ArgumentNullException_if_connection_is_null()
         {
             var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdatePlayerStatistics(Array.Empty<PlayerInMatchStatisticsRecord>(), null).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdatePlayerStatistics(Array.Empty<PlayerInMatchStatisticsRecord>(), null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 #nullable enable
 
@@ -317,7 +317,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                         PlayerOfTheMatch = false
                     };
 
-                    await repo.UpdatePlayerStatistics(new[] { stats }, transaction).ConfigureAwait(false);
+                    await repo.UpdatePlayerStatistics(new[] { stats }, connection, transaction).ConfigureAwait(false);
 
                     var count = await connection.QuerySingleAsync<int>(@$"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} 
                                 WHERE PlayerId = @PlayerId
@@ -502,7 +502,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                         });
                     }
 
-                    await repo.UpdatePlayerStatistics(statisticsRecords, transaction).ConfigureAwait(false);
+                    await repo.UpdatePlayerStatistics(statisticsRecords, connection, transaction).ConfigureAwait(false);
 
                     foreach (var record in statisticsRecords)
                     {
@@ -656,7 +656,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 using (var transaction = connection.BeginTransaction())
                 {
                     var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
-                    await repo.UpdatePlayerStatistics(statisticsRecords, transaction).ConfigureAwait(false);
+                    await repo.UpdatePlayerStatistics(statisticsRecords, connection, transaction).ConfigureAwait(false);
 
                     foreach (var record in statisticsRecords)
                     {
@@ -721,7 +721,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 using (var transaction = connection.BeginTransaction())
                 {
                     var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
-                    await repo.UpdatePlayerStatistics(statisticsRecords, transaction).ConfigureAwait(false);
+                    await repo.UpdatePlayerStatistics(statisticsRecords, connection, transaction).ConfigureAwait(false);
 
                     foreach (var record in statisticsRecords)
                     {
@@ -790,7 +790,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 using (var transaction = connection.BeginTransaction())
                 {
                     var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
-                    await repo.UpdatePlayerStatistics(statisticsRecords, transaction).ConfigureAwait(false);
+                    await repo.UpdatePlayerStatistics(statisticsRecords, connection, transaction).ConfigureAwait(false);
 
                     foreach (var record in statisticsRecords)
                     {

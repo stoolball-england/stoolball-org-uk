@@ -67,9 +67,9 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
-                    var auditableTeam = await CreateTeam(team, transaction, memberUsername).ConfigureAwait(false);
+                    var auditableTeam = await CreateTeam(team, connection, transaction, memberUsername).ConfigureAwait(false);
 
                     var redacted = _copier.CreateRedactedCopy(auditableTeam);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -81,9 +81,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableTeam),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.CreateTeam));
 
@@ -95,16 +95,16 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Creates a team using an existing transaction
         /// </summary>
-        public async Task<Team> CreateTeam(Team team, IDbTransaction transaction, string memberUsername)
+        public async Task<Team> CreateTeam(Team team, IDbConnection connection, IDbTransaction? transaction, string memberUsername)
         {
             if (team is null)
             {
                 throw new ArgumentNullException(nameof(team));
             }
 
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
             if (string.IsNullOrWhiteSpace(memberUsername))
@@ -129,7 +129,7 @@ namespace Stoolball.Data.SqlServer
             // Create a route. Generally {team.teamRoute} will be blank, but allowing a pre-populated prefix is useful for transient teams
             auditableTeam.TeamRoute = await _routeGenerator.GenerateUniqueRoute(
                 $"{auditableTeam.TeamRoute}/teams", auditableTeam.TeamName, NoiseWords.TeamRoute,
-                async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { TeamRoute = route }, transaction).ConfigureAwait(false)
+                async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { TeamRoute = route }, transaction).ConfigureAwait(false)
             ).ConfigureAwait(false);
 
             // Create an owner group
@@ -143,7 +143,7 @@ namespace Stoolball.Data.SqlServer
                 _memberGroupHelper.AssignRole(memberUsername, group.Name);
             }
 
-            await transaction.Connection.ExecuteAsync(
+            await connection.ExecuteAsync(
                 $@"INSERT INTO {Tables.Team} (TeamId, TeamType, AgeRangeLower, AgeRangeUpper, PlayerType, Introduction, PlayingTimes, Cost, ClubMark,
                                 PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, TeamRoute, MemberGroupKey, MemberGroupName) 
                                 VALUES (@TeamId, @TeamType, @AgeRangeLower, @AgeRangeUpper, @PlayerType, @Introduction, @PlayingTimes, @Cost, @ClubMark,
@@ -171,7 +171,7 @@ namespace Stoolball.Data.SqlServer
                     auditableTeam.MemberGroupName
                 }, transaction).ConfigureAwait(false);
 
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamVersion} 
+            await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamVersion}
                                 (TeamVersionId, TeamId, TeamName, ComparableName, FromDate, UntilDate) VALUES (@TeamVersionId, @TeamId, @TeamName, @ComparableName, @FromDate, @UntilDate)",
                 new
                 {
@@ -183,7 +183,7 @@ namespace Stoolball.Data.SqlServer
                     UntilDate = auditableTeam.UntilYear.HasValue ? new DateTime(auditableTeam.UntilYear.Value, 12, 31).ToUniversalTime() : (DateTime?)null
                 }, transaction).ConfigureAwait(false);
 
-            await InsertNewMatchLocationsForTeam(auditableTeam, new List<Guid>(), transaction).ConfigureAwait(false);
+            await InsertNewMatchLocationsForTeam(auditableTeam, new List<Guid>(), connection, transaction).ConfigureAwait(false);
 
             return auditableTeam;
         }
@@ -219,7 +219,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     auditableTeam.TeamRoute = await _routeGenerator.GenerateUniqueRoute(
                         team.TeamRoute,
@@ -277,11 +277,11 @@ namespace Stoolball.Data.SqlServer
 
                     await connection.ExecuteAsync($"UPDATE {Tables.TeamMatchLocation} SET UntilDate = @UntilDate WHERE TeamId = @TeamId AND UntilDate IS NULL AND MatchLocationId NOT IN @MatchLocationIds", new { UntilDate = DateTime.UtcNow.Date.AddDays(1).AddSeconds(-1), auditableTeam.TeamId, MatchLocationIds = auditableTeam.MatchLocations.Select(x => x.MatchLocationId) }, transaction).ConfigureAwait(false);
                     var currentLocations = (await connection.QueryAsync<Guid>($"SELECT MatchLocationId FROM {Tables.TeamMatchLocation} tml WHERE TeamId = @TeamId AND tml.UntilDate IS NULL", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false)).ToList();
-                    await InsertNewMatchLocationsForTeam(auditableTeam, currentLocations, transaction).ConfigureAwait(false);
+                    await InsertNewMatchLocationsForTeam(auditableTeam, currentLocations, connection, transaction).ConfigureAwait(false);
 
                     if (team.TeamRoute != auditableTeam.TeamRoute)
                     {
-                        await _redirectsRepository.InsertRedirect(team.TeamRoute, auditableTeam.TeamRoute, null, transaction).ConfigureAwait(false);
+                        await _redirectsRepository.InsertRedirect(team.TeamRoute, auditableTeam.TeamRoute, null, connection, transaction).ConfigureAwait(false);
                     }
 
                     var redacted = _copier.CreateRedactedCopy(auditableTeam);
@@ -294,9 +294,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableTeam),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.UpdateTeam));
                 }
@@ -305,13 +305,13 @@ namespace Stoolball.Data.SqlServer
             return auditableTeam;
         }
 
-        private static async Task InsertNewMatchLocationsForTeam(Team team, List<Guid> currentMatchLocations, IDbTransaction transaction)
+        private static async Task InsertNewMatchLocationsForTeam(Team team, List<Guid> currentMatchLocations, IDbConnection connection, IDbTransaction? transaction)
         {
             foreach (var location in team.MatchLocations)
             {
                 if (location.MatchLocationId.HasValue && !currentMatchLocations.Contains(location.MatchLocationId.Value))
                 {
-                    await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation}
                                     (TeamMatchLocationId, TeamId, MatchLocationId, FromDate)
                                     VALUES 
                                     (@TeamMatchLocationId, @TeamId, @MatchLocationId, @FromDate)",
@@ -356,7 +356,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     var routePrefix = Regex.Match(auditableTeam.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value;
                     auditableTeam.TeamRoute = await _routeGenerator.GenerateUniqueRoute(
@@ -410,7 +410,7 @@ namespace Stoolball.Data.SqlServer
 
                     if (team.TeamRoute != auditableTeam.TeamRoute)
                     {
-                        await _redirectsRepository.InsertRedirect(team.TeamRoute, auditableTeam.TeamRoute, null, transaction).ConfigureAwait(false);
+                        await _redirectsRepository.InsertRedirect(team.TeamRoute, auditableTeam.TeamRoute, null, connection, transaction).ConfigureAwait(false);
                     }
 
                     var redacted = _copier.CreateRedactedCopy(auditableTeam);
@@ -423,9 +423,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableTeam),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.UpdateTransientTeam));
                 }
@@ -450,7 +450,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE TeamId = @TeamId OR OppositionTeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET BowledByPlayerIdentityId = NULL WHERE BowledByPlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
@@ -475,7 +475,7 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($"DELETE FROM {Tables.TeamVersion} WHERE TeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Team} WHERE TeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
 
-                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableTeam.TeamRoute, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableTeam.TeamRoute, connection, transaction).ConfigureAwait(false);
 
                     var redacted = _copier.CreateRedactedCopy(auditableTeam);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -487,9 +487,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableTeam),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.DeleteTeam));
                 }

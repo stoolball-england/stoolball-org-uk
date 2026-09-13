@@ -12,13 +12,13 @@ namespace Stoolball.Data.Abstractions
         /// <summary>
         /// Delete bowling figures for a match innings.
         /// </summary>
-        Task DeleteBowlingFigures(Guid matchInningsId, IDbTransaction transaction);
-        Task DeletePlayerStatistics(Guid matchId, IDbTransaction transaction);
+        Task DeleteBowlingFigures(Guid matchInningsId, IDbConnection connection, IDbTransaction? transaction);
+        Task DeletePlayerStatistics(Guid matchId, IDbConnection connection, IDbTransaction? transaction);
 
         /// <summary>
         /// Updates the bowling figures for a single innings of a match. Assumes caller will handle auditing and logging.
         /// </summary>
-        Task<IList<BowlingFigures>> UpdateBowlingFigures(MatchInnings innings, Guid memberKey, string memberName, IDbTransaction transaction);
-        Task UpdatePlayerStatistics(IEnumerable<PlayerInMatchStatisticsRecord> statisticsData, IDbTransaction transaction);
+        Task<IList<BowlingFigures>> UpdateBowlingFigures(MatchInnings innings, Guid memberKey, string memberName, IDbConnection connection, IDbTransaction? transaction);
+        Task UpdatePlayerStatistics(IEnumerable<PlayerInMatchStatisticsRecord> statisticsData, IDbConnection connection, IDbTransaction? transaction);
     }
 }

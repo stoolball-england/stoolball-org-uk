@@ -105,7 +105,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var updated = await Repository.UpdateStartOfPlay(match, MemberKey, MemberName);
 
-            RedirectsRepository.Verify(x => x.InsertRedirect(match.MatchRoute!, updated.MatchRoute!, null, It.IsAny<IDbTransaction>()));
+            RedirectsRepository.Verify(x => x.InsertRedirect(match.MatchRoute!, updated.MatchRoute!, null, It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()));
         }
 
         [Theory]
@@ -449,7 +449,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             _ = await Repository.UpdateStartOfPlay(matchToUpdate, MemberKey, MemberName).ConfigureAwait(false);
 
-            StatisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbTransaction>()), Times.Once());
+            StatisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once());
         }
     }
 }

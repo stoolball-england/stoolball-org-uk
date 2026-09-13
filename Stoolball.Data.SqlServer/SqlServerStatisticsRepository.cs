@@ -22,19 +22,19 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <inheritdoc />
-        public async Task DeleteBowlingFigures(Guid matchInningsId, IDbTransaction transaction)
+        public async Task DeleteBowlingFigures(Guid matchInningsId, IDbConnection connection, IDbTransaction? transaction)
         {
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
-            await transaction.Connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET BowlingFiguresId = NULL WHERE MatchId = (SELECT MatchId FROM {Tables.MatchInnings} WHERE MatchInningsId = @matchInningsId)", new { matchInningsId }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures} WHERE MatchInningsId = @matchInningsId", new { matchInningsId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET BowlingFiguresId = NULL WHERE MatchId = (SELECT MatchId FROM {Tables.MatchInnings} WHERE MatchInningsId = @matchInningsId)", new { matchInningsId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures} WHERE MatchInningsId = @matchInningsId", new { matchInningsId }, transaction).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
-        public async Task<IList<BowlingFigures>> UpdateBowlingFigures(MatchInnings innings, Guid memberKey, string memberName, IDbTransaction transaction)
+        public async Task<IList<BowlingFigures>> UpdateBowlingFigures(MatchInnings innings, Guid memberKey, string memberName, IDbConnection connection, IDbTransaction? transaction)
         {
             if (innings is null)
             {
@@ -46,9 +46,9 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
             var i = 1;
@@ -69,9 +69,9 @@ namespace Stoolball.Data.SqlServer
                     throw new ArgumentException($"{nameof(innings.MatchInningsId)} cannot be null in a {typeof(MatchInnings)}");
                 }
 
-                bowlingFigures.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(bowlingFigures.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
+                bowlingFigures.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(bowlingFigures.Bowler, memberKey, memberName, connection, transaction).ConfigureAwait(false);
 
-                await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.BowlingFigures} 
+                await connection.ExecuteAsync($@"INSERT INTO {Tables.BowlingFigures}
                                 (BowlingFiguresId, MatchInningsId, BowlingOrder, BowlerPlayerIdentityId, Overs, Maidens, RunsConceded, Wickets, IsFromOversBowled)
                                 VALUES 
                                 (@BowlingFiguresId, @MatchInningsId, @BowlingOrder, @BowlerPlayerIdentityId, @Overs, @Maidens, @RunsConceded, @Wickets, @IsFromOversBowled)",
@@ -95,31 +95,31 @@ namespace Stoolball.Data.SqlServer
             return innings.BowlingFigures;
         }
 
-        public async Task DeletePlayerStatistics(Guid matchId, IDbTransaction transaction)
+        public async Task DeletePlayerStatistics(Guid matchId, IDbConnection connection, IDbTransaction? transaction)
         {
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE MatchId = @matchId", new { matchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE MatchId = @matchId", new { matchId }, transaction).ConfigureAwait(false);
         }
 
-        public async Task UpdatePlayerStatistics(IEnumerable<PlayerInMatchStatisticsRecord> statisticsData, IDbTransaction transaction)
+        public async Task UpdatePlayerStatistics(IEnumerable<PlayerInMatchStatisticsRecord> statisticsData, IDbConnection connection, IDbTransaction? transaction)
         {
             if (statisticsData is null)
             {
                 throw new ArgumentNullException(nameof(statisticsData));
             }
 
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
             foreach (var record in statisticsData)
             {
-                await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerInMatchStatistics}
+                await connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerInMatchStatistics}
                     (PlayerInMatchStatisticsId, PlayerId, PlayerIdentityId, PlayerIdentityName, PlayerRoute, MatchId, MatchStartTime, MatchType, MatchPlayerType, MatchName, MatchRoute, 
                      TournamentId, SeasonId, CompetitionId, MatchTeamId, ClubId, TeamId, TeamName, TeamRoute, OppositionTeamId, OppositionTeamName, OppositionTeamRoute, MatchLocationId, 
                      MatchInningsPair, TeamRunsScored, TeamWicketsLost, TeamBonusOrPenaltyRunsAwarded, TeamRunsConceded, TeamNoBallsConceded, TeamWidesConceded, TeamByesConceded, TeamWicketsTaken, 

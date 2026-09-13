@@ -8,13 +8,13 @@
         [Fact]
         public async Task DeleteSeasons_throws_ArgumentNullException_if_season_is_null()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Repository.DeleteSeasons(null!, MemberKey, MemberName, Mock.Of<IDbTransaction>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Repository.DeleteSeasons(null!, MemberKey, MemberName, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
         public async Task DeleteSeasons_throws_ArgumentNullException_if_memberKey_is_default_Guid()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Repository.DeleteSeasons([DatabaseFixture.TestData.Seasons.First()], default, MemberName, Mock.Of<IDbTransaction>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Repository.DeleteSeasons([DatabaseFixture.TestData.Seasons.First()], default, MemberName, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()));
         }
 
         [Theory]
@@ -23,7 +23,7 @@
         [InlineData("   ")]
         public async Task DeleteSeasons_throws_ArgumentNullException_if_memberName_is_null_or_whitespace(string? memberName)
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Repository.DeleteSeasons([DatabaseFixture.TestData.Seasons.First()], MemberKey, memberName!, Mock.Of<IDbTransaction>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Repository.DeleteSeasons([DatabaseFixture.TestData.Seasons.First()], MemberKey, memberName!, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -35,7 +35,7 @@
             {
                 connection.Open();
                 var transaction = connection.BeginTransaction();
-                await Repository.DeleteSeasons(seasonsToDelete, MemberKey, MemberName, transaction).ConfigureAwait(false);
+                await Repository.DeleteSeasons(seasonsToDelete, MemberKey, MemberName, connection, transaction).ConfigureAwait(false);
             }
 
             var anyOtherSeasonId = DatabaseFixture.TestData.Seasons.First(s => !seasonsToDelete.Select(x => x.SeasonId!.Value).ToList().Contains(s.SeasonId!.Value)).SeasonId!.Value;
@@ -52,12 +52,12 @@
             {
                 connection.Open();
                 var transaction = connection.BeginTransaction();
-                await Repository.DeleteSeasons(seasons, MemberKey, MemberName, transaction).ConfigureAwait(false);
+                await Repository.DeleteSeasons(seasons, MemberKey, MemberName, connection, transaction).ConfigureAwait(false);
             }
 
             foreach (var season in seasons)
             {
-                AuditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.EntityUri == season.EntityUri), It.IsAny<IDbTransaction>()), Times.Once);
+                AuditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.EntityUri == season.EntityUri), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
                 Logger.Verify(x => x.Info(LoggingTemplates.Deleted,
                                            It.Is<Season>(x => x.Competition!.CompetitionId == season.Competition!.CompetitionId
                                                                             && x.FromYear == season.FromYear
@@ -119,7 +119,7 @@
 
             await Repository.DeleteSeason(season, MemberKey, MemberName).ConfigureAwait(false);
 
-            AuditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.EntityUri == season.EntityUri), It.IsAny<IDbTransaction>()), Times.Once);
+            AuditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.EntityUri == season.EntityUri), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             Logger.Verify(x => x.Info(LoggingTemplates.Deleted,
                                        It.Is<Season>(x => x.Competition!.CompetitionId == season.Competition!.CompetitionId
                                                                         && x.FromYear == season.FromYear

@@ -37,6 +37,6 @@ namespace Stoolball.Data.Abstractions
         /// <summary>
         /// Delete multiple stoolball seasons
         /// </summary>
-        Task DeleteSeasons(IEnumerable<Season> seasons, Guid memberKey, string memberName, IDbTransaction transaction);
+        Task DeleteSeasons(IEnumerable<Season> seasons, Guid memberKey, string memberName, IDbConnection connection, IDbTransaction? transaction);
     }
 }

@@ -12,7 +12,7 @@ namespace Stoolball.Data.Abstractions
         /// Finds an existing player identity or creates it if it is not found.
         /// </summary>
         /// <returns>The <see cref="PlayerIdentity"/> of the created or matched player identity.</returns>
-        Task<PlayerIdentity> CreateOrMatchPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName, IDbTransaction transaction);
+        Task<PlayerIdentity> CreateOrMatchPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName, IDbConnection connection, IDbTransaction? transaction);
 
         /// <summary>
         /// Sets the MemberKey on a player to the supplied MemberKey, or moves the identities from <c>player</c> to an existing player if one is already linked.

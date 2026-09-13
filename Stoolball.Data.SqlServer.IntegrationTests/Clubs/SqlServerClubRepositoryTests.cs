@@ -200,7 +200,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 
             var createdClub = await repo.CreateClub(club, memberKey, memberName).ConfigureAwait(false);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Created, auditable, memberName, memberKey, typeof(SqlServerClubRepository), nameof(SqlServerClubRepository.CreateClub)));
         }
 
@@ -398,7 +398,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 
             _ = await repo.UpdateClub(club, memberKey, memberName).ConfigureAwait(false);
 
-            _redirectsRepository.Verify(x => x.InsertRedirect(club.ClubRoute, club.ClubRoute + "-123", null, It.IsAny<IDbTransaction>()), Times.Once);
+            _redirectsRepository.Verify(x => x.InsertRedirect(club.ClubRoute, club.ClubRoute + "-123", null, It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
         }
 
 
@@ -415,7 +415,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 
             _ = await repo.UpdateClub(club, memberKey, memberName).ConfigureAwait(false);
 
-            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
+            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Never);
         }
 
         [Fact]
@@ -431,7 +431,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 
             var updatedClub = await repo.UpdateClub(club, memberKey, memberName).ConfigureAwait(false);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<Club>(), memberName, memberKey, typeof(SqlServerClubRepository), nameof(SqlServerClubRepository.UpdateClub)));
         }
 

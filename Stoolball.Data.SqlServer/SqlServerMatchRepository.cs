@@ -117,10 +117,10 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
-                    var createdMatch = await CreateMatch(match, memberKey, memberName, transaction).ConfigureAwait(false);
-                    transaction.Commit();
+                    var createdMatch = await CreateMatch(match, memberKey, memberName, connection, transaction).ConfigureAwait(false);
+                    transaction?.Commit();
                     return createdMatch;
                 }
             }
@@ -129,13 +129,13 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Creates a stoolball match
         /// </summary>
-        public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName, IDbTransaction transaction)
+        public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName, IDbConnection connection, IDbTransaction? transaction)
         {
             ValidateCreateUpdateMatchInputs(match, memberName);
 
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
             var auditableMatch = _copier.CreateAuditableCopy(match);
@@ -144,8 +144,8 @@ namespace Stoolball.Data.SqlServer
             if (auditableMatch.MatchNotes is not null) { auditableMatch.MatchNotes = _htmlSanitiser.Sanitize(auditableMatch.MatchNotes); }
             auditableMatch.MemberKey = memberKey;
 
-            await PopulateTeamNames(auditableMatch, transaction).ConfigureAwait(false);
-            await UpdateMatchRoute(auditableMatch, string.Empty, transaction).ConfigureAwait(false);
+            await PopulateTeamNames(auditableMatch, connection, transaction).ConfigureAwait(false);
+            await UpdateMatchRoute(auditableMatch, string.Empty, connection, transaction).ConfigureAwait(false);
 
             if (auditableMatch.UpdateMatchNameAutomatically)
             {
@@ -165,7 +165,7 @@ namespace Stoolball.Data.SqlServer
             }
             auditableMatch.PlayerType = _playerTypeSelector.SelectPlayerType(auditableMatch);
 
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.Match}
+            await connection.ExecuteAsync($@"INSERT INTO {Tables.Match}
 						(MatchId, MatchName, UpdateMatchNameAutomatically, TournamentId, MatchLocationId, MatchType, PlayerType, PlayersPerTeam, InningsOrderIsKnown,
 						 StartTime, StartTimeIsKnown, LastPlayerBatsOn, EnableBonusOrPenaltyRuns, MatchNotes, SeasonId, MatchRoute, MemberKey)
 						VALUES (@MatchId, @MatchName, @UpdateMatchNameAutomatically, @TournamentId, @MatchLocationId, @MatchType, @PlayerType, @PlayersPerTeam, @InningsOrderIsKnown, 
@@ -214,7 +214,7 @@ namespace Stoolball.Data.SqlServer
 
                 team.MatchTeamId = matchTeamId;
 
-                await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
+                await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam}
 								(MatchTeamId, MatchId, TeamId, TeamRole, PlayingAsTeamName) VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole, @PlayingAsTeamName)",
                     new
                     {
@@ -238,7 +238,7 @@ namespace Stoolball.Data.SqlServer
 
                 foreach (var innings in auditableMatch.MatchInnings)
                 {
-                    await InsertMatchInnings(auditableMatch.MatchId.Value, innings, transaction).ConfigureAwait(false);
+                    await InsertMatchInnings(auditableMatch.MatchId.Value, innings, connection, transaction).ConfigureAwait(false);
                 }
             }
 
@@ -252,18 +252,18 @@ namespace Stoolball.Data.SqlServer
                 State = JsonConvert.SerializeObject(auditableMatch),
                 RedactedState = JsonConvert.SerializeObject(redacted),
                 AuditDate = DateTime.UtcNow
-            }, transaction).ConfigureAwait(false);
+            }, connection, transaction).ConfigureAwait(false);
 
             _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(CreateMatch));
 
             return auditableMatch;
         }
 
-        private static async Task InsertMatchInnings(Guid matchId, MatchInnings innings, IDbTransaction transaction)
+        private static async Task InsertMatchInnings(Guid matchId, MatchInnings innings, IDbConnection connection, IDbTransaction? transaction)
         {
             innings.MatchInningsId = innings.MatchInningsId ?? Guid.NewGuid();
 
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
+            await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
 							(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch)
 							VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamId, @InningsOrderInMatch)",
                 new
@@ -276,15 +276,15 @@ namespace Stoolball.Data.SqlServer
                 },
                 transaction).ConfigureAwait(false);
 
-            await InsertOverSets(innings, transaction).ConfigureAwait(false);
+            await InsertOverSets(innings, connection, transaction).ConfigureAwait(false);
         }
 
-        private static async Task InsertOverSets(MatchInnings innings, IDbTransaction transaction)
+        private static async Task InsertOverSets(MatchInnings innings, IDbConnection connection, IDbTransaction? transaction)
         {
             for (var i = 0; i < innings.OverSets.Count; i++)
             {
                 innings.OverSets[i].OverSetId = Guid.NewGuid();
-                await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @MatchInningsId, @OverSetNumber, @Overs, @BallsPerOver)",
+                await connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @MatchInningsId, @OverSetNumber, @Overs, @BallsPerOver)",
                     new
                     {
                         innings.OverSets[i].OverSetId,
@@ -327,7 +327,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     // Validate that the match is in the future
                     var matchId = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchId FROM {Tables.Match} WHERE MatchId = @MatchId AND StartTime > @StartTime",
@@ -342,8 +342,8 @@ namespace Stoolball.Data.SqlServer
                         throw new InvalidOperationException($"Match {auditableMatch.MatchId} cannot be in the past.");
                     }
 
-                    await PopulateTeamNames(auditableMatch, transaction).ConfigureAwait(false);
-                    await UpdateMatchRoute(auditableMatch, match.MatchRoute, transaction).ConfigureAwait(false);
+                    await PopulateTeamNames(auditableMatch, connection, transaction).ConfigureAwait(false);
+                    await UpdateMatchRoute(auditableMatch, match.MatchRoute, connection, transaction).ConfigureAwait(false);
 
                     if (auditableMatch.UpdateMatchNameAutomatically)
                     {
@@ -404,7 +404,7 @@ namespace Stoolball.Data.SqlServer
                         // Team removed?
                         foreach (var team in currentTeams.Where(x => !auditableMatch.Teams.Select(t => t.Team!.TeamId!.Value).Contains(x.TeamId!.Value)))
                         {
-                            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchTeamId = @MatchTeamId", new { team.MatchTeamId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchTeamId = @MatchTeamId", new { team.MatchTeamId }, transaction).ConfigureAwait(false);
                         }
                     }
                     else
@@ -444,8 +444,8 @@ namespace Stoolball.Data.SqlServer
                         }
 
                         // Team removed?
-                        await RemoveTeamIfRequired(TeamRole.Home, currentTeams, auditableMatch.Teams, transaction).ConfigureAwait(false);
-                        await RemoveTeamIfRequired(TeamRole.Away, currentTeams, auditableMatch.Teams, transaction).ConfigureAwait(false);
+                        await RemoveTeamIfRequired(TeamRole.Home, currentTeams, auditableMatch.Teams, connection, transaction).ConfigureAwait(false);
+                        await RemoveTeamIfRequired(TeamRole.Away, currentTeams, auditableMatch.Teams, connection, transaction).ConfigureAwait(false);
 
                         // Update innings with the new values for match team ids (assuming the match hasn't happened yet, 
                         // therefore the innings order is home bats first as assumed in CreateMatch)
@@ -472,7 +472,7 @@ namespace Stoolball.Data.SqlServer
 
                     if (match.MatchRoute != auditableMatch.MatchRoute)
                     {
-                        await _redirectsRepository.InsertRedirect(match.MatchRoute, auditableMatch.MatchRoute!, null, transaction).ConfigureAwait(false);
+                        await _redirectsRepository.InsertRedirect(match.MatchRoute, auditableMatch.MatchRoute!, null, connection, transaction).ConfigureAwait(false);
                     }
 
                     var redacted = _copier.CreateRedactedCopy(auditableMatch);
@@ -485,9 +485,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableMatch),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateMatchInTheFuture));
                 }
@@ -496,15 +496,15 @@ namespace Stoolball.Data.SqlServer
             return auditableMatch;
         }
 
-        private static async Task RemoveTeamIfRequired(TeamRole teamRole, IEnumerable<MatchTeamResult> currentTeams, IEnumerable<TeamInMatch> updatedTeams, IDbTransaction transaction)
+        private static async Task RemoveTeamIfRequired(TeamRole teamRole, IEnumerable<MatchTeamResult> currentTeams, IEnumerable<TeamInMatch> updatedTeams, IDbConnection connection, IDbTransaction? transaction)
         {
             var currentTeamInRole = currentTeams.SingleOrDefault(x => x.TeamRole == teamRole);
             var newTeamInRole = updatedTeams.SingleOrDefault(x => x.TeamRole == teamRole);
             if (currentTeamInRole != null && newTeamInRole == null)
             {
-                await transaction.Connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = NULL WHERE BattingMatchTeamId = @MatchTeamId", new { currentTeamInRole.MatchTeamId }, transaction).ConfigureAwait(false);
-                await transaction.Connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = NULL WHERE BowlingMatchTeamId = @MatchTeamId", new { currentTeamInRole.MatchTeamId }, transaction).ConfigureAwait(false);
-                await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchTeamId = @MatchTeamId", new { currentTeamInRole.MatchTeamId }, transaction).ConfigureAwait(false);
+                await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = NULL WHERE BattingMatchTeamId = @MatchTeamId", new { currentTeamInRole.MatchTeamId }, transaction).ConfigureAwait(false);
+                await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = NULL WHERE BowlingMatchTeamId = @MatchTeamId", new { currentTeamInRole.MatchTeamId }, transaction).ConfigureAwait(false);
+                await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchTeamId = @MatchTeamId", new { currentTeamInRole.MatchTeamId }, transaction).ConfigureAwait(false);
             }
         }
 
@@ -529,7 +529,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     var currentMatchInnings = await connection.QueryAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
 
@@ -566,7 +566,7 @@ namespace Stoolball.Data.SqlServer
                     {
                         foreach (var innings in addedMatchInnings)
                         {
-                            await InsertMatchInnings(auditableMatch.MatchId!.Value, innings, transaction).ConfigureAwait(false);
+                            await InsertMatchInnings(auditableMatch.MatchId!.Value, innings, connection, transaction).ConfigureAwait(false);
                         }
                     }
 
@@ -580,9 +580,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableMatch),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateMatchFormat));
                 }
@@ -662,14 +662,14 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     var beforeUpdate = await _dapperWrapper.QuerySingleOrDefaultAsync<Match>(
                         $@"SELECT MatchResultType, UpdateMatchNameAutomatically, MatchName, MatchRoute, StartTime
-                            FROM {Tables.Match} 
+                            FROM {Tables.Match}
                             WHERE MatchId = @MatchId",
                         new { auditableMatch.MatchId },
-                        transaction).ConfigureAwait(false);
+                        connection, transaction).ConfigureAwait(false);
 
                     if (beforeUpdate is null) { throw new MatchNotFoundException(auditableMatch.MatchId!.Value); }
 
@@ -677,7 +677,7 @@ namespace Stoolball.Data.SqlServer
                     auditableMatch.MatchName = beforeUpdate.MatchName;
 
                     // the route might change if teams were missing and are only now being added
-                    await UpdateMatchRoute(auditableMatch, beforeUpdate.MatchRoute, transaction).ConfigureAwait(false);
+                    await UpdateMatchRoute(auditableMatch, beforeUpdate.MatchRoute, connection, transaction).ConfigureAwait(false);
 
                     if (!auditableMatch.MatchResultType.HasValue && beforeUpdate.MatchResultType.HasValue &&
                         matchCompletedResults.Contains(beforeUpdate.MatchResultType.Value))
@@ -710,9 +710,9 @@ namespace Stoolball.Data.SqlServer
                         }
 
                         await _dapperWrapper.ExecuteAsync($@"UPDATE {Tables.Match} SET
-                                MatchName = @MatchName,                                
-                                MatchLocationId = @MatchLocationId, 
-                                InningsOrderIsKnown = @InningsOrderIsKnown, 
+                                MatchName = @MatchName,
+                                MatchLocationId = @MatchLocationId,
+                                InningsOrderIsKnown = @InningsOrderIsKnown,
                                 MatchResultType = @MatchResultType,
                                 MatchRoute = @MatchRoute
                                 WHERE MatchId = @MatchId",
@@ -724,7 +724,7 @@ namespace Stoolball.Data.SqlServer
                             MatchResultType = auditableMatch.MatchResultType?.ToString(),
                             auditableMatch.MatchRoute,
                             auditableMatch.MatchId
-                        }, transaction).ConfigureAwait(false);
+                        }, connection, transaction).ConfigureAwait(false);
                     }
 
                     foreach (var team in auditableMatch.Teams)
@@ -737,12 +737,12 @@ namespace Stoolball.Data.SqlServer
                                 team.WonToss,
                                 team.MatchTeamId
                             },
-                            transaction).ConfigureAwait(false);
+                            connection, transaction).ConfigureAwait(false);
                         }
                         else
                         {
                             team.MatchTeamId = Guid.NewGuid();
-                            await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
+                            await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam}
                                     (MatchTeamId, MatchId, TeamId, TeamRole, WonToss)
                                      VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole, @WonToss)",
                                  new
@@ -753,7 +753,7 @@ namespace Stoolball.Data.SqlServer
                                      team.TeamRole,
                                      team.WonToss
                                  },
-                                 transaction).ConfigureAwait(false);
+                                 connection, transaction).ConfigureAwait(false);
 
                             // You cannot set the order of innings in a match until both teams are fixed, so this is the last point where 
                             // we know that, in the database, match.InningsOrderIsKnown is false and the assumption is that the home team 
@@ -763,13 +763,13 @@ namespace Stoolball.Data.SqlServer
                             var evenInnings = auditableMatch.MatchInnings.Where(x => x.InningsOrderInMatch % 2 == 0);
                             if (team.TeamRole == TeamRole.Home)
                             {
-                                await InsertMatchTeamIdIntoMatchInnings(_dapperWrapper, transaction, team.MatchTeamId.Value, oddInnings.Select(x => x.MatchInningsId), evenInnings.Select(x => x.MatchInningsId)).ConfigureAwait(false);
+                                await InsertMatchTeamIdIntoMatchInnings(_dapperWrapper, connection, transaction, team.MatchTeamId.Value, oddInnings.Select(x => x.MatchInningsId), evenInnings.Select(x => x.MatchInningsId)).ConfigureAwait(false);
                                 foreach (var innings in oddInnings) { innings.BattingMatchTeamId = team.MatchTeamId; }
                                 foreach (var innings in evenInnings) { innings.BowlingMatchTeamId = team.MatchTeamId; }
                             }
                             else if (team.TeamRole == TeamRole.Away)
                             {
-                                await InsertMatchTeamIdIntoMatchInnings(_dapperWrapper, transaction, team.MatchTeamId.Value, evenInnings.Select(x => x.MatchInningsId), oddInnings.Select(x => x.MatchInningsId)).ConfigureAwait(false);
+                                await InsertMatchTeamIdIntoMatchInnings(_dapperWrapper, connection, transaction, team.MatchTeamId.Value, evenInnings.Select(x => x.MatchInningsId), oddInnings.Select(x => x.MatchInningsId)).ConfigureAwait(false);
                                 foreach (var innings in evenInnings) { innings.BattingMatchTeamId = team.MatchTeamId; }
                                 foreach (var innings in oddInnings) { innings.BowlingMatchTeamId = team.MatchTeamId; }
                             }
@@ -803,18 +803,18 @@ namespace Stoolball.Data.SqlServer
                                     innings.InningsOrderInMatch,
                                     innings.MatchInningsId
                                 },
-                                transaction).ConfigureAwait(false);
+                                connection, transaction).ConfigureAwait(false);
                         }
                     }
 
                     if (beforeUpdate.MatchRoute != auditableMatch.MatchRoute)
                     {
-                        await _redirectsRepository.InsertRedirect(beforeUpdate.MatchRoute!, auditableMatch.MatchRoute!, null, transaction).ConfigureAwait(false);
+                        await _redirectsRepository.InsertRedirect(beforeUpdate.MatchRoute!, auditableMatch.MatchRoute!, null, connection, transaction).ConfigureAwait(false);
                     }
 
                     var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
-                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, transaction).ConfigureAwait(false);
-                    await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, connection, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, connection, transaction).ConfigureAwait(false);
 
                     var redacted = _copier.CreateRedactedCopy(auditableMatch);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -826,9 +826,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableMatch),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateStartOfPlay));
                 }
@@ -868,12 +868,12 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     // Select existing innings and work out which ones have changed.
                     var matchInningsBefore = await _dapperWrapper.QuerySingleAsync<(int? Byes, int? Wides, int? NoBalls, int? BonusOrPenaltyRuns, int? Runs, int? Wickets)>(
                         $"SELECT Byes, Wides, NoBalls, BonusOrPenaltyRuns, Runs, Wickets FROM {Tables.MatchInnings} WHERE MatchInningsId = @MatchInningsId",
-                        new { auditableInnings.MatchInningsId }, transaction).ConfigureAwait(false);
+                        new { auditableInnings.MatchInningsId }, connection, transaction).ConfigureAwait(false);
 
                     var matchInningsTotalsHaveChanged = matchInningsBefore.Byes != auditableInnings.Byes ||
                                                         matchInningsBefore.Wides != auditableInnings.Wides ||
@@ -900,6 +900,7 @@ namespace Stoolball.Data.SqlServer
                             return playerInnings;
                         },
                            new { auditableInnings.MatchInningsId },
+                           connection,
                            transaction,
                            splitOn: "PlayerIdentityId, PlayerIdentityId, PlayerIdentityId").ConfigureAwait(false);
 
@@ -913,19 +914,19 @@ namespace Stoolball.Data.SqlServer
                         if (playerInnings.Batter != null && !string.IsNullOrWhiteSpace(playerInnings.Batter.PlayerIdentityName))
                         {
                             playerInnings.Batter.Team = auditableInnings.BattingTeam.Team;
-                            playerInnings.Batter = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Batter, memberKey, memberName, transaction).ConfigureAwait(false);
+                            playerInnings.Batter = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Batter, memberKey, memberName, connection, transaction).ConfigureAwait(false);
                         }
 
                         if (playerInnings.DismissedBy != null)
                         {
                             playerInnings.DismissedBy.Team = auditableInnings.BowlingTeam.Team;
-                            playerInnings.DismissedBy = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.DismissedBy, memberKey, memberName, transaction).ConfigureAwait(false);
+                            playerInnings.DismissedBy = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.DismissedBy, memberKey, memberName, connection, transaction).ConfigureAwait(false);
                         }
 
                         if (playerInnings.Bowler != null)
                         {
                             playerInnings.Bowler.Team = auditableInnings.BowlingTeam.Team;
-                            playerInnings.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
+                            playerInnings.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Bowler, memberKey, memberName, connection, transaction).ConfigureAwait(false);
                         }
                     }
 
@@ -933,7 +934,7 @@ namespace Stoolball.Data.SqlServer
                     foreach (var figures in auditableInnings.BowlingFigures)
                     {
                         figures.Bowler.Team = auditableInnings.BowlingTeam.Team;
-                        figures.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(figures.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
+                        figures.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(figures.Bowler, memberKey, memberName, connection, transaction).ConfigureAwait(false);
                     }
 
                     var comparison = _battingScorecardComparer.CompareScorecards(playerInningsBefore, auditableInnings.PlayerInnings);
@@ -948,7 +949,7 @@ namespace Stoolball.Data.SqlServer
                     var playerInningsHaveChanged = comparison.PlayerInningsAdded.Any() || comparison.PlayerInningsChanged.Any() || comparison.PlayerInningsRemoved.Any();
                     if (playerInningsHaveChanged || matchInningsTotalsHaveChanged)
                     {
-                        await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, transaction).ConfigureAwait(false);
+                        await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, connection, transaction).ConfigureAwait(false);
                     }
 
                     if (playerInningsHaveChanged)
@@ -956,7 +957,7 @@ namespace Stoolball.Data.SqlServer
                         foreach (var playerInnings in comparison.PlayerInningsAdded)
                         {
                             playerInnings.PlayerInningsId = Guid.NewGuid();
-                            await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.PlayerInnings} 
+                            await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.PlayerInnings}
                                 (PlayerInningsId, BattingPosition, MatchInningsId, BatterPlayerIdentityId, DismissalType, DismissedByPlayerIdentityId, BowlerPlayerIdentityId, RunsScored, BallsFaced) 
                                 VALUES 
                                 (@PlayerInningsId, @BattingPosition, @MatchInningsId, @BatterPlayerIdentityId, @DismissalType, @DismissedByPlayerIdentityId, @BowlerPlayerIdentityId, @RunsScored, @BallsFaced)",
@@ -971,7 +972,7 @@ namespace Stoolball.Data.SqlServer
                                     BowlerPlayerIdentityId = playerInnings.Bowler?.PlayerIdentityId,
                                     playerInnings.RunsScored,
                                     playerInnings.BallsFaced
-                                }, transaction).ConfigureAwait(false);
+                                }, connection, transaction).ConfigureAwait(false);
 
                         }
 
@@ -997,11 +998,11 @@ namespace Stoolball.Data.SqlServer
                                     after.RunsScored,
                                     after.BallsFaced,
                                     after.PlayerInningsId
-                                }, transaction).ConfigureAwait(false);
+                                }, connection, transaction).ConfigureAwait(false);
                         }
 
                         // Deleting removed player innings only works because we already deleted them from the statistics table
-                        await _dapperWrapper.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE PlayerInningsId IN @PlayerInningsIds", new { PlayerInningsIds = comparison.PlayerInningsRemoved.Select(x => x.PlayerInningsId) }, transaction).ConfigureAwait(false);
+                        await _dapperWrapper.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE PlayerInningsId IN @PlayerInningsIds", new { PlayerInningsIds = comparison.PlayerInningsRemoved.Select(x => x.PlayerInningsId) }, connection, transaction).ConfigureAwait(false);
                     }
 
                     // Update the extras and final score
@@ -1026,13 +1027,13 @@ namespace Stoolball.Data.SqlServer
                                 auditableInnings.Wickets,
                                 auditableInnings.MatchInningsId
                             },
-                            transaction).ConfigureAwait(false);
+                            connection, transaction).ConfigureAwait(false);
                     }
 
                     // Update the number of players per team if it has grown
                     await _dapperWrapper.ExecuteAsync(
-                         $@"UPDATE {Tables.Match} SET 
-                                PlayersPerTeam = @PlayersPerTeam 
+                         $@"UPDATE {Tables.Match} SET
+                                PlayersPerTeam = @PlayersPerTeam
                                 WHERE MatchId = (SELECT MatchId FROM {Tables.MatchInnings} WHERE MatchInningsId = @MatchInningsId)
                                 AND @PlayersPerTeam > PlayersPerTeam",
                         new
@@ -1040,7 +1041,7 @@ namespace Stoolball.Data.SqlServer
                             PlayersPerTeam = auditableInnings.PlayerInnings.Count,
                             auditableInnings.MatchInningsId
                         },
-                        transaction).ConfigureAwait(false);
+                        connection, transaction).ConfigureAwait(false);
 
 
                     if (playerInningsHaveChanged)
@@ -1050,15 +1051,15 @@ namespace Stoolball.Data.SqlServer
                             comparison.PlayerInningsRemoved.Any(x => x.Bowler != null);
                         if (bowlingFiguresHaveChanged)
                         {
-                            await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId!.Value, transaction).ConfigureAwait(false);
-                            await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
+                            await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId!.Value, connection, transaction).ConfigureAwait(false);
+                            await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, connection, transaction).ConfigureAwait(false);
                         }
                     }
 
                     if (playerInningsHaveChanged || matchInningsTotalsHaveChanged)
                     {
                         var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
-                        await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
+                        await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, connection, transaction).ConfigureAwait(false);
                     }
 
                     if (playerInningsHaveChanged)
@@ -1068,7 +1069,7 @@ namespace Stoolball.Data.SqlServer
                             await MarkObsoletePlayersForDelete(comparison.BattingPlayerIdentitiesRemoved,
                                 auditableInnings.BattingTeam.Team.TeamId!.Value,
                                 (name, _) => playerInningsBefore.First(pi => pi.Batter!.ComparableName() == ComparableNameFor(name)).Batter!.PlayerIdentityId!.Value,
-                                transaction);
+                                connection, transaction);
                         }
 
                         var bowlersRemoved = comparison.BowlingPlayerIdentitiesRemoved.Where(nameRemoved => playerInningsBefore.Where(pi => pi.Bowler != null).Select(pi => pi.Bowler!.ComparableName()).Contains(ComparableNameFor(nameRemoved)));
@@ -1077,7 +1078,7 @@ namespace Stoolball.Data.SqlServer
                             await MarkObsoletePlayersForDelete(bowlersRemoved,
                                 auditableInnings.BowlingTeam.Team.TeamId!.Value,
                                 (name, _) => playerInningsBefore.First(pi => pi.Bowler is not null && pi.Bowler.ComparableName() == ComparableNameFor(name)).Bowler!.PlayerIdentityId!.Value,
-                                transaction);
+                                connection, transaction);
                         }
 
                         var fieldersRemoved = comparison.BowlingPlayerIdentitiesRemoved.Where(name => !bowlersRemoved.Contains(name));
@@ -1086,7 +1087,7 @@ namespace Stoolball.Data.SqlServer
                             await MarkObsoletePlayersForDelete(fieldersRemoved,
                                 auditableInnings.BowlingTeam.Team.TeamId!.Value,
                                 (name, _) => playerInningsBefore.First(pi => pi.DismissedBy is not null && pi.DismissedBy.ComparableName() == ComparableNameFor(name)).DismissedBy!.PlayerIdentityId!.Value,
-                                transaction);
+                                connection, transaction);
                         }
                     }
 
@@ -1102,12 +1103,12 @@ namespace Stoolball.Data.SqlServer
                             State = serialisedInnings,
                             RedactedState = serialisedInnings,
                             AuditDate = DateTime.UtcNow
-                        }, transaction).ConfigureAwait(false);
+                        }, connection, transaction).ConfigureAwait(false);
 
                         _logger.Info(LoggingTemplates.Updated, auditableInnings, memberName, memberKey, GetType(), nameof(UpdateBattingScorecard));
                     }
 
-                    transaction.Commit();
+                    transaction?.Commit();
                 }
             }
 
@@ -1148,7 +1149,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     // Select existing overs and work out which ones have changed.
                     var oversBefore = await _dapperWrapper.QueryAsync<Over, OverSet, PlayerIdentity, Over>(
@@ -1164,6 +1165,7 @@ namespace Stoolball.Data.SqlServer
                             return over;
                         },
                            new { auditableInnings.MatchInningsId },
+                           connection,
                            transaction,
                            splitOn: "OverSetId, PlayerIdentityId").ConfigureAwait(false);
 
@@ -1176,7 +1178,7 @@ namespace Stoolball.Data.SqlServer
 
                         over.OverId = Guid.NewGuid();
                         over.Bowler.Team = auditableInnings.BowlingTeam.Team;
-                        over.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(over.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
+                        over.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(over.Bowler, memberKey, memberName, connection, transaction).ConfigureAwait(false);
                     }
 
                     foreach (var figures in auditableInnings.BowlingFigures)
@@ -1201,7 +1203,7 @@ namespace Stoolball.Data.SqlServer
                         // Get existing oversets and, if there were more overs than expected, extend the last overset to fit
                         var overSets = (await _dapperWrapper.QueryAsync<OverSet>(
                             $"SELECT OverSetId, OverSetNumber, Overs FROM {Tables.OverSet} WHERE MatchInningsId = @MatchInningsId ORDER BY OverSetNumber ASC",
-                            new { auditableInnings.MatchInningsId }, transaction).ConfigureAwait(false)).ToList();
+                            new { auditableInnings.MatchInningsId }, connection, transaction).ConfigureAwait(false)).ToList();
 
                         var expectedOvers = overSets.Sum(x => x.Overs);
                         if (auditableInnings.OversBowled.Count > expectedOvers)
@@ -1212,12 +1214,12 @@ namespace Stoolball.Data.SqlServer
                             {
                                 lastOverSet.OverSetId,
                                 lastOverSet.Overs
-                            }, transaction).ConfigureAwait(false);
+                            }, connection, transaction).ConfigureAwait(false);
                         }
 
                         foreach (var over in comparison.OversAdded)
                         {
-                            await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.Over} 
+                            await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.Over}
                                 (OverId, OverNumber, MatchInningsId, BowlerPlayerIdentityId, OverSetId, BallsBowled, NoBalls, Wides, RunsConceded) 
                                 VALUES 
                                 (@OverId, @OverNumber, @MatchInningsId, @BowlerPlayerIdentityId, @OverSetId, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
@@ -1232,14 +1234,14 @@ namespace Stoolball.Data.SqlServer
                                     over.NoBalls,
                                     over.Wides,
                                     over.RunsConceded,
-                                }, transaction).ConfigureAwait(false);
+                                }, connection, transaction).ConfigureAwait(false);
 
                         }
 
                         foreach (var (before, after) in comparison.OversChanged)
                         {
                             after.OverId = before.OverId;
-                            await _dapperWrapper.ExecuteAsync($@"UPDATE {Tables.Over} SET 
+                            await _dapperWrapper.ExecuteAsync($@"UPDATE {Tables.Over} SET
                                 OverNumber = @OverNumber,
                                 BowlerPlayerIdentityId = @BowlerPlayerIdentityId,
                                 OverSetId = @OverSetId,
@@ -1258,23 +1260,23 @@ namespace Stoolball.Data.SqlServer
                                     after.Wides,
                                     after.RunsConceded,
                                     after.OverId
-                                }, transaction).ConfigureAwait(false);
+                                }, connection, transaction).ConfigureAwait(false);
 
                         }
 
-                        await _dapperWrapper.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE OverId IN @OverIds", new { OverIds = comparison.OversRemoved.Select(x => x.OverId) }, transaction).ConfigureAwait(false);
+                        await _dapperWrapper.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE OverId IN @OverIds", new { OverIds = comparison.OversRemoved.Select(x => x.OverId) }, connection, transaction).ConfigureAwait(false);
 
                         var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
 
-                        await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, transaction).ConfigureAwait(false);
-                        await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId!.Value, transaction).ConfigureAwait(false);
-                        await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
-                        await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
+                        await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, connection, transaction).ConfigureAwait(false);
+                        await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId!.Value, connection, transaction).ConfigureAwait(false);
+                        await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, connection, transaction).ConfigureAwait(false);
+                        await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, connection, transaction).ConfigureAwait(false);
 
                         await MarkObsoletePlayersForDelete(comparison.PlayerIdentitiesRemoved,
                             auditableInnings.BowlingTeam.Team.TeamId.Value,
                             (name, _) => oversBefore.First(o => o.Bowler!.ComparableName() == new PlayerIdentity { PlayerIdentityName = name }.ComparableName()).Bowler!.PlayerIdentityId!.Value,
-                            transaction);
+                            connection, transaction);
 
                         var serialisedInnings = JsonConvert.SerializeObject(auditableInnings);
                         await _auditRepository.CreateAudit(new AuditRecord
@@ -1286,12 +1288,12 @@ namespace Stoolball.Data.SqlServer
                             State = serialisedInnings,
                             RedactedState = serialisedInnings,
                             AuditDate = DateTime.UtcNow
-                        }, transaction).ConfigureAwait(false);
+                        }, connection, transaction).ConfigureAwait(false);
 
                         _logger.Info(LoggingTemplates.Updated, auditableInnings, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateBowlingScorecard));
                     }
 
-                    transaction.Commit();
+                    transaction?.Commit();
                 }
 
             }
@@ -1299,47 +1301,47 @@ namespace Stoolball.Data.SqlServer
             return auditableInnings;
         }
 
-        private async Task MarkObsoletePlayersForDelete(IEnumerable<string> playerIdentitiesRemoved, Guid teamId, Func<string, Guid, Guid> convertPlayerIdentityNameToId, IDbTransaction transaction)
+        private async Task MarkObsoletePlayersForDelete(IEnumerable<string> playerIdentitiesRemoved, Guid teamId, Func<string, Guid, Guid> convertPlayerIdentityNameToId, IDbConnection connection, IDbTransaction? transaction)
         {
             foreach (var playerIdentityName in playerIdentitiesRemoved)
             {
                 var playerIdentityId = convertPlayerIdentityNameToId(playerIdentityName, teamId);
 
                 // Check against the original data because statistics may be awaiting other async updates
-                var playerInnings = await _dapperWrapper.ExecuteScalarAsync<int>($@"SELECT COUNT(PlayerInningsId) FROM {Tables.PlayerInnings} 
+                var playerInnings = await _dapperWrapper.ExecuteScalarAsync<int>($@"SELECT COUNT(PlayerInningsId) FROM {Tables.PlayerInnings}
                             WHERE BatterPlayerIdentityId = @PlayerIdentityId OR DismissedByPlayerIdentityId = @PlayerIdentityId OR BowlerPlayerIdentityId = @PlayerIdentityId",
                     new { PlayerIdentityId = playerIdentityId },
-                    transaction
+                    connection, transaction
                     );
                 if (playerInnings > 0) { continue; }
 
                 var bowlingFigures = await _dapperWrapper.ExecuteScalarAsync<int>($"SELECT COUNT(BowlingFiguresId) FROM {Tables.BowlingFigures} WHERE BowlerPlayerIdentityId = @PlayerIdentityId",
                     new { PlayerIdentityId = playerIdentityId },
-                    transaction
+                    connection, transaction
                     );
                 if (bowlingFigures > 0) { continue; }
 
                 var overs = await _dapperWrapper.ExecuteScalarAsync<int>($"SELECT COUNT(OverId) FROM {Tables.Over} WHERE BowlerPlayerIdentityId = @PlayerIdentityId",
                     new { PlayerIdentityId = playerIdentityId },
-                    transaction
+                    connection, transaction
                     );
                 if (overs > 0) { continue; }
 
                 var awards = await _dapperWrapper.ExecuteScalarAsync<int>($"SELECT COUNT(AwardedToId) FROM {Tables.AwardedTo} WHERE PlayerIdentityId = @PlayerIdentityId",
                     new { PlayerIdentityId = playerIdentityId },
-                    transaction
+                    connection, transaction
                     );
                 if (awards > 0) { continue; }
 
                 var fallOfWicket = await _dapperWrapper.ExecuteScalarAsync<int>($"SELECT COUNT(FallOfWicketId) FROM {Tables.FallOfWicket} WHERE BatterPlayerIdentityId = @PlayerIdentityId",
                     new { PlayerIdentityId = playerIdentityId },
-                    transaction
+                    connection, transaction
                     );
                 if (fallOfWicket > 0) { continue; }
 
-                // We need to delete the now-unused player identity, but it's possible that async statistics updates haven't happened yet. 
+                // We need to delete the now-unused player identity, but it's possible that async statistics updates haven't happened yet.
                 // Therefore this is done asynchronously by ProcessAsyncUpdatesForPlayers, so we just need to mark the identity as safe to delete.
-                await _dapperWrapper.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET Deleted = 1 WHERE PlayerIdentityId = @PlayerIdentityId", new { PlayerIdentityId = playerIdentityId }, transaction);
+                await _dapperWrapper.ExecuteAsync($"UPDATE {Tables.PlayerIdentity} SET Deleted = 1 WHERE PlayerIdentityId = @PlayerIdentityId", new { PlayerIdentityId = playerIdentityId }, connection, transaction);
             }
         }
 
@@ -1396,14 +1398,14 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     var beforeUpdate = await _dapperWrapper.QuerySingleOrDefaultAsync<Match>(
                         $@"SELECT UpdateMatchNameAutomatically, MatchName
-                            FROM {Tables.Match} 
+                            FROM {Tables.Match}
                             WHERE MatchId = @MatchId",
                         new { auditableMatch.MatchId },
-                        transaction).ConfigureAwait(false);
+                        connection, transaction).ConfigureAwait(false);
 
                     if (beforeUpdate is null) { throw new MatchNotFoundException(auditableMatch.MatchId!.Value); }
 
@@ -1426,23 +1428,23 @@ namespace Stoolball.Data.SqlServer
                             MatchResultType = auditableMatch.MatchResultType?.ToString(),
                             auditableMatch.MatchId
                         },
-                        transaction).ConfigureAwait(false);
+                        connection, transaction).ConfigureAwait(false);
 
 
                     var awardsBefore = await _dapperWrapper.QueryAsync<(Guid playerIdentityId, string playerIdentityName, Guid teamId)>(
-                            $@"SELECT pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TeamId 
-                                FROM {Tables.AwardedTo} a INNER JOIN {Views.PlayerIdentity} pi ON a.PlayerIdentityId = pi.PlayerIdentityId 
+                            $@"SELECT pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TeamId
+                                FROM {Tables.AwardedTo} a INNER JOIN {Views.PlayerIdentity} pi ON a.PlayerIdentityId = pi.PlayerIdentityId
                                 WHERE a.MatchId = @MatchId",
                             new { auditableMatch.MatchId },
-                            transaction).ConfigureAwait(false);
+                            connection, transaction).ConfigureAwait(false);
 
                     var playerIdentitiesWithAwardsBefore = awardsBefore.Select(x => x.playerIdentityId).ToList();
                     var playerIdentitiesAffectedByAwards = new List<(Guid playerIdentityId, string playerIdentityName, Guid teamId)>();
 
-                    await _dapperWrapper.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+                    await _dapperWrapper.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, connection, transaction).ConfigureAwait(false);
                     foreach (var award in auditableMatch.Awards)
                     {
-                        var awardId = await _dapperWrapper.QuerySingleOrDefaultAsync<Guid?>($"SELECT AwardId FROM {Tables.Award} WHERE AwardName = @AwardName", award.Award, transaction).ConfigureAwait(false);
+                        var awardId = await _dapperWrapper.QuerySingleOrDefaultAsync<Guid?>($"SELECT AwardId FROM {Tables.Award} WHERE AwardName = @AwardName", award.Award, connection, transaction).ConfigureAwait(false);
                         if (!awardId.HasValue) { throw new AwardNotFoundException(award.Award!.AwardName!); }
 
                         if (!award.AwardedToId.HasValue)
@@ -1452,10 +1454,10 @@ namespace Stoolball.Data.SqlServer
 
                         if (!award.PlayerIdentity!.PlayerIdentityId.HasValue)
                         {
-                            award.PlayerIdentity = await _playerRepository.CreateOrMatchPlayerIdentity(award.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
+                            award.PlayerIdentity = await _playerRepository.CreateOrMatchPlayerIdentity(award.PlayerIdentity, memberKey, memberName, connection, transaction).ConfigureAwait(false);
                         }
 
-                        await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.AwardedTo} 
+                        await _dapperWrapper.ExecuteAsync($@"INSERT INTO {Tables.AwardedTo}
                                 (AwardedToId, MatchId, AwardId, PlayerIdentityId, Reason)
                                 VALUES (@AwardedToId, @MatchId, @awardId, @PlayerIdentityId, @Reason)",
                                 new
@@ -1466,7 +1468,7 @@ namespace Stoolball.Data.SqlServer
                                     award.PlayerIdentity.PlayerIdentityId,
                                     award.Reason
                                 },
-                                transaction).ConfigureAwait(false);
+                                connection, transaction).ConfigureAwait(false);
 
                         // If this is a new award, add to affected player identities
                         if (!playerIdentitiesWithAwardsBefore.Contains(award.PlayerIdentity.PlayerIdentityId!.Value))
@@ -1481,15 +1483,15 @@ namespace Stoolball.Data.SqlServer
 
                     var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
 
-                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, transaction).ConfigureAwait(false);
-                    await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId!.Value, connection, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, connection, transaction).ConfigureAwait(false);
 
                     foreach (var team in auditableMatch.Teams)
                     {
                         await MarkObsoletePlayersForDelete(playerIdentitiesRemoved.Where(x => x.teamId == team.Team.TeamId).Select(x => x.playerIdentityName),
                             team.Team.TeamId.Value,
                             (name, teamId) => awardsBefore.First(aw => aw.playerIdentityName == name && aw.teamId == teamId).playerIdentityId,
-                            transaction).ConfigureAwait(false);
+                            connection, transaction).ConfigureAwait(false);
                     }
 
                     var redacted = _copier.CreateRedactedCopy(auditableMatch);
@@ -1502,9 +1504,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableMatch),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateCloseOfPlay));
                 }
@@ -1513,7 +1515,7 @@ namespace Stoolball.Data.SqlServer
             return auditableMatch;
         }
 
-        private static async Task InsertMatchTeamIdIntoMatchInnings(IDapperWrapper dapperWrapper, IDbTransaction transaction, Guid matchTeamId, IEnumerable<Guid?> battingInnings, IEnumerable<Guid?> bowlingInnings)
+        private static async Task InsertMatchTeamIdIntoMatchInnings(IDapperWrapper dapperWrapper, IDbConnection connection, IDbTransaction? transaction, Guid matchTeamId, IEnumerable<Guid?> battingInnings, IEnumerable<Guid?> bowlingInnings)
         {
             await dapperWrapper.ExecuteAsync(
                 $"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = @MatchTeamId WHERE MatchInningsId IN @MatchInningsIds",
@@ -1522,7 +1524,7 @@ namespace Stoolball.Data.SqlServer
                     MatchTeamId = matchTeamId,
                     MatchInningsIds = battingInnings
                 },
-                transaction).ConfigureAwait(false);
+                connection, transaction).ConfigureAwait(false);
 
             await dapperWrapper.ExecuteAsync(
                 $"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = @MatchTeamId WHERE MatchInningsId IN @MatchInningsIds",
@@ -1531,10 +1533,10 @@ namespace Stoolball.Data.SqlServer
                     MatchTeamId = matchTeamId,
                     MatchInningsIds = bowlingInnings
                 },
-                transaction).ConfigureAwait(false);
+                connection, transaction).ConfigureAwait(false);
         }
 
-        private async Task UpdateMatchRoute(Match match, string? routeBeforeUpdate, IDbTransaction transaction)
+        private async Task UpdateMatchRoute(Match match, string? routeBeforeUpdate, IDbConnection connection, IDbTransaction? transaction)
         {
             var baseRoute = string.Empty;
             if (!match.UpdateMatchNameAutomatically)
@@ -1565,7 +1567,7 @@ namespace Stoolball.Data.SqlServer
                 int count;
                 do
                 {
-                    count = await _dapperWrapper.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Match} WHERE MatchRoute = @MatchRoute", new { match.MatchRoute }, transaction).ConfigureAwait(false);
+                    count = await _dapperWrapper.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Match} WHERE MatchRoute = @MatchRoute", new { match.MatchRoute }, connection, transaction).ConfigureAwait(false);
                     if (count > 0)
                     {
                         match.MatchRoute = _routeGenerator.IncrementRoute(match.MatchRoute);
@@ -1575,12 +1577,12 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static async Task PopulateTeamNames(Match match, IDbTransaction transaction)
+        private static async Task PopulateTeamNames(Match match, IDbConnection connection, IDbTransaction? transaction)
         {
             if (match.Teams.Count > 0)
             {
                 var teamsInMatch = match.Teams.Where(x => x.Team is not null);
-                var teamsWithNames = await transaction.Connection.QueryAsync<Team>($@"SELECT t.TeamId, t.PlayerType, tn.TeamName 
+                var teamsWithNames = await connection.QueryAsync<Team>($@"SELECT t.TeamId, t.PlayerType, tn.TeamName
                                                                                     FROM {Tables.Team} AS t INNER JOIN {Tables.TeamVersion} tn ON t.TeamId = tn.TeamId
                                                                                     WHERE t.TeamId IN @TeamIds
                                                                                     AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
@@ -1609,10 +1611,10 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
-                    await DeleteMatch(match, memberKey, memberName, transaction).ConfigureAwait(false);
-                    transaction.Commit();
+                    await DeleteMatch(match, memberKey, memberName, connection, transaction).ConfigureAwait(false);
+                    transaction?.Commit();
                 }
             }
         }
@@ -1620,32 +1622,32 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Deletes a stoolball match
         /// </summary>
-        public async Task DeleteMatch(Match match, Guid memberKey, string memberName, IDbTransaction transaction)
+        public async Task DeleteMatch(Match match, Guid memberKey, string memberName, IDbConnection connection, IDbTransaction? transaction)
         {
             if (match is null)
             {
                 throw new ArgumentNullException(nameof(match));
             }
 
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
             var auditableMatch = _copier.CreateAuditableCopy(match);
 
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.Comment} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.Match} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.Comment} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.Match} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
 
-            await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableMatch.MatchRoute, transaction).ConfigureAwait(false);
+            await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableMatch.MatchRoute, connection, transaction).ConfigureAwait(false);
 
             var redacted = _copier.CreateRedactedCopy(auditableMatch);
             await _auditRepository.CreateAudit(new AuditRecord
@@ -1657,7 +1659,7 @@ namespace Stoolball.Data.SqlServer
                 State = JsonConvert.SerializeObject(auditableMatch),
                 RedactedState = JsonConvert.SerializeObject(redacted),
                 AuditDate = DateTime.UtcNow
-            }, transaction).ConfigureAwait(false);
+            }, connection, transaction).ConfigureAwait(false);
 
             _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.DeleteMatch));
         }

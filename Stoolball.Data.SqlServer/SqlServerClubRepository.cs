@@ -59,7 +59,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     auditableClub.ClubRoute = await _routeGenerator.GenerateUniqueRoute(
                        "/clubs", auditableClub.ClubName, NoiseWords.ClubRoute,
@@ -102,9 +102,9 @@ namespace Stoolball.Data.SqlServer
                         RedactedState = serialisedClub,
                         AuditDate = DateTime.UtcNow
                     },
-                    transaction).ConfigureAwait(false);
+                    connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Created, auditableClub, memberName, memberKey, GetType(), nameof(CreateClub));
                 }
@@ -134,7 +134,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     auditableClub.ClubRoute = await _routeGenerator.GenerateUniqueRoute(
                         club.ClubRoute,
@@ -178,7 +178,7 @@ namespace Stoolball.Data.SqlServer
 
                     if (club.ClubRoute != auditableClub.ClubRoute)
                     {
-                        await _redirectsRepository.InsertRedirect(club.ClubRoute, auditableClub.ClubRoute, null, transaction).ConfigureAwait(false);
+                        await _redirectsRepository.InsertRedirect(club.ClubRoute, auditableClub.ClubRoute, null, connection, transaction).ConfigureAwait(false);
                     }
 
                     var serialisedClub = JsonConvert.SerializeObject(auditableClub);
@@ -191,9 +191,9 @@ namespace Stoolball.Data.SqlServer
                         State = serialisedClub,
                         RedactedState = serialisedClub,
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, auditableClub, memberName, memberKey, GetType(), nameof(SqlServerClubRepository.UpdateClub));
                 }
@@ -215,7 +215,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     await connection.ExecuteAsync($@"UPDATE {Tables.PlayerInMatchStatistics} SET ClubId = NULL WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET ClubId = NULL, ClubMark = 0 WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
@@ -223,7 +223,7 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.ClubVersion} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Club} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
 
-                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(club.ClubRoute, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(club.ClubRoute, connection, transaction).ConfigureAwait(false);
 
                     var auditableClub = _copier.CreateAuditableCopy(club);
                     var serialisedClub = JsonConvert.SerializeObject(auditableClub);
@@ -236,9 +236,9 @@ namespace Stoolball.Data.SqlServer
                         State = serialisedClub,
                         RedactedState = serialisedClub,
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Deleted, club, memberName, memberKey, GetType(), nameof(SqlServerClubRepository.DeleteClub));
                 }

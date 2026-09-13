@@ -26,15 +26,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Logging
         {
             var repo = new SqlServerAuditRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateAudit(null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateAudit(null, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Create_audit_throws_ArgumentNullException_if_transaction_is_null()
+        public async Task Create_audit_throws_ArgumentNullException_if_connection_is_null()
         {
             var repo = new SqlServerAuditRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateAudit(new AuditRecord(), null).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateAudit(new AuditRecord(), null, null).ConfigureAwait(false)).ConfigureAwait(false);
         }
 #nullable enable
 
@@ -78,7 +78,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Logging
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var createdAudit = await repo.CreateAudit(audit, transaction).ConfigureAwait(false);
+                    var createdAudit = await repo.CreateAudit(audit, connection, transaction).ConfigureAwait(false);
 
                     var auditResult = await connection.QuerySingleOrDefaultAsync<AuditRecord>(
                             $"SELECT AuditId, Action, ActorName, AuditDate, EntityUri, MemberKey, State, RedactedState FROM {Tables.Audit} WHERE AuditId = @AuditId",

@@ -237,7 +237,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var repo = CreateRepository();
             await repo.LinkPlayerToMemberAccount(player, memberNotLinkedToPlayer.Key, memberNotLinkedToPlayer.Name).ConfigureAwait(false);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri!.ToString().EndsWith(player.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri!.ToString().EndsWith(player.PlayerId.ToString()!)), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, JsonConvert.SerializeObject(playerCopy), memberNotLinkedToPlayer.Name, memberNotLinkedToPlayer.Key, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
         }
 
@@ -258,10 +258,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var repo = CreateRepository();
             await repo.LinkPlayerToMemberAccount(playerNotLinkedToMember, memberWithExistingPlayer.Key, memberWithExistingPlayer.Name).ConfigureAwait(false);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Delete && x.EntityUri!.ToString().EndsWith(playerNotLinkedToMember.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Delete && x.EntityUri!.ToString().EndsWith(playerNotLinkedToMember.PlayerId.ToString()!)), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Deleted, It.Is<string>(x => x.Contains(playerNotLinkedToMember.PlayerId.ToString()!)), memberWithExistingPlayer.Name, memberWithExistingPlayer.Key, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri!.ToString().EndsWith(playerAlreadyLinked.PlayerId.ToString()!)), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(x => x.Action == AuditAction.Update && x.EntityUri!.ToString().EndsWith(playerAlreadyLinked.PlayerId.ToString()!)), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.Is<string>(x => x.Contains(playerAlreadyLinked.PlayerId.ToString()!)), memberWithExistingPlayer.Name, memberWithExistingPlayer.Key, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.LinkPlayerToMemberAccount)));
         }
         #endregion
@@ -330,7 +330,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
 
             await repo.UnlinkPlayerIdentityFromMemberAccount(playerIdentity, member.Key, member.Name).ConfigureAwait(false);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<string>(), member.Name, member.Key, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.UnlinkPlayerIdentityFromMemberAccount)));
         }
 
@@ -364,7 +364,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
 
             await repo.UnlinkPlayerIdentityFromMemberAccount(player.PlayerIdentities.First(), member.Key, member.Name).ConfigureAwait(false);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), member.Name, member.Key, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.UnlinkPlayerIdentityFromMemberAccount)));
         }
         #endregion

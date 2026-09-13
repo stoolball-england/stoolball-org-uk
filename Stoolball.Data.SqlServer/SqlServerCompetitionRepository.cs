@@ -82,7 +82,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     auditableCompetition.CompetitionRoute = await _routeGenerator.GenerateUniqueRoute(
                       "/competitions", auditableCompetition.CompetitionName, NoiseWords.CompetitionRoute,
@@ -134,9 +134,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableCompetition),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerCompetitionRepository.CreateCompetition));
                 }
@@ -174,7 +174,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     auditableCompetition.CompetitionRoute = await _routeGenerator.GenerateUniqueRoute(
                         competition.CompetitionRoute,
@@ -226,13 +226,13 @@ namespace Stoolball.Data.SqlServer
 
                     if (competition.CompetitionRoute != auditableCompetition.CompetitionRoute)
                     {
-                        await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, auditableCompetition.CompetitionRoute, null, transaction).ConfigureAwait(false);
+                        await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, auditableCompetition.CompetitionRoute, null, connection, transaction).ConfigureAwait(false);
 
                         // Update the season routes to match the amended competition route
                         var seasonRoutes = await connection.QueryAsync<string>($"SELECT SeasonRoute FROM {Tables.Season} WHERE CompetitionId = @CompetitionId", new { auditableCompetition.CompetitionId }, transaction).ConfigureAwait(false);
                         foreach (var route in seasonRoutes)
                         {
-                            await _redirectsRepository.InsertRedirect(route, auditableCompetition.CompetitionRoute + route.Substring(competition.CompetitionRoute.Length), null, transaction).ConfigureAwait(false);
+                            await _redirectsRepository.InsertRedirect(route, auditableCompetition.CompetitionRoute + route.Substring(competition.CompetitionRoute.Length), null, connection, transaction).ConfigureAwait(false);
                         }
 
                         await connection.ExecuteAsync($@"UPDATE {Tables.Season} 
@@ -250,9 +250,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableCompetition),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerCompetitionRepository.UpdateCompetition));
                 }
@@ -274,7 +274,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     var seasonIdsNotSupplied = await connection.QueryAsync<Guid>($"SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId AND SeasonId NOT IN @seasonIds",
                         new
@@ -288,12 +288,12 @@ namespace Stoolball.Data.SqlServer
                         competition.Seasons.AddRange(seasonIdsNotSupplied.Select(x => new Season { SeasonId = x }));
                     }
 
-                    await _seasonRepository.DeleteSeasons(competition.Seasons, memberKey, memberName, transaction).ConfigureAwait(false);
+                    await _seasonRepository.DeleteSeasons(competition.Seasons, memberKey, memberName, connection, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET CompetitionId = NULL WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.CompetitionVersion} WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Competition} WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
 
-                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(competition.CompetitionRoute, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(competition.CompetitionRoute, connection, transaction).ConfigureAwait(false);
 
                     var auditableCompetition = _copier.CreateAuditableCopy(competition);
                     var redacted = _copier.CreateRedactedCopy(auditableCompetition);
@@ -306,9 +306,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableCompetition),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteCompetition));
                 }

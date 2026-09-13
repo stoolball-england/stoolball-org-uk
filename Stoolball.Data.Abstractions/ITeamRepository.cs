@@ -16,7 +16,7 @@ namespace Stoolball.Data.Abstractions
         /// <summary>
         /// Creates a team using an existing transaction
         /// </summary>
-        Task<Team> CreateTeam(Team team, IDbTransaction transaction, string memberUsername);
+        Task<Team> CreateTeam(Team team, IDbConnection connection, IDbTransaction? transaction, string memberUsername);
 
         /// <summary>
         /// Updates a stoolball team

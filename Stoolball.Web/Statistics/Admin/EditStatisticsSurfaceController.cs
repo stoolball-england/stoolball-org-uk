@@ -118,12 +118,12 @@ namespace Stoolball.Web.Statistics.Admin
                             {
                                 using (var transaction = connection.BeginTransaction())
                                 {
-                                    await _statisticsRepository.DeletePlayerStatistics(match.MatchId!.Value, transaction);
+                                    await _statisticsRepository.DeletePlayerStatistics(match.MatchId!.Value, connection, transaction);
                                     foreach (var innings in match.MatchInnings)
                                     {
-                                        await _statisticsRepository.DeleteBowlingFigures(innings.MatchInningsId!.Value, transaction);
+                                        await _statisticsRepository.DeleteBowlingFigures(innings.MatchInningsId!.Value, connection, transaction);
                                         innings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(innings);
-                                        await _statisticsRepository.UpdateBowlingFigures(innings, memberKey, memberName, transaction);
+                                        await _statisticsRepository.UpdateBowlingFigures(innings, memberKey, memberName, connection, transaction);
                                         _taskTracker.IncrementCompletedBy(taskId, 1);
                                     }
 
@@ -131,7 +131,7 @@ namespace Stoolball.Web.Statistics.Admin
                                     if (hasPlayerData)
                                     {
                                         var statisticsData = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(match);
-                                        await _statisticsRepository.UpdatePlayerStatistics(statisticsData, transaction);
+                                        await _statisticsRepository.UpdatePlayerStatistics(statisticsData, connection, transaction);
                                     }
                                     _taskTracker.IncrementCompletedBy(taskId, 1);
                                     transaction.Commit();

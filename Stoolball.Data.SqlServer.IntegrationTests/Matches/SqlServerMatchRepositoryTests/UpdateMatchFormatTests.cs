@@ -251,7 +251,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var _ = await Repository.UpdateMatchFormat(matchBefore, MemberKey, MemberName).ConfigureAwait(false);
 
-            AuditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            AuditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             Logger.Verify(x => x.Info(LoggingTemplates.Updated,
                                        It.Is<Stoolball.Matches.Match>(x => x.StartTime.AccurateToTheMinute() == matchBefore.StartTime.AccurateToTheMinute()
                                                                         && x.MatchName == matchBefore.MatchName),

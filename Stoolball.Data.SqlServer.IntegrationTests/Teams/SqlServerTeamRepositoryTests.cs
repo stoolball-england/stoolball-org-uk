@@ -88,15 +88,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(null, Mock.Of<IDbTransaction>(), "Username").ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(null, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>(), "Username").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Create_team_with_transaction_throws_ArgumentNullException_if_transaction_is_null()
+        public async Task Create_team_with_transaction_throws_ArgumentNullException_if_connection_is_null()
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), null, "Username").ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), null, Mock.Of<IDbTransaction>(), "Username").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), Mock.Of<IDbTransaction>(), null).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>(), null).ConfigureAwait(false)).ConfigureAwait(false);
         }
 #nullable enable
 
@@ -113,7 +113,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), Mock.Of<IDbTransaction>(), string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateTeam(new Team(), Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>(), string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
 #nullable disable
@@ -414,7 +414,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var created = await repo.CreateTeam(team, transaction, "Username").ConfigureAwait(false);
+                    var created = await repo.CreateTeam(team, connection, transaction, "Username").ConfigureAwait(false);
 
                     _copier.Verify(x => x.CreateAuditableCopy(team), Times.Once);
                     Assert.Equal(copyTeam, created);
@@ -463,7 +463,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var created = await repo.CreateTeam(team, memberKey, "Username", memberName).ConfigureAwait(false);
 
             _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.CreateTeam)), Times.Once);
         }
 
@@ -491,10 +491,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var created = await repo.CreateTeam(team, transaction, "Username").ConfigureAwait(false);
+                    var created = await repo.CreateTeam(team, connection, transaction, "Username").ConfigureAwait(false);
 
                     _copier.Verify(x => x.CreateRedactedCopy(It.IsAny<Team>()), Times.Never);
-                    _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Never);
+                    _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Never);
                     _logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<Team>(), It.IsAny<string>(), It.IsAny<Guid>(), typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.CreateTeam)), Times.Never);
                 }
             }
@@ -776,7 +776,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             _ = await repo.UpdateTeam(team, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            _redirectsRepository.Verify(x => x.InsertRedirect(team.TeamRoute, team.TeamRoute + "-123", null, It.IsAny<IDbTransaction>()), Times.Once);
+            _redirectsRepository.Verify(x => x.InsertRedirect(team.TeamRoute, team.TeamRoute + "-123", null, It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
         }
 
 
@@ -791,7 +791,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             _ = await repo.UpdateTeam(team, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
+            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Never);
         }
 
         [Fact]
@@ -828,7 +828,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             _ = await repo.UpdateTeam(team, memberKey, memberName).ConfigureAwait(false);
 
             _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.UpdateTeam)), Times.Once);
         }
 
@@ -1141,7 +1141,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             _ = await repo.UpdateTransientTeam(team, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            _redirectsRepository.Verify(x => x.InsertRedirect(team.TeamRoute, team.TeamRoute + "-123", null, It.IsAny<IDbTransaction>()), Times.Once);
+            _redirectsRepository.Verify(x => x.InsertRedirect(team.TeamRoute, team.TeamRoute + "-123", null, It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
         }
 
         [Fact]
@@ -1155,7 +1155,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             _ = await repo.UpdateTransientTeam(team, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
+            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Never);
         }
 
         [Fact]
@@ -1192,7 +1192,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             _ = await repo.UpdateTransientTeam(team, memberKey, memberName).ConfigureAwait(false);
 
             _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerTeamRepository), nameof(SqlServerTeamRepository.UpdateTransientTeam)), Times.Once);
         }
 

@@ -68,7 +68,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
             var repo = CreateRepository();
             var transaction = new Mock<IDbTransaction>();
 
-            var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", transaction.Object);
+            var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", Mock.Of<IDbConnection>(), transaction.Object);
 
             Assert.Equal(playerIdentity, result);
             transaction.Verify(x => x.Connection, Times.Never);
@@ -89,7 +89,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
 
                     var repo = CreateRepository();
 
-                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", transaction);
+                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", connection, transaction);
 
                     Assert.NotNull(result);
                     Assert.Equal(dataForAnyPlayerIdentity.playerIdentityId, result.PlayerIdentityId);
@@ -133,7 +133,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
 
                     var repo = CreateRepository();
 
-                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", transaction);
+                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, Guid.NewGuid(), "Member name", connection, transaction);
 
                     Assert.NotNull(result);
                     _copier.Verify(x => x.CreateAuditableCopy(playerIdentity), Times.Once);
@@ -188,12 +188,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics.SqlServerPlayerRe
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, memberKey, memberName, transaction);
+                    var result = await repo.CreateOrMatchPlayerIdentity(playerIdentity, memberKey, memberName, connection, transaction);
                     transaction.Rollback();
                 }
             }
 
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Created, It.IsAny<Player>(), memberName, memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.CreateOrMatchPlayerIdentity)));
         }
     }

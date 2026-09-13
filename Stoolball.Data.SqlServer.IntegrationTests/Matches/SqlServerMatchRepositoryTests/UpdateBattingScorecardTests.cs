@@ -403,8 +403,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             _ = await Repository.UpdateBattingScorecard(modifiedMatch, modifiedMatchInnings.MatchInningsId!.Value, MemberKey, MemberName).ConfigureAwait(false);
 
-            StatisticsRepository.Verify(x => x.UpdateBowlingFigures(It.Is<MatchInnings>(mi => mi.MatchInningsId == modifiedMatchInnings.MatchInningsId), MemberKey, MemberName, It.IsAny<IDbTransaction>()), bowlerHasChanged ? Times.Once() : Times.Never());
-            StatisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbTransaction>()), anythingHasChanged ? Times.Once() : Times.Never());
+            StatisticsRepository.Verify(x => x.UpdateBowlingFigures(It.Is<MatchInnings>(mi => mi.MatchInningsId == modifiedMatchInnings.MatchInningsId), MemberKey, MemberName, It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), bowlerHasChanged ? Times.Once() : Times.Never());
+            StatisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), anythingHasChanged ? Times.Once() : Times.Never());
         }
 
         [Fact]

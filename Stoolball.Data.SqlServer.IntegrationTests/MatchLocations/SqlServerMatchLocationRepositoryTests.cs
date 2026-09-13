@@ -229,7 +229,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var created = await repo.CreateMatchLocation(location, memberKey, memberName).ConfigureAwait(false);
 
             _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerMatchLocationRepository), nameof(SqlServerMatchLocationRepository.CreateMatchLocation)));
         }
 
@@ -371,7 +371,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var updated = await repo.UpdateMatchLocation(location, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
             _routeGenerator.Verify(x => x.GenerateUniqueRoute(location.MatchLocationRoute, "/locations", auditable.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute, It.IsAny<Func<string, Task<int>>>()), Times.Once);
-            _redirectsRepository.Verify(x => x.InsertRedirect(location.MatchLocationRoute, updatedRoute, null, It.IsAny<IDbTransaction>()), Times.Once);
+            _redirectsRepository.Verify(x => x.InsertRedirect(location.MatchLocationRoute, updatedRoute, null, It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
         }
 
 
@@ -392,7 +392,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             var updated = await repo.UpdateMatchLocation(location, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
 
-            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
+            _redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Never);
         }
 
         [Fact]
@@ -422,7 +422,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var updated = await repo.UpdateMatchLocation(location, memberKey, memberName).ConfigureAwait(false);
 
             _copier.Verify(x => x.CreateRedactedCopy(auditable), Times.Once);
-            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, typeof(SqlServerMatchLocationRepository), nameof(SqlServerMatchLocationRepository.UpdateMatchLocation)));
         }
 

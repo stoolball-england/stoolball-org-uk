@@ -116,7 +116,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
                                                                             audit.State.Contains(auditable.TournamentId.Value.ToString()) &&
                                                                             audit.RedactedState.Contains(redacted.TournamentId.Value.ToString()) &&
                                                                             audit.AuditDate.Date == DateTime.UtcNow.Date
-                                                                         ), _databaseTransaction.Object), Times.Once);
+                                                                         ), _databaseConnection.Object, _databaseTransaction.Object), Times.Once);
 
             _logger.Verify(x => x.Info(LoggingTemplates.Created, redacted, memberName, memberKey, typeof(SqlServerTournamentRepository), nameof(SqlServerTournamentRepository.CreateTournament)), Times.Once);
 

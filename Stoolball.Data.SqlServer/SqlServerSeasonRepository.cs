@@ -91,7 +91,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     auditableSeason.SeasonRoute = $"{auditableSeason.Competition!.CompetitionRoute}/{auditableSeason.FromYear}";
                     if (auditableSeason.UntilYear > auditableSeason.FromYear)
@@ -145,7 +145,7 @@ namespace Stoolball.Data.SqlServer
                             auditableSeason.SeasonRoute
                         }, transaction).ConfigureAwait(false);
 
-                    await InsertOverSets(auditableSeason, transaction).ConfigureAwait(false);
+                    await InsertOverSets(auditableSeason, connection, transaction).ConfigureAwait(false);
 
                     foreach (var matchType in auditableSeason.MatchTypes)
                     {
@@ -241,9 +241,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableSeason),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.CreateSeason));
                 }
@@ -252,12 +252,12 @@ namespace Stoolball.Data.SqlServer
             return auditableSeason;
         }
 
-        private static async Task InsertOverSets(Season auditableSeason, IDbTransaction transaction)
+        private static async Task InsertOverSets(Season auditableSeason, IDbConnection connection, IDbTransaction? transaction)
         {
             for (var i = 0; i < auditableSeason.DefaultOverSets.Count; i++)
             {
                 auditableSeason.DefaultOverSets[i].OverSetId = auditableSeason.DefaultOverSets[i].OverSetId ?? Guid.NewGuid();
-                await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, SeasonId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @SeasonId, @OverSetNumber, @Overs, @BallsPerOver)",
+                await connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, SeasonId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @SeasonId, @OverSetNumber, @Overs, @BallsPerOver)",
                     new
                     {
                         auditableSeason.DefaultOverSets[i].OverSetId,
@@ -298,7 +298,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
 
                     await connection.ExecuteAsync(
@@ -322,7 +322,7 @@ namespace Stoolball.Data.SqlServer
                         }, transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
-                    await InsertOverSets(auditableSeason, transaction).ConfigureAwait(false);
+                    await InsertOverSets(auditableSeason, connection, transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId = @SeasonId AND MatchType NOT IN @MatchTypes",
                         new
@@ -359,9 +359,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableSeason),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateSeason));
                 }
@@ -395,7 +395,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     await connection.ExecuteAsync(
                     $@"UPDATE {Tables.Season} SET
@@ -436,9 +436,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableSeason),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateResultsTable));
                 }
@@ -473,7 +473,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
                     await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
                     foreach (var team in auditableSeason.Teams)
@@ -501,9 +501,9 @@ namespace Stoolball.Data.SqlServer
                         State = JsonConvert.SerializeObject(auditableSeason),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    }, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
 
                     _logger.Info(LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateTeams));
                 }
@@ -533,17 +533,17 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransactionIfNoAmbientTransaction())
                 {
-                    await DeleteSeasons(new[] { season }, memberKey, memberName, transaction).ConfigureAwait(false);
+                    await DeleteSeasons(new[] { season }, memberKey, memberName, connection, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+                    transaction?.Commit();
                 }
             }
         }
 
         /// <inheritdoc />
-        public async Task DeleteSeasons(IEnumerable<Season> seasons, Guid memberKey, string memberName, IDbTransaction transaction)
+        public async Task DeleteSeasons(IEnumerable<Season> seasons, Guid memberKey, string memberName, IDbConnection connection, IDbTransaction? transaction)
         {
             if (seasons is null)
             {
@@ -560,28 +560,28 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException($"'{nameof(memberName)}' cannot be null or whitespace", nameof(memberName));
             }
 
-            if (transaction is null)
+            if (connection is null)
             {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException(nameof(connection));
             }
 
             var auditableSeasons = seasons.Select(x => _copier.CreateAuditableCopy(x));
             var seasonIds = auditableSeasons.Select(x => x.SeasonId).OfType<Guid>();
 
-            await transaction.Connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET SeasonId = NULL WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PointsRule} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PointsAdjustment} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"UPDATE {Tables.Match} SET SeasonId = NULL WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.Season} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET SeasonId = NULL WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.PointsRule} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.PointsAdjustment} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"UPDATE {Tables.Match} SET SeasonId = NULL WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await connection.ExecuteAsync($"DELETE FROM {Tables.Season} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
 
             foreach (var auditableSeason in auditableSeasons)
             {
-                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableSeason.SeasonRoute, transaction).ConfigureAwait(false);
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableSeason.SeasonRoute, connection, transaction).ConfigureAwait(false);
 
                 var redacted = _copier.CreateRedactedCopy(auditableSeason);
                 await _auditRepository.CreateAudit(new AuditRecord
@@ -593,7 +593,7 @@ namespace Stoolball.Data.SqlServer
                     State = JsonConvert.SerializeObject(auditableSeason),
                     RedactedState = JsonConvert.SerializeObject(redacted),
                     AuditDate = DateTime.UtcNow
-                }, transaction).ConfigureAwait(false);
+                }, connection, transaction).ConfigureAwait(false);
 
                 _logger.Info(LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteSeasons));
             }

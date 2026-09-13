@@ -182,7 +182,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
 
             _ = await Repository.UpdateMatches(tournament, MemberKey, MemberUsername, MemberName).ConfigureAwait(false);
 
-            AuditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), It.IsAny<IDbTransaction>()), Times.Once);
+            AuditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), Times.Once);
             Logger.Verify(x => x.Info(LoggingTemplates.Updated, It.Is<Tournament>(t => t.TournamentId == tournament.TournamentId), MemberName, MemberKey, typeof(SqlServerTournamentRepository), nameof(SqlServerTournamentRepository.UpdateMatches)));
         }
     }

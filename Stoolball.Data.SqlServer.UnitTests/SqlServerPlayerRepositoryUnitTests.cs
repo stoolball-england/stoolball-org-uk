@@ -54,7 +54,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(null, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(null, Guid.NewGuid(), "Member name", Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -62,14 +62,14 @@ namespace Stoolball.Data.SqlServer.UnitTests
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = null, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = null, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()));
         }
         [Fact]
         public async Task CreateOrMatchPlayerIdentity_throws_ArgumentException_if_PlayerIdentityName_is_empty_string()
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = string.Empty, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = string.Empty, Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), null, Mock.Of<IDbTransaction>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), null, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), string.Empty, Mock.Of<IDbTransaction>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), string.Empty, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
@@ -93,15 +93,15 @@ namespace Stoolball.Data.SqlServer.UnitTests
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1" }, Guid.NewGuid(), "Member name", Mock.Of<IDbTransaction>()));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1" }, Guid.NewGuid(), "Member name", Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()));
         }
 
         [Fact]
-        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_transaction_is_null()
+        public async Task CreateOrMatchPlayerIdentity_throws_ArgumentNullException_if_connection_is_null()
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateOrMatchPlayerIdentity(new PlayerIdentity { PlayerIdentityName = "Player 1", Team = new Team { TeamId = Guid.NewGuid() } }, Guid.NewGuid(), "Member name", null, Mock.Of<IDbTransaction>()));
         }
 #nullable enable
 
@@ -336,11 +336,11 @@ namespace Stoolball.Data.SqlServer.UnitTests
                 Team = playerIdentityToUpdate.Team
             });
             _playerNameFormatter.Setup(x => x.CapitaliseName(playerIdentityToUpdate.PlayerIdentityName)).Returns(playerIdentityToUpdate.PlayerIdentityName);
-            _dapperWrapper.Setup(x => x.QueryAsync<(string, string, int)>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>())).ReturnsAsync(new[] { ("/players/example-player", "Example player", 10) });
+            _dapperWrapper.Setup(x => x.QueryAsync<(string, string, int)>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>())).ReturnsAsync(new[] { ("/players/example-player", "Example player", 10) });
 
             var result = await repo.UpdatePlayerIdentity(playerIdentityToUpdate, memberKey, memberName);
 
-            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _transaction.Object), Times.Once);
+            _auditRepository.Verify(x => x.CreateAudit(It.Is<AuditRecord>(a => a.Action == AuditAction.Update), _databaseConnection.Object, _transaction.Object), Times.Once);
             _logger.Verify(x => x.Info(LoggingTemplates.Updated, It.IsAny<string>(), memberName, memberKey, typeof(SqlServerPlayerRepository), nameof(SqlServerPlayerRepository.UpdatePlayerIdentity)), Times.Once);
         }
     }

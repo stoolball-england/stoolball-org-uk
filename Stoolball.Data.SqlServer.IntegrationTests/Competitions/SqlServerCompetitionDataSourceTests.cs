@@ -17,7 +17,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         public async Task Read_minimal_competition_by_route_succeeds()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithMinimalDetails.CompetitionRoute, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithMinimalDetails.CompetitionRoute);
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithMinimalDetails!.CompetitionRoute!, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithMinimalDetails.CompetitionRoute);
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithMinimalDetails.CompetitionRoute).ConfigureAwait(false);
@@ -29,7 +29,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         public async Task Read_competition_by_route_returns_basic_fields()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
-            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute);
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.TestData.CompetitionWithFullDetails!.CompetitionRoute!, "competitions")).Returns(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute);
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var result = await competitionDataSource.ReadCompetitionByRoute(_databaseFixture.TestData.CompetitionWithFullDetails.CompetitionRoute).ConfigureAwait(false);
@@ -162,7 +162,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var result = await competitionDataSource.ReadTotalCompetitions(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TestData.Competitions.Count(x => x.CompetitionName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)), result);
+            Assert.Equal(_databaseFixture.TestData.Competitions.Count(x => x.CompetitionName!.Contains(query.Query, StringComparison.OrdinalIgnoreCase)), result);
         }
 
 
@@ -258,7 +258,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var result = await competitionDataSource.ReadCompetitions(query).ConfigureAwait(false);
 
-            foreach (var competition in _databaseFixture.TestData.Competitions.Where(x => x.CompetitionName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)))
+            foreach (var competition in _databaseFixture.TestData.Competitions.Where(x => x.CompetitionName!.Contains(query.Query, StringComparison.OrdinalIgnoreCase)))
             {
                 Assert.NotNull(result.Single(x => x.CompetitionId == competition.CompetitionId));
             }

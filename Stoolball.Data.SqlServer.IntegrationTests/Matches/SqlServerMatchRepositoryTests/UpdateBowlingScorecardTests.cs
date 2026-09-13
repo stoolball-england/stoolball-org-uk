@@ -200,8 +200,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
                     MemberKey,
                     MemberName);
 
-            StatisticsRepository.Verify(x => x.UpdateBowlingFigures(It.Is<MatchInnings>(mi => mi.MatchInningsId == modifiedInnings.MatchInningsId), MemberKey, MemberName, It.IsAny<IDbTransaction>()), bowlingHasChanged ? Times.Once() : Times.Never());
-            StatisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbTransaction>()), bowlingHasChanged ? Times.Once() : Times.Never());
+            StatisticsRepository.Verify(x => x.UpdateBowlingFigures(It.Is<MatchInnings>(mi => mi.MatchInningsId == modifiedInnings.MatchInningsId), MemberKey, MemberName, It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), bowlingHasChanged ? Times.Once() : Times.Never());
+            StatisticsRepository.Verify(x => x.UpdatePlayerStatistics(It.IsAny<IEnumerable<PlayerInMatchStatisticsRecord>>(), It.IsAny<IDbConnection>(), It.IsAny<IDbTransaction>()), bowlingHasChanged ? Times.Once() : Times.Never());
         }
 
         [Fact]

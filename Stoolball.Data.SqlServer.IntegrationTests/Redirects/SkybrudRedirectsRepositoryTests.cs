@@ -32,7 +32,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Redirects
                 var before = DateTime.UtcNow;
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await repo.InsertRedirect(original, revised, suffix, transaction).ConfigureAwait(false);
+                    await repo.InsertRedirect(original, revised, suffix, connection, transaction).ConfigureAwait(false);
                     transaction.Commit();
                 }
                 var after = DateTime.UtcNow;
@@ -66,7 +66,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Redirects
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.InsertRedirect(originalRoute, "/revised", null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.InsertRedirect(originalRoute, "/revised", null, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Theory]
@@ -76,23 +76,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Redirects
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.InsertRedirect("/original", revisedRoute, null, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentException>(async () => await repo.InsertRedirect("/original", revisedRoute, null, Mock.Of<IDbConnection>(), Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Create_redirect_throws_ArgumentNullException_if_transaction_is_null()
+        public async Task Create_redirect_throws_ArgumentNullException_if_connection_is_null()
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.InsertRedirect("/original", "/revised", null, null!).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.InsertRedirect("/original", "/revised", null, null!, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task Delete_redirects_by_destination_prefix_throws_ArgumentNullException_if_transaction_is_null()
+        public async Task Delete_redirects_by_destination_prefix_throws_ArgumentNullException_if_connection_is_null()
         {
             var repo = CreateRepository();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.DeleteRedirectsByDestinationPrefix("/teams/team-to-delete", null!).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.DeleteRedirectsByDestinationPrefix("/teams/team-to-delete", null!, Mock.Of<IDbTransaction>()).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -109,26 +109,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Redirects
                     // Exact match for the prefix, with nothing after it. This only gets deleted if the
                     // implementation truly treats the trailing % as a wildcard matching zero characters,
                     // rather than requiring something after the prefix.
-                    await repo.InsertRedirect("/original-exact-match", prefix, null, transaction).ConfigureAwait(false);
+                    await repo.InsertRedirect("/original-exact-match", prefix, null, connection, transaction).ConfigureAwait(false);
 
                     // Prefix followed by more of the URL. This is deleted whether the implementation
                     // does a wildcard "starts with" match or a naive substring match.
-                    await repo.InsertRedirect("/original-starts-with-prefix", prefix + "/one", null, transaction).ConfigureAwait(false);
+                    await repo.InsertRedirect("/original-starts-with-prefix", prefix + "/one", null, connection, transaction).ConfigureAwait(false);
 
                     // Prefix appears, but only after other characters at the start of the URL. This must
                     // be kept - if it were deleted, the query would be matching the prefix anywhere in the
                     // string (e.g. LIKE '%prefix%') rather than anchoring it to the start (LIKE 'prefix%').
-                    await repo.InsertRedirect("/original-prefix-not-at-start", "/other" + prefix, null, transaction).ConfigureAwait(false);
+                    await repo.InsertRedirect("/original-prefix-not-at-start", "/other" + prefix, null, connection, transaction).ConfigureAwait(false);
 
                     // Unrelated destination that shares no characters with the prefix. This is the baseline
                     // "definitely not touched" case.
-                    await repo.InsertRedirect("/original-to-keep", "/teams/team-to-keep", null, transaction).ConfigureAwait(false);
+                    await repo.InsertRedirect("/original-to-keep", "/teams/team-to-keep", null, connection, transaction).ConfigureAwait(false);
                     transaction.Commit();
                 }
 
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await repo.DeleteRedirectsByDestinationPrefix(prefix, transaction).ConfigureAwait(false);
+                    await repo.DeleteRedirectsByDestinationPrefix(prefix, connection, transaction).ConfigureAwait(false);
                     transaction.Commit();
                 }
 
