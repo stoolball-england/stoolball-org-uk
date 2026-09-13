@@ -118,28 +118,14 @@ namespace Stoolball.Testing
                 MemberGroupName = "Example league owners",
             };
             competition.Seasons = new List<Season> {
-                    CreateSeasonWithMinimalDetails(competition,2021,2021),
-                    CreateSeasonWithMinimalDetails(competition,2020,2021),
-                    CreateSeasonWithMinimalDetails(competition,2020,2020)
+                    _seasonFactory.CreateFaker(competition,2021,2021).Generate(),
+                    _seasonFactory.CreateFaker(competition,2020,2021).Generate(),
+                    _seasonFactory.CreateFaker(competition,2020,2020).Generate()
                 };
             competition.Seasons[1].MatchTypes = [MatchType.LeagueMatch, MatchType.KnockoutMatch]; // matches a specific test in UpdateSeasonTests
             competition.Seasons[2].MatchTypes = [MatchType.LeagueMatch, MatchType.FriendlyMatch, MatchType.KnockoutMatch, MatchType.TrainingSession, MatchType.GroupMatch]; // every type
 
             return competition;
-        }
-
-        internal Season CreateSeasonWithMinimalDetails(Competition competition, int fromYear, int untilYear)
-        {
-            return new Season
-            {
-                SeasonId = Guid.NewGuid(),
-                Competition = competition,
-                FromYear = fromYear,
-                UntilYear = untilYear,
-                SeasonRoute = competition?.CompetitionRoute + "/" + fromYear + "-" + untilYear,
-                DefaultOverSets = _oversetFactory.CreateFaker().Generate(1),
-                MatchTypes = new List<MatchType> { MatchType.LeagueMatch, MatchType.FriendlyMatch }
-            };
         }
 
         private Season CreateSeasonWithFullDetails(Competition competition, int fromYear, int untilYear, Team team1, Team team2)
@@ -226,11 +212,11 @@ namespace Stoolball.Testing
                 Seasons = new List<TeamInSeason> {
                     new TeamInSeason
                     {
-                        Season = CreateSeasonWithMinimalDetails(competition, 2020, 2020)
+                        Season = _seasonFactory.CreateFaker(competition, 2020, 2020).Generate()
                     },
                     new TeamInSeason
                     {
-                        Season = CreateSeasonWithMinimalDetails(competition, 2019,2019)
+                        Season = _seasonFactory.CreateFaker(competition, 2019, 2019).Generate()
                     }
                 }
             };
@@ -340,7 +326,7 @@ namespace Stoolball.Testing
             var fourthInningsOverSets = oversetFaker.Generate(1);
 
             var competition = _competitionFaker.Generate();
-            var season = CreateSeasonWithMinimalDetails(competition, 2020, 2020);
+            var season = _seasonFactory.CreateFaker(competition, 2020, 2020).Generate();
             competition.Seasons.Add(season);
 
             var match = new Match
@@ -646,7 +632,7 @@ namespace Stoolball.Testing
                 else
                 {
                     testData.Competitions.Add(_competitionFaker.Generate());
-                    testData.Competitions[testData.Competitions.Count - 1].Seasons.Add(CreateSeasonWithMinimalDetails(testData.Competitions[testData.Competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i));
+                    testData.Competitions[testData.Competitions.Count - 1].Seasons.Add(_seasonFactory.CreateFaker(testData.Competitions[testData.Competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i).Generate());
                 }
             }
 
@@ -890,7 +876,7 @@ namespace Stoolball.Testing
 
             var competitionForSeason = _competitionFaker.Generate();
             competitionForSeason.UntilYear = 2021;
-            testData.SeasonWithMinimalDetails = CreateSeasonWithMinimalDetails(competitionForSeason, 2020, 2020);
+            testData.SeasonWithMinimalDetails = _seasonFactory.CreateFaker(competitionForSeason, 2020, 2020).Generate();
             competitionForSeason.Seasons.Add(testData.SeasonWithMinimalDetails);
             testData.Competitions.Add(competitionForSeason);
 

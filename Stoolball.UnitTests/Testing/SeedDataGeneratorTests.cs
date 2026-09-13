@@ -19,10 +19,10 @@ namespace Stoolball.UnitTests.Testing
         private SeedDataGenerator CreateGenerator()
         {
             var competitionFactory = Mock.Of<CompetitionFactory>();
-            var seasonFactory = Mock.Of<SeasonFactory>();
             var teamFactory = Mock.Of<TeamFactory>();
             var matchLocationFactory = Mock.Of<MatchLocationFactory>();
             var oversetFactory = Mock.Of<OverSetFactory>();
+            var seasonFactory = new Mock<SeasonFactory>(oversetFactory).Object;
             var memberFactory = Mock.Of<UmbracoMemberFactory>();
             var commentFactory = Mock.Of<CommentFactory>();
             return new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),

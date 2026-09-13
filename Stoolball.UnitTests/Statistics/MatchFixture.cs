@@ -27,6 +27,7 @@ namespace Stoolball.UnitTests.Statistics
             var competitionFaker = serviceProvider.GetRequiredService<CompetitionFactory>().CreateFaker();
             var oversetFactory = serviceProvider.GetRequiredService<OverSetFactory>();
             var matchLocationFaker = serviceProvider.GetRequiredService<MatchLocationFactory>().CreateFaker();
+            var seasonFactory = serviceProvider.GetRequiredService<SeasonFactory>();
             var seedDataGenerator = serviceProvider.GetRequiredService<SeedDataGenerator>();
 
             var homeTeam = teamFaker.Generate();
@@ -90,7 +91,7 @@ namespace Stoolball.UnitTests.Statistics
             var fourthInningsOverSets = oversetFaker.Generate(1);
 
             var competition = competitionFaker.Generate();
-            var season = seedDataGenerator.CreateSeasonWithMinimalDetails(competition, 2020, 2020);
+            var season = seasonFactory.CreateFaker(competition, 2020, 2020).Generate();
             competition.Seasons.Add(season);
 
             Match = new Match
