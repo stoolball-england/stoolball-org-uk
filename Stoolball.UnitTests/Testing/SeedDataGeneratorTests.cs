@@ -25,25 +25,13 @@ namespace Stoolball.UnitTests.Testing
             var seasonFactory = new Mock<SeasonFactory>(oversetFactory).Object;
             var memberFactory = Mock.Of<UmbracoMemberFactory>();
             var commentFactory = Mock.Of<CommentFactory>();
-            return new SeedDataGenerator(_randomiser, Mock.Of<IOversHelper>(), Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
+            var overFactory = new OverFactory(Mock.Of<IOversHelper>());
+            return new SeedDataGenerator(_randomiser, overFactory, Mock.Of<IBowlingFiguresCalculator>(), Mock.Of<IPlayerIdentityFinder>(), Mock.Of<IMatchFinder>(),
                             competitionFactory, seasonFactory, teamFactory, Mock.Of<ClubFactory>(),
                             new Mock<TournamentFactory>(competitionFactory, seasonFactory, teamFactory, matchLocationFactory, oversetFactory, memberFactory, commentFactory).Object,
                             matchLocationFactory,
                             Mock.Of<SchoolFactory>(), new PlayerFactory(),
                             oversetFactory, memberFactory, commentFactory, _playerOfTheMatchAward);
-        }
-
-        [Fact]
-        public void Over_exists_with_only_a_bowler_name()
-        {
-            var generator = CreateGenerator();
-
-            for (var i = 0; i < _iterations; i++)
-            {
-                var overs = generator.CreateOversBowled(generator.GenerateTeams()[0].identities, [new OverSet { OverSetNumber = 1, Overs = 5, BallsPerOver = 8 }]);
-
-                Assert.Contains(overs, x => x.Bowler != null && x.BallsBowled == null && x.NoBalls == null && x.Wides == null && x.RunsConceded == null);
-            }
         }
 
         [Fact]

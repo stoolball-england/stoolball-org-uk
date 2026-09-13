@@ -28,7 +28,7 @@ namespace Stoolball.UnitTests.Statistics
             var oversetFactory = serviceProvider.GetRequiredService<OverSetFactory>();
             var matchLocationFaker = serviceProvider.GetRequiredService<MatchLocationFactory>().CreateFaker();
             var seasonFactory = serviceProvider.GetRequiredService<SeasonFactory>();
-            var seedDataGenerator = serviceProvider.GetRequiredService<SeedDataGenerator>();
+            var overFactory = serviceProvider.GetRequiredService<OverFactory>();
 
             var homeTeam = teamFaker.Generate();
             var homeTeamInMatch = new TeamInMatch
@@ -152,7 +152,7 @@ namespace Stoolball.UnitTests.Statistics
                         Wickets = 2,
                         PlayerInnings = CreateBattingScorecard(HomePlayers, AwayPlayers),
                         OverSets = firstInningsOverSets,
-                        OversBowled = seedDataGenerator.CreateOversBowled(AwayPlayers, firstInningsOverSets)
+                        OversBowled = overFactory.CreateOversBowledIncludingOneWithOnlyName(AwayPlayers, firstInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -170,7 +170,7 @@ namespace Stoolball.UnitTests.Statistics
                         Wickets = 7,
                         PlayerInnings = CreateBattingScorecard(AwayPlayers, HomePlayers),
                         OverSets = secondInningsOverSets,
-                        OversBowled = seedDataGenerator.CreateOversBowled(HomePlayers, secondInningsOverSets)
+                        OversBowled = overFactory.CreateOversBowledIncludingOneWithOnlyName(HomePlayers, secondInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -188,7 +188,7 @@ namespace Stoolball.UnitTests.Statistics
                         Wickets = 10,
                         PlayerInnings = CreateBattingScorecard(HomePlayers, AwayPlayers),
                         OverSets = thirdInningsOverSets,
-                        OversBowled = seedDataGenerator.CreateOversBowled(AwayPlayers, thirdInningsOverSets)
+                        OversBowled = overFactory.CreateOversBowledIncludingOneWithOnlyName(AwayPlayers, thirdInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -206,7 +206,7 @@ namespace Stoolball.UnitTests.Statistics
                         Wickets = 4,
                         PlayerInnings = CreateBattingScorecard(AwayPlayers, HomePlayers),
                         OverSets = fourthInningsOverSets,
-                        OversBowled = seedDataGenerator.CreateOversBowled(HomePlayers, fourthInningsOverSets)
+                        OversBowled = overFactory.CreateOversBowledIncludingOneWithOnlyName(HomePlayers, fourthInningsOverSets)
                     }
                 },
                 MatchLocation = matchLocationFaker.Generate(),

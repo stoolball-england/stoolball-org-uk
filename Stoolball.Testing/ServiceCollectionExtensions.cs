@@ -28,13 +28,14 @@ namespace Stoolball.Testing
             services.AddSingleton<SchoolFactory>();
             services.AddSingleton<PlayerFactory>();
             services.AddSingleton<OverSetFactory>();
+            services.AddSingleton<OverFactory>();
             services.AddSingleton<UmbracoMemberFactory>();
             services.AddSingleton<CommentFactory>();
             services.AddSingleton(new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" });
 
             services.AddSingleton(sp => new SeedDataGenerator(
                 sp.GetRequiredService<Randomiser>(),
-                sp.GetRequiredService<IOversHelper>(),
+                sp.GetRequiredService<OverFactory>(),
                 sp.GetRequiredService<IBowlingFiguresCalculator>(),
                 sp.GetRequiredService<IPlayerIdentityFinder>(),
                 sp.GetRequiredService<IMatchFinder>(),

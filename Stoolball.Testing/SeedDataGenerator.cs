@@ -30,16 +30,16 @@ namespace Stoolball.Testing
         private readonly Faker<MatchLocation> _matchLocationFaker;
         private readonly Faker<Player> _playerFaker;
         private readonly Award _playerOfTheMatchAward;
-        private readonly IOversHelper _oversHelper;
+        private readonly OverFactory _overFactory;
 
-        internal SeedDataGenerator(Randomiser randomiser, IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator,
+        internal SeedDataGenerator(Randomiser randomiser, OverFactory overFactory, IBowlingFiguresCalculator bowlingFiguresCalculator,
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
             CompetitionFactory competitionFactory, SeasonFactory seasonFactory, TeamFactory teamFactory, ClubFactory clubFactory,
             TournamentFactory tournamentFactory, MatchLocationFactory matchLocationFactory, SchoolFactory schoolFactory,
             PlayerFactory playerFactory, OverSetFactory oversetFactory, UmbracoMemberFactory memberFactory, CommentFactory commentFactory, Award playerOfTheMatchAward)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
-            _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
+            _overFactory = overFactory ?? throw new ArgumentNullException(nameof(overFactory));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
             _matchFinder = matchFinder ?? throw new ArgumentNullException(nameof(matchFinder));
@@ -384,7 +384,7 @@ namespace Stoolball.Testing
                         Wickets = 2,
                         PlayerInnings = CreateBattingScorecard(homePlayers, awayPlayers),
                         OverSets = firstInningsOverSets,
-                        OversBowled = CreateOversBowled(new List<PlayerIdentity>(awayPlayers), firstInningsOverSets)
+                        OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName(new List<PlayerIdentity>(awayPlayers), firstInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -402,7 +402,7 @@ namespace Stoolball.Testing
                         Wickets = 7,
                         PlayerInnings = CreateBattingScorecard(awayPlayers, homePlayers),
                         OverSets = secondInningsOverSets,
-                        OversBowled = CreateOversBowled(new List<PlayerIdentity>(homePlayers), secondInningsOverSets)
+                        OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName(new List<PlayerIdentity>(homePlayers), secondInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -420,7 +420,7 @@ namespace Stoolball.Testing
                         Wickets = 10,
                         PlayerInnings = CreateBattingScorecard(homePlayers, awayPlayers),
                         OverSets = thirdInningsOverSets,
-                        OversBowled = CreateOversBowled(new List<PlayerIdentity>(awayPlayers), thirdInningsOverSets)
+                        OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName(new List<PlayerIdentity>(awayPlayers), thirdInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -438,7 +438,7 @@ namespace Stoolball.Testing
                         Wickets = 4,
                         PlayerInnings = CreateBattingScorecard(awayPlayers, homePlayers),
                         OverSets = fourthInningsOverSets,
-                        OversBowled = CreateOversBowled(new List<PlayerIdentity>(homePlayers), fourthInningsOverSets)
+                        OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName(new List<PlayerIdentity>(homePlayers), fourthInningsOverSets)
                     }
                 },
                 MatchLocation = _matchLocationFaker.Generate(),
@@ -547,33 +547,6 @@ namespace Stoolball.Testing
                                 DismissalType = DismissalType.DidNotBat
                             }
                         };
-        }
-
-        internal List<Over> CreateOversBowled(List<PlayerIdentity> bowlingTeam, IEnumerable<OverSet> overSets)
-        {
-            var oversBowled = new List<Over>();
-            for (var i = 0; i < overSets.Sum(x => x.Overs); i++)
-            {
-                oversBowled.Add(new Over
-                {
-                    OverId = Guid.NewGuid(),
-                    OverSet = _oversHelper.OverSetForOver(overSets, i + 1),
-                    OverNumber = i + 1,
-                    Bowler = i % 2 == 0 ? bowlingTeam[5] : bowlingTeam[3],
-                    BallsBowled = 8,
-                    NoBalls = 1,
-                    Wides = 0,
-                    RunsConceded = 10
-                }); ;
-            }
-
-            // One over has a known bowler with missing data
-            oversBowled[^1].BallsBowled = null;
-            oversBowled[^1].Wides = null;
-            oversBowled[^1].NoBalls = null;
-            oversBowled[^1].RunsConceded = null;
-
-            return oversBowled;
         }
 
         internal List<(Team team, List<PlayerIdentity> identities)> GenerateTeams()
