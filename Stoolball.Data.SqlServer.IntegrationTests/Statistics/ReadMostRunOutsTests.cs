@@ -771,20 +771,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         /// </summary>
         private async Task ForceFifthAndSixthMostRunOutsToBeTheSame()
         {
-            var allPlayers = _databaseFixture.TestData.Players.Select(x => new
+            // Only players who've actually effected a run-out appear in the ReadMostRunOuts results at all,
+            // so the 5th/6th place we pick to force a tie between must come from that same subset - not from
+            // every player, most of whom have zero run-outs and would never be a real 6th place.
+            var playersWithRunOuts = _databaseFixture.TestData.Players.Select(x => new
             {
                 Player = x,
                 RunOuts = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
                                        .SelectMany(m => m.MatchInnings)
                                        .SelectMany(mi => mi.PlayerInnings)
-                                       .Count(pi => pi.DismissalType == DismissalType.RunOut && pi.DismissedBy?.Player.PlayerId == x.PlayerId)
-            }).OrderByDescending(x => x.RunOuts).ToList();
+                                       .Count(pi => pi.DismissalType == DismissalType.RunOut && pi.DismissedBy?.Player?.PlayerId == x.PlayerId)
+            }).Where(x => x.RunOuts > 0).OrderByDescending(x => x.RunOuts).ToList();
 
-            var sixthPlayer = allPlayers[5].Player;
-            var differenceBetweenFifthAndSixth = allPlayers[4].RunOuts - allPlayers[5].RunOuts;
+            var sixthPlayer = playersWithRunOuts[5].Player;
+            var differenceBetweenFifthAndSixth = playersWithRunOuts[4].RunOuts - playersWithRunOuts[5].RunOuts;
 
-            var matchWherePlayerSixFielded = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
-                .First(m => m.MatchInnings.Any(mi => sixthPlayer.PlayerIdentities.Select(pi => pi.Team!.TeamId!.Value).Contains(mi.BowlingTeam!.Team!.TeamId!.Value)));
+            // Pick the specific match where the 6th player personally effected a run-out, rather than any match
+            // their team happened to bowl in, so the update below is guaranteed to land on a row that exists
+            // (PlayerInMatchStatisticsBuilder only writes a RunOuts value for players recognised as fielders).
+            var matchWherePlayerSixEffectedARunOut = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
+                .First(m => m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi => pi.DismissalType == DismissalType.RunOut && pi.DismissedBy?.Player?.PlayerId == sixthPlayer.PlayerId)));
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -793,7 +799,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     $@"UPDATE TOP (1) {Tables.PlayerInMatchStatistics}
                        SET RunOuts = RunOuts + @Difference
                        WHERE MatchId = @MatchId AND PlayerId = @PlayerId AND RunOuts IS NOT NULL",
-                    new { Difference = differenceBetweenFifthAndSixth, matchWherePlayerSixFielded.MatchId, sixthPlayer.PlayerId }).ConfigureAwait(false);
+                    new { Difference = differenceBetweenFifthAndSixth, matchWherePlayerSixEffectedARunOut.MatchId, sixthPlayer.PlayerId }).ConfigureAwait(false);
             }
         }
     }

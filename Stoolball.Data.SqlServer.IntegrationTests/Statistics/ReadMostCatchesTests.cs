@@ -759,21 +759,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         /// </summary>
         private async Task ForceFifthAndSixthMostCatchesToBeTheSame()
         {
-            var allPlayers = _databaseFixture.TestData.Players.Select(x => new
+            // Only players who've actually taken a catch appear in the ReadMostCatches results at all, so the
+            // 5th/6th place we pick to force a tie between must come from that same subset - not from every
+            // player, most of whom have zero catches and would never be a real 6th place.
+            var playersWithCatches = _databaseFixture.TestData.Players.Select(x => new
             {
                 Player = x,
                 Catches = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
                                        .SelectMany(m => m.MatchInnings)
                                        .SelectMany(mi => mi.PlayerInnings)
-                                       .Count(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player.PlayerId == x.PlayerId) ||
-                                                    (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player.PlayerId == x.PlayerId))
-            }).OrderByDescending(x => x.Catches).ToList();
+                                       .Count(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == x.PlayerId) ||
+                                                    (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == x.PlayerId))
+            }).Where(x => x.Catches > 0).OrderByDescending(x => x.Catches).ToList();
 
-            var sixthPlayer = allPlayers[5].Player;
-            var differenceBetweenFifthAndSixth = allPlayers[4].Catches - allPlayers[5].Catches;
+            var sixthPlayer = playersWithCatches[5].Player;
+            var differenceBetweenFifthAndSixth = playersWithCatches[4].Catches - playersWithCatches[5].Catches;
 
-            var matchWherePlayerSixFielded = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
-                .First(m => m.MatchInnings.Any(mi => sixthPlayer.PlayerIdentities.Select(pi => pi.Team!.TeamId!.Value).Contains(mi.BowlingTeam!.Team!.TeamId!.Value)));
+            // Pick the specific match where the 6th player personally took a catch, rather than any match their
+            // team happened to field in, so the update below is guaranteed to land on a row that exists
+            // (PlayerInMatchStatisticsBuilder only writes a Catches value for players recognised as fielders).
+            var matchWherePlayerSixTookACatch = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
+                .First(m => m.MatchInnings.Any(mi => mi.PlayerInnings.Any(pi =>
+                    (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player?.PlayerId == sixthPlayer.PlayerId) ||
+                    (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player?.PlayerId == sixthPlayer.PlayerId))));
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
@@ -782,7 +790,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     $@"UPDATE TOP (1) {Tables.PlayerInMatchStatistics}
                        SET Catches = Catches + @Difference
                        WHERE MatchId = @MatchId AND PlayerId = @PlayerId AND Catches IS NOT NULL",
-                    new { Difference = differenceBetweenFifthAndSixth, matchWherePlayerSixFielded.MatchId, sixthPlayer.PlayerId }).ConfigureAwait(false);
+                    new { Difference = differenceBetweenFifthAndSixth, matchWherePlayerSixTookACatch.MatchId, sixthPlayer.PlayerId }).ConfigureAwait(false);
             }
         }
     }
