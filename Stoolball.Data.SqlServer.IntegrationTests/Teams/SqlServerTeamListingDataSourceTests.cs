@@ -23,6 +23,24 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             return new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
         }
 
+        // ReadTeamListings matches Query against team/club name, player type, locality, town AND administrative area together,
+        // so a test that only checks one of those fields can fail when a randomly-generated value for another field happens to
+        // contain the query text too (e.g. a Bogus city name like "Davonte" contains the county name "Avon").
+        private bool TeamListingMatchesQuery(TeamListing listing, string query)
+        {
+            if (listing.ClubOrTeamName?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false) { return true; }
+            if (listing.PlayerTypes.Any(playerType => playerType.ToString()!.Contains(query, StringComparison.OrdinalIgnoreCase))) { return true; }
+            if (listing.MatchLocations.Any(ml =>
+                    (ml.Locality?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (ml.Town?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (ml.AdministrativeArea?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false)))
+            { return true; }
+
+            // A club listing can represent several teams, and the query also matches each member team's own name.
+            var club = _databaseFixture.TestData.Clubs.SingleOrDefault(c => c.ClubId == listing.TeamListingId);
+            return club != null && club.Teams.Any(t => t.TeamName?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false);
+        }
+
         [Fact]
         public async Task Read_total_teams_supports_no_filter()
         {
@@ -80,7 +98,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.Locality?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false)), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => TeamListingMatchesQuery(x, query.Query)), result);
         }
 
         [Fact]
@@ -91,7 +109,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.Town?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false)), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => TeamListingMatchesQuery(x, query.Query)), result);
         }
 
         [Fact]
@@ -102,7 +120,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.AdministrativeArea?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false)), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => TeamListingMatchesQuery(x, query.Query)), result);
         }
 
         [Fact]
@@ -151,7 +169,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.Locality!.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => TeamListingMatchesQuery(x, query.Query)), result);
         }
 
         [Fact]
@@ -162,7 +180,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.Town!.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => TeamListingMatchesQuery(x, query.Query)), result);
         }
 
         [Fact]
@@ -173,7 +191,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => x.MatchLocations.Any(ml => ml.AdministrativeArea!.Contains(query.Query, StringComparison.OrdinalIgnoreCase))), result);
+            Assert.Equal(_databaseFixture.TestData.TeamListings.Count(x => TeamListingMatchesQuery(x, query.Query)), result);
         }
 
         [Fact]
@@ -428,7 +446,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.Locality?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => TeamListingMatchesQuery(x, query.Query));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
@@ -444,7 +462,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.Town?.Contains(query.Query, StringComparison.OrdinalIgnoreCase) ?? false));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => TeamListingMatchesQuery(x, query.Query));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
@@ -460,7 +478,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.AdministrativeArea!.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => TeamListingMatchesQuery(x, query.Query));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var teamListing in expected)
             {
@@ -525,7 +543,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.Locality.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => TeamListingMatchesQuery(x, query.Query));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
@@ -541,7 +559,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.Town.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => TeamListingMatchesQuery(x, query.Query));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
@@ -557,7 +575,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.TeamListings.Where(x => x.MatchLocations.Any(ml => ml.AdministrativeArea.Contains(query.Query, StringComparison.OrdinalIgnoreCase)));
+            var expected = _databaseFixture.TestData.TeamListings.Where(x => TeamListingMatchesQuery(x, query.Query));
             Assert.Equal(expected.Count(), result.Count);
             foreach (var team in expected)
             {
