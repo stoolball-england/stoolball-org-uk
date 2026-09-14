@@ -4,6 +4,13 @@ This project tests the SQL Server repository implementations against a real data
 Test data generation lives in the separate `Stoolball.Testing` project (it depends on
 Bogus, so that dependency is kept out of production code).
 
+**Always run the affected tests at least once after making any change in this project**
+(or in `Stoolball.Testing`, since that's where the seed data they depend on is generated) —
+before reporting the work as done. Static review and a successful build are not enough:
+this suite depends on a real SQL Server database and on generated data whose shape can
+only be checked by actually executing the tests. If there's no way to run them (e.g. no
+database is reachable), say so explicitly rather than reporting success.
+
 ## 1. Isolating each test with TransactionScope
 
 Every test class (or a shared `*TestsBase` class for repositories split one-file-per-method)

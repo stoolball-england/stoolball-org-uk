@@ -834,10 +834,17 @@ namespace Stoolball.Testing
             testData.MatchLocationWithMinimalDetails = testData.MatchLocations.First(x => !x.Teams.Any());
 
             var competitionWithOneSeasonWithPointsRules = _competitionFaker.Generate();
+            var pointsRulesSeasonTeam1 = poolOfTeamsWithPlayers[_randomiser.Between(0, poolOfTeamsWithPlayers.Count - 1)].team;
+            Team pointsRulesSeasonTeam2;
+            do
+            {
+                pointsRulesSeasonTeam2 = poolOfTeamsWithPlayers[_randomiser.Between(0, poolOfTeamsWithPlayers.Count - 1)].team;
+            }
+            while (pointsRulesSeasonTeam2.TeamId == pointsRulesSeasonTeam1.TeamId);
             competitionWithOneSeasonWithPointsRules.Seasons.Add(CreateSeasonWithFullDetails(competitionWithOneSeasonWithPointsRules,
                                                                                             2020, 2020,
-                                                                                            poolOfTeamsWithPlayers[_randomiser.Between(0, poolOfTeamsWithPlayers.Count - 1)].team,
-                                                                                            poolOfTeamsWithPlayers[_randomiser.Between(0, poolOfTeamsWithPlayers.Count - 1)].team));
+                                                                                            pointsRulesSeasonTeam1,
+                                                                                            pointsRulesSeasonTeam2));
 
             testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
                 .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
