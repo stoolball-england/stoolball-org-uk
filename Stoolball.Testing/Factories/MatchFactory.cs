@@ -50,7 +50,7 @@ namespace Stoolball.Testing.Factories
                 MatchName = "Training session",
                 MatchType = MatchType.TrainingSession,
                 MatchRoute = $"/matches/training-session-{Guid.NewGuid()}-generated-by-{routeTag}",
-                StartTime = DateTimeOffset.UtcNow.AddMonths(_randomiser.PositiveIntegerLessThan(30)).UtcToUkTime()
+                StartTime = DateTimeOffset.UtcNow.AddMonths(_randomiser.Between(1, 30)).UtcToUkTime()
             };
 
             for (var i = 0; i < howManyTeams; i++)
