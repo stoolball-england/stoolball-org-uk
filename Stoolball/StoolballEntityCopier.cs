@@ -277,7 +277,7 @@ namespace Stoolball
                     CompetitionRoute = season.Competition?.CompetitionRoute
                 },
                 Introduction = season.Introduction,
-                MatchTypes = season.MatchTypes,
+                MatchTypes = season.MatchTypes.ToList(),
                 EnableTournaments = season.EnableTournaments,
                 EnableBonusOrPenaltyRuns = season.EnableBonusOrPenaltyRuns,
                 PlayersPerTeam = season.PlayersPerTeam,

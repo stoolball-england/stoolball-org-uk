@@ -131,12 +131,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var result = await competitionDataSource.ReadCompetitionByRoute(comp.CompetitionRoute!).ConfigureAwait(false);
 
             Assert.NotNull(result);
-            for (var season = 0; season < comp.Seasons.Count; season++)
+            foreach (var season in comp.Seasons)
             {
-                var matchTypesInSeason = comp.Seasons[season].MatchTypes;
-                for (var matchType = 0; matchType < matchTypesInSeason.Count; matchType++)
+                var resultSeason = result!.Seasons.SingleOrDefault(x => x.SeasonId == season.SeasonId);
+                Assert.NotNull(resultSeason);
+
+                Assert.Equal(season.MatchTypes.Count, resultSeason!.MatchTypes.Count);
+                foreach (var matchType in season.MatchTypes)
                 {
-                    Assert.Contains(matchTypesInSeason[matchType], result!.Seasons[season].MatchTypes);
+                    Assert.Contains(matchType, resultSeason!.MatchTypes);
                 }
             }
         }
