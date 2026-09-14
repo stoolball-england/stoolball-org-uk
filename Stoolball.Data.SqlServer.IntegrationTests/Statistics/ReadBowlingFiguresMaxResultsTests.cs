@@ -97,9 +97,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             bowlingFigures[5].Wickets = bowlingFigures[4].Wickets;
 
             // If there are more than six sets of figures, make sure they're worse so we know what to assert.
+            // A null RunsConceded already ranks worse than any known value for the same Wickets (see
+            // HasRunsConceded DESC in the query this exercises), so only increment figures that already
+            // have a value - turning null into a low number like 1 would rank it *better*, not worse.
             for (var i = 6; i < bowlingFigures.Count; i++)
             {
-                bowlingFigures[i].RunsConceded = (bowlingFigures[i].RunsConceded ?? 0) + 1;
+                if (bowlingFigures[i].RunsConceded.HasValue)
+                {
+                    bowlingFigures[i].RunsConceded++;
+                }
             }
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
