@@ -188,7 +188,7 @@ jobs:
       env:
         SA_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
       run: |
-        docker run --name "integration-tests-sql" -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ env.SA_PASSWORD }}" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
+        docker run --name "integration-tests-sql" -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ env.SA_PASSWORD }}" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
   
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
