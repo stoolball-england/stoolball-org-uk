@@ -107,8 +107,8 @@ namespace Stoolball.Testing.Factories
             // Some matches should have multiple innings
             if (_randomiser.PositiveIntegerLessThan(4) == 0)
             {
-                match.MatchInnings.Add(CreateMatchInnings(3));
-                match.MatchInnings.Add(CreateMatchInnings(4));
+                match.MatchInnings.Add(CreateMatchInningsWithScores(3));
+                match.MatchInnings.Add(CreateMatchInningsWithScores(4));
             }
 
             foreach (var innings in match.MatchInnings.Where(x => x.InningsOrderInMatch % 2 == 1))
@@ -150,7 +150,7 @@ namespace Stoolball.Testing.Factories
             return match;
         }
 
-        private MatchInnings CreateMatchInnings(int inningsOrderInMatch)
+        internal MatchInnings CreateMatchInningsWithScores(int inningsOrderInMatch)
         {
             return new MatchInnings
             {
@@ -162,7 +162,7 @@ namespace Stoolball.Testing.Factories
                 BonusOrPenaltyRuns = _randomiser.Between(-5, 4),
                 Runs = _randomiser.Between(100, 249),
                 Wickets = _randomiser.PositiveIntegerLessThan(11),
-                OverSets = CreateOverSets()
+                OverSets = [_oversetFactory.CreateFaker().Generate()]
             };
         }
 
@@ -222,11 +222,6 @@ namespace Stoolball.Testing.Factories
                     if (i >= 6 && i % 2 == 0) { innings.OversBowled.Add(CreateRandomOver(innings.OverSets[0], i, bowlers[3])); }
                 }
             }
-        }
-
-        private List<OverSet> CreateOverSets()
-        {
-            return new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
         }
 
         private Over CreateRandomOver(OverSet overSet, int overNumber, PlayerIdentity playerIdentity)
@@ -290,5 +285,6 @@ namespace Stoolball.Testing.Factories
                 BallsFaced = ballsFaced
             };
         }
+
     }
 }

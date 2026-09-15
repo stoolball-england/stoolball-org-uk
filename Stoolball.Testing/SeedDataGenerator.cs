@@ -1,6 +1,5 @@
 ﻿using Stoolball.Awards;
 using Stoolball.Logging;
-using Stoolball.Testing.CompetitionDataProviders;
 using Stoolball.Testing.MatchDataProviders;
 using Stoolball.Testing.PlayerDataProviders;
 using Stoolball.Testing.SchoolDataProviders;
@@ -18,9 +17,7 @@ namespace Stoolball.Testing
         private readonly TeamFactory _teamFactory;
         private readonly ClubFactory _clubFactory;
         private readonly MatchLocationFactory _matchLocationFactory;
-        private readonly SchoolFactory _schoolFactory;
         private readonly PlayerFactory _playerFactory;
-        private readonly OverSetFactory _oversetFactory;
         private readonly UmbracoMemberFactory _memberFactory;
         private readonly CommentFactory _commentFactory;
         private readonly MatchFactory _matchFactory;
@@ -35,18 +32,16 @@ namespace Stoolball.Testing
         private readonly Faker<MatchLocation> _matchLocationFaker;
         private readonly Faker<Player> _playerFaker;
         private readonly Award _playerOfTheMatchAward;
-        private readonly OverFactory _overFactory;
 
-        internal SeedDataGenerator(Randomiser randomiser, OverFactory overFactory, IBowlingFiguresCalculator bowlingFiguresCalculator,
+        internal SeedDataGenerator(Randomiser randomiser, IBowlingFiguresCalculator bowlingFiguresCalculator,
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
             CompetitionFactory competitionFactory, SeasonFactory seasonFactory, TeamFactory teamFactory, ClubFactory clubFactory,
-            TournamentFactory tournamentFactory, MatchLocationFactory matchLocationFactory, SchoolFactory schoolFactory,
-            PlayerFactory playerFactory, OverSetFactory oversetFactory, UmbracoMemberFactory memberFactory, CommentFactory commentFactory, Award playerOfTheMatchAward,
+            TournamentFactory tournamentFactory, MatchLocationFactory matchLocationFactory,
+            PlayerFactory playerFactory, UmbracoMemberFactory memberFactory, CommentFactory commentFactory, Award playerOfTheMatchAward,
             MatchFactory matchFactory, IEnumerable<BaseMatchDataProvider> matchDataProviders, IEnumerable<BaseCompetitionDataProvider> competitionDataProviders,
             IEnumerable<BasePlayerDataProvider> playerDataProviders, IEnumerable<BaseSchoolDataProvider> schoolDataProviders)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
-            _overFactory = overFactory ?? throw new ArgumentNullException(nameof(overFactory));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
             _matchFinder = matchFinder ?? throw new ArgumentNullException(nameof(matchFinder));
@@ -56,9 +51,7 @@ namespace Stoolball.Testing
             _clubFactory = clubFactory ?? throw new ArgumentNullException(nameof(clubFactory));
             _tournamentFactory = tournamentFactory ?? throw new ArgumentNullException(nameof(tournamentFactory));
             _matchLocationFactory = matchLocationFactory ?? throw new ArgumentNullException(nameof(matchLocationFactory));
-            _schoolFactory = schoolFactory ?? throw new ArgumentNullException(nameof(schoolFactory));
             _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
-            _oversetFactory = oversetFactory ?? throw new ArgumentNullException(nameof(oversetFactory));
             _memberFactory = memberFactory ?? throw new ArgumentNullException(nameof(memberFactory));
             _commentFactory = commentFactory ?? throw new ArgumentNullException(nameof(commentFactory));
             _competitionFaker = competitionFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(competitionFactory));
@@ -72,297 +65,6 @@ namespace Stoolball.Testing
             _competitionDataProviders = competitionDataProviders ?? throw new ArgumentNullException(nameof(competitionDataProviders));
             _playerDataProviders = playerDataProviders ?? throw new ArgumentNullException(nameof(playerDataProviders));
             _schoolDataProviders = schoolDataProviders ?? throw new ArgumentNullException(nameof(schoolDataProviders));
-        }
-
-        private Match CreateMatchInThePastWithFullDetails(List<UmbracoMember> members)
-        {
-            // Note: Team names would sort the away team first alphabetically
-            var homeTeam = _teamFaker.Generate();
-            var homeTeamInMatch = new TeamInMatch
-            {
-                MatchTeamId = Guid.NewGuid(),
-                Team = homeTeam,
-                PlayingAsTeamName = homeTeam.TeamName,
-                WonToss = true,
-                BattedFirst = true,
-                TeamRole = TeamRole.Home
-            };
-
-            var awayTeam = _teamFaker.Generate();
-            var awayTeamInMatch = new TeamInMatch
-            {
-                MatchTeamId = Guid.NewGuid(),
-                Team = awayTeam,
-                PlayingAsTeamName = awayTeam.TeamName,
-                WonToss = false,
-                BattedFirst = false,
-                TeamRole = TeamRole.Away
-            };
-
-            var homePlayers = new PlayerIdentity[11];
-            for (var i = 0; i < 11; i++)
-            {
-                homePlayers[i] = new PlayerIdentity
-                {
-                    Player = new Player
-                    {
-                        PlayerId = Guid.NewGuid(),
-                        PlayerRoute = "/players/home-" + (i + 1)
-                    },
-                    PlayerIdentityId = Guid.NewGuid(),
-                    PlayerIdentityName = "Home player identity " + (i + 1),
-                    RouteSegment = "home-player-identity-" + (i + 1),
-                    Team = homeTeamInMatch.Team
-                };
-            }
-            ;
-
-            var awayPlayers = new PlayerIdentity[11];
-            for (var i = 0; i < 11; i++)
-            {
-                awayPlayers[i] = new PlayerIdentity
-                {
-                    Player = new Player
-                    {
-                        PlayerId = Guid.NewGuid(),
-                        PlayerRoute = "/players/away-" + (i + 1)
-                    },
-                    PlayerIdentityId = Guid.NewGuid(),
-                    PlayerIdentityName = "Away player identity " + (i + 12),
-                    RouteSegment = "away-player-identity-" + (i + 1),
-                    Team = awayTeamInMatch.Team
-                };
-            }
-            ;
-
-            var oversetFaker = _oversetFactory.CreateFaker();
-            var firstInningsOverSets = oversetFaker.Generate(1);
-            var secondInningsOverSets = oversetFaker.Generate(1);
-            var thirdInningsOverSets = oversetFaker.Generate(1);
-            var fourthInningsOverSets = oversetFaker.Generate(1);
-
-            var competition = _competitionFaker.Generate();
-            var season = _seasonFactory.CreateFaker(competition, 2020, 2020).Generate();
-            competition.Seasons.Add(season);
-
-            var match = new Match
-            {
-                MatchId = Guid.NewGuid(),
-                MatchType = MatchType.LeagueMatch,
-                PlayerType = PlayerType.Ladies,
-                MatchName = "Team A beat Team B",
-                UpdateMatchNameAutomatically = true,
-                StartTime = new DateTimeOffset(2020, 7, 1, 19, 00, 00, TimeSpan.FromHours(1)),
-                StartTimeIsKnown = true,
-                Awards = new List<MatchAward> {
-                    // Arranged alphabetically by award name to match the data that should be returned
-                    new MatchAward
-                    {
-                        AwardedToId = Guid.NewGuid(),
-                        Award = new Award
-                        {
-                            AwardId = Guid.NewGuid(),
-                            AwardName = "Champagne moment"
-                        },
-                        PlayerIdentity = awayPlayers[4],
-                        Reason = "Amazing catch"
-                    },
-                    new MatchAward {
-                        AwardedToId = Guid.NewGuid(),
-                        Award = _playerOfTheMatchAward,
-                        PlayerIdentity = homePlayers[2],
-                        Reason = "Taking wickets"
-                    }
-                },
-                EnableBonusOrPenaltyRuns = true,
-                InningsOrderIsKnown = true,
-                LastPlayerBatsOn = true,
-                PlayersPerTeam = 11,
-                Teams = new List<TeamInMatch> {
-                    homeTeamInMatch,
-                    awayTeamInMatch
-                },
-                Season = season,
-                MatchInnings = new List<MatchInnings> {
-                    new MatchInnings
-                    {
-                        MatchInningsId = Guid.NewGuid(),
-                        InningsOrderInMatch = 1,
-                        BattingMatchTeamId = homeTeamInMatch.MatchTeamId,
-                        BowlingMatchTeamId = awayTeamInMatch.MatchTeamId,
-                        BattingTeam = homeTeamInMatch,
-                        BowlingTeam = awayTeamInMatch,
-                        NoBalls = 20,
-                        Wides = 15,
-                        Byes = 10,
-                        BonusOrPenaltyRuns = 5,
-                        Runs = 200,
-                        Wickets = 2,
-                        PlayerInnings = CreateBattingScorecard(homePlayers, awayPlayers),
-                        OverSets = firstInningsOverSets,
-                        OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName(new List<PlayerIdentity>(awayPlayers), firstInningsOverSets)
-                    },
-                    new MatchInnings
-                    {
-                        MatchInningsId = Guid.NewGuid(),
-                        InningsOrderInMatch = 2,
-                        BattingMatchTeamId = awayTeamInMatch.MatchTeamId,
-                        BowlingMatchTeamId = homeTeamInMatch.MatchTeamId,
-                        BattingTeam = awayTeamInMatch,
-                        BowlingTeam = homeTeamInMatch,
-                        NoBalls = 23,
-                        Wides = 12,
-                        Byes = 5,
-                        BonusOrPenaltyRuns = 0,
-                        Runs = 230,
-                        Wickets = 7,
-                        PlayerInnings = CreateBattingScorecard(awayPlayers, homePlayers),
-                        OverSets = secondInningsOverSets,
-                        OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName(new List<PlayerIdentity>(homePlayers), secondInningsOverSets)
-                    },
-                    new MatchInnings
-                    {
-                        MatchInningsId = Guid.NewGuid(),
-                        InningsOrderInMatch = 3,
-                        BattingMatchTeamId = homeTeamInMatch.MatchTeamId,
-                        BowlingMatchTeamId = awayTeamInMatch.MatchTeamId,
-                        BattingTeam = homeTeamInMatch,
-                        BowlingTeam = awayTeamInMatch,
-                        NoBalls = 31,
-                        Wides = 2,
-                        Byes = 18,
-                        BonusOrPenaltyRuns = -6,
-                        Runs = 150,
-                        Wickets = 10,
-                        PlayerInnings = CreateBattingScorecard(homePlayers, awayPlayers),
-                        OverSets = thirdInningsOverSets,
-                        OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName(new List<PlayerIdentity>(awayPlayers), thirdInningsOverSets)
-                    },
-                    new MatchInnings
-                    {
-                        MatchInningsId = Guid.NewGuid(),
-                        InningsOrderInMatch = 4,
-                        BattingMatchTeamId = awayTeamInMatch.MatchTeamId,
-                        BowlingMatchTeamId = homeTeamInMatch.MatchTeamId,
-                        BattingTeam = awayTeamInMatch,
-                        BowlingTeam = homeTeamInMatch,
-                        NoBalls = 16,
-                        Wides = 12,
-                        Byes = 8,
-                        BonusOrPenaltyRuns = 2,
-                        Runs = 210,
-                        Wickets = 4,
-                        PlayerInnings = CreateBattingScorecard(awayPlayers, homePlayers),
-                        OverSets = fourthInningsOverSets,
-                        OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName(new List<PlayerIdentity>(homePlayers), fourthInningsOverSets)
-                    }
-                },
-                MatchLocation = _matchLocationFaker.Generate(),
-                MatchResultType = MatchResultType.HomeWin,
-                MatchNotes = "<p>This is a test match, not a Test Match.</p>",
-                MatchRoute = "/matches/team-a-vs-team-b-1jul2020-" + Guid.NewGuid(),
-                MemberKey = Guid.NewGuid(),
-                Comments = _commentFactory.CreateFaker(members).Generate(10)
-            };
-
-            foreach (var innings in match.MatchInnings)
-            {
-                innings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(innings);
-            }
-            return match;
-        }
-
-        private static List<PlayerInnings> CreateBattingScorecard(PlayerIdentity[] battingTeam, PlayerIdentity[] bowlingTeam)
-        {
-            return new List<PlayerInnings>{
-                            new PlayerInnings {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 1,
-                                Batter = battingTeam[0],
-                                DismissalType = DismissalType.Bowled,
-                                Bowler = bowlingTeam[3],
-                                RunsScored = 50,
-                                BallsFaced = 60
-                            },
-                            new PlayerInnings
-                            {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 2,
-                                Batter = battingTeam[1],
-                                DismissalType = DismissalType.Caught,
-                                DismissedBy = bowlingTeam[9],
-                                Bowler = bowlingTeam[7],
-                                RunsScored = 20,
-                                BallsFaced = 15
-                            },
-                            new PlayerInnings
-                            {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 3,
-                                Batter = battingTeam[2],
-                                DismissalType = DismissalType.NotOut,
-                                RunsScored = 120,
-                                BallsFaced = 150
-                            },
-                            new PlayerInnings
-                            {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 4,
-                                Batter = battingTeam[3],
-                                DismissalType = DismissalType.NotOut,
-                                RunsScored = 42,
-                                BallsFaced = 35
-                            },
-                            new PlayerInnings
-                            {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 5,
-                                Batter = battingTeam[4],
-                                DismissalType = DismissalType.DidNotBat
-                            },
-                            new PlayerInnings
-                            {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 6,
-                                Batter = battingTeam[5],
-                                DismissalType = DismissalType.DidNotBat
-                            },
-                            new PlayerInnings
-                            {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 7,
-                                Batter = battingTeam[6],
-                                DismissalType = DismissalType.DidNotBat
-                            },
-                            new PlayerInnings
-                            {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 8,
-                                Batter = battingTeam[7],
-                                DismissalType = DismissalType.DidNotBat
-                            },
-                            new PlayerInnings
-                            {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 9,
-                                Batter = battingTeam[8],
-                                DismissalType = DismissalType.DidNotBat
-                            },
-                            new PlayerInnings
-                            {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 10,
-                                Batter = battingTeam[9],
-                                DismissalType = DismissalType.DidNotBat
-                            },
-                            new PlayerInnings
-                            {
-                                PlayerInningsId = Guid.NewGuid(),
-                                BattingPosition = 11,
-                                Batter = battingTeam[10],
-                                DismissalType = DismissalType.DidNotBat
-                            }
-                        };
         }
 
         internal List<(Team team, List<PlayerIdentity> identities)> GenerateTeams()
@@ -436,10 +138,6 @@ namespace Stoolball.Testing
             testData.Matches = GenerateMatchData(testData, poolOfTeamsWithPlayers);
 
             testData.MatchInThePastWithMinimalDetails = FindMatchInThePastWithMinimalDetails(testData);
-
-            testData.MatchInThePastWithFullDetails = FindMatchInThePastWithFullDetails(testData);
-
-            testData.MatchInThePastWithFullDetailsAndTournament = FindMatchInThePastWithFullDetailsAndTournament(testData);
 
             var membersFromMatchComments = testData.Matches.SelectMany(x => x.Comments).Select(x => new UmbracoMember { Key = x.MemberKey, Name = x.MemberName ?? "No name" });
             testData.Members = membersFromMatchComments.ToList();
@@ -706,8 +404,31 @@ namespace Stoolball.Testing
 
                     var newPlayers = newPlayerIdentities.Select(x => x.Player).Where(x => x != null && !testData.Players.Select(p => p.PlayerId).Contains(x.PlayerId)).OfType<Player>();
                     if (newPlayers.Any()) { testData.Players.AddRange(newPlayers); }
+
+                    if (match.MatchLocation != null && !testData.MatchLocations.Any(ml => ml.MatchLocationId == match.MatchLocation.MatchLocationId))
+                    {
+                        testData.MatchLocations.Add(match.MatchLocation);
+                    }
+
+                    if (match.Season != null && !testData.Seasons.Any(s => s.SeasonId == match.Season.SeasonId))
+                    {
+                        testData.Seasons.Add(match.Season);
+                        if (match.Season.Competition != null && !testData.Competitions.Any(c => c.CompetitionId == match.Season.Competition.CompetitionId))
+                        {
+                            testData.Competitions.Add(match.Season.Competition);
+                        }
+                    }
+
+                    if (match.Tournament != null && !testData.Tournaments.Any(t => t.TournamentId == match.Tournament.TournamentId))
+                    {
+                        testData.Tournaments.Add(match.Tournament);
+                    }
                 }
             }
+
+            testData.MatchInThePastWithFullDetails = FindMatchInThePastWithFullDetails(testData);
+
+            testData.MatchInThePastWithFullDetailsAndTournament = FindMatchInThePastWithFullDetailsAndTournament(testData);
 
             testData.MatchInTheFutureWithMinimalDetails = FindMatchInTheFutureWithMinimalDetails(testData);
 
@@ -1098,14 +819,7 @@ namespace Stoolball.Testing
             // Ensure there's always an intra-club match to test
             matches.Add(_matchFactory.CreateMatchBetween(teamsWithIdentities[0].team, teamsWithIdentities[0].identities, teamsWithIdentities[0].team, teamsWithIdentities[0].identities, _randomiser.FiftyFiftyChance(), testData, nameof(GenerateMatchData) + "IntraClub"));
 
-            // Aim to make these obsolete by recreating everything offered by CreateMatchInThePastWithFullDetails in the generated match data above
             matches.Add(_matchFactory.CreateMatchInThePast(false, testData, nameof(GenerateMatchData)));
-            matches.Add(CreateMatchInThePastWithFullDetails(members));
-
-            var matchInThePastWithFullDetailsAndTournament = CreateMatchInThePastWithFullDetails(members);
-            matchInThePastWithFullDetailsAndTournament.Tournament = _tournamentFactory.CreateFaker().Generate();
-            matchInThePastWithFullDetailsAndTournament.Season!.FromYear = matchInThePastWithFullDetailsAndTournament.Season.UntilYear = 2018;
-            matches.Add(matchInThePastWithFullDetailsAndTournament);
 
             // Generate bowling figures for each innings
             foreach (var innings in matches.SelectMany(x => x.MatchInnings))

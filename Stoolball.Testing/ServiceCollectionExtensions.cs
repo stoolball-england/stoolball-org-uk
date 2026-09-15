@@ -64,6 +64,11 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new DifferentTeamsWhereSomeonePlaysOnBothTeams(
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
+            services.AddSingleton<BaseMatchDataProvider>(sp => new MatchInThePastWithFullDetailsProvider(
+                sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<CompetitionFactory>(),
+                sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<MatchLocationFactory>(), sp.GetRequiredService<CommentFactory>(),
+                sp.GetRequiredService<OverFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(), sp.GetRequiredService<UmbracoMemberFactory>(),
+                sp.GetRequiredService<TournamentFactory>(), sp.GetRequiredService<Award>()));
 
             services.AddSingleton<BaseCompetitionDataProvider>(sp => new CompetitionWithTeamsAndOverSetsInSeasonProvider(
                 sp.GetRequiredService<CompetitionFactory>(), sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<OverSetFactory>()));
@@ -80,7 +85,6 @@ namespace Stoolball.Testing
 
             services.AddSingleton(sp => new SeedDataGenerator(
                 sp.GetRequiredService<Randomiser>(),
-                sp.GetRequiredService<OverFactory>(),
                 sp.GetRequiredService<IBowlingFiguresCalculator>(),
                 sp.GetRequiredService<IPlayerIdentityFinder>(),
                 sp.GetRequiredService<IMatchFinder>(),
@@ -90,9 +94,7 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<ClubFactory>(),
                 sp.GetRequiredService<TournamentFactory>(),
                 sp.GetRequiredService<MatchLocationFactory>(),
-                sp.GetRequiredService<SchoolFactory>(),
                 sp.GetRequiredService<PlayerFactory>(),
-                sp.GetRequiredService<OverSetFactory>(),
                 sp.GetRequiredService<UmbracoMemberFactory>(),
                 sp.GetRequiredService<CommentFactory>(),
                 sp.GetRequiredService<Award>(),
