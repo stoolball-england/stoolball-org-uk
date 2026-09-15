@@ -8,6 +8,7 @@ using Stoolball.Testing.Factories;
 using Stoolball.Testing.MatchDataProviders;
 using Stoolball.Testing.PlayerDataProviders;
 using Stoolball.Testing.SchoolDataProviders;
+using Stoolball.Testing.TournamentDataProviders;
 
 namespace Stoolball.Testing
 {
@@ -83,6 +84,10 @@ namespace Stoolball.Testing
             services.AddSingleton<BaseSchoolDataProvider>(sp => new SchoolDataProvider(
                 sp.GetRequiredService<SchoolFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<MatchLocationFactory>()));
 
+            services.AddSingleton<BaseTournamentDataProvider>(sp => new TournamentWithFullDetailsProvider(
+                sp.GetRequiredService<TournamentFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>(),
+                sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(), sp.GetRequiredService<Award>()));
+
             services.AddSingleton(sp => new SeedDataGenerator(
                 sp.GetRequiredService<Randomiser>(),
                 sp.GetRequiredService<IBowlingFiguresCalculator>(),
@@ -97,12 +102,12 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<PlayerFactory>(),
                 sp.GetRequiredService<UmbracoMemberFactory>(),
                 sp.GetRequiredService<CommentFactory>(),
-                sp.GetRequiredService<Award>(),
                 sp.GetRequiredService<MatchFactory>(),
                 sp.GetRequiredService<IEnumerable<BaseMatchDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BaseCompetitionDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BasePlayerDataProvider>>(),
-                sp.GetRequiredService<IEnumerable<BaseSchoolDataProvider>>()));
+                sp.GetRequiredService<IEnumerable<BaseSchoolDataProvider>>(),
+                sp.GetRequiredService<IEnumerable<BaseTournamentDataProvider>>()));
 
             return services;
         }

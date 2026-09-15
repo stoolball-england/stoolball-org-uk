@@ -13,6 +13,8 @@ namespace Stoolball.Testing.UnitTests.Factories
             var team = _services.Get<TeamFactory>().CreateTeamWithFullDetails("Example team");
 
             Assert.Equal(PlayerType.Ladies, team.PlayerType);
+            Assert.NotNull(team.Club);
+            Assert.Contains(team, team.Club!.Teams);
             Assert.Equal(2, team.MatchLocations.Count);
             Assert.All(team.MatchLocations, x => Assert.Contains(team, x.Teams));
 

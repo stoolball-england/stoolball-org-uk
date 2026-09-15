@@ -67,6 +67,19 @@
                 teamInSeason.Season!.Teams.Add(teamInSeason);
             }
             competition.Seasons.AddRange(team.Seasons.Select(x => x.Season)!);
+
+            // Built directly rather than via ClubFactory, which itself depends on TeamFactory.
+            var club = new Club
+            {
+                ClubId = Guid.NewGuid(),
+                ClubName = teamName + " Club",
+                ClubRoute = "/clubs/" + teamName.Kebaberize() + "-" + Guid.NewGuid(),
+                MemberGroupKey = Guid.NewGuid(),
+                MemberGroupName = teamName + " Club owners"
+            };
+            team.Club = club;
+            club.Teams.Add(team);
+
             return team;
         }
     }
