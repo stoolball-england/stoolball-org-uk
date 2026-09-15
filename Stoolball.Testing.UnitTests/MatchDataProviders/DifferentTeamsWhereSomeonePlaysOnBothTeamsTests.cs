@@ -17,7 +17,8 @@ namespace Stoolball.Testing.UnitTests.MatchDataProviders
             var randomiser = new Randomiser(new Random());
             var overSetFactory = new OverSetFactory();
             var matchFactory = new MatchFactory(randomiser, new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" }, overSetFactory);
-            var provider = new DifferentTeamsWhereSomeonePlaysOnBothTeams(randomiser, matchFactory, new TeamFactory(), new PlayerFactory());
+            var teamFactory = new TeamFactory(new CompetitionFactory(new SeasonFactory(overSetFactory)), new SeasonFactory(overSetFactory), new MatchLocationFactory());
+            var provider = new DifferentTeamsWhereSomeonePlaysOnBothTeams(randomiser, matchFactory, teamFactory, new PlayerFactory());
 
             var match = provider.CreateMatches(new TestData()).Single();
 

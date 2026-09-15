@@ -20,5 +20,33 @@
                 .RuleFor(x => x.MemberGroupName, (faker, location) => location.PrimaryAddressableObjectName + " " + location.StreetDescription + " owners")
                 .RuleFor(x => x.MatchLocationRoute, (faker, location) => "/locations/" + (location.PrimaryAddressableObjectName + " " + location.StreetDescription).Kebaberize());
         }
+
+        /// <summary>
+        /// Creates a match location with a mix of active, inactive and transient teams, to test how teams at a location are filtered and sorted.
+        /// </summary>
+        /// <param name="teamFaker">The faker used to generate the teams at the match location.</param>
+        public MatchLocation CreateMatchLocationWithFullDetails(Faker<Team> teamFaker)
+        {
+            var activeTeam = teamFaker.Generate();
+            activeTeam.TeamName = "Team active";
+            var anotherActiveTeam = teamFaker.Generate();
+            anotherActiveTeam.TeamName = "Team that plays";
+            var transientTeam = teamFaker.Generate();
+            transientTeam.TeamName = "Transient team";
+            transientTeam.TeamType = TeamType.Transient;
+            var inactiveTeam = teamFaker.Generate();
+            inactiveTeam.TeamName = "Inactive but alphabetically first";
+            inactiveTeam.UntilYear = 2019;
+
+            var matchLocation = CreateFaker().Generate();
+            matchLocation.Teams = [inactiveTeam, activeTeam, transientTeam, anotherActiveTeam];
+
+            activeTeam.MatchLocations.Add(matchLocation);
+            anotherActiveTeam.MatchLocations.Add(matchLocation);
+            transientTeam.MatchLocations.Add(matchLocation);
+            inactiveTeam.MatchLocations.Add(matchLocation);
+
+            return matchLocation;
+        }
     }
 }

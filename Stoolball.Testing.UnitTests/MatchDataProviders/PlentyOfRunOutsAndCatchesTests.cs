@@ -18,7 +18,8 @@ namespace Stoolball.Testing.UnitTests.MatchDataProviders
             var randomiser = new Randomiser(new Random());
             var overSetFactory = new OverSetFactory();
             var matchFactory = new MatchFactory(randomiser, new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" }, overSetFactory);
-            var provider = new PlentyOfRunOutsAndCatches(matchFactory, new TeamFactory(), new PlayerFactory());
+            var teamFactory = new TeamFactory(new CompetitionFactory(new SeasonFactory(overSetFactory)), new SeasonFactory(overSetFactory), new MatchLocationFactory());
+            var provider = new PlentyOfRunOutsAndCatches(matchFactory, teamFactory, new PlayerFactory());
 
             var playerInnings = provider.CreateMatches(new TestData()).SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings);
 
