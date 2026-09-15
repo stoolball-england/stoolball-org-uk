@@ -66,7 +66,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     {
                         DataSource = _sqlServerContainerInstance,
                         UserID = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME"),
-                        Password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD")
+                        Password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD"),
+                        TrustServerCertificate = true
                     }.ToString());
 
                     connectionStringForTests = new SqlConnectionStringBuilder
