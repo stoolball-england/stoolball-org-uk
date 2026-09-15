@@ -33,7 +33,8 @@
         {
             var season = EntityCopier.CreateAuditableCopy(DatabaseFixture.TestData.Seasons.First())!;
             var newTeam = DatabaseFixture.TestData.Teams.First(t => !season.Teams.Select(x => x.Team!.TeamId).Contains(t.TeamId));
-            var withdrawnDate = teamHasWithdrawn ? DateTimeOffset.UtcNow.Date : (DateTimeOffset?)null;
+            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone());
+            var withdrawnDate = teamHasWithdrawn ? new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date)) : (DateTimeOffset?)null;
             season.Teams.Add(new TeamInSeason { Team = newTeam, WithdrawnDate = withdrawnDate });
 
             var result = await Repository.UpdateTeams(season, MemberKey, MemberName).ConfigureAwait(false);
@@ -68,7 +69,8 @@
         {
             var season = EntityCopier.CreateAuditableCopy(DatabaseFixture.TestData.Seasons.First(s => s.Teams.Any(t => t.WithdrawnDate is not null)))!;
             var affectedTeam = season.Teams.First(t => wasWithdrawn ? t.WithdrawnDate is not null : t.WithdrawnDate is null);
-            var expectedWithdrawnDate = wasWithdrawn ? (DateTimeOffset?)null : DateTimeOffset.UtcNow.Date;
+            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone());
+            var expectedWithdrawnDate = wasWithdrawn ? (DateTimeOffset?)null : new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date));
             affectedTeam.WithdrawnDate = expectedWithdrawnDate;
 
             var result = await Repository.UpdateTeams(season, MemberKey, MemberName).ConfigureAwait(false);

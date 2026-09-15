@@ -199,7 +199,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         {
             var match = CloneValidMatch(DatabaseFixture.TestData.MatchInTheFutureWithMinimalDetails!);
 
-            match.StartTime = DateTimeOffset.Now.AddDays(1);
+            match.StartTime = DateTimeOffset.UtcNow.UtcToUkTime().AddDays(1);
             match.StartTimeIsKnown = startTimeIsKnown;
             match.MatchName = "Match " + Guid.NewGuid().ToString();
             match.MatchLocation = DatabaseFixture.TestData.MatchLocations.First();

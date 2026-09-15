@@ -182,7 +182,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
 
             var match = new Stoolball.Matches.Match
             {
-                StartTime = DateTimeOffset.Now,
+                StartTime = DateTimeOffset.UtcNow.UtcToUkTime(),
                 StartTimeIsKnown = startTimeIsKnown,
                 MatchName = "Match " + Guid.NewGuid().ToString(),
                 Tournament = DatabaseFixture.TestData.Tournaments.First(),
@@ -248,7 +248,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         {
             var match = new Stoolball.Matches.Match
             {
-                StartTime = DateTimeOffset.Now
+                StartTime = DateTimeOffset.UtcNow.UtcToUkTime()
             };
             var expectedMatchName = "Match " + Guid.NewGuid().ToString();
             MatchNameBuilder.Setup(x => x.BuildMatchName(It.IsAny<Stoolball.Matches.Match>())).Returns(expectedMatchName);
@@ -278,7 +278,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         {
             var match = new Stoolball.Matches.Match
             {
-                StartTime = DateTimeOffset.Now,
+                StartTime = DateTimeOffset.UtcNow.UtcToUkTime(),
                 MatchName = "Test match",
                 EnableBonusOrPenaltyRuns = initialValueOnMatch
             };
@@ -311,7 +311,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         {
             var match = new Stoolball.Matches.Match
             {
-                StartTime = DateTimeOffset.Now,
+                StartTime = DateTimeOffset.UtcNow.UtcToUkTime(),
                 MatchName = "Test match",
                 LastPlayerBatsOn = initialValueOnMatch
             };
@@ -341,7 +341,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         {
             var match = new Stoolball.Matches.Match
             {
-                StartTime = DateTimeOffset.Now,
+                StartTime = DateTimeOffset.UtcNow.UtcToUkTime(),
                 MatchName = "Test match",
                 PlayersPerTeam = 5
             };
@@ -373,7 +373,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         {
             var match = new Stoolball.Matches.Match
             {
-                StartTime = DateTimeOffset.Now,
+                StartTime = DateTimeOffset.UtcNow.UtcToUkTime(),
                 MatchName = "Test match"
             };
             PlayerTypeSelector.Setup(x => x.SelectPlayerType(It.IsAny<Stoolball.Matches.Match>())).Returns(playerType);
@@ -396,7 +396,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         {
             var match = new Stoolball.Matches.Match
             {
-                StartTime = DateTimeOffset.Now,
+                StartTime = DateTimeOffset.UtcNow.UtcToUkTime(),
                 MatchName = "Test match",
                 Teams = [
                     new TeamInMatch {
@@ -453,7 +453,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
             var match = new Stoolball.Matches.Match
             {
                 MatchType = matchType,
-                StartTime = DateTimeOffset.Now,
+                StartTime = DateTimeOffset.UtcNow.UtcToUkTime(),
                 MatchName = "Test match",
                 Teams = [
                     new TeamInMatch {
@@ -586,7 +586,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.SqlServerMatchReposi
         {
             var match = new Stoolball.Matches.Match
             {
-                StartTime = DateTimeOffset.Now,
+                StartTime = DateTimeOffset.UtcNow.UtcToUkTime(),
                 MatchName = "Test match"
             };
 
