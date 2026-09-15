@@ -4,20 +4,16 @@ using Xunit;
 
 namespace Stoolball.Testing.UnitTests.Factories
 {
-    public class SeasonFactoryTests
+    public class SeasonFactoryTests(TestServicesFixture _services) : IClassFixture<TestServicesFixture>
     {
-        private readonly SeasonFactory _seasonFactory = new(new OverSetFactory());
-        private readonly CompetitionFactory _competitionFactory = new(new SeasonFactory(new OverSetFactory()));
-        private readonly TeamFactory _teamFactory = new(new CompetitionFactory(new SeasonFactory(new OverSetFactory())), new SeasonFactory(new OverSetFactory()), new MatchLocationFactory());
-
         [Fact]
         public void Season_with_full_details_has_two_teams_points_rules_and_a_points_adjustment()
         {
-            var competition = _competitionFactory.CreateFaker().Generate();
-            var team1 = _teamFactory.CreateFaker().Generate();
-            var team2 = _teamFactory.CreateFaker().Generate();
+            var competition = _services.Get<CompetitionFactory>().CreateFaker().Generate();
+            var team1 = _services.Get<TeamFactory>().CreateFaker().Generate();
+            var team2 = _services.Get<TeamFactory>().CreateFaker().Generate();
 
-            var season = _seasonFactory.CreateSeasonWithFullDetails(competition, 2020, 2020, team1, team2);
+            var season = _services.Get<SeasonFactory>().CreateSeasonWithFullDetails(competition, 2020, 2020, team1, team2);
 
             Assert.Equal(2, season.Teams.Count);
             Assert.Contains(season.Teams, x => x.Team == team1);

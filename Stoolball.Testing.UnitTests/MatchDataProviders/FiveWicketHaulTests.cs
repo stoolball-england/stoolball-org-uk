@@ -1,24 +1,17 @@
-using System;
 using System.Linq;
-using Stoolball.Awards;
 using Stoolball.Statistics;
-using Stoolball.Testing;
 using Stoolball.Testing.Factories;
 using Stoolball.Testing.MatchDataProviders;
 using Xunit;
 
 namespace Stoolball.Testing.UnitTests.MatchDataProviders
 {
-    public class FiveWicketHaulTests
+    public class FiveWicketHaulTests(TestServicesFixture _services) : IClassFixture<TestServicesFixture>
     {
         [Fact]
         public void Five_wicket_haul_exists()
         {
-            var randomiser = new Randomiser(new Random());
-            var overSetFactory = new OverSetFactory();
-            var matchFactory = new MatchFactory(randomiser, new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" }, overSetFactory);
-            var teamFactory = new TeamFactory(new CompetitionFactory(new SeasonFactory(overSetFactory)), new SeasonFactory(overSetFactory), new MatchLocationFactory());
-            var provider = new FiveWicketHaul(matchFactory, teamFactory, new PlayerFactory());
+            var provider = new FiveWicketHaul(_services.Get<MatchFactory>(), _services.Get<TeamFactory>(), _services.Get<PlayerFactory>());
 
             var innings = provider.CreateMatches(new TestData()).SelectMany(x => x.MatchInnings);
 

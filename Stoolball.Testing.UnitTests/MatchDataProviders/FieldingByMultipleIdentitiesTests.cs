@@ -1,24 +1,17 @@
-using System;
 using System.Linq;
-using Stoolball.Awards;
 using Stoolball.Matches;
-using Stoolball.Testing;
 using Stoolball.Testing.Factories;
 using Stoolball.Testing.MatchDataProviders;
 using Xunit;
 
 namespace Stoolball.Testing.UnitTests.MatchDataProviders
 {
-    public class FieldingByMultipleIdentitiesTests
+    public class FieldingByMultipleIdentitiesTests(TestServicesFixture _services) : IClassFixture<TestServicesFixture>
     {
         [Fact]
         public void A_catcher_and_a_run_out_fielder_each_have_two_identities_credited()
         {
-            var randomiser = new Randomiser(new Random());
-            var overSetFactory = new OverSetFactory();
-            var matchFactory = new MatchFactory(randomiser, new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" }, overSetFactory);
-            var teamFactory = new TeamFactory(new CompetitionFactory(new SeasonFactory(overSetFactory)), new SeasonFactory(overSetFactory), new MatchLocationFactory());
-            var provider = new FieldingByMultipleIdentities(randomiser, matchFactory, teamFactory, new PlayerFactory());
+            var provider = new FieldingByMultipleIdentities(_services.Get<Randomiser>(), _services.Get<MatchFactory>(), _services.Get<TeamFactory>(), _services.Get<PlayerFactory>());
 
             var match = provider.CreateMatches(new TestData()).Single();
 

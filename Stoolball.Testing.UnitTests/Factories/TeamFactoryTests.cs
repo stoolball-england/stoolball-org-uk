@@ -5,14 +5,12 @@ using Xunit;
 
 namespace Stoolball.Testing.UnitTests.Factories
 {
-    public class TeamFactoryTests
+    public class TeamFactoryTests(TestServicesFixture _services) : IClassFixture<TestServicesFixture>
     {
-        private readonly TeamFactory _teamFactory = new(new CompetitionFactory(new SeasonFactory(new OverSetFactory())), new SeasonFactory(new OverSetFactory()), new MatchLocationFactory());
-
         [Fact]
         public void Team_with_full_details_has_match_locations_and_seasons_for_a_ladies_competition()
         {
-            var team = _teamFactory.CreateTeamWithFullDetails("Example team");
+            var team = _services.Get<TeamFactory>().CreateTeamWithFullDetails("Example team");
 
             Assert.Equal(PlayerType.Ladies, team.PlayerType);
             Assert.Equal(2, team.MatchLocations.Count);

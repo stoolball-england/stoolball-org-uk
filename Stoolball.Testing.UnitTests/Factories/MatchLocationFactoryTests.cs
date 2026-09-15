@@ -5,15 +5,12 @@ using Xunit;
 
 namespace Stoolball.Testing.UnitTests.Factories
 {
-    public class MatchLocationFactoryTests
+    public class MatchLocationFactoryTests(TestServicesFixture _services) : IClassFixture<TestServicesFixture>
     {
-        private readonly MatchLocationFactory _matchLocationFactory = new();
-        private readonly TeamFactory _teamFactory = new(new CompetitionFactory(new SeasonFactory(new OverSetFactory())), new SeasonFactory(new OverSetFactory()), new MatchLocationFactory());
-
         [Fact]
         public void Match_location_with_full_details_has_active_transient_and_inactive_teams()
         {
-            var matchLocation = _matchLocationFactory.CreateMatchLocationWithFullDetails(_teamFactory.CreateFaker());
+            var matchLocation = _services.Get<MatchLocationFactory>().CreateMatchLocationWithFullDetails(_services.Get<TeamFactory>().CreateFaker());
 
             Assert.Equal(4, matchLocation.Teams.Count);
             Assert.Contains(matchLocation.Teams, x => x.TeamType == TeamType.Transient);

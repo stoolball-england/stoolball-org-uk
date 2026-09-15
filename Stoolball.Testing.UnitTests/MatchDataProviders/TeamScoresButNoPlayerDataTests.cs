@@ -1,22 +1,16 @@
-using System;
 using System.Linq;
-using Stoolball.Awards;
 using Stoolball.Testing.Factories;
 using Stoolball.Testing.MatchDataProviders;
 using Xunit;
 
 namespace Stoolball.Testing.UnitTests.MatchDataProviders
 {
-    public class TeamScoresButNoPlayerDataTests
+    public class TeamScoresButNoPlayerDataTests(TestServicesFixture _services) : IClassFixture<TestServicesFixture>
     {
         [Fact]
         public void Match_has_team_scores_but_no_player_data()
         {
-            var randomiser = new Randomiser(new Random());
-            var overSetFactory = new OverSetFactory();
-            var matchFactory = new MatchFactory(randomiser, new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" }, overSetFactory);
-            var teamFactory = new TeamFactory(new CompetitionFactory(new SeasonFactory(overSetFactory)), new SeasonFactory(overSetFactory), new MatchLocationFactory());
-            var provider = new TeamScoresButNoPlayerData(randomiser, matchFactory, teamFactory);
+            var provider = new TeamScoresButNoPlayerData(_services.Get<Randomiser>(), _services.Get<MatchFactory>(), _services.Get<TeamFactory>());
 
             var match = provider.CreateMatches(new TestData()).Single();
 

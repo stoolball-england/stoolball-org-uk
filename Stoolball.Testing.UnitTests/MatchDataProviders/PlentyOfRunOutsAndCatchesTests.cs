@@ -1,25 +1,18 @@
-using System;
 using System.Linq;
-using Stoolball.Awards;
 using Stoolball.Matches;
 using Stoolball.Statistics;
-using Stoolball.Testing;
 using Stoolball.Testing.Factories;
 using Stoolball.Testing.MatchDataProviders;
 using Xunit;
 
 namespace Stoolball.Testing.UnitTests.MatchDataProviders
 {
-    public class PlentyOfRunOutsAndCatchesTests
+    public class PlentyOfRunOutsAndCatchesTests(TestServicesFixture _services) : IClassFixture<TestServicesFixture>
     {
         [Fact]
         public void At_least_six_distinct_players_have_a_run_out_and_at_least_six_distinct_players_have_a_catch()
         {
-            var randomiser = new Randomiser(new Random());
-            var overSetFactory = new OverSetFactory();
-            var matchFactory = new MatchFactory(randomiser, new Award { AwardId = Guid.NewGuid(), AwardName = "Player of the match" }, overSetFactory);
-            var teamFactory = new TeamFactory(new CompetitionFactory(new SeasonFactory(overSetFactory)), new SeasonFactory(overSetFactory), new MatchLocationFactory());
-            var provider = new PlentyOfRunOutsAndCatches(matchFactory, teamFactory, new PlayerFactory());
+            var provider = new PlentyOfRunOutsAndCatches(_services.Get<MatchFactory>(), _services.Get<TeamFactory>(), _services.Get<PlayerFactory>());
 
             var playerInnings = provider.CreateMatches(new TestData()).SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings);
 
