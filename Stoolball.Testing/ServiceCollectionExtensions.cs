@@ -91,6 +91,8 @@ namespace Stoolball.Testing
 
             services.AddSingleton<BaseClubDataProvider>(sp => new ClubWithTeamsAndMatchLocationProvider(
                 sp.GetRequiredService<ClubFactory>(), sp.GetRequiredService<MatchLocationFactory>()));
+            services.AddSingleton<BaseClubDataProvider>(sp => new ClubsWithTeamsDataProvider(
+                sp.GetRequiredService<ClubFactory>(), sp.GetRequiredService<TeamFactory>()));
 
             services.AddSingleton(sp => new SeedDataGenerator(
                 sp.GetRequiredService<Randomiser>(),

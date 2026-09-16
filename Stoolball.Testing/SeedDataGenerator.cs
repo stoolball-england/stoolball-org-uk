@@ -173,22 +173,6 @@ namespace Stoolball.Testing
 
             testData.ClubWithMinimalDetails = _clubFaker.Generate();
 
-            var clubWithOneActiveTeam = _clubFaker.Generate();
-            var onlyTeamInClub = _teamFaker.Generate();
-            onlyTeamInClub.TeamName = "Only team in the club";
-            clubWithOneActiveTeam.Teams.Add(onlyTeamInClub);
-            onlyTeamInClub.Club = clubWithOneActiveTeam;
-
-            var clubWithOneActiveTeamAndOthersInactive = _clubFaker.Generate();
-            var activeTeamInClub = _teamFaker.Generate();
-            activeTeamInClub.TeamName = "Only active team in the club";
-            var inactiveTeamInClub = _teamFaker.Generate();
-            inactiveTeamInClub.TeamName = "Inactive team in a club with an active team";
-            inactiveTeamInClub.UntilYear = DateTimeOffset.UtcNow.Year - 2;
-            clubWithOneActiveTeamAndOthersInactive.Teams.AddRange(new[] { activeTeamInClub, inactiveTeamInClub });
-            activeTeamInClub.Club = clubWithOneActiveTeamAndOthersInactive;
-            inactiveTeamInClub.Club = clubWithOneActiveTeamAndOthersInactive;
-
             var clubsFromProviders = CreateTestDataFromClubProviders(testData);
             testData.ClubWithTeamsAndMatchLocation = clubsFromProviders.First(c => c.Teams.Any(t => t.MatchLocations.Any()));
             testData.MatchLocationForClub = testData.ClubWithTeamsAndMatchLocation.Teams.SelectMany(t => t.MatchLocations).OfType<MatchLocation>().First();
@@ -202,10 +186,7 @@ namespace Stoolball.Testing
                             .Union(teamsInTournaments)
                             .Union(teamsInSeasons)
                             .Union(teamsAtMatchLocations).Distinct(new TeamEqualityComparer()).ToList();
-            testData.Teams.Add(onlyTeamInClub);
-            testData.Teams.Add(activeTeamInClub);
-            testData.Teams.Add(inactiveTeamInClub);
-            testData.Teams.AddRange(testData.ClubWithTeamsAndMatchLocation.Teams);
+            testData.Teams.AddRange(clubsFromProviders.SelectMany(c => c.Teams));
 
             testData.Clubs.Add(testData.ClubWithMinimalDetails);
             testData.Clubs.AddRange(testData.Teams.Select(x => x.Club).OfType<Club>().Distinct(new ClubEqualityComparer()));
