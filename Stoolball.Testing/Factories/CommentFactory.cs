@@ -1,11 +1,13 @@
-﻿using Stoolball.Comments;
+using Stoolball.Comments;
 
 namespace Stoolball.Testing.Factories
 {
-    public class CommentFactory
+    public class CommentFactory(UmbracoMemberFactory _memberFactory)
     {
-        public Faker<HtmlComment> CreateFaker(IEnumerable<UmbracoMember> members)
+        public Faker<HtmlComment> CreateFaker()
         {
+            var members = _memberFactory.CreateFaker().Generate(10);
+
             return new Faker<HtmlComment>()
                     .RuleFor(x => x.CommentId, () => Guid.NewGuid())
                     .RuleFor(x => x.CommentDate, (faker) => DateTimeOffset.UtcNow.AccurateToTheMinute().AddDays(faker.Random.Int(1, 1000) * -1))

@@ -69,7 +69,7 @@ namespace Stoolball.Testing
             services.AddSingleton<BaseMatchDataProvider>(sp => new MatchInThePastWithFullDetailsProvider(
                 sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<CompetitionFactory>(),
                 sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<MatchLocationFactory>(), sp.GetRequiredService<CommentFactory>(),
-                sp.GetRequiredService<OverFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(), sp.GetRequiredService<UmbracoMemberFactory>(),
+                sp.GetRequiredService<OverFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(),
                 sp.GetRequiredService<TournamentFactory>(), sp.GetRequiredService<Award>()));
 
             services.AddSingleton<BaseCompetitionDataProvider>(sp => new CompetitionWithTeamsAndOverSetsInSeasonProvider(
@@ -106,7 +106,6 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<TournamentFactory>(),
                 sp.GetRequiredService<MatchLocationFactory>(),
                 sp.GetRequiredService<PlayerFactory>(),
-                sp.GetRequiredService<UmbracoMemberFactory>(),
                 sp.GetRequiredService<CommentFactory>(),
                 sp.GetRequiredService<MatchFactory>(),
                 sp.GetRequiredService<IEnumerable<BaseMatchDataProvider>>(),

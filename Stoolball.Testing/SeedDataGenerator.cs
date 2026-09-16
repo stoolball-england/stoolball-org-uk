@@ -18,7 +18,6 @@ namespace Stoolball.Testing
         private readonly TeamFactory _teamFactory;
         private readonly MatchLocationFactory _matchLocationFactory;
         private readonly PlayerFactory _playerFactory;
-        private readonly UmbracoMemberFactory _memberFactory;
         private readonly CommentFactory _commentFactory;
         private readonly MatchFactory _matchFactory;
         private readonly IEnumerable<BaseMatchDataProvider> _matchDataProviders;
@@ -38,7 +37,7 @@ namespace Stoolball.Testing
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
             CompetitionFactory competitionFactory, SeasonFactory seasonFactory, TeamFactory teamFactory, ClubFactory clubFactory,
             TournamentFactory tournamentFactory, MatchLocationFactory matchLocationFactory,
-            PlayerFactory playerFactory, UmbracoMemberFactory memberFactory, CommentFactory commentFactory,
+            PlayerFactory playerFactory, CommentFactory commentFactory,
             MatchFactory matchFactory, IEnumerable<BaseMatchDataProvider> matchDataProviders, IEnumerable<BaseCompetitionDataProvider> competitionDataProviders,
             IEnumerable<BasePlayerDataProvider> playerDataProviders, IEnumerable<BaseSchoolDataProvider> schoolDataProviders,
             IEnumerable<BaseTournamentDataProvider> tournamentDataProviders, IEnumerable<BaseClubDataProvider> clubDataProviders)
@@ -53,7 +52,6 @@ namespace Stoolball.Testing
             _tournamentFactory = tournamentFactory ?? throw new ArgumentNullException(nameof(tournamentFactory));
             _matchLocationFactory = matchLocationFactory ?? throw new ArgumentNullException(nameof(matchLocationFactory));
             _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
-            _memberFactory = memberFactory ?? throw new ArgumentNullException(nameof(memberFactory));
             _commentFactory = commentFactory ?? throw new ArgumentNullException(nameof(commentFactory));
             _competitionFaker = competitionFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(competitionFactory));
             _teamFaker = teamFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(teamFactory));
@@ -141,9 +139,6 @@ namespace Stoolball.Testing
 
             testData.MatchInThePastWithMinimalDetails = FindMatchInThePastWithMinimalDetails(testData);
 
-            var membersFromMatchComments = testData.Matches.SelectMany(x => x.Comments).Select(x => new UmbracoMember { Key = x.MemberKey, Name = x.MemberName ?? "No name" });
-            testData.Members = membersFromMatchComments.ToList();
-
             testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
             for (var i = 0; i < 10; i++)
             {
@@ -156,7 +151,7 @@ namespace Stoolball.Testing
                     tournament2.TournamentLocation = testData.MatchLocations[_randomiser.PositiveIntegerLessThan(testData.MatchLocations.Count)];
                 }
                 tournament2.StartTime = DateTimeOffset.UtcNow.AddMonths(i - 20).AddDays(5).UtcToUkTime();
-                tournament2.Comments = _commentFactory.CreateFaker(testData.Members).Generate(i);
+                tournament2.Comments = _commentFactory.CreateFaker().Generate(i);
                 testData.Tournaments.Add(tournament2);
             }
 
@@ -296,23 +291,6 @@ namespace Stoolball.Testing
 
             testData.MatchInTheFutureWithMinimalDetails = FindMatchInTheFutureWithMinimalDetails(testData);
 
-            testData.PlayersWithMultipleIdentities = FindPlayersWithMultipleIdentities(testData);
-
-            // Find any player who has multiple identities and bowled, and associate them to a member
-            testData.BowlerWithMultipleIdentities = testData.Matches
-                .SelectMany(x => x.MatchInnings)
-                .SelectMany(x => x.BowlingFigures)
-                .Where(x => testData.PlayersWithMultipleIdentities.Contains(x.Bowler?.Player, playerComparer))
-                .Select(x => x.Bowler?.Player)
-                .First();
-            testData.BowlerWithMultipleIdentities!.PlayerIdentities.Clear();
-            testData.BowlerWithMultipleIdentities.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player?.PlayerId == testData.BowlerWithMultipleIdentities.PlayerId));
-            testData.BowlerWithMultipleIdentities.MemberKey = testData.AnyMemberNotLinkedToPlayer().Key;
-            foreach (var identity in testData.BowlerWithMultipleIdentities.PlayerIdentities)
-            {
-                identity.LinkedBy = PlayerIdentityLinkedBy.Member;
-            }
-
             testData.MatchListings.AddRange(testData.Matches.Where(x => x.Tournament == null).Select(x => x.ToMatchListing()).Union(testData.Tournaments.Select(x => x.ToMatchListing())));
             testData.TournamentMatchListings.AddRange(testData.Matches.Where(x => x.Tournament != null).Select(x => x.ToMatchListing()));
 
@@ -323,11 +301,32 @@ namespace Stoolball.Testing
 
             BuildCollections(testData);
 
+            testData.BowlerWithMultipleIdentities = CreateBowlerWithMultipleIdentities(testData, playerComparer);
+
             EnsureCyclicalRelationshipsArePopulated(testData);
 
             PopulateCalculatedProperties(testData);
 
             return testData;
+        }
+
+        private static Player? CreateBowlerWithMultipleIdentities(TestData testData, PlayerEqualityComparer playerComparer)
+        {
+            // Find any player who has multiple identities and bowled, and associate them to a member
+            var player = testData.Matches
+                .SelectMany(x => x.MatchInnings)
+                .SelectMany(x => x.BowlingFigures)
+                .Where(x => testData.PlayersWithMultipleIdentities.Contains(x.Bowler?.Player, playerComparer))
+                .Select(x => x.Bowler?.Player)
+                .First();
+            player!.PlayerIdentities.Clear();
+            player.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player?.PlayerId == player.PlayerId));
+            player.MemberKey = testData.AnyMemberNotLinkedToPlayer().Key;
+            foreach (var identity in player.PlayerIdentities)
+            {
+                identity.LinkedBy = PlayerIdentityLinkedBy.Member;
+            }
+            return player;
         }
 
         private IEnumerable<Competition> CreateCompetitionsFromDataProviders(TestData testData)
@@ -697,8 +696,6 @@ namespace Stoolball.Testing
 
         internal List<Match> GenerateMatchData(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
         {
-            var members = _memberFactory.CreateFaker().Generate(5);
-
             // Randomly assign at least two players from each team a second identity - one on the same team, one on a different team.
             // This ensure we always have lots of teams with multiple identities for the same player for both scenarios.
             foreach (var (team, playerIdentities) in teamsWithIdentities)
@@ -746,7 +743,7 @@ namespace Stoolball.Testing
                 var match = _matchFactory.CreateMatchBetween(teamA, teamAPlayers, teamB, teamBPlayers, homeTeamBatsFirst, testData, nameof(GenerateMatchData) + "RandomMatches");
                 if (_randomiser.FiftyFiftyChance())
                 {
-                    match.Comments = _commentFactory.CreateFaker(members).Generate(_randomiser.Between(1, 15));
+                    match.Comments = _commentFactory.CreateFaker().Generate(_randomiser.Between(1, 15));
                 }
 
                 match.MatchResultType = _randomiser.FiftyFiftyChance() ? new MatchResultType[] { MatchResultType.HomeWin, MatchResultType.AwayWin, MatchResultType.Tie }[_randomiser.PositiveIntegerLessThan(3)] : null;

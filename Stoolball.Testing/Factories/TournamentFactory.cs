@@ -6,7 +6,6 @@
         TeamFactory _teamFactory,
         MatchLocationFactory _matchLocationFactory,
         OverSetFactory _oversetFactory,
-        UmbracoMemberFactory _memberFactory,
         CommentFactory _commentFactory)
     {
         public Faker<Tournament> CreateFaker()
@@ -62,7 +61,7 @@
                 TournamentLocation = matchLocationFaker.Generate(),
                 DefaultOverSets = [oversetFaker.Generate()],
                 Seasons = [season1, season2],
-                Comments = _commentFactory.CreateFaker(_memberFactory.CreateFaker().Generate(5)).Generate(10)
+                Comments = _commentFactory.CreateFaker().Generate(10)
             };
             foreach (var season in tournament.Seasons)
             {

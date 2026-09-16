@@ -12,13 +12,12 @@ namespace Stoolball.Testing.MatchDataProviders
         private readonly CommentFactory _commentFactory;
         private readonly OverFactory _overFactory;
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
-        private readonly UmbracoMemberFactory _memberFactory;
         private readonly TournamentFactory _tournamentFactory;
         private readonly Award _playerOfTheMatchAward;
 
         public MatchInThePastWithFullDetailsProvider(MatchFactory matchFactory, TeamFactory teamFactory, CompetitionFactory competitionFactory,
             SeasonFactory seasonFactory, MatchLocationFactory matchLocationFactory, CommentFactory commentFactory, OverFactory overFactory,
-            IBowlingFiguresCalculator bowlingFiguresCalculator, UmbracoMemberFactory memberFactory, TournamentFactory tournamentFactory, Award playerOfTheMatchAward)
+            IBowlingFiguresCalculator bowlingFiguresCalculator, TournamentFactory tournamentFactory, Award playerOfTheMatchAward)
         {
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
             _teamFactory = teamFactory ?? throw new ArgumentNullException(nameof(teamFactory));
@@ -28,7 +27,6 @@ namespace Stoolball.Testing.MatchDataProviders
             _commentFactory = commentFactory ?? throw new ArgumentNullException(nameof(commentFactory));
             _overFactory = overFactory ?? throw new ArgumentNullException(nameof(overFactory));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
-            _memberFactory = memberFactory ?? throw new ArgumentNullException(nameof(memberFactory));
             _tournamentFactory = tournamentFactory ?? throw new ArgumentNullException(nameof(tournamentFactory));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
         }
@@ -50,8 +48,6 @@ namespace Stoolball.Testing.MatchDataProviders
 
         private Match CreateMatchInThePastWithFullDetails()
         {
-            var members = _memberFactory.CreateFaker().Generate(5);
-
             var teamFaker = _teamFactory.CreateFaker();
 
             var homeTeam = teamFaker.Generate();
@@ -163,7 +159,7 @@ namespace Stoolball.Testing.MatchDataProviders
                 MatchNotes = "<p>This is a test match, not a Test Match.</p>",
                 MatchRoute = "/matches/team-a-vs-team-b-1jul2020-" + Guid.NewGuid(),
                 MemberKey = Guid.NewGuid(),
-                Comments = _commentFactory.CreateFaker(members).Generate(10)
+                Comments = _commentFactory.CreateFaker().Generate(10)
             };
 
             var firstInnings = match.MatchInnings[0];
