@@ -3,7 +3,6 @@
     internal class PlayersNotLinkedToMembersProvider(TeamFactory _teamFactory, PlayerFactory _playerFactory) : BasePlayerDataProvider
     {
         private readonly Faker<Team> _teamFaker = _teamFactory.CreateFaker();
-        private readonly Faker<Player> _playerFaker = _playerFactory.CreatePlayerFaker();
 
         internal override IEnumerable<Player> CreatePlayers(TestData readOnlyTestData)
         {
@@ -11,28 +10,28 @@
             var playerIdentityFaker = _playerFactory.CreatePlayerIdentityFaker(team);
 
             // player with a single identity
-            var playerWithSingleIdentity = _playerFaker.Generate();
-            playerWithSingleIdentity.PlayerIdentities.Add(playerIdentityFaker.Generate());
-            playerWithSingleIdentity.PlayerIdentities[0].Player = playerWithSingleIdentity;
-            playerWithSingleIdentity.PlayerIdentities[0].LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity;
+            var singleIdentityForPlayer = playerIdentityFaker.Generate();
+            singleIdentityForPlayer.LinkedBy = PlayerIdentityLinkedBy.DefaultIdentity;
 
             // player with two identities both linked by team, on the same team, not linked to member
-            var playerWithTwoIdentitiesLinkedByTeam = CreatePlayerWithMultipleIdentities(playerIdentityFaker, 2, PlayerIdentityLinkedBy.Team, team);
-            var playerWithTwoIdentitiesLinkedByAdmin = CreatePlayerWithMultipleIdentities(playerIdentityFaker, 2, PlayerIdentityLinkedBy.StoolballEngland, team);
-            var playerWithThreeIdentitiesLinkedByTeam = CreatePlayerWithMultipleIdentities(playerIdentityFaker, 3, PlayerIdentityLinkedBy.Team, team);
+            var playerWithTwoIdentitiesLinkedByTeam = CreatePlayerWithMultipleIdentities(playerIdentityFaker, 2, PlayerIdentityLinkedBy.Team);
+            var playerWithTwoIdentitiesLinkedByAdmin = CreatePlayerWithMultipleIdentities(playerIdentityFaker, 2, PlayerIdentityLinkedBy.StoolballEngland);
+            var playerWithThreeIdentitiesLinkedByTeam = CreatePlayerWithMultipleIdentities(playerIdentityFaker, 3, PlayerIdentityLinkedBy.Team);
 
-            return [playerWithSingleIdentity, playerWithTwoIdentitiesLinkedByTeam, playerWithTwoIdentitiesLinkedByAdmin, playerWithThreeIdentitiesLinkedByTeam];
+            return [singleIdentityForPlayer.Player!, playerWithTwoIdentitiesLinkedByTeam, playerWithTwoIdentitiesLinkedByAdmin, playerWithThreeIdentitiesLinkedByTeam];
         }
 
-        private Player CreatePlayerWithMultipleIdentities(Faker<PlayerIdentity> playerIdentityFaker, int howManyIdentities, PlayerIdentityLinkedBy linkedBy, Team team)
+        private static Player CreatePlayerWithMultipleIdentities(Faker<PlayerIdentity> playerIdentityFaker, int howManyIdentities, PlayerIdentityLinkedBy linkedBy)
         {
-            var player = _playerFaker.Generate();
-            player.PlayerIdentities.AddRange(playerIdentityFaker.Generate(howManyIdentities));
+            var identities = playerIdentityFaker.Generate(howManyIdentities);
+            var player = identities[0].Player!;
+            identities[0].LinkedBy = linkedBy;
 
-            foreach (var identity in player.PlayerIdentities)
+            for (var i = 1; i < identities.Count; i++)
             {
-                identity.Player = player;
-                identity.LinkedBy = linkedBy;
+                identities[i].Player = player;
+                identities[i].LinkedBy = linkedBy;
+                player.PlayerIdentities.Add(identities[i]);
             }
 
             return player;

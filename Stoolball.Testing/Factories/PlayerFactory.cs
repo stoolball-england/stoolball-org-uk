@@ -16,7 +16,8 @@
                  .RuleFor(x => x.PlayerIdentityName, faker => faker.Person.FullName)
                  .RuleFor(x => x.Player, () => new Player { PlayerId = Guid.NewGuid(), PlayerRoute = "/players/" + Guid.NewGuid() })
                  .RuleFor(x => x.RouteSegment, (faker, identity) => identity.PlayerIdentityName.Kebaberize())
-                 .RuleFor(x => x.Team, () => team);
+                 .RuleFor(x => x.Team, () => team)
+                 .FinishWith((faker, identity) => identity.Player!.PlayerIdentities.Add(identity));
         }
     }
 }

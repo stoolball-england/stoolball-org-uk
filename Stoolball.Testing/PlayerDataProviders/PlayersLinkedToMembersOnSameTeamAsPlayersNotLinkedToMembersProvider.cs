@@ -3,7 +3,6 @@
     internal class PlayersLinkedToMembersOnSameTeamAsPlayersNotLinkedToMembersProvider(TeamFactory _teamFactory, PlayerFactory _playerFactory) : BasePlayerDataProvider
     {
         private readonly Faker<Team> _teamFaker = _teamFactory.CreateFaker();
-        private readonly Faker<Player> _playerFaker = _playerFactory.CreatePlayerFaker();
 
         internal override IEnumerable<Player> CreatePlayers(TestData readOnlyTestData)
         {
@@ -27,17 +26,21 @@
 
         private Player CreatePlayer(int identities, Team team, bool isLinkedToMember)
         {
-            var player = _playerFaker.Generate();
-            player.PlayerIdentities.AddRange(_playerFactory.CreatePlayerIdentityFaker(team).Generate(identities));
+            var playerIdentities = _playerFactory.CreatePlayerIdentityFaker(team).Generate(identities);
+            var player = playerIdentities[0].Player!;
             if (isLinkedToMember)
             {
                 player.MemberKey = Guid.NewGuid();
             }
 
-            foreach (var identity in player.PlayerIdentities)
+            var linkedBy = isLinkedToMember ? PlayerIdentityLinkedBy.Member : PlayerIdentityLinkedBy.Team;
+            playerIdentities[0].LinkedBy = linkedBy;
+
+            for (var i = 1; i < playerIdentities.Count; i++)
             {
-                identity.Player = player;
-                identity.LinkedBy = isLinkedToMember ? PlayerIdentityLinkedBy.Member : PlayerIdentityLinkedBy.Team;
+                playerIdentities[i].Player = player;
+                playerIdentities[i].LinkedBy = linkedBy;
+                player.PlayerIdentities.Add(playerIdentities[i]);
             }
 
             return player;

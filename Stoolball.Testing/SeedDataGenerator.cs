@@ -31,7 +31,6 @@ namespace Stoolball.Testing
         private readonly Faker<Team> _teamFaker;
         private readonly Faker<Club> _clubFaker;
         private readonly Faker<MatchLocation> _matchLocationFaker;
-        private readonly Faker<Player> _playerFaker;
 
         internal SeedDataGenerator(Randomiser randomiser, IBowlingFiguresCalculator bowlingFiguresCalculator,
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
@@ -57,7 +56,6 @@ namespace Stoolball.Testing
             _teamFaker = teamFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(teamFactory));
             _clubFaker = clubFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(clubFactory));
             _matchLocationFaker = matchLocationFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(matchLocationFactory));
-            _playerFaker = playerFactory?.CreatePlayerFaker() ?? throw new ArgumentNullException(nameof(playerFactory));
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
             _matchDataProviders = matchDataProviders ?? throw new ArgumentNullException(nameof(matchDataProviders));
             _competitionDataProviders = competitionDataProviders ?? throw new ArgumentNullException(nameof(competitionDataProviders));
@@ -74,16 +72,7 @@ namespace Stoolball.Testing
             for (var i = 0; i < 5; i++)
             {
                 var team = _randomiser.IsEven(i) ? _teamFactory.CreateTeamWithFullDetails($"Team {i + 1}") : _teamFaker.Generate();
-                poolOfTeams.Add((team, CreatePlayerIdentitiesForTeam(team)));
-                if (_randomiser.IsEven(i))
-                {
-                    poolOfTeams[poolOfTeams.Count - 1].team.Club = _clubFaker.Generate();
-                }
-            }
-
-            foreach (var club in poolOfTeams.Where(x => x.team.Club != null).Select(x => x.team.Club))
-            {
-                club!.Teams.AddRange(poolOfTeams.Where(x => x.team.Club?.ClubId == club.ClubId).Select(x => x.team));
+                poolOfTeams.Add((team, _playerFactory.CreatePlayerIdentityFaker(team).Generate(8)));
             }
 
             return poolOfTeams;
@@ -764,20 +753,5 @@ namespace Stoolball.Testing
             return matches;
         }
 
-
-        private List<PlayerIdentity> CreatePlayerIdentitiesForTeam(Team team)
-        {
-            var poolOfPlayers = new List<PlayerIdentity>();
-            for (var i = 0; i < 8; i++)
-            {
-                var player = _playerFaker.Generate();
-                var playerIdentity = _playerFactory.CreatePlayerIdentityFaker(team).Generate();
-                playerIdentity.Player = player;
-                player.PlayerIdentities.Add(playerIdentity);
-                poolOfPlayers.Add(playerIdentity);
-            }
-
-            return poolOfPlayers;
-        }
     }
 }
