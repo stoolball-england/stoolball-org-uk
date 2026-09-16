@@ -261,17 +261,16 @@ namespace Stoolball.Testing
                 );
             testData.CompetitionWithFullDetails = testData.Competitions.First(x => x.Seasons.Any());
 
-            var competitionForSeason = _competitionFaker.Generate();
-            competitionForSeason.UntilYear = 2021;
-            testData.SeasonWithMinimalDetails = _seasonFactory.CreateFaker(competitionForSeason, 2020, 2020).Generate();
-            competitionForSeason.Seasons.Add(testData.SeasonWithMinimalDetails);
-            testData.Competitions.Add(competitionForSeason);
-
             testData.Seasons = testData.Competitions.SelectMany(x => x.Seasons)
                 .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season).OfType<Season>())
                 .Distinct(new SeasonEqualityComparer()).ToList();
 
-            testData.SeasonWithFullDetails = testData.Seasons.First(x => x.Teams.Any() && x.PointsRules.Any() && x.PointsAdjustments.Any());
+            testData.SeasonWithMinimalDetails = testData.Seasons.First(x => !x.Teams.Any()
+                                                                         && !x.PointsAdjustments.Any()
+                                                                         && !x.PointsRules.Any());
+            testData.SeasonWithFullDetails = testData.Seasons.First(x => x.Teams.Any()
+                                                                      && x.PointsRules.Any()
+                                                                      && x.PointsAdjustments.Any());
 
             var playerIdentitiesInMatches = testData.Matches.SelectMany(_playerIdentityFinder.PlayerIdentitiesInMatch).Distinct(new PlayerIdentityEqualityComparer());
             testData.PlayerIdentities = playerIdentitiesInMatches.ToList();
