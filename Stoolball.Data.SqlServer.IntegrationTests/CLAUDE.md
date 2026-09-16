@@ -147,8 +147,9 @@ originally did everything. **New test data generation should not be added to it.
   `OverFactory.CreateOversBowledIncludingOneWithOnlyName(...)` alongside its `CreateFaker(...)`.
 
 - A **Provider** (`Stoolball.Testing\MatchDataProviders`, `CompetitionDataProviders`,
-  `PlayerDataProviders`, `SchoolDataProviders`) composes several factories to build one
-  deliberately-shaped, named edge-case scenario, given the data generated so far:
+  `PlayerDataProviders`, `SchoolDataProviders`, `TournamentDataProviders`, `ClubDataProviders`)
+  composes several factories to build one deliberately-shaped, named edge-case scenario, given
+  the data generated so far:
 
   ```csharp
   // Stoolball.Testing\MatchDataProviders\BaseMatchDataProvider.cs
@@ -260,6 +261,17 @@ It's then included automatically wherever `SeedDataGenerator` (or a test) resolv
 (`Teams`, `Competitions`, `Seasons`, `Matches`, ...) and singular "named example" properties
 (`TeamWithFullDetails`, `CompetitionWithNoSeasons`, `SeasonWithMinimalDetails`, ...).
 
+**`TestData` is read-only everywhere except inside `SeedDataGenerator`, which has sole
+responsibility for building it up.** Factories and providers are handed a `TestData` (often
+named `readOnlyTestData` in provider signatures, e.g. `CreateMatches(TestData readOnlyTestData)`)
+so they can read what's been generated so far and shape their scenario around it — but they
+must never mutate it: no `readOnlyTestData.Teams.Add(...)`, no assigning to one of its
+properties. A provider returns the entities it created (a `Match`, a `Club`, a tuple of
+`Tournament` and its `Match`es, ...) and only `SeedDataGenerator` adds them to `TestData` or
+assigns a named property, using the patterns in this section. This keeps there being exactly
+one place that decides the final shape of the generated data, so it stays trustworthy to
+assert against.
+
 **Target pattern — select from the finished data.** Once every provider and factory has run,
 rebuild the collection from everything that was actually generated, then pick the singular
 examples from that finished collection:
@@ -302,6 +314,8 @@ Stoolball.Testing\          (references Bogus; kept out of production projects)
   CompetitionDataProviders\  BaseCompetitionDataProvider + scenarios
   PlayerDataProviders\       BasePlayerDataProvider + scenarios
   SchoolDataProviders\       BaseSchoolDataProvider + scenarios
+  TournamentDataProviders\   BaseTournamentDataProvider + scenarios
+  ClubDataProviders\         BaseClubDataProvider + scenarios
   SeedDataGenerator.cs       shrinking orchestrator — avoid adding to it, extract from it
   ServiceCollectionExtensions.cs   AddSeedDataGenerator() DI registration
   TestData.cs                the generated-data bag exposed to tests

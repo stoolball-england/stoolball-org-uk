@@ -3,6 +3,7 @@ using Stoolball.Awards;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Statistics;
+using Stoolball.Testing.ClubDataProviders;
 using Stoolball.Testing.CompetitionDataProviders;
 using Stoolball.Testing.Factories;
 using Stoolball.Testing.MatchDataProviders;
@@ -88,6 +89,9 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<TournamentFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>(),
                 sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(), sp.GetRequiredService<Award>()));
 
+            services.AddSingleton<BaseClubDataProvider>(sp => new ClubWithTeamsAndMatchLocationProvider(
+                sp.GetRequiredService<ClubFactory>(), sp.GetRequiredService<MatchLocationFactory>()));
+
             services.AddSingleton(sp => new SeedDataGenerator(
                 sp.GetRequiredService<Randomiser>(),
                 sp.GetRequiredService<IBowlingFiguresCalculator>(),
@@ -107,7 +111,8 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<IEnumerable<BaseCompetitionDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BasePlayerDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BaseSchoolDataProvider>>(),
-                sp.GetRequiredService<IEnumerable<BaseTournamentDataProvider>>()));
+                sp.GetRequiredService<IEnumerable<BaseTournamentDataProvider>>(),
+                sp.GetRequiredService<IEnumerable<BaseClubDataProvider>>()));
 
             return services;
         }

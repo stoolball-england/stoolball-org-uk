@@ -1,4 +1,5 @@
 ﻿using Stoolball.Logging;
+using Stoolball.Testing.ClubDataProviders;
 using Stoolball.Testing.MatchDataProviders;
 using Stoolball.Testing.PlayerDataProviders;
 using Stoolball.Testing.SchoolDataProviders;
@@ -15,7 +16,6 @@ namespace Stoolball.Testing
         private readonly CompetitionFactory _competitionFactory;
         private readonly SeasonFactory _seasonFactory;
         private readonly TeamFactory _teamFactory;
-        private readonly ClubFactory _clubFactory;
         private readonly MatchLocationFactory _matchLocationFactory;
         private readonly PlayerFactory _playerFactory;
         private readonly UmbracoMemberFactory _memberFactory;
@@ -26,6 +26,7 @@ namespace Stoolball.Testing
         private readonly IEnumerable<BasePlayerDataProvider> _playerDataProviders;
         private readonly IEnumerable<BaseSchoolDataProvider> _schoolDataProviders;
         private readonly IEnumerable<BaseTournamentDataProvider> _tournamentDataProviders;
+        private readonly IEnumerable<BaseClubDataProvider> _clubDataProviders;
         private readonly TournamentFactory _tournamentFactory;
         private readonly Faker<Competition> _competitionFaker;
         private readonly Faker<Team> _teamFaker;
@@ -40,7 +41,7 @@ namespace Stoolball.Testing
             PlayerFactory playerFactory, UmbracoMemberFactory memberFactory, CommentFactory commentFactory,
             MatchFactory matchFactory, IEnumerable<BaseMatchDataProvider> matchDataProviders, IEnumerable<BaseCompetitionDataProvider> competitionDataProviders,
             IEnumerable<BasePlayerDataProvider> playerDataProviders, IEnumerable<BaseSchoolDataProvider> schoolDataProviders,
-            IEnumerable<BaseTournamentDataProvider> tournamentDataProviders)
+            IEnumerable<BaseTournamentDataProvider> tournamentDataProviders, IEnumerable<BaseClubDataProvider> clubDataProviders)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
@@ -49,7 +50,6 @@ namespace Stoolball.Testing
             _competitionFactory = competitionFactory ?? throw new ArgumentNullException(nameof(competitionFactory));
             _seasonFactory = seasonFactory ?? throw new ArgumentNullException(nameof(seasonFactory));
             _teamFactory = teamFactory ?? throw new ArgumentNullException(nameof(teamFactory));
-            _clubFactory = clubFactory ?? throw new ArgumentNullException(nameof(clubFactory));
             _tournamentFactory = tournamentFactory ?? throw new ArgumentNullException(nameof(tournamentFactory));
             _matchLocationFactory = matchLocationFactory ?? throw new ArgumentNullException(nameof(matchLocationFactory));
             _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
@@ -66,6 +66,7 @@ namespace Stoolball.Testing
             _playerDataProviders = playerDataProviders ?? throw new ArgumentNullException(nameof(playerDataProviders));
             _schoolDataProviders = schoolDataProviders ?? throw new ArgumentNullException(nameof(schoolDataProviders));
             _tournamentDataProviders = tournamentDataProviders ?? throw new ArgumentNullException(nameof(tournamentDataProviders));
+            _clubDataProviders = clubDataProviders ?? throw new ArgumentNullException(nameof(clubDataProviders));
         }
 
         internal List<(Team team, List<PlayerIdentity> identities)> GenerateTeams()
@@ -188,11 +189,9 @@ namespace Stoolball.Testing
             activeTeamInClub.Club = clubWithOneActiveTeamAndOthersInactive;
             inactiveTeamInClub.Club = clubWithOneActiveTeamAndOthersInactive;
 
-            testData.ClubWithTeamsAndMatchLocation = _clubFactory.CreateClubWithTeams();
-            testData.MatchLocationForClub = _matchLocationFaker.Generate();
-            var teamWithMatchLocation = testData.ClubWithTeamsAndMatchLocation.Teams.First(x => !x.UntilYear.HasValue);
-            teamWithMatchLocation.MatchLocations.Add(testData.MatchLocationForClub);
-            testData.MatchLocationForClub.Teams.Add(teamWithMatchLocation);
+            var clubsFromProviders = CreateTestDataFromClubProviders(testData);
+            testData.ClubWithTeamsAndMatchLocation = clubsFromProviders.First(c => c.Teams.Any(t => t.MatchLocations.Any()));
+            testData.MatchLocationForClub = testData.ClubWithTeamsAndMatchLocation.Teams.SelectMany(t => t.MatchLocations).OfType<MatchLocation>().First();
 
             var teamsInMatches = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsInTournaments = testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
@@ -475,6 +474,16 @@ namespace Stoolball.Testing
             testData.Schools.AddRange(CreateTestDataFromSchoolProviders(testData));
 
             testData.Players.AddRange(CreateTestDataFromPlayerProviders(testData));
+        }
+
+        private List<Club> CreateTestDataFromClubProviders(TestData testData)
+        {
+            var clubs = new List<Club>();
+            foreach (var provider in _clubDataProviders)
+            {
+                clubs.AddRange(provider.CreateClubs(testData));
+            }
+            return clubs;
         }
 
         private List<School> CreateTestDataFromSchoolProviders(TestData testData)
