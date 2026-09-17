@@ -25,7 +25,7 @@ namespace Stoolball.Testing.TournamentDataProviders
 
         internal override IEnumerable<(Tournament Tournament, IEnumerable<Match> Matches)> CreateTournaments(TestData readOnlyTestData)
         {
-            var teamWithFullDetails = _teamFactory.CreateTeamWithFullDetails("Team with full details in a tournament");
+            var teamWithFullDetails = _teamFactory.CreateDetailedTeamFaker().Generate();
 
             var tournament = _tournamentFactory.CreateTournamentInThePastWithFullDetailsExceptMatches();
 
@@ -41,7 +41,7 @@ namespace Stoolball.Testing.TournamentDataProviders
                     EntityUri = tournament.EntityUri
                 } });
 
-            var transientTeamForTournament = _teamFactory.CreateFaker().Generate();
+            var transientTeamForTournament = _teamFactory.CreateBasicTeamFaker().Generate();
             transientTeamForTournament.TeamType = TeamType.Transient;
             transientTeamForTournament.TeamRoute = tournament.TournamentRoute + transientTeamForTournament.TeamRoute;
 

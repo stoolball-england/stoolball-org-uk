@@ -28,7 +28,8 @@ namespace Stoolball.Testing
         private readonly IEnumerable<BaseClubDataProvider> _clubDataProviders;
         private readonly TournamentFactory _tournamentFactory;
         private readonly Faker<Competition> _competitionFaker;
-        private readonly Faker<Team> _teamFaker;
+        private readonly Faker<Team> _basicTeamFaker;
+        private readonly Faker<Team> _detailedTeamFaker;
         private readonly Faker<Club> _clubFaker;
         private readonly Faker<MatchLocation> _matchLocationFaker;
 
@@ -53,7 +54,8 @@ namespace Stoolball.Testing
             _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
             _commentFactory = commentFactory ?? throw new ArgumentNullException(nameof(commentFactory));
             _competitionFaker = competitionFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(competitionFactory));
-            _teamFaker = teamFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(teamFactory));
+            _basicTeamFaker = teamFactory?.CreateBasicTeamFaker() ?? throw new ArgumentNullException(nameof(teamFactory));
+            _detailedTeamFaker = teamFactory.CreateDetailedTeamFaker();
             _clubFaker = clubFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(clubFactory));
             _matchLocationFaker = matchLocationFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(matchLocationFactory));
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
@@ -71,7 +73,7 @@ namespace Stoolball.Testing
             var poolOfTeams = new List<(Team team, List<PlayerIdentity> identities)>();
             for (var i = 0; i < 5; i++)
             {
-                var team = _randomiser.IsEven(i) ? _teamFactory.CreateTeamWithFullDetails($"Team {i + 1}") : _teamFaker.Generate();
+                var team = _randomiser.IsEven(i) ? _detailedTeamFaker.Generate() : _basicTeamFaker.Generate();
                 poolOfTeams.Add((team, _playerFactory.CreatePlayerIdentityFaker(team).Generate(8)));
             }
 
@@ -119,7 +121,7 @@ namespace Stoolball.Testing
             // Create a pool of match locations 
             for (var i = 0; i < 10; i++)
             {
-                testData.MatchLocations.Add(_randomiser.IsEven(i) ? _matchLocationFactory.CreateMatchLocationWithFullDetails(_teamFaker) : _matchLocationFaker.Generate());
+                testData.MatchLocations.Add(_randomiser.IsEven(i) ? _matchLocationFactory.CreateMatchLocationWithFullDetails(_basicTeamFaker) : _matchLocationFaker.Generate());
             }
             testData.MatchLocations.AddRange(poolOfTeamsWithPlayers.SelectMany(x => x.team.MatchLocations).OfType<MatchLocation>());
 

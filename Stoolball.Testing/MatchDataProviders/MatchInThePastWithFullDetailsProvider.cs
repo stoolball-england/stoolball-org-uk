@@ -48,7 +48,7 @@ namespace Stoolball.Testing.MatchDataProviders
 
         private Match CreateMatchInThePastWithFullDetails()
         {
-            var teamFaker = _teamFactory.CreateFaker();
+            var teamFaker = _teamFactory.CreateBasicTeamFaker();
 
             var homeTeam = teamFaker.Generate();
             var homeTeamInMatch = new TeamInMatch

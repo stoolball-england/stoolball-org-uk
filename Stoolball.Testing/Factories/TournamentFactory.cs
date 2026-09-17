@@ -26,7 +26,7 @@
             season2.FromYear = season1.FromYear;
             season2.UntilYear = season1.UntilYear;
 
-            var teamFaker = _teamFactory.CreateFaker();
+            var teamFaker = _teamFactory.CreateBasicTeamFaker();
             var matchLocationFaker = _matchLocationFactory.CreateFaker();
             var oversetFaker = _oversetFactory.CreateFaker();
 

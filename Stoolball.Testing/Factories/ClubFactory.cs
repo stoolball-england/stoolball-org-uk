@@ -27,7 +27,7 @@ namespace Stoolball.Testing.Factories
                 MemberGroupName = "Club with teams owners",
             };
 
-            var teamFaker = _teamFactory.CreateFaker();
+            var teamFaker = _teamFactory.CreateBasicTeamFaker();
 
             var inactiveAlphabeticallyFirst = teamFaker.Generate();
             inactiveAlphabeticallyFirst.TeamName = "Inactive team";

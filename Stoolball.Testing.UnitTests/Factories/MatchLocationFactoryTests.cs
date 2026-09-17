@@ -10,7 +10,7 @@ namespace Stoolball.Testing.UnitTests.Factories
         [Fact]
         public void Match_location_with_full_details_has_active_transient_and_inactive_teams()
         {
-            var matchLocation = _services.Get<MatchLocationFactory>().CreateMatchLocationWithFullDetails(_services.Get<TeamFactory>().CreateFaker());
+            var matchLocation = _services.Get<MatchLocationFactory>().CreateMatchLocationWithFullDetails(_services.Get<TeamFactory>().CreateBasicTeamFaker());
 
             Assert.Equal(4, matchLocation.Teams.Count);
             Assert.Contains(matchLocation.Teams, x => x.TeamType == TeamType.Transient);

@@ -10,8 +10,8 @@ namespace Stoolball.Testing.UnitTests.Factories
         public void Season_with_full_details_has_two_teams_points_rules_and_a_points_adjustment()
         {
             var competition = _services.Get<CompetitionFactory>().CreateFaker().Generate();
-            var team1 = _services.Get<TeamFactory>().CreateFaker().Generate();
-            var team2 = _services.Get<TeamFactory>().CreateFaker().Generate();
+            var team1 = _services.Get<TeamFactory>().CreateBasicTeamFaker().Generate();
+            var team2 = _services.Get<TeamFactory>().CreateBasicTeamFaker().Generate();
 
             var season = _services.Get<SeasonFactory>().CreateSeasonWithFullDetails(competition, 2020, 2020, team1, team2);
 

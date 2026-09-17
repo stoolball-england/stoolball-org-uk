@@ -23,7 +23,7 @@ namespace Stoolball.UnitTests.Statistics
             using var serviceProvider = new ServiceCollection().AddSeedDataGenerator().BuildServiceProvider();
 
             var bowlingFiguresCalculator = serviceProvider.GetRequiredService<IBowlingFiguresCalculator>();
-            var teamFaker = serviceProvider.GetRequiredService<TeamFactory>().CreateFaker();
+            var teamFaker = serviceProvider.GetRequiredService<TeamFactory>().CreateBasicTeamFaker();
             var competitionFaker = serviceProvider.GetRequiredService<CompetitionFactory>().CreateFaker();
             var oversetFactory = serviceProvider.GetRequiredService<OverSetFactory>();
             var matchLocationFaker = serviceProvider.GetRequiredService<MatchLocationFactory>().CreateFaker();

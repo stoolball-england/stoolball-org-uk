@@ -14,7 +14,7 @@ namespace Stoolball.Testing.MatchDataProviders
             _matchFactory = matchFactory ?? throw new System.ArgumentNullException(nameof(matchFactory));
             _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
-            _teamFaker = teamFactory.CreateFaker();
+            _teamFaker = teamFactory.CreateBasicTeamFaker();
         }
 
         internal override IEnumerable<Match> CreateMatches(TestData readOnlyTestData)

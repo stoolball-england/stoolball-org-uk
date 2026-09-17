@@ -14,7 +14,7 @@ namespace Stoolball.Testing.ClubDataProviders
         internal override IEnumerable<Club> CreateClubs(TestData readOnlyTestData)
         {
             var clubFaker = _clubFactory.CreateFaker();
-            var teamFaker = _teamFactory.CreateFaker();
+            var teamFaker = _teamFactory.CreateBasicTeamFaker();
 
             var clubWithOneActiveTeam = clubFaker.Generate();
             var onlyTeamInClub = teamFaker.Generate();

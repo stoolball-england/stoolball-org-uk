@@ -16,7 +16,7 @@ namespace Stoolball.Testing.CompetitionDataProviders
             var overSets = _overSetFactory.CreateFaker().Generate(4);
             season.DefaultOverSets.AddRange(overSets);
 
-            var teams = _teamFactory.CreateFaker().Generate(3);
+            var teams = _teamFactory.CreateBasicTeamFaker().Generate(3);
             season.Teams.AddRange(teams.Select(t => new TeamInSeason { Team = t, Season = season }));
 
             // Ensure one team withdrew from the season

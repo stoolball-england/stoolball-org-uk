@@ -2,7 +2,7 @@
 {
     internal class PlayersLinkedToMembersOnSameTeamAsPlayersNotLinkedToMembersProvider(TeamFactory _teamFactory, PlayerFactory _playerFactory) : BasePlayerDataProvider
     {
-        private readonly Faker<Team> _teamFaker = _teamFactory.CreateFaker();
+        private readonly Faker<Team> _teamFaker = _teamFactory.CreateBasicTeamFaker();
 
         internal override IEnumerable<Player> CreatePlayers(TestData readOnlyTestData)
         {

@@ -10,9 +10,8 @@ namespace Stoolball.Testing.UnitTests.Factories
         [Fact]
         public void Team_with_full_details_has_match_locations_and_seasons_for_a_ladies_competition()
         {
-            var team = _services.Get<TeamFactory>().CreateTeamWithFullDetails("Example team");
+            var team = _services.Get<TeamFactory>().CreateDetailedTeamFaker().Generate();
 
-            Assert.Equal(PlayerType.Ladies, team.PlayerType);
             Assert.NotNull(team.Club);
             Assert.Contains(team, team.Club!.Teams);
             Assert.Equal(2, team.MatchLocations.Count);
@@ -22,6 +21,7 @@ namespace Stoolball.Testing.UnitTests.Factories
             Assert.All(team.Seasons, x => Assert.Same(team, x.Team));
             var competition = team.Seasons.First().Season!.Competition;
             Assert.All(team.Seasons, x => Assert.Same(competition, x.Season!.Competition));
+            Assert.Equal(PlayerType.Ladies, competition!.PlayerType);
         }
     }
 }

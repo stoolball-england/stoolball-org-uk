@@ -8,7 +8,7 @@
             var schoolFaker = _schoolFactory.CreateFaker();
             var schools = schoolFaker.Generate(20);
 
-            CreateSchoolTeamsForSchools(schools, _teamFactory.CreateFaker, _matchLocationFactory.CreateFaker);
+            CreateSchoolTeamsForSchools(schools, _teamFactory.CreateBasicTeamFaker, _matchLocationFactory.CreateFaker);
 
             return schools;
         }

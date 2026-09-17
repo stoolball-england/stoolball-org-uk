@@ -11,7 +11,7 @@ namespace Stoolball.Testing.MatchDataProviders
         public MatchesInTheFuture(MatchFactory matchFactory, TeamFactory teamFactory, OverSetFactory oversetFactory)
         {
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
-            _teamFaker = teamFactory.CreateFaker();
+            _teamFaker = teamFactory.CreateBasicTeamFaker();
             _oversetFactory = oversetFactory ?? throw new ArgumentNullException(nameof(oversetFactory));
         }
 
