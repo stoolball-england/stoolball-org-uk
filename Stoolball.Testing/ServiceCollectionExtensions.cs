@@ -7,6 +7,7 @@ using Stoolball.Testing.ClubDataProviders;
 using Stoolball.Testing.CompetitionDataProviders;
 using Stoolball.Testing.Factories;
 using Stoolball.Testing.MatchDataProviders;
+using Stoolball.Testing.MatchLocationDataProviders;
 using Stoolball.Testing.PlayerDataProviders;
 using Stoolball.Testing.SchoolDataProviders;
 using Stoolball.Testing.TournamentDataProviders;
@@ -98,6 +99,9 @@ namespace Stoolball.Testing
             services.AddSingleton<BaseClubDataProvider>(sp => new ClubsWithTeamsDataProvider(
                 sp.GetRequiredService<ClubFactory>(), sp.GetRequiredService<TeamFactory>()));
 
+            services.AddSingleton<BaseMatchLocationDataProvider>(sp => new RandomMatchLocationDataProvider(
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchLocationFactory>(), sp.GetRequiredService<TeamFactory>()));
+
             services.AddSingleton(sp => new SeedDataGenerator(
                 sp.GetRequiredService<Randomiser>(),
                 sp.GetRequiredService<IBowlingFiguresCalculator>(),
@@ -108,7 +112,6 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<TeamFactory>(),
                 sp.GetRequiredService<ClubFactory>(),
                 sp.GetRequiredService<TournamentFactory>(),
-                sp.GetRequiredService<MatchLocationFactory>(),
                 sp.GetRequiredService<PlayerFactory>(),
                 sp.GetRequiredService<CommentFactory>(),
                 sp.GetRequiredService<MatchFactory>(),
@@ -117,7 +120,8 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<IEnumerable<BasePlayerDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BaseSchoolDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BaseTournamentDataProvider>>(),
-                sp.GetRequiredService<IEnumerable<BaseClubDataProvider>>()));
+                sp.GetRequiredService<IEnumerable<BaseClubDataProvider>>(),
+                sp.GetRequiredService<IEnumerable<BaseMatchLocationDataProvider>>()));
 
             return services;
         }

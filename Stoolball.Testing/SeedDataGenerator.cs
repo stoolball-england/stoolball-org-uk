@@ -1,6 +1,7 @@
 ﻿using Stoolball.Logging;
 using Stoolball.Testing.ClubDataProviders;
 using Stoolball.Testing.MatchDataProviders;
+using Stoolball.Testing.MatchLocationDataProviders;
 using Stoolball.Testing.PlayerDataProviders;
 using Stoolball.Testing.SchoolDataProviders;
 using Stoolball.Testing.TournamentDataProviders;
@@ -16,7 +17,6 @@ namespace Stoolball.Testing
         private readonly CompetitionFactory _competitionFactory;
         private readonly SeasonFactory _seasonFactory;
         private readonly TeamFactory _teamFactory;
-        private readonly MatchLocationFactory _matchLocationFactory;
         private readonly PlayerFactory _playerFactory;
         private readonly CommentFactory _commentFactory;
         private readonly MatchFactory _matchFactory;
@@ -26,21 +26,22 @@ namespace Stoolball.Testing
         private readonly IEnumerable<BaseSchoolDataProvider> _schoolDataProviders;
         private readonly IEnumerable<BaseTournamentDataProvider> _tournamentDataProviders;
         private readonly IEnumerable<BaseClubDataProvider> _clubDataProviders;
+        private readonly IEnumerable<BaseMatchLocationDataProvider> _matchLocationDataProviders;
         private readonly TournamentFactory _tournamentFactory;
         private readonly Faker<Competition> _competitionFaker;
         private readonly Faker<Team> _basicTeamFaker;
         private readonly Faker<Team> _detailedTeamFaker;
         private readonly Faker<Club> _clubFaker;
-        private readonly Faker<MatchLocation> _matchLocationFaker;
 
         internal SeedDataGenerator(Randomiser randomiser, IBowlingFiguresCalculator bowlingFiguresCalculator,
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
             CompetitionFactory competitionFactory, SeasonFactory seasonFactory, TeamFactory teamFactory, ClubFactory clubFactory,
-            TournamentFactory tournamentFactory, MatchLocationFactory matchLocationFactory,
+            TournamentFactory tournamentFactory,
             PlayerFactory playerFactory, CommentFactory commentFactory,
             MatchFactory matchFactory, IEnumerable<BaseMatchDataProvider> matchDataProviders, IEnumerable<BaseCompetitionDataProvider> competitionDataProviders,
             IEnumerable<BasePlayerDataProvider> playerDataProviders, IEnumerable<BaseSchoolDataProvider> schoolDataProviders,
-            IEnumerable<BaseTournamentDataProvider> tournamentDataProviders, IEnumerable<BaseClubDataProvider> clubDataProviders)
+            IEnumerable<BaseTournamentDataProvider> tournamentDataProviders, IEnumerable<BaseClubDataProvider> clubDataProviders,
+            IEnumerable<BaseMatchLocationDataProvider> matchLocationDataProviders)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
@@ -50,14 +51,12 @@ namespace Stoolball.Testing
             _seasonFactory = seasonFactory ?? throw new ArgumentNullException(nameof(seasonFactory));
             _teamFactory = teamFactory ?? throw new ArgumentNullException(nameof(teamFactory));
             _tournamentFactory = tournamentFactory ?? throw new ArgumentNullException(nameof(tournamentFactory));
-            _matchLocationFactory = matchLocationFactory ?? throw new ArgumentNullException(nameof(matchLocationFactory));
             _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
             _commentFactory = commentFactory ?? throw new ArgumentNullException(nameof(commentFactory));
             _competitionFaker = competitionFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(competitionFactory));
             _basicTeamFaker = teamFactory?.CreateBasicTeamFaker() ?? throw new ArgumentNullException(nameof(teamFactory));
             _detailedTeamFaker = teamFactory.CreateDetailedTeamFaker();
             _clubFaker = clubFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(clubFactory));
-            _matchLocationFaker = matchLocationFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(matchLocationFactory));
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
             _matchDataProviders = matchDataProviders ?? throw new ArgumentNullException(nameof(matchDataProviders));
             _competitionDataProviders = competitionDataProviders ?? throw new ArgumentNullException(nameof(competitionDataProviders));
@@ -65,6 +64,7 @@ namespace Stoolball.Testing
             _schoolDataProviders = schoolDataProviders ?? throw new ArgumentNullException(nameof(schoolDataProviders));
             _tournamentDataProviders = tournamentDataProviders ?? throw new ArgumentNullException(nameof(tournamentDataProviders));
             _clubDataProviders = clubDataProviders ?? throw new ArgumentNullException(nameof(clubDataProviders));
+            _matchLocationDataProviders = matchLocationDataProviders ?? throw new ArgumentNullException(nameof(matchLocationDataProviders));
         }
 
         internal List<(Team team, List<PlayerIdentity> identities)> GenerateTeams()
@@ -118,10 +118,9 @@ namespace Stoolball.Testing
                 }
             }
 
-            // Create a pool of match locations 
-            for (var i = 0; i < 10; i++)
+            foreach (var provider in _matchLocationDataProviders)
             {
-                testData.MatchLocations.Add(_randomiser.IsEven(i) ? _matchLocationFactory.CreateMatchLocationWithFullDetails(_basicTeamFaker) : _matchLocationFaker.Generate());
+                testData.MatchLocations.AddRange(provider.CreateMatchLocations(testData));
             }
             testData.MatchLocations.AddRange(poolOfTeamsWithPlayers.SelectMany(x => x.team.MatchLocations).OfType<MatchLocation>());
 
