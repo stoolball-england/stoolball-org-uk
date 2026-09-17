@@ -93,6 +93,8 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(), sp.GetRequiredService<Award>()));
             services.AddSingleton<BaseTournamentDataProvider>(sp => new RandomTournamentDataProvider(
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<TournamentFactory>(), sp.GetRequiredService<CommentFactory>()));
+            services.AddSingleton<BaseTournamentDataProvider>(sp => new TournamentsInTheFutureDataProvider(
+                sp.GetRequiredService<TournamentFactory>()));
 
             services.AddSingleton<BaseClubDataProvider>(sp => new ClubWithTeamsAndMatchLocationProvider(
                 sp.GetRequiredService<ClubFactory>(), sp.GetRequiredService<MatchLocationFactory>()));

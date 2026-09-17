@@ -134,14 +134,6 @@ namespace Stoolball.Testing
             testData.TournamentInThePastWithMinimalDetails = _tournamentFactory.CreateFaker().Generate();
             testData.Tournaments.Add(testData.TournamentInThePastWithMinimalDetails);
 
-            testData.TournamentInTheFutureWithMinimalDetails = _tournamentFactory.CreateFaker().Generate();
-            testData.TournamentInTheFutureWithMinimalDetails.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
-            testData.Tournaments.Add(testData.TournamentInTheFutureWithMinimalDetails);
-
-            var tournamentInTheFutureWithSeasons = _tournamentFactory.CreateTournamentInThePastWithFullDetailsExceptMatches();
-            tournamentInTheFutureWithSeasons.StartTime = DateTimeOffset.UtcNow.AddMonths(1).UtcToUkTime();
-            testData.Tournaments.Add(tournamentInTheFutureWithSeasons);
-
             testData.ClubWithMinimalDetails = _clubFaker.Generate();
 
             var clubsFromProviders = CreateTestDataFromClubProviders(testData);
@@ -162,9 +154,6 @@ namespace Stoolball.Testing
             testData.Clubs.Add(testData.ClubWithMinimalDetails);
             testData.Clubs.AddRange(testData.Teams.Select(x => x.Club).OfType<Club>().Distinct(new ClubEqualityComparer()));
 
-            // Get a minimal team
-            testData.TeamWithMinimalDetails = FindTeamWithMinimalDetails(testData, teamsInMatches);
-
             foreach (var provider in _tournamentDataProviders)
             {
                 foreach (var (tournament, matches) in provider.CreateTournaments(testData))
@@ -184,6 +173,12 @@ namespace Stoolball.Testing
             }
 
             testData.TournamentInThePastWithFullDetails = testData.Tournaments.First(t => t.History.Any());
+
+            testData.TournamentInTheFutureWithMinimalDetails = testData.Tournaments.First(t => t.StartTime > DateTimeOffset.UtcNow && !t.Teams.Any() && !t.Seasons.Any());
+
+            // Get a minimal team. Resolved after the tournament providers have run, so that a team added purely as a
+            // tournament participant (never in a match, club, location or season) is a candidate too.
+            testData.TeamWithMinimalDetails = FindTeamWithMinimalDetails(testData, teamsInMatches);
 
             // Get a detailed team that's played a match. Resolved after the tournament providers have run, so that a
             // team playing in TournamentInThePastWithFullDetails is a candidate too, alongside teams that have only
