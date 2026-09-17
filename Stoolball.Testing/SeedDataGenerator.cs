@@ -131,20 +131,6 @@ namespace Stoolball.Testing
             testData.MatchInThePastWithMinimalDetails = FindMatchInThePastWithMinimalDetails(testData);
 
             testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
-            for (var i = 0; i < 10; i++)
-            {
-                var tournament = _tournamentFactory.CreateTournamentInThePastWithFullDetailsExceptMatches();
-                testData.Tournaments.Add(tournament);
-
-                var tournament2 = _tournamentFactory.CreateFaker().Generate();
-                if (!_randomiser.OneInFourChance())
-                {
-                    tournament2.TournamentLocation = testData.MatchLocations[_randomiser.PositiveIntegerLessThan(testData.MatchLocations.Count)];
-                }
-                tournament2.StartTime = DateTimeOffset.UtcNow.AddMonths(i - 20).AddDays(5).UtcToUkTime();
-                tournament2.Comments = _commentFactory.CreateFaker().Generate(i);
-                testData.Tournaments.Add(tournament2);
-            }
 
             testData.TournamentInThePastWithMinimalDetails = _tournamentFactory.CreateFaker().Generate();
             testData.Tournaments.Add(testData.TournamentInThePastWithMinimalDetails);

@@ -26,6 +26,10 @@ namespace Stoolball.Testing.TournamentDataProviders
         internal override IEnumerable<(Tournament Tournament, IEnumerable<Match> Matches)> CreateTournaments(TestData readOnlyTestData)
         {
             var teamWithFullDetails = _teamFactory.CreateDetailedTeamFaker().Generate();
+            // CreateDetailedTeamFaker() randomises TeamType, but this team must stay distinguishable from
+            // transientTeamForTournament below - a genuinely Transient team would never have the seasons,
+            // club and match locations that come with "full details".
+            if (teamWithFullDetails.TeamType == TeamType.Transient) { teamWithFullDetails.TeamType = TeamType.Regular; }
 
             var tournament = _tournamentFactory.CreateTournamentInThePastWithFullDetailsExceptMatches();
 
