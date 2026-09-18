@@ -77,6 +77,8 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<CompetitionFactory>(), sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<OverSetFactory>()));
             services.AddSingleton<BaseCompetitionDataProvider>(sp => new CompetitionWithOneSeasonDataProvider(
                 sp.GetRequiredService<CompetitionFactory>(), sp.GetRequiredService<SeasonFactory>()));
+            services.AddSingleton<BaseCompetitionDataProvider>(sp => new CompetitionWithOneSeasonWithPointsRulesDataProvider(
+                sp.GetRequiredService<CompetitionFactory>(), sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<TeamFactory>()));
 
             services.AddSingleton<BasePlayerDataProvider>(sp => new PlayersLinkedToMembersProvider(
                 sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
