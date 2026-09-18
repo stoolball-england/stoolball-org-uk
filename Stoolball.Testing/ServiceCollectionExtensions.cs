@@ -67,6 +67,8 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new DifferentTeamsWhereSomeonePlaysOnBothTeams(
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
+            services.AddSingleton<BaseMatchDataProvider>(sp => new IntraClubMatchDataProvider(
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new MatchInThePastWithFullDetailsProvider(
                 sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<CompetitionFactory>(),
                 sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<MatchLocationFactory>(), sp.GetRequiredService<CommentFactory>(),

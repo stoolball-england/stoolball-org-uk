@@ -707,9 +707,6 @@ namespace Stoolball.Testing
                 matches.Add(match);
             }
 
-            // Ensure there's always an intra-club match to test
-            matches.Add(_matchFactory.CreateMatchBetween(teamsWithIdentities[0].team, teamsWithIdentities[0].identities, teamsWithIdentities[0].team, teamsWithIdentities[0].identities, _randomiser.FiftyFiftyChance(), testData, nameof(GenerateMatchData) + "IntraClub"));
-
             matches.Add(_matchFactory.CreateMatchInThePast(false, testData, nameof(GenerateMatchData)));
 
             // Generate bowling figures for each innings
