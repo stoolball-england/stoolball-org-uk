@@ -127,8 +127,6 @@ namespace Stoolball.Testing
             // Create match and tournament data
             testData.Matches = GenerateMatchData(testData, poolOfTeamsWithPlayers);
 
-            testData.MatchInThePastWithMinimalDetails = FindMatchInThePastWithMinimalDetails(testData);
-
             testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
 
             testData.TournamentInThePastWithMinimalDetails = _tournamentFactory.CreateFaker().Generate();
@@ -240,6 +238,8 @@ namespace Stoolball.Testing
                     AddMatchAndRelatedEntitiesToTestData(testData, match);
                 }
             }
+
+            testData.MatchInThePastWithMinimalDetails = FindMatchInThePastWithMinimalDetails(testData);
 
             testData.MatchInThePastWithFullDetails = FindMatchInThePastWithFullDetails(testData);
 
@@ -706,8 +706,6 @@ namespace Stoolball.Testing
 
                 matches.Add(match);
             }
-
-            matches.Add(_matchFactory.CreateMatchInThePast(false, testData, nameof(GenerateMatchData)));
 
             // Generate bowling figures for each innings
             foreach (var innings in matches.SelectMany(x => x.MatchInnings))
