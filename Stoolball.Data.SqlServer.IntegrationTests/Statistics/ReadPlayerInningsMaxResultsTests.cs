@@ -69,10 +69,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         /// </summary>
         private async Task<(Player Player, List<PlayerInnings> PlayerInnings)> ForceFifthAndSixthPlayerInningsToBeTheSame()
         {
+            // Only use innings which have a row in the statistics table, because the update below can only change rows that exist.
+            HashSet<Guid> inningsInStatisticsTable;
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                inningsInStatisticsTable = (await connection.QueryAsync<Guid>($"SELECT PlayerInningsId FROM {Tables.PlayerInMatchStatistics} WHERE RunsScored IS NOT NULL").ConfigureAwait(false)).ToHashSet();
+            }
+
             var originalInningsInOrder = _databaseFixture.TestData.MatchesThatCouldHavePlayerStatistics()
                 .SelectMany(m => m.MatchInnings)
                 .SelectMany(mi => mi.PlayerInnings)
-                .Where(i => i.DismissalType != DismissalType.DidNotBat && i.DismissalType != DismissalType.TimedOut && i.RunsScored.HasValue)
+                .Where(i => i.DismissalType != DismissalType.DidNotBat && i.DismissalType != DismissalType.TimedOut && i.RunsScored.HasValue &&
+                            i.PlayerInningsId.HasValue && inningsInStatisticsTable.Contains(i.PlayerInningsId.Value))
                 .GroupBy(i => i.Batter!.Player!.PlayerId)
                 .First(g => g.Count() > 5)
                 .OrderByDescending(i => i.RunsScored)
@@ -125,7 +134,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 connection.Open();
                 foreach (var innings in playerInnings)
                 {
-                    await connection.ExecuteAsync(
+                    var rowsUpdated = await connection.ExecuteAsync(
                         $@"UPDATE {Tables.PlayerInMatchStatistics}
                            SET RunsScored = @RunsScored, BallsFaced = @BallsFaced, DismissalType = @DismissalType, PlayerWasDismissed = @PlayerWasDismissed
                            WHERE PlayerInningsId = @PlayerInningsId",
@@ -137,6 +146,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                             PlayerWasDismissed = StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(innings.DismissalType),
                             innings.PlayerInningsId
                         }).ConfigureAwait(false);
+
+                    if (rowsUpdated != 1) { throw new InvalidOperationException($"Expected to update one statistics row for player innings {innings.PlayerInningsId} but updated {rowsUpdated}."); }
                 }
             }
 
