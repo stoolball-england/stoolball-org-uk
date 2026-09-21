@@ -116,13 +116,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_player_innings_supports_filter_by_competition_id()
         {
-            var filter = new StatisticsFilter { Competition = _databaseFixture.TestData.Competitions.First() };
-            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
+            var filter = new StatisticsFilter { Competition = _databaseFixture.TestData.CompetitionWithPlayerStatistics() };
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var result = await dataSource.ReadTotalPlayerInnings(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId)
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId)
                 .SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.PlayerInnings)
                 .Count(x => x.RunsScored.HasValue);
@@ -133,13 +133,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_player_innings_supports_filter_by_season_id()
         {
-            var filter = new StatisticsFilter { Season = _databaseFixture.TestData.Competitions.First().Seasons.First() };
-            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
+            var filter = new StatisticsFilter { Season = _databaseFixture.TestData.SeasonWithPlayerStatistics() };
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var result = await dataSource.ReadTotalPlayerInnings(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId)
                 .SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.PlayerInnings)
                 .Count(x => x.RunsScored.HasValue);
@@ -375,12 +375,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var filter = new StatisticsFilter
             {
-                Competition = _databaseFixture.TestData.Competitions.First()
+                Competition = _databaseFixture.TestData.CompetitionWithPlayerStatistics()
             };
-            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId! } }));
 
             await ActAndAssertReadPlayerInnings(filter,
-                x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId,
+                x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId,
                 x => true,
                 x => x.RunsScored.HasValue
             ).ConfigureAwait(false);
@@ -391,12 +391,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var filter = new StatisticsFilter
             {
-                Season = _databaseFixture.TestData.Competitions.First().Seasons.First()
+                Season = _databaseFixture.TestData.SeasonWithPlayerStatistics()
             };
-            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId! } }));
 
             await ActAndAssertReadPlayerInnings(filter,
-                x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId,
+                x => x.Season?.SeasonId == _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId,
                 x => true,
                 x => x.RunsScored.HasValue
             ).ConfigureAwait(false);

@@ -100,13 +100,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_bowling_figures_supports_filter_by_competition_id()
         {
-            var filter = new StatisticsFilter { Competition = _databaseFixture.TestData.Competitions.First() };
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
+            var filter = new StatisticsFilter { Competition = _databaseFixture.TestData.CompetitionWithPlayerStatistics() };
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId)
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId)
                 .SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.BowlingFigures)
                 .Count();
@@ -116,13 +116,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_bowling_figures_supports_filter_by_season_id()
         {
-            var filter = new StatisticsFilter { Season = _databaseFixture.TestData.Competitions.First().Seasons.First() };
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
+            var filter = new StatisticsFilter { Season = _databaseFixture.TestData.SeasonWithPlayerStatistics() };
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId)
                 .SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.BowlingFigures)
                 .Count();
@@ -358,12 +358,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var filter = new StatisticsFilter
             {
-                Competition = _databaseFixture.TestData.Competitions.First()
+                Competition = _databaseFixture.TestData.CompetitionWithPlayerStatistics()
             };
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId! } }));
 
             await ActAndAssertReadBowlingFigures(filter,
-                x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId,
+                x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId,
                 x => true,
                 x => true
             ).ConfigureAwait(false);
@@ -374,12 +374,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var filter = new StatisticsFilter
             {
-                Season = _databaseFixture.TestData.Competitions.First().Seasons.First()
+                Season = _databaseFixture.TestData.SeasonWithPlayerStatistics()
             };
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId! } }));
 
             await ActAndAssertReadBowlingFigures(filter,
-                   x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId,
+                   x => x.Season?.SeasonId == _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId,
                    x => true,
                    x => true
             ).ConfigureAwait(false);

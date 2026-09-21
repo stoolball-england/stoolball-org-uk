@@ -9,6 +9,7 @@ using Stoolball.Testing.Factories;
 using Stoolball.Testing.MatchDataProviders;
 using Stoolball.Testing.MatchLocationDataProviders;
 using Stoolball.Testing.PlayerDataProviders;
+using Stoolball.Testing.TeamDataProviders;
 using Stoolball.Testing.SchoolDataProviders;
 using Stoolball.Testing.TournamentDataProviders;
 
@@ -48,8 +49,11 @@ namespace Stoolball.Testing
             // One AddSingleton<TBase> per provider, so SeedDataGenerator can resolve each family as an
             // IEnumerable<TBase> - each provider still gets its own combination of factories/collaborators,
             // it's just DI rather than SeedDataGenerator constructing them inline.
+            services.AddSingleton<BaseMatchDataProvider>(sp => new RandomMatchDataProvider(
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<CommentFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(
-                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(), sp.GetRequiredService<Award>()));
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(), sp.GetRequiredService<Award>(),
+                sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new PlayersOnlyRecordedInOnePlace(
@@ -83,6 +87,12 @@ namespace Stoolball.Testing
             services.AddSingleton<BaseCompetitionDataProvider>(sp => new CompetitionWithOneSeasonWithPointsRulesDataProvider(
                 sp.GetRequiredService<CompetitionFactory>(), sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<TeamFactory>()));
 
+            services.AddSingleton<BaseCompetitionDataProvider>(sp => new RandomCompetitionsDataProvider(
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<CompetitionFactory>(), sp.GetRequiredService<SeasonFactory>()));
+
+            services.AddSingleton<BaseTeamDataProvider>(sp => new RandomTeamsDataProvider(
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
+
             services.AddSingleton<BasePlayerDataProvider>(sp => new PlayersLinkedToMembersProvider(
                 sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
             services.AddSingleton<BasePlayerDataProvider>(sp => new PlayersNotLinkedToMembersProvider(
@@ -110,25 +120,20 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchLocationFactory>(), sp.GetRequiredService<TeamFactory>()));
 
             services.AddSingleton(sp => new SeedDataGenerator(
-                sp.GetRequiredService<Randomiser>(),
                 sp.GetRequiredService<IBowlingFiguresCalculator>(),
                 sp.GetRequiredService<IPlayerIdentityFinder>(),
                 sp.GetRequiredService<IMatchFinder>(),
                 sp.GetRequiredService<CompetitionFactory>(),
-                sp.GetRequiredService<SeasonFactory>(),
-                sp.GetRequiredService<TeamFactory>(),
                 sp.GetRequiredService<ClubFactory>(),
                 sp.GetRequiredService<TournamentFactory>(),
-                sp.GetRequiredService<PlayerFactory>(),
-                sp.GetRequiredService<CommentFactory>(),
-                sp.GetRequiredService<MatchFactory>(),
                 sp.GetRequiredService<IEnumerable<BaseMatchDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BaseCompetitionDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BasePlayerDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BaseSchoolDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BaseTournamentDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BaseClubDataProvider>>(),
-                sp.GetRequiredService<IEnumerable<BaseMatchLocationDataProvider>>()));
+                sp.GetRequiredService<IEnumerable<BaseMatchLocationDataProvider>>(),
+                sp.GetRequiredService<IEnumerable<BaseTeamDataProvider>>()));
 
             return services;
         }

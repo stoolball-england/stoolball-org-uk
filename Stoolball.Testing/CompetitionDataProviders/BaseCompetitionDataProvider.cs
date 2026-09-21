@@ -1,4 +1,4 @@
-﻿namespace Stoolball.Testing.PlayerDataProviders
+﻿namespace Stoolball.Testing.CompetitionDataProviders
 {
     internal abstract class BaseCompetitionDataProvider
     {

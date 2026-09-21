@@ -15,44 +15,40 @@ namespace Stoolball.Testing.MatchDataProviders
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly Award _playerOfTheMatchAward;
         private readonly Randomiser _randomiser;
+        private readonly Faker<Team> _teamFaker;
+        private readonly PlayerFactory _playerFactory;
 
-        internal APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(Randomiser randomiser, MatchFactory matchFactory, IBowlingFiguresCalculator bowlingFiguresCalculator, Award playerOfTheMatchAward)
+        internal APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(Randomiser randomiser, MatchFactory matchFactory, IBowlingFiguresCalculator bowlingFiguresCalculator, Award playerOfTheMatchAward, TeamFactory teamFactory, PlayerFactory playerFactory)
         {
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
+            _teamFaker = teamFactory?.CreateBasicTeamFaker() ?? throw new ArgumentNullException(nameof(teamFactory));
+            _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
         }
 
         internal override IEnumerable<Match> CreateMatches(TestData readOnlyTestData)
         {
-            if (readOnlyTestData.TeamWithFullDetails == null) { throw new ArgumentException($"{nameof(readOnlyTestData.TeamWithFullDetails)} cannot be null"); }
-            if (!readOnlyTestData.Players.Any()) { throw new ArgumentException($"{nameof(readOnlyTestData.Players)} cannot be empty"); }
-            if (!readOnlyTestData.Matches.Any()) { throw new ArgumentException($"{nameof(readOnlyTestData.Matches)} cannot be empty"); }
+            // Create teams for the scenario, rather than using any team already in the test data, so that the scenario is not affected by other matches.
+            var teamThePlayerPlaysFor = _teamFaker.Generate();
+            var anyOppositionTeam = _teamFaker.Generate();
+            var someOtherTeamThePlayerBelongsTo = _teamFaker.Generate();
+            var anyPlayerForTheOppositionTeam = _playerFactory.CreatePlayerIdentityFaker(anyOppositionTeam).Generate();
 
-
-            // Create a match for testData.TeamWithFullDetails and any other team.
-            // Important to use testData.TeamWithFullDetails because it's used in tests that filter by team.
-            var anyOppositionTeam = readOnlyTestData.Teams.First(x => x.TeamId != readOnlyTestData.TeamWithFullDetails.TeamId &&
-                                                              readOnlyTestData.PlayerIdentities.Any(pi => pi.Team?.TeamId == x.TeamId));
-            var anyPlayerForTheOppositionTeam = readOnlyTestData.PlayerIdentities.First(pi => pi.Team?.TeamId == anyOppositionTeam.TeamId);
-
+            // Create a match for the team the player plays for and any other team.
             var matchWhereThePlayerUnderTestBattedBowledAndFielded = _matchFactory.CreateMatchBetween(
-                readOnlyTestData.TeamWithFullDetails, new List<PlayerIdentity>(),
+                teamThePlayerPlaysFor, new List<PlayerIdentity>(),
                 anyOppositionTeam, new List<PlayerIdentity>(),
                 _randomiser.FiftyFiftyChance(), readOnlyTestData, nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam));
 
 
-            // Create a player with identities on testData.TeamWithFullDetails and any other team.
+            // Create a player with identities on the team the player plays for and another team.
             var playerUnderTest = new Player
             {
                 PlayerId = Guid.NewGuid(),
                 PlayerRoute = "/players/player-" + Guid.NewGuid(),
             };
-            var someOtherTeamThePlayerBelongsTo = readOnlyTestData.Teams.First(x =>
-                                                            x.TeamId != readOnlyTestData.TeamWithFullDetails.TeamId &&
-                                                            x.TeamId != anyOppositionTeam?.TeamId);
-
             var identityOnSomeOtherTeamName = $"Identity A from {nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam)}";
             var identityOnSomeOtherTeam = new PlayerIdentity
             {
@@ -64,59 +60,59 @@ namespace Stoolball.Testing.MatchDataProviders
             };
             playerUnderTest.PlayerIdentities.Add(identityOnSomeOtherTeam);
 
-            var identityOnTeamWithFullDetailsName = $"Identity B from {nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam)}";
-            var identityOnTeamWithFullDetails = new PlayerIdentity
+            var identityOnTeamThePlayerPlaysForName = $"Identity B from {nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam)}";
+            var identityOnTeamThePlayerPlaysFor = new PlayerIdentity
             {
                 PlayerIdentityId = Guid.NewGuid(),
                 Player = playerUnderTest,
-                PlayerIdentityName = identityOnTeamWithFullDetailsName,
-                RouteSegment = identityOnTeamWithFullDetailsName.Kebaberize(),
-                Team = readOnlyTestData.TeamWithFullDetails
+                PlayerIdentityName = identityOnTeamThePlayerPlaysForName,
+                RouteSegment = identityOnTeamThePlayerPlaysForName.Kebaberize(),
+                Team = teamThePlayerPlaysFor
             };
-            playerUnderTest.PlayerIdentities.Add(identityOnTeamWithFullDetails);
+            playerUnderTest.PlayerIdentities.Add(identityOnTeamThePlayerPlaysFor);
 
 
-            // Make sure the identity that IS on testData.TeamWithFullDetails has batted and taken wickets, catches and run-outs in a match, so that they have averages, economy etc.
-            var battingInningsForTeamWithFullDetails = matchWhereThePlayerUnderTestBattedBowledAndFielded.MatchInnings.First(x => x.BattingTeam!.Team!.TeamId == readOnlyTestData.TeamWithFullDetails!.TeamId);
-            battingInningsForTeamWithFullDetails.PlayerInnings.Add(new PlayerInnings
+            // Make sure the identity that IS on the team the player plays for has batted and taken wickets, catches and run-outs in a match, so that they have averages, economy etc.
+            var battingInningsForTeamThePlayerPlaysFor = matchWhereThePlayerUnderTestBattedBowledAndFielded.MatchInnings.First(x => x.BattingTeam!.Team!.TeamId == teamThePlayerPlaysFor.TeamId);
+            battingInningsForTeamThePlayerPlaysFor.PlayerInnings.Add(new PlayerInnings
             {
                 PlayerInningsId = Guid.NewGuid(),
-                Batter = identityOnTeamWithFullDetails,
+                Batter = identityOnTeamThePlayerPlaysFor,
                 DismissalType = DismissalType.Bowled,
                 RunsScored = 40,
                 BallsFaced = 36
             });
-            var bowlingInningsForTeamWithFullDetails = matchWhereThePlayerUnderTestBattedBowledAndFielded.MatchInnings.First(x => x.BowlingTeam!.Team!.TeamId == readOnlyTestData.TeamWithFullDetails!.TeamId);
-            bowlingInningsForTeamWithFullDetails.PlayerInnings.Add(new PlayerInnings
+            var bowlingInningsForTeamThePlayerPlaysFor = matchWhereThePlayerUnderTestBattedBowledAndFielded.MatchInnings.First(x => x.BowlingTeam!.Team!.TeamId == teamThePlayerPlaysFor.TeamId);
+            bowlingInningsForTeamThePlayerPlaysFor.PlayerInnings.Add(new PlayerInnings
             {
                 PlayerInningsId = Guid.NewGuid(),
                 Batter = anyPlayerForTheOppositionTeam,
                 DismissalType = DismissalType.CaughtAndBowled,
-                Bowler = identityOnTeamWithFullDetails
+                Bowler = identityOnTeamThePlayerPlaysFor
             });
-            bowlingInningsForTeamWithFullDetails.PlayerInnings.Add(new PlayerInnings
+            bowlingInningsForTeamThePlayerPlaysFor.PlayerInnings.Add(new PlayerInnings
             {
                 PlayerInningsId = Guid.NewGuid(),
                 Batter = anyPlayerForTheOppositionTeam,
                 DismissalType = DismissalType.RunOut,
-                DismissedBy = identityOnTeamWithFullDetails
+                DismissedBy = identityOnTeamThePlayerPlaysFor
             });
-            bowlingInningsForTeamWithFullDetails.OversBowled.Add(new Over
+            bowlingInningsForTeamThePlayerPlaysFor.OversBowled.Add(new Over
             {
                 OverId = Guid.NewGuid(),
-                OverSet = bowlingInningsForTeamWithFullDetails.OverSets.First(),
-                Bowler = identityOnTeamWithFullDetails,
+                OverSet = bowlingInningsForTeamThePlayerPlaysFor.OverSets.First(),
+                Bowler = identityOnTeamThePlayerPlaysFor,
                 BallsBowled = 8,
                 RunsConceded = 10
             });
-            bowlingInningsForTeamWithFullDetails.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(bowlingInningsForTeamWithFullDetails);
-            identityOnTeamWithFullDetails.FirstPlayed = identityOnTeamWithFullDetails.LastPlayed = matchWhereThePlayerUnderTestBattedBowledAndFielded.StartTime;
+            bowlingInningsForTeamThePlayerPlaysFor.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(bowlingInningsForTeamThePlayerPlaysFor);
+            identityOnTeamThePlayerPlaysFor.FirstPlayed = identityOnTeamThePlayerPlaysFor.LastPlayed = matchWhereThePlayerUnderTestBattedBowledAndFielded.StartTime;
 
 
             // Create a match between the player's two teams. This must be a different match to the one where the player has batted and taken wickets, catches and run-outs.
-            // Make sure the identity NOT on testData.TeamWithFullDetails has an award but no other part in the match.
-            // When test queries filter by testData.TeamWithFullDetails they should NOT include the match where the player won an award for a different team in TotalMatches for the player.
-            var matchBetweenThePlayersTeams = _matchFactory.CreateMatchBetween(someOtherTeamThePlayerBelongsTo, new List<PlayerIdentity>(), readOnlyTestData.TeamWithFullDetails, new List<PlayerIdentity>(), _randomiser.FiftyFiftyChance(), readOnlyTestData, nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam));
+            // Make sure the identity NOT on the team the player plays for has an award but no other part in the match.
+            // When test queries filter by the team the player plays for they should NOT include the match where the player won an award for a different team in TotalMatches for the player.
+            var matchBetweenThePlayersTeams = _matchFactory.CreateMatchBetween(someOtherTeamThePlayerBelongsTo, new List<PlayerIdentity>(), teamThePlayerPlaysFor, new List<PlayerIdentity>(), _randomiser.FiftyFiftyChance(), readOnlyTestData, nameof(APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam));
             matchBetweenThePlayersTeams.MatchLocation = null;
             matchBetweenThePlayersTeams.Season = null;
             matchBetweenThePlayersTeams.Awards.Add(new MatchAward

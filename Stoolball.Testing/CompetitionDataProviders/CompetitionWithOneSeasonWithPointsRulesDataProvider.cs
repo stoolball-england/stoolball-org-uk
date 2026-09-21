@@ -1,5 +1,3 @@
-using Stoolball.Testing.PlayerDataProviders;
-
 namespace Stoolball.Testing.CompetitionDataProviders
 {
     internal class CompetitionWithOneSeasonWithPointsRulesDataProvider(CompetitionFactory _competitionFactory, SeasonFactory _seasonFactory, TeamFactory _teamFactory) : BaseCompetitionDataProvider

@@ -1,6 +1,4 @@
-﻿using Stoolball.Testing.PlayerDataProviders;
-
-namespace Stoolball.Testing.CompetitionDataProviders
+﻿namespace Stoolball.Testing.CompetitionDataProviders
 {
     internal class CompetitionWithTeamsAndOverSetsInSeasonProvider(CompetitionFactory _competitionFactory,
                                                         SeasonFactory _seasonFactory,

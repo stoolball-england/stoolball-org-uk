@@ -115,8 +115,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_performances_supports_filter_by_competition_id()
         {
-            var filter = new StatisticsFilter { Competition = _databaseFixture.TestData.Competitions.First() };
-            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
+            var filter = new StatisticsFilter { Competition = _databaseFixture.TestData.CompetitionWithPlayerStatistics() };
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
@@ -130,8 +130,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_performances_supports_filter_by_season_id()
         {
-            var filter = new StatisticsFilter { Season = _databaseFixture.TestData.Competitions.First().Seasons.First() };
-            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
+            var filter = new StatisticsFilter { Season = _databaseFixture.TestData.SeasonWithPlayerStatistics() };
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var result = await dataSource.ReadTotalPlayerIdentityPerformances(filter).ConfigureAwait(false);
@@ -322,9 +322,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     PageSize = int.MaxValue
                 },
-                Competition = _databaseFixture.TestData.Competitions.First()
+                Competition = _databaseFixture.TestData.CompetitionWithPlayerStatistics()
             };
-            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var results = await dataSource.ReadPlayerIdentityPerformances(filter).ConfigureAwait(false);
@@ -344,9 +344,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     PageSize = int.MaxValue
                 },
-                Season = _databaseFixture.TestData.Competitions.First().Seasons.First()
+                Season = _databaseFixture.TestData.SeasonWithPlayerStatistics()
             };
-            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
+            _queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId! } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object);
 
             var results = await dataSource.ReadPlayerIdentityPerformances(filter).ConfigureAwait(false);

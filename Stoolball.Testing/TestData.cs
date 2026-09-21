@@ -23,6 +23,11 @@ namespace Stoolball.Testing
         internal List<MatchInnings> MatchInnings { get; set; } = new();
         internal Team? TeamWithMinimalDetails { get; set; }
         internal Team? TeamWithFullDetails { get; set; }
+
+        /// <summary>
+        /// A team with a player who has another identity on a different team, where that other identity only won an award in a match against this team.
+        /// </summary>
+        internal Team? TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam { get; set; }
         internal List<Team> Teams { get; set; } = new();
         internal List<TeamListing> TeamListings { get; set; } = new();
         internal MatchLocation? MatchLocationWithMinimalDetails { get; set; }
@@ -53,6 +58,26 @@ namespace Stoolball.Testing
         internal IEnumerable<Match> MatchesThatCouldHavePlayerStatistics()
         {
             return Matches.Where(m => m.MatchType != MatchType.TrainingSession && m.StartTime <= DateTimeOffset.UtcNow);
+        }
+
+        /// <summary>
+        /// Finds a season with at least one match that has player statistics.
+        /// </summary>
+        internal Season SeasonWithPlayerStatistics()
+        {
+            var matches = MatchesThatCouldHavePlayerStatistics().Where(m => m.Season != null && m.MatchInnings.Any(i => i.PlayerInnings.Any())).ToList();
+            return Competitions.SelectMany(c => c.Seasons).FirstOrDefault(s => matches.Any(m => m.Season?.SeasonId == s.SeasonId))
+                ?? throw new InvalidOperationException($"{nameof(SeasonWithPlayerStatistics)} did not find a season.");
+        }
+
+        /// <summary>
+        /// Finds a competition with at least one match that has player statistics.
+        /// </summary>
+        internal Competition CompetitionWithPlayerStatistics()
+        {
+            var matches = MatchesThatCouldHavePlayerStatistics().Where(m => m.Season?.Competition != null && m.MatchInnings.Any(i => i.PlayerInnings.Any())).ToList();
+            return Competitions.FirstOrDefault(c => matches.Any(m => m.Season?.Competition?.CompetitionId == c.CompetitionId))
+                ?? throw new InvalidOperationException($"{nameof(CompetitionWithPlayerStatistics)} did not find a competition.");
         }
 
         internal (PlayerIdentity firstIdentity, PlayerIdentity secondIdentity) AnyTwoIdentitiesFromTheSameTeam()

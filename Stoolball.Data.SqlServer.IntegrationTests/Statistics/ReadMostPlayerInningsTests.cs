@@ -139,6 +139,33 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 aw => aw.PlayerIdentity?.Team?.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId).ConfigureAwait(false);
         }
 
+        [Fact]
+        public async Task Read_most_player_innings_supports_statistics_filtered_by_team_id_where_a_player_only_won_an_award_for_another_team()
+        {
+            // TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam has a player with two identities: one on this team, and one on another team
+            // which only won a player of the match award in a match against this team, without batting, bowling or fielding.
+            // When filtering by this team, that match must not be counted in the player's TotalMatches, because the award was
+            // won for the other team. This checks TotalMatches is calculated for the identities on the team being filtered.
+            var filter = new StatisticsFilter
+            {
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
+                Team = _databaseFixture.TestData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam
+            };
+            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam!.TeamId! } }));
+            _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
+            var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
+
+            await ActAndAssertStatistics(filter, dataSource,
+                x => true,
+                i => i.BowlingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam.TeamId,
+                i => i.BattingTeam?.Team?.TeamId == _databaseFixture.TestData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam.TeamId,
+                x => true,
+                aw => aw.PlayerIdentity?.Team?.TeamId == _databaseFixture.TestData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam.TeamId).ConfigureAwait(false);
+        }
+
 
         [Fact]
         public async Task Read_most_player_innings_supports_statistics_filtered_by_team_route()
@@ -161,6 +188,33 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 i => i.BattingTeam?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute,
                 x => true,
                 aw => aw.PlayerIdentity?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithFullDetails.TeamRoute).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Read_most_player_innings_supports_statistics_filtered_by_team_route_where_a_player_only_won_an_award_for_another_team()
+        {
+            // TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam has a player with two identities: one on this team, and one on another team
+            // which only won a player of the match award in a match against this team, without batting, bowling or fielding.
+            // When filtering by this team, that match must not be counted in the player's TotalMatches, because the award was
+            // won for the other team. This checks TotalMatches is calculated for the identities on the team being filtered.
+            var filter = new StatisticsFilter
+            {
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
+                Team = _databaseFixture.TestData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam
+            };
+            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND TeamRoute = @TeamRoute", new Dictionary<string, object> { { "TeamRoute", _databaseFixture.TestData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam!.TeamRoute! } }));
+            _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
+            var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
+
+            await ActAndAssertStatistics(filter, dataSource,
+                x => true,
+                i => i.BowlingTeam?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam.TeamRoute,
+                i => i.BattingTeam?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam.TeamRoute,
+                x => true,
+                aw => aw.PlayerIdentity?.Team?.TeamRoute == _databaseFixture.TestData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam.TeamRoute).ConfigureAwait(false);
         }
 
         [Fact]
@@ -196,9 +250,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     PageSize = int.MaxValue
                 },
-                Competition = _databaseFixture.TestData.Competitions.First()
+                Competition = _databaseFixture.TestData.CompetitionWithPlayerStatistics()
             };
-            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
+            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId! } }));
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
@@ -220,9 +274,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     PageSize = int.MaxValue
                 },
-                Season = _databaseFixture.TestData.Competitions.First().Seasons.First()
+                Season = _databaseFixture.TestData.SeasonWithPlayerStatistics()
             };
-            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
+            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId! } }));
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
@@ -470,16 +524,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     PageSize = int.MaxValue
                 },
-                Competition = _databaseFixture.TestData.Competitions.First()
+                Competition = _databaseFixture.TestData.CompetitionWithPlayerStatistics()
             };
-            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId! } }));
+            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId! } }));
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
             var results = await dataSource.ReadMostPlayerInnings(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                     .Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId)
+                                                     .Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.CompetitionWithPlayerStatistics().CompetitionId)
                                                      .SelectMany(m => m.MatchInnings)
                                                      .SelectMany(mi => mi.PlayerInnings)
                                                      .Any(pi => pi.Batter?.Player?.PlayerId == x.PlayerId && pi.RunsScored.HasValue));
@@ -501,16 +555,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     PageSize = int.MaxValue
                 },
-                Season = _databaseFixture.TestData.Competitions.First().Seasons.First()
+                Season = _databaseFixture.TestData.SeasonWithPlayerStatistics()
             };
-            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId! } }));
+            _queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId! } }));
             _playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, _queryBuilder.Object, _playerDataSource.Object);
 
             var results = await dataSource.ReadMostPlayerInnings(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
-                                                     .Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
+                                                     .Where(x => x.Season?.SeasonId == _databaseFixture.TestData.SeasonWithPlayerStatistics().SeasonId)
                                                      .SelectMany(m => m.MatchInnings)
                                                      .SelectMany(mi => mi.PlayerInnings)
                                                      .Any(pi => pi.Batter?.Player?.PlayerId == x.PlayerId && pi.RunsScored.HasValue));

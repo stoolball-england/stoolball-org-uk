@@ -1,25 +1,21 @@
 ﻿using Stoolball.Logging;
 using Stoolball.Testing.ClubDataProviders;
+using Stoolball.Testing.CompetitionDataProviders;
 using Stoolball.Testing.MatchDataProviders;
 using Stoolball.Testing.MatchLocationDataProviders;
 using Stoolball.Testing.PlayerDataProviders;
 using Stoolball.Testing.SchoolDataProviders;
+using Stoolball.Testing.TeamDataProviders;
 using Stoolball.Testing.TournamentDataProviders;
 
 namespace Stoolball.Testing
 {
     internal class SeedDataGenerator
     {
-        private readonly Randomiser _randomiser;
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly IPlayerIdentityFinder _playerIdentityFinder;
         private readonly IMatchFinder _matchFinder;
         private readonly CompetitionFactory _competitionFactory;
-        private readonly SeasonFactory _seasonFactory;
-        private readonly TeamFactory _teamFactory;
-        private readonly PlayerFactory _playerFactory;
-        private readonly CommentFactory _commentFactory;
-        private readonly MatchFactory _matchFactory;
         private readonly IEnumerable<BaseMatchDataProvider> _matchDataProviders;
         private readonly IEnumerable<BaseCompetitionDataProvider> _competitionDataProviders;
         private readonly IEnumerable<BasePlayerDataProvider> _playerDataProviders;
@@ -28,36 +24,26 @@ namespace Stoolball.Testing
         private readonly IEnumerable<BaseClubDataProvider> _clubDataProviders;
         private readonly IEnumerable<BaseMatchLocationDataProvider> _matchLocationDataProviders;
         private readonly TournamentFactory _tournamentFactory;
+        private readonly IEnumerable<BaseTeamDataProvider> _teamDataProviders;
         private readonly Faker<Competition> _competitionFaker;
-        private readonly Faker<Team> _basicTeamFaker;
-        private readonly Faker<Team> _detailedTeamFaker;
         private readonly Faker<Club> _clubFaker;
 
-        internal SeedDataGenerator(Randomiser randomiser, IBowlingFiguresCalculator bowlingFiguresCalculator,
+        internal SeedDataGenerator(IBowlingFiguresCalculator bowlingFiguresCalculator,
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
-            CompetitionFactory competitionFactory, SeasonFactory seasonFactory, TeamFactory teamFactory, ClubFactory clubFactory,
+            CompetitionFactory competitionFactory, ClubFactory clubFactory,
             TournamentFactory tournamentFactory,
-            PlayerFactory playerFactory, CommentFactory commentFactory,
-            MatchFactory matchFactory, IEnumerable<BaseMatchDataProvider> matchDataProviders, IEnumerable<BaseCompetitionDataProvider> competitionDataProviders,
+            IEnumerable<BaseMatchDataProvider> matchDataProviders, IEnumerable<BaseCompetitionDataProvider> competitionDataProviders,
             IEnumerable<BasePlayerDataProvider> playerDataProviders, IEnumerable<BaseSchoolDataProvider> schoolDataProviders,
             IEnumerable<BaseTournamentDataProvider> tournamentDataProviders, IEnumerable<BaseClubDataProvider> clubDataProviders,
-            IEnumerable<BaseMatchLocationDataProvider> matchLocationDataProviders)
+            IEnumerable<BaseMatchLocationDataProvider> matchLocationDataProviders, IEnumerable<BaseTeamDataProvider> teamDataProviders)
         {
-            _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
             _matchFinder = matchFinder ?? throw new ArgumentNullException(nameof(matchFinder));
             _competitionFactory = competitionFactory ?? throw new ArgumentNullException(nameof(competitionFactory));
-            _seasonFactory = seasonFactory ?? throw new ArgumentNullException(nameof(seasonFactory));
-            _teamFactory = teamFactory ?? throw new ArgumentNullException(nameof(teamFactory));
             _tournamentFactory = tournamentFactory ?? throw new ArgumentNullException(nameof(tournamentFactory));
-            _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
-            _commentFactory = commentFactory ?? throw new ArgumentNullException(nameof(commentFactory));
             _competitionFaker = competitionFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(competitionFactory));
-            _basicTeamFaker = teamFactory?.CreateBasicTeamFaker() ?? throw new ArgumentNullException(nameof(teamFactory));
-            _detailedTeamFaker = teamFactory.CreateDetailedTeamFaker();
             _clubFaker = clubFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(clubFactory));
-            _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
             _matchDataProviders = matchDataProviders ?? throw new ArgumentNullException(nameof(matchDataProviders));
             _competitionDataProviders = competitionDataProviders ?? throw new ArgumentNullException(nameof(competitionDataProviders));
             _playerDataProviders = playerDataProviders ?? throw new ArgumentNullException(nameof(playerDataProviders));
@@ -65,19 +51,7 @@ namespace Stoolball.Testing
             _tournamentDataProviders = tournamentDataProviders ?? throw new ArgumentNullException(nameof(tournamentDataProviders));
             _clubDataProviders = clubDataProviders ?? throw new ArgumentNullException(nameof(clubDataProviders));
             _matchLocationDataProviders = matchLocationDataProviders ?? throw new ArgumentNullException(nameof(matchLocationDataProviders));
-        }
-
-        internal List<(Team team, List<PlayerIdentity> identities)> GenerateTeams()
-        {
-            // Create a pool of teams of 8 players
-            var poolOfTeams = new List<(Team team, List<PlayerIdentity> identities)>();
-            for (var i = 0; i < 5; i++)
-            {
-                var team = _randomiser.IsEven(i) ? _detailedTeamFaker.Generate() : _basicTeamFaker.Generate();
-                poolOfTeams.Add((team, _playerFactory.CreatePlayerIdentityFaker(team).Generate(8)));
-            }
-
-            return poolOfTeams;
+            _teamDataProviders = teamDataProviders ?? throw new ArgumentNullException(nameof(teamDataProviders));
         }
 
         internal TestData GenerateTestData()
@@ -85,47 +59,25 @@ namespace Stoolball.Testing
             var testData = new TestData();
             var playerComparer = new PlayerEqualityComparer();
 
-            var poolOfTeamsWithPlayers = GenerateTeams();
-
-            // Create a pool of competitions
-            for (var i = 0; i < 10; i++)
-            {
-                if (_randomiser.IsEven(i))
-                {
-                    testData.Competitions.Add(_competitionFactory.CreateCompetitionWithFullDetails());
-                    var team1 = poolOfTeamsWithPlayers[_randomiser.PositiveIntegerLessThan(poolOfTeamsWithPlayers.Count)].team;
-                    Team team2;
-                    do
-                    {
-                        team2 = poolOfTeamsWithPlayers[_randomiser.PositiveIntegerLessThan(poolOfTeamsWithPlayers.Count)].team;
-                    }
-                    while (team2.TeamId == team1.TeamId);
-
-                    var existingSummerSeasonsForCompetition = testData.Competitions[testData.Competitions.Count - 1].Seasons.Where(x => x.FromYear == x.UntilYear).Select(x => x.FromYear);
-                    var newSummerSeason = DateTime.Now.Year - i;
-                    while (existingSummerSeasonsForCompetition.Contains(newSummerSeason))
-                    {
-                        newSummerSeason--;
-                    }
-
-                    var season = _seasonFactory.CreateSeasonWithFullDetails(testData.Competitions[testData.Competitions.Count - 1], newSummerSeason, newSummerSeason, team1, team2);
-                    testData.Competitions[testData.Competitions.Count - 1].Seasons.Add(season);
-                }
-                else
-                {
-                    testData.Competitions.Add(_competitionFaker.Generate());
-                    testData.Competitions[testData.Competitions.Count - 1].Seasons.Add(_seasonFactory.CreateFaker(testData.Competitions[testData.Competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i).Generate());
-                }
-            }
-
             foreach (var provider in _matchLocationDataProviders)
             {
                 testData.MatchLocations.AddRange(provider.CreateMatchLocations(testData));
             }
-            testData.MatchLocations.AddRange(poolOfTeamsWithPlayers.SelectMany(x => x.team.MatchLocations).OfType<MatchLocation>());
 
-            // Create match and tournament data
-            testData.Matches = GenerateMatchData(testData, poolOfTeamsWithPlayers);
+            foreach (var provider in _teamDataProviders)
+            {
+                foreach (var (team, identities) in provider.CreateTeams(testData))
+                {
+                    AddTeamsAndRelatedEntitiesToTestData(testData, [team]);
+                    testData.PlayerIdentities.AddRange(identities);
+                }
+            }
+
+            foreach (var competition in CreateCompetitionsFromDataProviders(testData))
+            {
+                testData.Competitions.Add(competition);
+                AddTeamsAndRelatedEntitiesToTestData(testData, competition.Seasons.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>());
+            }
 
             testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
 
@@ -142,7 +94,7 @@ namespace Stoolball.Testing
             var teamsInTournaments = testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsInSeasons = testData.Competitions.SelectMany(x => x.Seasons).SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsAtMatchLocations = testData.MatchLocations.SelectMany(x => x.Teams);
-            testData.Teams = poolOfTeamsWithPlayers.Select(x => x.team)
+            testData.Teams = testData.Teams
                             .Union(teamsInMatches)
                             .Union(teamsInTournaments)
                             .Union(teamsInSeasons)
@@ -150,7 +102,7 @@ namespace Stoolball.Testing
             testData.Teams.AddRange(clubsFromProviders.SelectMany(c => c.Teams));
 
             testData.Clubs.Add(testData.ClubWithMinimalDetails);
-            testData.Clubs.AddRange(testData.Teams.Select(x => x.Club).OfType<Club>().Distinct(new ClubEqualityComparer()));
+            testData.Clubs.AddRange(testData.Teams.Select(x => x.Club).OfType<Club>().Distinct(new ClubEqualityComparer()).Where(x => !testData.Clubs.Any(c => c.ClubId == x.ClubId)));
 
             foreach (var provider in _tournamentDataProviders)
             {
@@ -174,21 +126,6 @@ namespace Stoolball.Testing
 
             testData.TournamentInTheFutureWithMinimalDetails = testData.Tournaments.First(t => t.StartTime > DateTimeOffset.UtcNow && !t.Teams.Any() && !t.Seasons.Any());
 
-            // Get a minimal team. Resolved after the tournament providers have run, so that a team added purely as a
-            // tournament participant (never in a match, club, location or season) is a candidate too.
-            testData.TeamWithMinimalDetails = FindTeamWithMinimalDetails(testData, teamsInMatches);
-
-            // Get a detailed team that's played a match. Resolved after the tournament providers have run, so that a
-            // team playing in TournamentInThePastWithFullDetails is a candidate too, alongside teams that have only
-            // played regular matches.
-            testData.TeamWithFullDetails = testData.Teams.First(x =>
-                        x.Club != null &&
-                        x.MatchLocations.Any() &&
-                        x.Seasons.Any() &&
-                        teamsInMatches.Select(t => t.TeamId).Contains(x.TeamId)
-            );
-            if (testData.TeamWithFullDetails == null) { throw new InvalidOperationException($"{nameof(testData.TeamWithFullDetails)} not found"); }
-
             testData.MatchLocations.AddRange(testData.Matches.Select(m => m.MatchLocation)
                 .Union(testData.Tournaments.Select(t => t.TournamentLocation))
                 .Union(testData.Teams.SelectMany(x => x.MatchLocations))
@@ -199,11 +136,35 @@ namespace Stoolball.Testing
             testData.MatchLocationWithFullDetails = testData.MatchLocations.First(x => x.Teams.Any());
             testData.MatchLocationWithMinimalDetails = testData.MatchLocations.First(x => !x.Teams.Any());
 
+            var playerIdentitiesInMatches = testData.Matches.SelectMany(_playerIdentityFinder.PlayerIdentitiesInMatch).Distinct(new PlayerIdentityEqualityComparer());
+            testData.PlayerIdentities = testData.PlayerIdentities.Union(playerIdentitiesInMatches, new PlayerIdentityEqualityComparer()).ToList();
+            testData.Players = testData.PlayerIdentities.Select(x => x.Player).OfType<Player>().Distinct(playerComparer).ToList();
+
+            foreach (var provider in _matchDataProviders.OrderBy(x => x.Order))
+            {
+                foreach (var match in provider.CreateMatches(testData))
+                {
+                    AddMatchAndRelatedEntitiesToTestData(testData, match);
+                }
+            }
+
+            // Get a minimal team. Resolved after the tournament and match providers have run, so that a team added purely as a
+            // tournament participant (never in a match, club, location or season) is a candidate too.
+            testData.TeamWithMinimalDetails = FindTeamWithMinimalDetails(testData, teamsInMatches);
+
+            // Get a detailed team that's played a match. Resolved after the tournament and match providers have run, so that a
+            // team playing in TournamentInThePastWithFullDetails is a candidate too, alongside teams that have only
+            // played regular matches.
+            testData.TeamWithFullDetails = FindTeamWithFullDetails(testData);
+
+            testData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam = FindTeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam(testData);
+
+            // Rebuilt after the match providers have run, so that competitions come first in the order of the matches played in them.
             testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
                 .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
                 .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season?.Competition))
                 .Union(new[] { _competitionFaker.Generate() })
-                .Union(CreateCompetitionsFromDataProviders(testData))
+                .Union(testData.Competitions)
                 .OfType<Competition>()
                 .Distinct(new CompetitionEqualityComparer()).ToList();
             testData.CompetitionWithNoSeasons = testData.Competitions.First(x => !x.Seasons.Any());
@@ -226,18 +187,6 @@ namespace Stoolball.Testing
             testData.SeasonWithFullDetails = testData.Seasons.First(x => x.Teams.Any()
                                                                       && x.PointsRules.Any()
                                                                       && x.PointsAdjustments.Any());
-
-            var playerIdentitiesInMatches = testData.Matches.SelectMany(_playerIdentityFinder.PlayerIdentitiesInMatch).Distinct(new PlayerIdentityEqualityComparer());
-            testData.PlayerIdentities = playerIdentitiesInMatches.ToList();
-            testData.Players = testData.PlayerIdentities.Select(x => x.Player).OfType<Player>().Distinct(playerComparer).ToList();
-
-            foreach (var provider in _matchDataProviders)
-            {
-                foreach (var match in provider.CreateMatches(testData))
-                {
-                    AddMatchAndRelatedEntitiesToTestData(testData, match);
-                }
-            }
 
             testData.MatchInThePastWithMinimalDetails = FindMatchInThePastWithMinimalDetails(testData);
 
@@ -290,11 +239,7 @@ namespace Stoolball.Testing
             var competitions = new List<Competition>();
             foreach (var provider in _competitionDataProviders)
             {
-                var competitionsFromProvider = provider.CreateCompetitions(testData);
-                foreach (var competition in competitionsFromProvider)
-                {
-                    competitions.Add(competition);
-                }
+                competitions.AddRange(provider.CreateCompetitions(testData));
             }
 
             return competitions;
@@ -462,6 +407,53 @@ namespace Stoolball.Testing
                 }
             }
             return results;
+        }
+
+        private static Team FindTeamWithFullDetails(TestData testData)
+        {
+            var teamIdsInMatches = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team?.TeamId).ToList();
+            return testData.Teams.FirstOrDefault(x =>
+                        x.Club != null &&
+                        x.MatchLocations.Any() &&
+                        x.Seasons.Any() &&
+                        teamIdsInMatches.Contains(x.TeamId)
+                   ) ?? throw new InvalidOperationException($"{nameof(FindTeamWithFullDetails)} did not find a team.");
+        }
+
+        /// <summary>
+        /// Finds a team with a player who has an identity on another team, where that other identity won an award in a match against this team
+        /// but took no other part in it, and the identity on this team played in a different match.
+        /// </summary>
+        private static Team FindTeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam(TestData testData)
+        {
+            static List<PlayerIdentity> IdentitiesWhoPlayed(Match match) =>
+                match.MatchInnings.SelectMany(i => i.PlayerInnings.SelectMany(pi => new[] { pi.Batter, pi.Bowler, pi.DismissedBy })
+                                                                  .Concat(i.OversBowled.Select(o => o.Bowler)))
+                                  .OfType<PlayerIdentity>().ToList();
+
+            var identitiesWhoPlayedInAnyMatch = testData.Matches.SelectMany(IdentitiesWhoPlayed).ToList();
+
+            foreach (var match in testData.Matches.Where(m => m.Awards.Any()))
+            {
+                var identitiesWhoPlayedInThisMatch = IdentitiesWhoPlayed(match);
+
+                foreach (var award in match.Awards)
+                {
+                    var awardIdentity = award.PlayerIdentity;
+                    if (awardIdentity?.Player?.PlayerId is null || awardIdentity.Team?.TeamId is null) { continue; }
+                    if (identitiesWhoPlayedInThisMatch.Any(x => x.PlayerIdentityId == awardIdentity.PlayerIdentityId)) { continue; }
+
+                    var identityOnAnotherTeamInThisMatch = identitiesWhoPlayedInAnyMatch.FirstOrDefault(x =>
+                        x.Player?.PlayerId == awardIdentity.Player.PlayerId &&
+                        x.Team?.TeamId is not null &&
+                        x.Team.TeamId != awardIdentity.Team.TeamId &&
+                        match.Teams.Any(t => t.Team?.TeamId == x.Team.TeamId));
+
+                    if (identityOnAnotherTeamInThisMatch?.Team is not null) { return identityOnAnotherTeamInThisMatch.Team; }
+                }
+            }
+
+            throw new InvalidOperationException($"{nameof(FindTeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam)} did not find a team.");
         }
 
         private static Team FindTeamWithMinimalDetails(TestData testData, IEnumerable<Team> teamsInMatches)
@@ -647,73 +639,6 @@ namespace Stoolball.Testing
                             )
                         )
                 ?? throw new InvalidOperationException($"{nameof(FindMatchInThePastWithFullDetails)} did not find a match.");
-        }
-
-
-        internal List<Match> GenerateMatchData(TestData testData, List<(Team team, List<PlayerIdentity> identities)> teamsWithIdentities)
-        {
-            // Randomly assign at least two players from each team a second identity - one on the same team, one on a different team.
-            // This ensure we always have lots of teams with multiple identities for the same player for both scenarios.
-            foreach (var (team, playerIdentities) in teamsWithIdentities)
-            {
-                // On the same team
-                var player1 = playerIdentities[_randomiser.PositiveIntegerLessThan(playerIdentities.Count)];
-                PlayerIdentity player2;
-                do
-                {
-                    player2 = playerIdentities[_randomiser.PositiveIntegerLessThan(playerIdentities.Count)];
-                } while (player1.PlayerIdentityId == player2.PlayerIdentityId);
-                player2.Player = player1.Player;
-
-                // On a different team
-                var player3 = playerIdentities[_randomiser.PositiveIntegerLessThan(playerIdentities.Count)];
-                (Team? targetTeam, List<PlayerIdentity>? targetIdentities) = (null, null);
-                do
-                {
-                    (targetTeam, targetIdentities) = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
-                } while (targetTeam.TeamId == team.TeamId);
-                var player4 = targetIdentities[_randomiser.PositiveIntegerLessThan(targetIdentities.Count)];
-                player4.Player = player3.Player;
-            }
-
-            var allIdentities = teamsWithIdentities.SelectMany(x => x.identities);
-            foreach (var player in allIdentities.Select(x => x.Player).OfType<Player>())
-            {
-                player.PlayerIdentities = new PlayerIdentityList(allIdentities.Where(x => x.Player?.PlayerId == player.PlayerId));
-            }
-
-            // Create matches for them to play in, with scorecards
-            var matches = new List<Match>();
-            for (var i = 0; i < 40; i++)
-            {
-                var homeTeamBatsFirst = _randomiser.FiftyFiftyChance();
-
-                var (teamA, teamAPlayers) = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
-                (Team? teamB, List<PlayerIdentity>? teamBPlayers) = (null, null);
-                do
-                {
-                    (teamB, teamBPlayers) = teamsWithIdentities[_randomiser.PositiveIntegerLessThan(teamsWithIdentities.Count)];
-                }
-                while (teamA.TeamId == teamB.TeamId);
-
-                var match = _matchFactory.CreateMatchBetween(teamA, teamAPlayers, teamB, teamBPlayers, homeTeamBatsFirst, testData, nameof(GenerateMatchData) + "RandomMatches");
-                if (_randomiser.FiftyFiftyChance())
-                {
-                    match.Comments = _commentFactory.CreateFaker().Generate(_randomiser.Between(1, 15));
-                }
-
-                match.MatchResultType = _randomiser.FiftyFiftyChance() ? new MatchResultType[] { MatchResultType.HomeWin, MatchResultType.AwayWin, MatchResultType.Tie }[_randomiser.PositiveIntegerLessThan(3)] : null;
-
-                matches.Add(match);
-            }
-
-            // Generate bowling figures for each innings
-            foreach (var innings in matches.SelectMany(x => x.MatchInnings))
-            {
-                innings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(innings);
-            }
-
-            return matches;
         }
 
     }

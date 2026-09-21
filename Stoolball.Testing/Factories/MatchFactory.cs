@@ -127,6 +127,8 @@ namespace Stoolball.Testing.Factories
             // Most matches have a season and competition
             if (_randomiser.OneInFourChance() && testData.Competitions.Any())
             {
+                if (!testData.Competitions.Any(x => x.Seasons.Any())) { throw new InvalidOperationException("No competition in the test data has a season, so a match cannot be given one."); }
+
                 do
                 {
                     var competition = testData.Competitions[_randomiser.PositiveIntegerLessThan(testData.Competitions.Count)];
