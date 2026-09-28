@@ -91,6 +91,8 @@ namespace Stoolball.Testing
 
             services.AddSingleton<BaseCompetitionDataProvider>(sp => new RandomCompetitionsDataProvider(
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<CompetitionFactory>(), sp.GetRequiredService<SeasonFactory>()));
+            services.AddSingleton<BaseCompetitionDataProvider>(sp => new CompetitionWithNoSeasonsDataProvider(
+                sp.GetRequiredService<CompetitionFactory>()));
 
             services.AddSingleton<BaseTeamDataProvider>(sp => new RandomTeamsDataProvider(
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
@@ -112,11 +114,15 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<TournamentFactory>(), sp.GetRequiredService<CommentFactory>()));
             services.AddSingleton<BaseTournamentDataProvider>(sp => new TournamentsInTheFutureDataProvider(
                 sp.GetRequiredService<TournamentFactory>()));
+            services.AddSingleton<BaseTournamentDataProvider>(sp => new TournamentInThePastWithMinimalDetailsDataProvider(
+                sp.GetRequiredService<TournamentFactory>()));
 
             services.AddSingleton<BaseClubDataProvider>(sp => new ClubWithTeamsAndMatchLocationProvider(
                 sp.GetRequiredService<ClubFactory>(), sp.GetRequiredService<MatchLocationFactory>()));
             services.AddSingleton<BaseClubDataProvider>(sp => new ClubsWithTeamsDataProvider(
                 sp.GetRequiredService<ClubFactory>(), sp.GetRequiredService<TeamFactory>()));
+            services.AddSingleton<BaseClubDataProvider>(sp => new ClubWithMinimalDetailsProvider(
+                sp.GetRequiredService<ClubFactory>()));
 
             services.AddSingleton<BaseMatchLocationDataProvider>(sp => new RandomMatchLocationDataProvider(
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchLocationFactory>(), sp.GetRequiredService<TeamFactory>()));
@@ -125,9 +131,6 @@ namespace Stoolball.Testing
                 sp.GetRequiredService<IBowlingFiguresCalculator>(),
                 sp.GetRequiredService<IPlayerIdentityFinder>(),
                 sp.GetRequiredService<IMatchFinder>(),
-                sp.GetRequiredService<CompetitionFactory>(),
-                sp.GetRequiredService<ClubFactory>(),
-                sp.GetRequiredService<TournamentFactory>(),
                 sp.GetRequiredService<IEnumerable<BaseMatchDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BaseCompetitionDataProvider>>(),
                 sp.GetRequiredService<IEnumerable<BasePlayerDataProvider>>(),

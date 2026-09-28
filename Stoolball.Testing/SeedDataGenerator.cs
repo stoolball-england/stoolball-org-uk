@@ -14,7 +14,6 @@ namespace Stoolball.Testing
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly IPlayerIdentityFinder _playerIdentityFinder;
         private readonly IMatchFinder _matchFinder;
-        private readonly CompetitionFactory _competitionFactory;
         private readonly IEnumerable<BaseMatchDataProvider> _matchDataProviders;
         private readonly IEnumerable<BaseCompetitionDataProvider> _competitionDataProviders;
         private readonly IEnumerable<BasePlayerDataProvider> _playerDataProviders;
@@ -22,15 +21,10 @@ namespace Stoolball.Testing
         private readonly IEnumerable<BaseTournamentDataProvider> _tournamentDataProviders;
         private readonly IEnumerable<BaseClubDataProvider> _clubDataProviders;
         private readonly IEnumerable<BaseMatchLocationDataProvider> _matchLocationDataProviders;
-        private readonly TournamentFactory _tournamentFactory;
         private readonly IEnumerable<BaseTeamDataProvider> _teamDataProviders;
-        private readonly Faker<Competition> _competitionFaker;
-        private readonly Faker<Club> _clubFaker;
 
         internal SeedDataGenerator(IBowlingFiguresCalculator bowlingFiguresCalculator,
             IPlayerIdentityFinder playerIdentityFinder, IMatchFinder matchFinder,
-            CompetitionFactory competitionFactory, ClubFactory clubFactory,
-            TournamentFactory tournamentFactory,
             IEnumerable<BaseMatchDataProvider> matchDataProviders, IEnumerable<BaseCompetitionDataProvider> competitionDataProviders,
             IEnumerable<BasePlayerDataProvider> playerDataProviders, IEnumerable<BaseSchoolDataProvider> schoolDataProviders,
             IEnumerable<BaseTournamentDataProvider> tournamentDataProviders, IEnumerable<BaseClubDataProvider> clubDataProviders,
@@ -39,10 +33,6 @@ namespace Stoolball.Testing
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
             _matchFinder = matchFinder ?? throw new ArgumentNullException(nameof(matchFinder));
-            _competitionFactory = competitionFactory ?? throw new ArgumentNullException(nameof(competitionFactory));
-            _tournamentFactory = tournamentFactory ?? throw new ArgumentNullException(nameof(tournamentFactory));
-            _competitionFaker = competitionFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(competitionFactory));
-            _clubFaker = clubFactory?.CreateFaker() ?? throw new ArgumentNullException(nameof(clubFactory));
             _matchDataProviders = matchDataProviders ?? throw new ArgumentNullException(nameof(matchDataProviders));
             _competitionDataProviders = competitionDataProviders ?? throw new ArgumentNullException(nameof(competitionDataProviders));
             _playerDataProviders = playerDataProviders ?? throw new ArgumentNullException(nameof(playerDataProviders));
@@ -80,12 +70,8 @@ namespace Stoolball.Testing
 
             testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
 
-            testData.TournamentInThePastWithMinimalDetails = _tournamentFactory.CreateFaker().Generate();
-            testData.Tournaments.Add(testData.TournamentInThePastWithMinimalDetails);
-
-            testData.ClubWithMinimalDetails = _clubFaker.Generate();
-
             var clubsFromProviders = CreateTestDataFromClubProviders(testData);
+            testData.ClubWithMinimalDetails = clubsFromProviders.First(c => !c.Teams.Any());
             testData.ClubWithTeamsAndMatchLocation = clubsFromProviders.First(c => c.Teams.Any(t => t.MatchLocations.Any()));
             testData.MatchLocationForClub = testData.ClubWithTeamsAndMatchLocation.Teams.SelectMany(t => t.MatchLocations).OfType<MatchLocation>().First();
 
@@ -122,6 +108,9 @@ namespace Stoolball.Testing
             }
 
             testData.TournamentInThePastWithFullDetails = testData.Tournaments.First(t => t.History.Any());
+
+            testData.TournamentInThePastWithMinimalDetails = testData.Tournaments.First(t =>
+                t.StartTime < DateTimeOffset.UtcNow && !t.Teams.Any() && !t.Seasons.Any() && !t.History.Any() && !t.Comments.Any() && t.TournamentLocation == null);
 
             testData.TournamentInTheFutureWithMinimalDetails = testData.Tournaments.First(t => t.StartTime > DateTimeOffset.UtcNow && !t.Teams.Any() && !t.Seasons.Any());
 
@@ -177,7 +166,6 @@ namespace Stoolball.Testing
             testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
                 .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
                 .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season?.Competition))
-                .Union(new[] { _competitionFaker.Generate() })
                 .Union(testData.Competitions)
                 .OfType<Competition>()
                 .Distinct(new CompetitionEqualityComparer()).ToList();
