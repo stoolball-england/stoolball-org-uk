@@ -1,5 +1,4 @@
-﻿using Stoolball.Logging;
-using Stoolball.Testing.ClubDataProviders;
+﻿using Stoolball.Testing.ClubDataProviders;
 using Stoolball.Testing.CompetitionDataProviders;
 using Stoolball.Testing.MatchDataProviders;
 using Stoolball.Testing.MatchLocationDataProviders;
@@ -544,15 +543,16 @@ namespace Stoolball.Testing
 
         private static Match FindMatchInThePastWithFullDetails(TestData testData)
         {
-            var match = testData.Matches.FirstOrDefault(x =>
+            return testData.Matches.FirstOrDefault(x =>
                                 x.StartTime < DateTime.UtcNow &&
-                                x.Teams.Any() &&
+                                x.Teams.Any(t => t.Team?.UntilYear is not null) &&
                                 x.PlayersPerTeam != null &&
                                 x.Season != null && x.Season.Competition != null &&
                                 x.MatchLocation != null &&
                                 x.Tournament == null &&
                                 x.Awards.Any() &&
                                 x.Comments.Any() &&
+                                x.History.Any() &&
                                 x.MatchInnings.Any(i =>
                                         i.BattingTeam != null &&
                                         i.BowlingTeam != null &&
@@ -563,21 +563,6 @@ namespace Stoolball.Testing
                                     )
                                 )
                 ?? throw new InvalidOperationException($"{nameof(FindMatchInThePastWithFullDetails)} did not find a match.");
-
-            match.Teams[0].Team!.UntilYear = 2020;
-            match.History.AddRange(new[] { new AuditRecord {
-                    Action = AuditAction.Create,
-                    ActorName = nameof(SeedDataGenerator),
-                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(-1),
-                    EntityUri = match.EntityUri
-                }, new AuditRecord {
-                    Action = AuditAction.Update,
-                    ActorName = nameof(SeedDataGenerator),
-                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute(),
-                    EntityUri = match.EntityUri
-                } });
-
-            return match;
         }
 
         private static Match FindMatchInTheFutureWithMinimalDetails(TestData testData)

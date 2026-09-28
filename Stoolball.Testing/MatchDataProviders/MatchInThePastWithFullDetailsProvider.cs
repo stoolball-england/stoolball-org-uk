@@ -1,4 +1,5 @@
 using Stoolball.Awards;
+using Stoolball.Logging;
 
 namespace Stoolball.Testing.MatchDataProviders
 {
@@ -31,9 +32,23 @@ namespace Stoolball.Testing.MatchDataProviders
 
         internal override IEnumerable<Match> CreateMatches(TestData readOnlyTestData)
         {
+            var matchInThePastWithFullDetails = CreateMatchInThePastWithFullDetails();
+            matchInThePastWithFullDetails.Teams[0].Team!.UntilYear = 2020;
+            matchInThePastWithFullDetails.History.AddRange(new[] { new AuditRecord {
+                    Action = AuditAction.Create,
+                    ActorName = nameof(MatchInThePastWithFullDetailsProvider),
+                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(-1),
+                    EntityUri = matchInThePastWithFullDetails.EntityUri
+                }, new AuditRecord {
+                    Action = AuditAction.Update,
+                    ActorName = nameof(MatchInThePastWithFullDetailsProvider),
+                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute(),
+                    EntityUri = matchInThePastWithFullDetails.EntityUri
+                } });
+
             var matches = new List<Match>
             {
-                CreateMatchInThePastWithFullDetails()
+                matchInThePastWithFullDetails
             };
 
             var matchInThePastWithFullDetailsAndTournament = CreateMatchInThePastWithFullDetails();
