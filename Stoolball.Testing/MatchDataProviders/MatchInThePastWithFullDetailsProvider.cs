@@ -11,13 +11,12 @@ namespace Stoolball.Testing.MatchDataProviders
         private readonly MatchLocationFactory _matchLocationFactory;
         private readonly CommentFactory _commentFactory;
         private readonly OverFactory _overFactory;
-        private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly TournamentFactory _tournamentFactory;
         private readonly Award _playerOfTheMatchAward;
 
         public MatchInThePastWithFullDetailsProvider(MatchFactory matchFactory, TeamFactory teamFactory, CompetitionFactory competitionFactory,
             SeasonFactory seasonFactory, MatchLocationFactory matchLocationFactory, CommentFactory commentFactory, OverFactory overFactory,
-            IBowlingFiguresCalculator bowlingFiguresCalculator, TournamentFactory tournamentFactory, Award playerOfTheMatchAward)
+            TournamentFactory tournamentFactory, Award playerOfTheMatchAward)
         {
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
             _teamFactory = teamFactory ?? throw new ArgumentNullException(nameof(teamFactory));
@@ -26,7 +25,6 @@ namespace Stoolball.Testing.MatchDataProviders
             _matchLocationFactory = matchLocationFactory ?? throw new ArgumentNullException(nameof(matchLocationFactory));
             _commentFactory = commentFactory ?? throw new ArgumentNullException(nameof(commentFactory));
             _overFactory = overFactory ?? throw new ArgumentNullException(nameof(overFactory));
-            _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _tournamentFactory = tournamentFactory ?? throw new ArgumentNullException(nameof(tournamentFactory));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
         }
@@ -169,7 +167,6 @@ namespace Stoolball.Testing.MatchDataProviders
             firstInnings.BowlingTeam = awayTeamInMatch;
             firstInnings.PlayerInnings = CreateBattingScorecard(homePlayers, awayPlayers);
             firstInnings.OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName([.. awayPlayers], firstInnings.OverSets);
-            firstInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(firstInnings);
 
             var secondInnings = match.MatchInnings[1];
             secondInnings.BattingMatchTeamId = awayTeamInMatch.MatchTeamId;
@@ -178,7 +175,6 @@ namespace Stoolball.Testing.MatchDataProviders
             secondInnings.BowlingTeam = homeTeamInMatch;
             secondInnings.PlayerInnings = CreateBattingScorecard(awayPlayers, homePlayers);
             secondInnings.OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName([.. homePlayers], secondInnings.OverSets);
-            secondInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(secondInnings);
 
             var thirdInnings = match.MatchInnings[2];
             thirdInnings.BattingMatchTeamId = homeTeamInMatch.MatchTeamId;
@@ -187,7 +183,6 @@ namespace Stoolball.Testing.MatchDataProviders
             thirdInnings.BowlingTeam = awayTeamInMatch;
             thirdInnings.PlayerInnings = CreateBattingScorecard(homePlayers, awayPlayers);
             thirdInnings.OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName([.. awayPlayers], thirdInnings.OverSets);
-            thirdInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(thirdInnings);
 
             var fourthInnings = match.MatchInnings[3];
             fourthInnings.BattingMatchTeamId = awayTeamInMatch.MatchTeamId;
@@ -196,7 +191,6 @@ namespace Stoolball.Testing.MatchDataProviders
             fourthInnings.BowlingTeam = homeTeamInMatch;
             fourthInnings.PlayerInnings = CreateBattingScorecard(awayPlayers, homePlayers);
             fourthInnings.OversBowled = _overFactory.CreateOversBowledIncludingOneWithOnlyName([.. homePlayers], fourthInnings.OverSets);
-            fourthInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(fourthInnings);
 
             return match;
         }

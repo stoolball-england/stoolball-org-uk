@@ -7,14 +7,12 @@ namespace Stoolball.Testing.MatchDataProviders
     {
         private readonly MatchFactory _matchFactory;
         private readonly PlayerFactory _playerFactory;
-        private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly Faker<Team> _teamFaker;
 
-        public MatchWithBowlerWithMultipleIdentities(MatchFactory matchFactory, TeamFactory teamFactory, PlayerFactory playerFactory, IBowlingFiguresCalculator bowlingFiguresCalculator)
+        public MatchWithBowlerWithMultipleIdentities(MatchFactory matchFactory, TeamFactory teamFactory, PlayerFactory playerFactory)
         {
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
             _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
-            _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _teamFaker = teamFactory.CreateBasicTeamFaker();
         }
 
@@ -65,8 +63,6 @@ namespace Stoolball.Testing.MatchDataProviders
                     BallsFaced = 1
                 });
             }
-
-            match.MatchInnings[0].BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(match.MatchInnings[0]);
 
             return new[] { match };
         }

@@ -12,16 +12,14 @@ namespace Stoolball.Testing.MatchDataProviders
     internal class APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam : BaseMatchDataProvider
     {
         private readonly MatchFactory _matchFactory;
-        private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly Award _playerOfTheMatchAward;
         private readonly Randomiser _randomiser;
         private readonly Faker<Team> _teamFaker;
         private readonly PlayerFactory _playerFactory;
 
-        internal APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(Randomiser randomiser, MatchFactory matchFactory, IBowlingFiguresCalculator bowlingFiguresCalculator, Award playerOfTheMatchAward, TeamFactory teamFactory, PlayerFactory playerFactory)
+        internal APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(Randomiser randomiser, MatchFactory matchFactory, Award playerOfTheMatchAward, TeamFactory teamFactory, PlayerFactory playerFactory)
         {
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
-            _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _teamFaker = teamFactory?.CreateBasicTeamFaker() ?? throw new ArgumentNullException(nameof(teamFactory));
@@ -105,7 +103,6 @@ namespace Stoolball.Testing.MatchDataProviders
                 BallsBowled = 8,
                 RunsConceded = 10
             });
-            bowlingInningsForTeamThePlayerPlaysFor.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(bowlingInningsForTeamThePlayerPlaysFor);
             identityOnTeamThePlayerPlaysFor.FirstPlayed = identityOnTeamThePlayerPlaysFor.LastPlayed = matchWhereThePlayerUnderTestBattedBowledAndFielded.StartTime;
 
 

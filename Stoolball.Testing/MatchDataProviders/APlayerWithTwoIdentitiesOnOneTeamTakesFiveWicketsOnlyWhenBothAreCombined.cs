@@ -12,13 +12,11 @@ namespace Stoolball.Testing.MatchDataProviders
     {
         private readonly Randomiser _randomiser;
         private readonly MatchFactory _matchFactory;
-        private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
 
-        public APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(Randomiser randomiser, MatchFactory matchFactory, IBowlingFiguresCalculator bowlingFiguresCalculator)
+        public APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(Randomiser randomiser, MatchFactory matchFactory)
         {
             _randomiser = randomiser ?? throw new ArgumentNullException(nameof(randomiser));
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
-            _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
         }
 
         internal override IEnumerable<Match> CreateMatches(TestData readOnlyTestData)
@@ -69,8 +67,6 @@ namespace Stoolball.Testing.MatchDataProviders
                         BallsFaced = _randomiser.Between(1, 100),
                     });
             }
-
-            firstBowlingInningsForPlayerWithMultipleIdentities.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(firstBowlingInningsForPlayerWithMultipleIdentities);
 
             return new[] { match };
         }

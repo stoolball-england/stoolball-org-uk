@@ -13,7 +13,7 @@ namespace Stoolball.Testing.UnitTests.MatchDataProviders
         public void A_player_linked_to_a_member_bowls_using_two_identities()
         {
             var provider = new MatchWithBowlerWithMultipleIdentities(
-                _services.Get<MatchFactory>(), _services.Get<TeamFactory>(), _services.Get<PlayerFactory>(), _services.Get<IBowlingFiguresCalculator>());
+                _services.Get<MatchFactory>(), _services.Get<TeamFactory>(), _services.Get<PlayerFactory>());
 
             var match = provider.CreateMatches(new TestData()).Single();
 

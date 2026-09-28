@@ -9,17 +9,15 @@ namespace Stoolball.Testing.TournamentDataProviders
         private readonly TeamFactory _teamFactory;
         private readonly PlayerFactory _playerFactory;
         private readonly MatchFactory _matchFactory;
-        private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly Award _playerOfTheMatchAward;
 
         internal TournamentWithFullDetailsProvider(TournamentFactory tournamentFactory, TeamFactory teamFactory, PlayerFactory playerFactory, MatchFactory matchFactory,
-            IBowlingFiguresCalculator bowlingFiguresCalculator, Award playerOfTheMatchAward)
+            Award playerOfTheMatchAward)
         {
             _tournamentFactory = tournamentFactory ?? throw new ArgumentNullException(nameof(tournamentFactory));
             _teamFactory = teamFactory ?? throw new ArgumentNullException(nameof(teamFactory));
             _playerFactory = playerFactory ?? throw new ArgumentNullException(nameof(playerFactory));
             _matchFactory = matchFactory ?? throw new ArgumentNullException(nameof(matchFactory));
-            _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerOfTheMatchAward = playerOfTheMatchAward ?? throw new ArgumentNullException(nameof(playerOfTheMatchAward));
         }
 
@@ -118,11 +116,6 @@ namespace Stoolball.Testing.TournamentDataProviders
                     dismissedPlayerInnings.DismissalType = DismissalType.Bowled;
                     dismissedPlayerInnings.Bowler = teamBPlayers.First();
                     dismissedPlayerInnings.DismissedBy = null;
-                }
-
-                foreach (var matchInnings in matchInTournament.MatchInnings)
-                {
-                    matchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(matchInnings);
                 }
 
                 matchOrderInTournament++;

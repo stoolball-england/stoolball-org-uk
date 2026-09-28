@@ -6,7 +6,7 @@ namespace Stoolball.Testing.MatchDataProviders
     /// Creates random matches with scorecards between teams that have player identities in the test data, other than teams in tournaments.
     /// Matches may or may not be in a season, at a match location, and have comments.
     /// </summary>
-    internal class RandomMatchDataProvider(Randomiser _randomiser, MatchFactory _matchFactory, CommentFactory _commentFactory, IBowlingFiguresCalculator _bowlingFiguresCalculator) : BaseMatchDataProvider
+    internal class RandomMatchDataProvider(Randomiser _randomiser, MatchFactory _matchFactory, CommentFactory _commentFactory) : BaseMatchDataProvider
     {
         /// <summary>
         /// Runs before the other match providers, so that they can rely on there being matches already.
@@ -46,11 +46,6 @@ namespace Stoolball.Testing.MatchDataProviders
                 match.MatchResultType = _randomiser.FiftyFiftyChance() ? new MatchResultType[] { MatchResultType.HomeWin, MatchResultType.AwayWin, MatchResultType.Tie }[_randomiser.PositiveIntegerLessThan(3)] : null;
 
                 matches.Add(match);
-            }
-
-            foreach (var innings in matches.SelectMany(x => x.MatchInnings))
-            {
-                innings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(innings);
             }
 
             return matches;

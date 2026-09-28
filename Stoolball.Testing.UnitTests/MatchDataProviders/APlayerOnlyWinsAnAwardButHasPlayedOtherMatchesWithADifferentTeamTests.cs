@@ -10,7 +10,7 @@ namespace Stoolball.Testing.UnitTests.MatchDataProviders
     public class APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeamTests(TestServicesFixture _services) : IClassFixture<TestServicesFixture>
     {
         private APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam CreateProvider() =>
-            new(_services.Get<Randomiser>(), _services.Get<MatchFactory>(), _services.Get<IBowlingFiguresCalculator>(), _services.Get<Award>(),
+            new(_services.Get<Randomiser>(), _services.Get<MatchFactory>(), _services.Get<Award>(),
                 _services.Get<TeamFactory>(), _services.Get<PlayerFactory>());
 
         [Fact]

@@ -50,12 +50,12 @@ namespace Stoolball.Testing
             // IEnumerable<TBase> - each provider still gets its own combination of factories/collaborators,
             // it's just DI rather than SeedDataGenerator constructing them inline.
             services.AddSingleton<BaseMatchDataProvider>(sp => new RandomMatchDataProvider(
-                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<CommentFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>()));
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<CommentFactory>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new APlayerOnlyWinsAnAwardButHasPlayedOtherMatchesWithADifferentTeam(
-                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(), sp.GetRequiredService<Award>(),
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<Award>(),
                 sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new APlayerWithTwoIdentitiesOnOneTeamTakesFiveWicketsOnlyWhenBothAreCombined(
-                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>()));
+                sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<MatchFactory>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new PlayersOnlyRecordedInOnePlace(
                 sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>(), sp.GetRequiredService<Award>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new MatchesInTheFuture(
@@ -77,10 +77,10 @@ namespace Stoolball.Testing
             services.AddSingleton<BaseMatchDataProvider>(sp => new MatchInThePastWithFullDetailsProvider(
                 sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<CompetitionFactory>(),
                 sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<MatchLocationFactory>(), sp.GetRequiredService<CommentFactory>(),
-                sp.GetRequiredService<OverFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(),
+                sp.GetRequiredService<OverFactory>(),
                 sp.GetRequiredService<TournamentFactory>(), sp.GetRequiredService<Award>()));
             services.AddSingleton<BaseMatchDataProvider>(sp => new MatchWithBowlerWithMultipleIdentities(
-                sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>()));
+                sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>()));
 
             services.AddSingleton<BaseCompetitionDataProvider>(sp => new CompetitionWithTeamsAndOverSetsInSeasonProvider(
                 sp.GetRequiredService<CompetitionFactory>(), sp.GetRequiredService<SeasonFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<OverSetFactory>()));
@@ -107,7 +107,7 @@ namespace Stoolball.Testing
 
             services.AddSingleton<BaseTournamentDataProvider>(sp => new TournamentWithFullDetailsProvider(
                 sp.GetRequiredService<TournamentFactory>(), sp.GetRequiredService<TeamFactory>(), sp.GetRequiredService<PlayerFactory>(),
-                sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<IBowlingFiguresCalculator>(), sp.GetRequiredService<Award>()));
+                sp.GetRequiredService<MatchFactory>(), sp.GetRequiredService<Award>()));
             services.AddSingleton<BaseTournamentDataProvider>(sp => new RandomTournamentDataProvider(
                 sp.GetRequiredService<Randomiser>(), sp.GetRequiredService<TournamentFactory>(), sp.GetRequiredService<CommentFactory>()));
             services.AddSingleton<BaseTournamentDataProvider>(sp => new TournamentsInTheFutureDataProvider(

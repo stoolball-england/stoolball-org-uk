@@ -1,5 +1,4 @@
 using System.Linq;
-using Stoolball.Statistics;
 using Stoolball.Testing.Factories;
 using Stoolball.Testing.MatchDataProviders;
 using Stoolball.Testing.TeamDataProviders;
@@ -10,7 +9,7 @@ namespace Stoolball.Testing.UnitTests.MatchDataProviders
     public class RandomMatchDataProviderTests(TestServicesFixture _services) : IClassFixture<TestServicesFixture>
     {
         private RandomMatchDataProvider CreateProvider() =>
-            new(_services.Get<Randomiser>(), _services.Get<MatchFactory>(), _services.Get<CommentFactory>(), _services.Get<IBowlingFiguresCalculator>());
+            new(_services.Get<Randomiser>(), _services.Get<MatchFactory>(), _services.Get<CommentFactory>());
 
         private TestData CreateTestDataWithTeams()
         {

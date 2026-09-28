@@ -140,6 +140,17 @@ namespace Stoolball.Testing
             testData.PlayerIdentities = testData.PlayerIdentities.Union(playerIdentitiesInMatches, new PlayerIdentityEqualityComparer()).ToList();
             testData.Players = testData.PlayerIdentities.Select(x => x.Player).OfType<Player>().Distinct(playerComparer).ToList();
 
+            // Create test data from providers, for specific scenarios which must not be altered in case they are no
+            // longer valid. Done here, rather than nearer the end, so the player identities it creates are part of
+            // testData.PlayerIdentities before PopulateCalculatedProperties runs below.
+            testData.Schools.AddRange(CreateTestDataFromSchoolProviders(testData));
+
+            testData.Players.AddRange(CreateTestDataFromPlayerProviders(testData));
+
+            testData.PlayerIdentities = testData.PlayerIdentities
+                                       .Union(testData.Players.SelectMany(p => p.PlayerIdentities), new PlayerIdentityEqualityComparer())
+                                       .ToList();
+
             foreach (var provider in _matchDataProviders.OrderBy(x => x.Order))
             {
                 foreach (var match in provider.CreateMatches(testData))
@@ -147,6 +158,10 @@ namespace Stoolball.Testing
                     AddMatchAndRelatedEntitiesToTestData(testData, match);
                 }
             }
+
+            // All matches are now built, so calculated properties - including bowling figures, which some of the
+            // lookups below rely on via BowlingFigures.Any() - can be populated.
+            PopulateCalculatedProperties(testData);
 
             // Get a minimal team. Resolved after the tournament and match providers have run, so that a team added purely as a
             // tournament participant (never in a match, club, location or season) is a candidate too.
@@ -202,15 +217,11 @@ namespace Stoolball.Testing
             // Get all batting records
             testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
 
-            CreateImmutableTestData(testData);
-
             BuildCollections(testData);
 
             testData.BowlerWithMultipleIdentities = FindBowlerWithMultipleIdentities(testData);
 
             EnsureCyclicalRelationshipsArePopulated(testData);
-
-            PopulateCalculatedProperties(testData);
 
             return testData;
         }
@@ -241,6 +252,11 @@ namespace Stoolball.Testing
         private void PopulateCalculatedProperties(TestData testData)
         {
             // The following steps must happen after ALL scorecards and awards are finalised
+            foreach (var matchInnings in testData.Matches.SelectMany(x => x.MatchInnings))
+            {
+                matchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(matchInnings);
+            }
+
             foreach (var identity in testData.PlayerIdentities)
             {
                 var matchesPlayedByThisIdentity = _matchFinder.MatchesPlayedByPlayerIdentity(testData.Matches, identity.PlayerIdentityId!.Value);
@@ -282,12 +298,6 @@ namespace Stoolball.Testing
                               .Union(membersFromMatchComments, memberComparer)
                               .Union(membersFromTournamentComments, memberComparer)
                               .ToList();
-
-            // Add player identities created to support other objects
-            var playerIdentitiesFromPlayers = testData.Players.SelectMany(p => p.PlayerIdentities);
-            testData.PlayerIdentities = testData.PlayerIdentities
-                                       .Union(playerIdentitiesFromPlayers, new PlayerIdentityEqualityComparer())
-                                       .ToList();
 
             // Add teams created to support other objects
             var teamsFromPlayers = testData.Players.SelectMany(p => p.PlayerIdentities).Where(pi => pi.Team is not null).Select(pi => pi.Team).OfType<Team>();
@@ -333,17 +343,6 @@ namespace Stoolball.Testing
                 teamListings.Add(club.ToTeamListing());
             }
             return teamListings;
-        }
-
-        /// <summary>
-        /// Create test data from providers, for specific scenarios which must not be altered in case they are no longer valid.
-        /// </summary>
-        /// <param name="testData"></param>
-        private void CreateImmutableTestData(TestData testData)
-        {
-            testData.Schools.AddRange(CreateTestDataFromSchoolProviders(testData));
-
-            testData.Players.AddRange(CreateTestDataFromPlayerProviders(testData));
         }
 
         private List<Club> CreateTestDataFromClubProviders(TestData testData)
@@ -491,11 +490,6 @@ namespace Stoolball.Testing
         private void AddMatchAndRelatedEntitiesToTestData(TestData testData, Match match)
         {
             testData.Matches.Add(match);
-
-            foreach (var matchInnings in match.MatchInnings)
-            {
-                matchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(matchInnings);
-            }
 
             AddTeamsAndRelatedEntitiesToTestData(testData, match.Teams.Select(x => x.Team).OfType<Team>());
 
