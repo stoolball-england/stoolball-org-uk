@@ -206,7 +206,7 @@ namespace Stoolball.Testing
 
             BuildCollections(testData);
 
-            testData.BowlerWithMultipleIdentities = CreateBowlerWithMultipleIdentities(testData, playerComparer);
+            testData.BowlerWithMultipleIdentities = FindBowlerWithMultipleIdentities(testData);
 
             EnsureCyclicalRelationshipsArePopulated(testData);
 
@@ -215,23 +215,12 @@ namespace Stoolball.Testing
             return testData;
         }
 
-        private static Player? CreateBowlerWithMultipleIdentities(TestData testData, PlayerEqualityComparer playerComparer)
+        private static Player FindBowlerWithMultipleIdentities(TestData testData)
         {
-            // Find any player who has multiple identities and bowled, and associate them to a member
-            var player = testData.Matches
-                .SelectMany(x => x.MatchInnings)
-                .SelectMany(x => x.BowlingFigures)
-                .Where(x => testData.PlayersWithMultipleIdentities.Contains(x.Bowler?.Player, playerComparer))
-                .Select(x => x.Bowler?.Player)
-                .First();
-            player!.PlayerIdentities.Clear();
-            player.PlayerIdentities.AddRange(testData.PlayerIdentities.Where(x => x.Player?.PlayerId == player.PlayerId));
-            player.MemberKey = testData.AnyMemberNotLinkedToPlayer().Key;
-            foreach (var identity in player.PlayerIdentities)
-            {
-                identity.LinkedBy = PlayerIdentityLinkedBy.Member;
-            }
-            return player;
+            return testData.Players.FirstOrDefault(player =>
+                        player.PlayerIdentities.Count > 1 &&
+                        testData.BowlingFigures.Any(bf => bf.Bowler?.Player?.PlayerId == player.PlayerId)
+                   ) ?? throw new InvalidOperationException($"{nameof(FindBowlerWithMultipleIdentities)} did not find a player.");
         }
 
         private IEnumerable<Competition> CreateCompetitionsFromDataProviders(TestData testData)
