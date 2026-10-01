@@ -48,18 +48,23 @@ namespace Stoolball.Testing
             var testData = new TestData();
             var playerComparer = new PlayerEqualityComparer();
 
-            foreach (var provider in _matchLocationDataProviders)
-            {
-                testData.MatchLocations.AddRange(provider.CreateMatchLocations(testData));
-            }
+            // --- 1. Provider loops, each producing entities that are immediately added to testData - so later
+            // provider loops see the output of earlier ones, and consume the shared seeded random stream in the
+            // same order every run. 
+            // 
+            // Population of collections that later provider loops rely on (eg club teams merged into testData.Teams) 
+            // stay interleaved here rather than moving to phase 2, since moving them shifts the random stream and 
+            // changes which random-but-seeded data gets generated. ---
 
-            foreach (var provider in _teamDataProviders)
+            testData.MatchLocations.AddRange(CreateMatchLocationsFromDataProviders(testData));
+
+            var clubsFromProviders = CreateTestDataFromClubProviders(testData);
+            testData.Clubs.AddRange(clubsFromProviders);
+
+            foreach (var (team, identities) in CreateTeamsFromDataProviders(testData))
             {
-                foreach (var (team, identities) in provider.CreateTeams(testData))
-                {
-                    AddTeamsAndRelatedEntitiesToTestData(testData, [team]);
-                    testData.PlayerIdentities.AddRange(identities);
-                }
+                AddTeamsAndRelatedEntitiesToTestData(testData, [team]);
+                testData.PlayerIdentities.AddRange(identities);
             }
 
             foreach (var competition in CreateCompetitionsFromDataProviders(testData))
@@ -70,49 +75,31 @@ namespace Stoolball.Testing
 
             testData.Tournaments.AddRange(testData.Matches.Where(x => x.Tournament != null && !testData.Tournaments.Select(t => t.TournamentId).Contains(x.Tournament.TournamentId)).Select(x => x.Tournament).OfType<Tournament>());
 
-            var clubsFromProviders = CreateTestDataFromClubProviders(testData);
-            testData.ClubWithMinimalDetails = clubsFromProviders.First(c => !c.Teams.Any());
-            testData.ClubWithTeamsAndMatchLocation = clubsFromProviders.First(c => c.Teams.Any(t => t.MatchLocations.Any()));
-            testData.MatchLocationForClub = testData.ClubWithTeamsAndMatchLocation.Teams.SelectMany(t => t.MatchLocations).OfType<MatchLocation>().First();
-
             var teamsInMatches = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsInTournaments = testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
-            var teamsInSeasons = testData.Competitions.SelectMany(x => x.Seasons).SelectMany(x => x.Teams).Select(x => x.Team).OfType<Team>();
             var teamsAtMatchLocations = testData.MatchLocations.SelectMany(x => x.Teams);
             testData.Teams = testData.Teams
                             .Union(teamsInMatches)
                             .Union(teamsInTournaments)
-                            .Union(teamsInSeasons)
                             .Union(teamsAtMatchLocations).Distinct(new TeamEqualityComparer()).ToList();
             testData.Teams.AddRange(clubsFromProviders.SelectMany(c => c.Teams));
 
-            testData.Clubs.Add(testData.ClubWithMinimalDetails);
             testData.Clubs.AddRange(testData.Teams.Select(x => x.Club).OfType<Club>().Distinct(new ClubEqualityComparer()).Where(x => !testData.Clubs.Any(c => c.ClubId == x.ClubId)));
 
-            foreach (var provider in _tournamentDataProviders)
+            foreach (var (tournament, matches) in CreateTournamentsFromDataProviders(testData))
             {
-                foreach (var (tournament, matches) in provider.CreateTournaments(testData))
+                if (!testData.Tournaments.Any(t => t.TournamentId == tournament.TournamentId))
                 {
-                    if (!testData.Tournaments.Any(t => t.TournamentId == tournament.TournamentId))
-                    {
-                        testData.Tournaments.Add(tournament);
-                    }
+                    testData.Tournaments.Add(tournament);
+                }
 
-                    AddTeamsAndRelatedEntitiesToTestData(testData, tournament.Teams.Select(x => x.Team).OfType<Team>());
+                AddTeamsAndRelatedEntitiesToTestData(testData, tournament.Teams.Select(x => x.Team).OfType<Team>());
 
-                    foreach (var match in matches)
-                    {
-                        AddMatchAndRelatedEntitiesToTestData(testData, match);
-                    }
+                foreach (var match in matches)
+                {
+                    AddMatchAndRelatedEntitiesToTestData(testData, match);
                 }
             }
-
-            testData.TournamentInThePastWithFullDetails = testData.Tournaments.First(t => t.History.Any());
-
-            testData.TournamentInThePastWithMinimalDetails = testData.Tournaments.First(t =>
-                t.StartTime < DateTimeOffset.UtcNow && !t.Teams.Any() && !t.Seasons.Any() && !t.History.Any() && !t.Comments.Any() && t.TournamentLocation == null);
-
-            testData.TournamentInTheFutureWithMinimalDetails = testData.Tournaments.First(t => t.StartTime > DateTimeOffset.UtcNow && !t.Teams.Any() && !t.Seasons.Any());
 
             testData.MatchLocations.AddRange(testData.Matches.Select(m => m.MatchLocation)
                 .Union(testData.Tournaments.Select(t => t.TournamentLocation))
@@ -121,16 +108,10 @@ namespace Stoolball.Testing
                 .Distinct(new MatchLocationEqualityComparer())
                 .Where(x => !testData.MatchLocations.Select(ml => ml.MatchLocationId).Contains(x.MatchLocationId)).ToList());
 
-            testData.MatchLocationWithFullDetails = testData.MatchLocations.First(x => x.Teams.Any());
-            testData.MatchLocationWithMinimalDetails = testData.MatchLocations.First(x => !x.Teams.Any());
-
             var playerIdentitiesInMatches = testData.Matches.SelectMany(_playerIdentityFinder.PlayerIdentitiesInMatch).Distinct(new PlayerIdentityEqualityComparer());
             testData.PlayerIdentities = testData.PlayerIdentities.Union(playerIdentitiesInMatches, new PlayerIdentityEqualityComparer()).ToList();
             testData.Players = testData.PlayerIdentities.Select(x => x.Player).OfType<Player>().Distinct(playerComparer).ToList();
 
-            // Create test data from providers, for specific scenarios which must not be altered in case they are no
-            // longer valid. Done here, rather than nearer the end, so the player identities it creates are part of
-            // testData.PlayerIdentities before PopulateCalculatedProperties runs below.
             testData.Schools.AddRange(CreateTestDataFromSchoolProviders(testData));
 
             testData.Players.AddRange(CreateTestDataFromPlayerProviders(testData));
@@ -139,17 +120,54 @@ namespace Stoolball.Testing
                                        .Union(testData.Players.SelectMany(p => p.PlayerIdentities), new PlayerIdentityEqualityComparer())
                                        .ToList();
 
-            foreach (var provider in _matchDataProviders.OrderBy(x => x.Order))
+            foreach (var match in CreateMatchesFromDataProviders(testData))
             {
-                foreach (var match in provider.CreateMatches(testData))
-                {
-                    AddMatchAndRelatedEntitiesToTestData(testData, match);
-                }
+                AddMatchAndRelatedEntitiesToTestData(testData, match);
             }
 
-            // All matches are now built, so calculated properties - including bowling figures, which some of the
-            // lookups below rely on via BowlingFigures.Any() - can be populated.
+            // --- 2. Calculated and cyclical data: rebuild collections from everything the providers produced above. ---
+
+            // All matches are now built, so calculated properties can be populated. This includes bowling figures (some of the
+            // lookups below rely on via BowlingFigures.Any()).
             PopulateCalculatedProperties(testData);
+
+            // Rebuilt after the match providers have run, so that competitions come first in the order of the matches played in them.
+            testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
+                .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
+                .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season?.Competition))
+                .Union(testData.Competitions)
+                .OfType<Competition>()
+                .Distinct(new CompetitionEqualityComparer()).ToList();
+
+            testData.Seasons = testData.Competitions.SelectMany(x => x.Seasons)
+                .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season).OfType<Season>())
+                .Distinct(new SeasonEqualityComparer()).ToList();
+
+            testData.MatchListings.AddRange(testData.Matches.Where(x => x.Tournament == null).Select(x => x.ToMatchListing()).Union(testData.Tournaments.Select(x => x.ToMatchListing())));
+            testData.TournamentMatchListings.AddRange(testData.Matches.Where(x => x.Tournament != null).Select(x => x.ToMatchListing()));
+
+            // Get all batting records
+            testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
+
+            BuildCollections(testData);
+
+            EnsureCyclicalRelationshipsArePopulated(testData);
+
+            // --- 3. Properties based on lookups into the finished, fully-calculated testData. ---
+
+            testData.ClubWithMinimalDetails = clubsFromProviders.First(c => !c.Teams.Any());
+            testData.ClubWithTeamsAndMatchLocation = clubsFromProviders.First(c => c.Teams.Any(t => t.MatchLocations.Any()));
+            testData.MatchLocationForClub = testData.ClubWithTeamsAndMatchLocation.Teams.SelectMany(t => t.MatchLocations).OfType<MatchLocation>().First();
+
+            testData.TournamentInThePastWithFullDetails = testData.Tournaments.First(t => t.History.Any());
+
+            testData.TournamentInThePastWithMinimalDetails = testData.Tournaments.First(t =>
+                t.StartTime < DateTimeOffset.UtcNow && !t.Teams.Any() && !t.Seasons.Any() && !t.History.Any() && !t.Comments.Any() && t.TournamentLocation == null);
+
+            testData.TournamentInTheFutureWithMinimalDetails = testData.Tournaments.First(t => t.StartTime > DateTimeOffset.UtcNow && !t.Teams.Any() && !t.Seasons.Any());
+
+            testData.MatchLocationWithFullDetails = testData.MatchLocations.First(x => x.Teams.Any());
+            testData.MatchLocationWithMinimalDetails = testData.MatchLocations.First(x => !x.Teams.Any());
 
             // Get a minimal team. Resolved after the tournament and match providers have run, so that a team added purely as a
             // tournament participant (never in a match, club, location or season) is a candidate too.
@@ -162,13 +180,6 @@ namespace Stoolball.Testing
 
             testData.TeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam = FindTeamWithPlayerWhoOnlyWonAnAwardForAnotherTeam(testData);
 
-            // Rebuilt after the match providers have run, so that competitions come first in the order of the matches played in them.
-            testData.Competitions = testData.Matches.Where(m => m.Season != null).Select(m => m.Season?.Competition)
-                .Union(testData.Tournaments.Where(t => t.Seasons.Any()).SelectMany(t => t.Seasons.Select(s => s.Competition)))
-                .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season?.Competition))
-                .Union(testData.Competitions)
-                .OfType<Competition>()
-                .Distinct(new CompetitionEqualityComparer()).ToList();
             testData.CompetitionWithNoSeasons = testData.Competitions.First(x => !x.Seasons.Any());
             testData.CompetitionWithMinimalDetails = testData.Competitions.First(x =>
                 !x.Seasons.Any() &&
@@ -178,10 +189,6 @@ namespace Stoolball.Testing
                 string.IsNullOrEmpty(x.Facebook) && string.IsNullOrEmpty(x.Twitter) && string.IsNullOrEmpty(x.Instagram) && string.IsNullOrEmpty(x.YouTube) && string.IsNullOrEmpty(x.Website)
                 );
             testData.CompetitionWithFullDetails = testData.Competitions.First(x => x.Seasons.Any());
-
-            testData.Seasons = testData.Competitions.SelectMany(x => x.Seasons)
-                .Union(testData.Teams.SelectMany(x => x.Seasons).Select(x => x.Season).OfType<Season>())
-                .Distinct(new SeasonEqualityComparer()).ToList();
 
             testData.SeasonWithMinimalDetails = testData.Seasons.First(x => !x.Teams.Any()
                                                                          && !x.PointsAdjustments.Any()
@@ -198,19 +205,49 @@ namespace Stoolball.Testing
 
             testData.MatchInTheFutureWithMinimalDetails = FindMatchInTheFutureWithMinimalDetails(testData);
 
-            testData.MatchListings.AddRange(testData.Matches.Where(x => x.Tournament == null).Select(x => x.ToMatchListing()).Union(testData.Tournaments.Select(x => x.ToMatchListing())));
-            testData.TournamentMatchListings.AddRange(testData.Matches.Where(x => x.Tournament != null).Select(x => x.ToMatchListing()));
-
-            // Get all batting records
-            testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
-
-            BuildCollections(testData);
-
             testData.BowlerWithMultipleIdentities = FindBowlerWithMultipleIdentities(testData);
 
-            EnsureCyclicalRelationshipsArePopulated(testData);
-
             return testData;
+        }
+
+        private List<MatchLocation> CreateMatchLocationsFromDataProviders(TestData testData)
+        {
+            var matchLocations = new List<MatchLocation>();
+            foreach (var provider in _matchLocationDataProviders)
+            {
+                matchLocations.AddRange(provider.CreateMatchLocations(testData));
+            }
+            return matchLocations;
+        }
+
+        private List<(Team team, List<PlayerIdentity> identities)> CreateTeamsFromDataProviders(TestData testData)
+        {
+            var teams = new List<(Team team, List<PlayerIdentity> identities)>();
+            foreach (var provider in _teamDataProviders)
+            {
+                teams.AddRange(provider.CreateTeams(testData));
+            }
+            return teams;
+        }
+
+        private List<(Tournament Tournament, IEnumerable<Match> Matches)> CreateTournamentsFromDataProviders(TestData testData)
+        {
+            var tournaments = new List<(Tournament Tournament, IEnumerable<Match> Matches)>();
+            foreach (var provider in _tournamentDataProviders)
+            {
+                tournaments.AddRange(provider.CreateTournaments(testData));
+            }
+            return tournaments;
+        }
+
+        private List<Match> CreateMatchesFromDataProviders(TestData testData)
+        {
+            var matches = new List<Match>();
+            foreach (var provider in _matchDataProviders.OrderBy(x => x.Order))
+            {
+                matches.AddRange(provider.CreateMatches(testData));
+            }
+            return matches;
         }
 
         private static Player FindBowlerWithMultipleIdentities(TestData testData)
