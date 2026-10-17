@@ -22,6 +22,10 @@ Push-Location $cloudRoot
 git pull $GitRemote master
 Pop-Location
 
+# Umbraco Cloud upgrades packages in its own repository. Copying older .csproj files over those upgrades stops Umbraco booting.
+& "$PSScriptRoot\Assert-NoPackageDowngrade.ps1" -ProjectRoot $projectRoot -CloudRoot $cloudRoot -Folders $foldersToCopy
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 # Build the code - it gets built anyway during deploy but this validates it builds before pushing, and will execute any MSBuild steps
 foreach ($folder in $foldersToCopy) {
     $folderPath = Resolve-Path (Join-Path $projectRoot -ChildPath $folder)
