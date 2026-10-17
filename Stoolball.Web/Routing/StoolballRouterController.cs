@@ -30,9 +30,22 @@ namespace Stoolball.Web.Routing
             _routeTypeMapper = routeTypeMapper ?? throw new ArgumentNullException(nameof(routeTypeMapper));
         }
 
+        /// <summary>
+        /// Hides the synchronous action inherited from <see cref="RenderController"/>. If it remained an action, any request that
+        /// is not a GET would be routed to it, rendering the template with the wrong model and throwing a ModelBindingException.
+        /// </summary>
+        [NonAction]
+        public override IActionResult Index()
+        {
+            throw new NotSupportedException($"Use {nameof(IndexAsync)}.");
+        }
+
+        Task<IActionResult> IStoolballRouterController.Index() => IndexAsync();
+
         [HttpGet]
+        [ActionName(nameof(Index))]
         [ServiceFilter(typeof(DelegatedContentSecurityPolicyAttribute))]
-        public new async Task<IActionResult> Index()
+        public async Task<IActionResult> IndexAsync()
         {
             if (string.IsNullOrEmpty(ControllerContext.RouteData.Values["umbracoSlug"]?.ToString()))
             {

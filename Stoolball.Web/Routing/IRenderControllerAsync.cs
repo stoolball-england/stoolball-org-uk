@@ -9,7 +9,7 @@ namespace Stoolball.Web.Routing
     /// <see cref="RenderController.Index()"/>. Controllers routed through <see cref="StoolballRouterController"/> 
     /// should implement from this and override <see cref="Index"/> using the 'new' keyword. When <see cref="StoolballRouterController" /> 
     /// invokes a specific controller type it can cast the return type as <c>IRenderControllerAsync</c> and itself support an 
-    /// async <see cref="StoolballRouterController.Index()">Index</c> action.
+    /// async <see cref="StoolballRouterController.IndexAsync()">Index</see> action.
     /// </summary>
     public interface IRenderControllerAsync
     {
