@@ -201,6 +201,7 @@ namespace Stoolball.Web
 
             // Caching
             services.AddMemoryCache();
+            services.AddOutputCache(options => options.AddBasePolicy(new FeedOutputCachePolicy()));
             services.AddTransient<IReadThroughCache, ReadThroughCache>();
             services.AddTransient<IPlayerCacheInvalidator, PlayerCacheInvalidator>();
             services.AddTransient<IMatchListingCacheInvalidator, MatchListingCacheInvalidator>();
@@ -389,6 +390,7 @@ namespace Stoolball.Web
             app.UseSecurityHeaders();
 
             app.UseStaticFileCaching();
+            app.UseFeedOutputCaching();
 
             app.UseCsvExport();
 
