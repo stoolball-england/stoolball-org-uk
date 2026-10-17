@@ -13,6 +13,7 @@ namespace Stoolball.Data.SqlServer.UnitTests
     {
         internal const string ERROR_ESTABLISHING_CONNECTION = "An error has occurred while establishing a connection to the server. When connecting to SQL Server, this failure may be caused by the fact that under the default settings SQL Server does not allow remote connections.";
         internal const string ERROR_TIMEOUT = "Timeout expired. The timeout period elapsed prior to completion of the operation or the server is not responding.";
+        internal const string ERROR_LOGIN_FAILED = "Login failed for user 'example'.";
 
         internal static SqlException Create(SqlExceptionType exceptionType)
         {
@@ -29,6 +30,10 @@ namespace Stoolball.Data.SqlServer.UnitTests
                 case SqlExceptionType.Timeout:
                     SetProperty(exception, "_message", ERROR_TIMEOUT);
                     SetProperty(error, "_number", -2);
+                    break;
+                case SqlExceptionType.LoginFailed:
+                    SetProperty(exception, "_message", ERROR_LOGIN_FAILED);
+                    SetProperty(error, "_number", 18456);
                     break;
             }
 

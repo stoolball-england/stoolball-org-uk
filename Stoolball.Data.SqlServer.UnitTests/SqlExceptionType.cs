@@ -3,6 +3,7 @@
     internal enum SqlExceptionType
     {
         Connection,
-        Timeout
+        Timeout,
+        LoginFailed
     }
 }
