@@ -837,5 +837,36 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 remaining -= pageSize;
             }
         }
+
+        [Fact]
+        public async Task Read_match_listings_pages_results_sorted_by_last_audit()
+        {
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            const int pageSize = 10;
+            var pageNumber = 1;
+            var remaining = _databaseFixture.TestData.MatchListings.Count;
+            var resultsFromAllPages = new List<MatchListing>();
+            while (remaining > 0)
+            {
+                var result = await matchDataSource.ReadMatchListings(new MatchFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = pageSize } }, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
+
+                var expected = pageSize > remaining ? remaining : pageSize;
+                Assert.Equal(expected, result.Count);
+                resultsFromAllPages.AddRange(result);
+
+                pageNumber++;
+                remaining -= pageSize;
+            }
+
+            // Each page must be selected using the sort order, so the sort order continues across pages. SQL Server sorts NULL last when descending.
+            DateTimeOffset? previousUpdate = DateTimeOffset.MaxValue;
+            foreach (var result in resultsFromAllPages)
+            {
+                Assert.True(result.LastAuditDate <= previousUpdate || (result.LastAuditDate is null));
+                Assert.False(previousUpdate is null && result.LastAuditDate is not null);
+                previousUpdate = result.LastAuditDate;
+            }
+        }
     }
 }

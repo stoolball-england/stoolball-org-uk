@@ -117,6 +117,12 @@ namespace Stoolball.Data.SqlServer
                 var parameters = new Dictionary<string, object>();
                 var orderBy = new List<string>();
 
+                // Paging has to sort the matching records to choose a page, so any column in ORDER BY must be selected by the matching records query.
+                // Otherwise SQL Server resolves it to the outer query, which correlates the subquery and re-runs it for every match and tournament.
+                // That's slow, and very slow for LastAuditDate, so only select it when it's needed and only sort the matching records when paging.
+                var isPaged = filter.Paging.PageOffset > 0 || filter.Paging.PageSize < int.MaxValue;
+                var selectLastAuditDateForPaging = isPaged && sortOrder == MatchSortOrder.LatestUpdateFirst;
+
                 if (filter.IncludeMatches)
                 {
                     // Join to MatchInnings only happens if there's a batting team, because otherwise all you get from it is extra rows to process with just a MatchInningsId
@@ -135,8 +141,9 @@ namespace Stoolball.Data.SqlServer
 
                     selectSql.Append(matchSelectSql);
 
+                    var matchLastAuditDateSql = selectLastAuditDateForPaging ? $", (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Match}', m.MatchId) ORDER BY AuditDate DESC) AS LastAuditDate" : string.Empty;
                     var (matchWhereSql, matchParameters) = BuildMatchQuery(filter,
-                        $@"SELECT m.MatchId, m.OrderInTournament, m.StartTime
+                        $@"SELECT m.MatchId, m.OrderInTournament, m.StartTime{matchLastAuditDateSql}
                            FROM {Tables.Match} AS m
                            <<JOIN>>
                            <<WHERE>> ");
@@ -172,8 +179,9 @@ namespace Stoolball.Data.SqlServer
 
                     selectSql.Append(tournamentSelectSql);
 
+                    var tournamentLastAuditDateSql = selectLastAuditDateForPaging ? $", (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Tournament}', tourney.TournamentId) ORDER BY AuditDate DESC) AS LastAuditDate" : string.Empty;
                     var (tournamentWhereSql, tournamentParameters) = BuildTournamentQuery(filter,
-                        $@"SELECT tourney.TournamentId AS MatchId, NULL AS OrderInTournament, tourney.StartTime
+                        $@"SELECT tourney.TournamentId AS MatchId, NULL AS OrderInTournament, tourney.StartTime{tournamentLastAuditDateSql}
                            FROM {Tables.Tournament} AS tourney
                            <<JOIN>>
                            <<WHERE>> ");
@@ -198,17 +206,22 @@ namespace Stoolball.Data.SqlServer
                     orderBy.Add("LastAuditDate DESC");
                 }
 
-                var pagedSql = $@"SELECT * FROM ({selectSql}) AS UnfilteredResults 
-                                  WHERE MatchId IN 
-                                  (
-                                      SELECT MatchId FROM ({whereSql}) AS MatchingRecords 
-                                      ORDER BY {string.Join(", ", orderBy.ToArray())}
-                                      OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY
-                                  ) 
-                                  ORDER BY {string.Join(", ", orderBy.ToArray())}";
+                var paging = string.Empty;
+                if (isPaged)
+                {
+                    paging = $@"ORDER BY {string.Join(", ", orderBy.ToArray())}
+                                OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                    parameters.Add("@PageOffset", filter.Paging.PageOffset);
+                    parameters.Add("@PageSize", filter.Paging.PageSize);
+                }
 
-                parameters.Add("@PageOffset", filter.Paging.PageOffset);
-                parameters.Add("@PageSize", filter.Paging.PageSize);
+                var pagedSql = $@"SELECT * FROM ({selectSql}) AS UnfilteredResults
+                                  WHERE MatchId IN
+                                  (
+                                      SELECT MatchId FROM ({whereSql}) AS MatchingRecords
+                                      {paging}
+                                  )
+                                  ORDER BY {string.Join(", ", orderBy.ToArray())}";
 
                 var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchLocation, MatchListing>(pagedSql,
                 (matchListing, teamInMatch, team, matchInnings, location) =>
