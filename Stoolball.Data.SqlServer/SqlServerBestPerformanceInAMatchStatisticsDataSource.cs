@@ -141,7 +141,7 @@ namespace Stoolball.Data.SqlServer
             else
             {
                 offsetPaging = $"OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
-                parameters.Add("@PageOffset", filter.Paging.PageSize * (filter.Paging.PageNumber - 1));
+                parameters.Add("@PageOffset", filter.Paging.PageOffset);
                 parameters.Add("@PageSize", filter.Paging.PageSize);
             }
 
@@ -180,7 +180,7 @@ namespace Stoolball.Data.SqlServer
                         WHERE 1=1 {where} 
                         ORDER BY MatchStartTime DESC, MatchId, MatchInningsPair DESC, BattingPosition DESC
                         OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
-            parameters.Add("@PageOffset", filter.Paging.PageSize * (filter.Paging.PageNumber - 1));
+            parameters.Add("@PageOffset", filter.Paging.PageOffset);
             parameters.Add("@PageSize", filter.Paging.PageSize);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())

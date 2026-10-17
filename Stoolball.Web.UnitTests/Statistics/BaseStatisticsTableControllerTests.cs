@@ -10,6 +10,7 @@ using Moq;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.MatchLocations;
+using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Navigation;
@@ -244,6 +245,37 @@ namespace Stoolball.Web.UnitTests.Statistics
 
                 Assert.Equal(results.Count, model.AppliedFilter.Paging.Total);
                 Assert.Equal(Request.Object.Scheme + "://" + Request.Object.Host + Request.Object.Path, model.AppliedFilter.Paging.PageUrl?.ToString());
+            }
+        }
+
+        [Theory]
+        [InlineData(1, 0, false)]
+        [InlineData(2, 51, false)]
+        [InlineData(3, 101, false)]
+        [InlineData(2, 50, true)]
+        [InlineData(3, 100, true)]
+        [InlineData(int.MaxValue, 100, true)]
+        public async Task Page_beyond_last_result_returns_NotFound_without_reading_results(int pageNumber, int totalResults, bool expectNotFound)
+        {
+            var defaultFilter = new StatisticsFilter();
+            var appliedFilter = new StatisticsFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = 50 } };
+
+            SetupMocks(defaultFilter, appliedFilter, []);
+            _statisticsQueryMethods.Setup(x => x.ReadTotalResults(It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(totalResults));
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                if (expectNotFound)
+                {
+                    Assert.IsType<NotFoundResult>(result);
+                    _statisticsQueryMethods.Verify(x => x.ReadResults(It.IsAny<StatisticsFilter>()), Times.Never);
+                }
+                else
+                {
+                    Assert.IsType<StatisticsViewModel<AnyClass>>(((ViewResult)result).Model);
+                }
             }
         }
 

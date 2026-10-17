@@ -172,7 +172,7 @@ namespace Stoolball.Data.SqlServer
 
                 var (filteredSql, parameters) = BuildMatchLocationQuery(filter, sql, new[] { Tables.TeamMatchLocation, Tables.Team, Tables.TeamVersion });
 
-                parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+                parameters.Add("@PageOffset", filter.Paging.PageOffset);
                 parameters.Add("@PageSize", filter.Paging.PageSize);
 
                 filteredSql = filteredSql.Replace("<<WHERE-T2-TYPE>>", filter.TeamTypes.Count > 0 ? "AND t2.TeamType IN @TeamTypes" : string.Empty);

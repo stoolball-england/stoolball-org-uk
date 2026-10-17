@@ -63,7 +63,10 @@ namespace Stoolball.Listings
             model.Filter.Paging.PageUrl = pageUrl;
             model.Filter.Paging.Total = await totalListings(model.Filter).ConfigureAwait(false);
             model.Listings.Clear();
-            model.Listings.AddRange(await listings(model.Filter).ConfigureAwait(false));
+            if (!model.Filter.Paging.IsBeyondLastPage)
+            {
+                model.Listings.AddRange(await listings(model.Filter).ConfigureAwait(false));
+            }
 
             model.Metadata.PageTitle = pageTitle;
             if (!string.IsNullOrEmpty(model.Filter.Query))

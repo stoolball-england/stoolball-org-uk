@@ -9,6 +9,7 @@ using Moq;
 using Stoolball.Data.Abstractions;
 using Stoolball.Listings;
 using Stoolball.MatchLocations;
+using Stoolball.Navigation;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.MatchLocations.Models;
 using Stoolball.Web.Security;
@@ -97,13 +98,45 @@ namespace Stoolball.Web.UnitTests.MatchLocations
                     {
                         model = buildInitialState();
                     }
-                );
+                )
+                .Returns(() => Task.FromResult(model!));
 
             using (var controller = CreateController())
             {
                 var result = await controller.Index();
 
                 Assert.True(model!.Filter.TeamTypes.Any());
+            }
+        }
+
+        [Theory]
+        [InlineData(51, false)]
+        [InlineData(50, true)]
+        public async Task Page_beyond_last_page_returns_NotFound(int totalListings, bool expectNotFound)
+        {
+            var model = new MatchLocationsViewModel(Mock.Of<IPublishedContent>(), Mock.Of<IUserService>());
+            model.Filter.Paging = new Paging { PageNumber = 2, PageSize = 50, Total = totalListings };
+            _listingsModelBuilder.Setup(x => x.BuildModel(
+                It.IsAny<Func<MatchLocationsViewModel>>(),
+                It.IsAny<Func<MatchLocationFilter, Task<int>>>(),
+                It.IsAny<Func<MatchLocationFilter, Task<List<MatchLocation>>>>(),
+                It.IsAny<string>(),
+                It.IsAny<Uri>(),
+                It.IsAny<string>()
+                )).Returns(Task.FromResult(model));
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                if (expectNotFound)
+                {
+                    Assert.IsType<NotFoundResult>(result);
+                }
+                else
+                {
+                    Assert.Equal(model, ((ViewResult)result).Model);
+                }
             }
         }
     }

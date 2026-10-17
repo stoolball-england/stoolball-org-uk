@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Stoolball.Data.Abstractions;
 using Stoolball.Listings;
+using Stoolball.Navigation;
 using Stoolball.Teams;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
@@ -73,7 +74,8 @@ namespace Stoolball.Web.UnitTests.Teams
                     {
                         model = buildInitialState();
                     }
-                );
+                )
+                .Returns(() => Task.FromResult(model!));
 
             using (var controller = CreateController())
             {
@@ -81,6 +83,37 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 Assert.Equal(1, model!.Filter.TeamTypes.Count(x => x == null));
                 Assert.True(model.Filter.TeamTypes.Count > 1);
+            }
+        }
+
+        [Theory]
+        [InlineData(51, false)]
+        [InlineData(50, true)]
+        public async Task Page_beyond_last_page_returns_NotFound(int totalListings, bool expectNotFound)
+        {
+            var model = new TeamsViewModel();
+            model.Filter.Paging = new Paging { PageNumber = 2, PageSize = 50, Total = totalListings };
+            _listingsModelBuilder.Setup(x => x.BuildModel(
+                It.IsAny<Func<TeamsViewModel>>(),
+                It.IsAny<Func<TeamListingFilter, Task<int>>>(),
+                It.IsAny<Func<TeamListingFilter, Task<List<TeamListing>>>>(),
+                It.IsAny<string>(),
+                It.IsAny<Uri>(),
+                It.IsAny<string>()
+                )).Returns(Task.FromResult(model));
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                if (expectNotFound)
+                {
+                    Assert.IsType<NotFoundResult>(result);
+                }
+                else
+                {
+                    Assert.Equal(model, ((ViewResult)result).Model);
+                }
             }
         }
     }

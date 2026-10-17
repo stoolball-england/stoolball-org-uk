@@ -152,7 +152,7 @@ namespace Stoolball.Data.SqlServer
                             AND (s2.FromYear = (SELECT MAX(FromYear) FROM {Tables.Season} WHERE CompetitionId = co2.CompetitionId) OR s2.FromYear IS NULL)
                             ORDER BY CASE WHEN cv2.UntilDate IS NULL THEN 0 ELSE 1 END, s2.UntilYear DESC, s2.FromYear DESC, cv2.ComparableName";
 
-                parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+                parameters.Add("@PageOffset", filter.Paging.PageOffset);
                 parameters.Add("@PageSize", filter.Paging.PageSize);
 
                 var competitions = await connection.QueryAsync<Competition, Season, Team, Competition>(sql,

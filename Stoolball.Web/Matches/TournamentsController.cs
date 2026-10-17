@@ -56,6 +56,11 @@ namespace Stoolball.Web.Matches
             };
             model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, Request.QueryString.Value);
             model.AppliedMatchFilter.Paging.Total = await _matchesDataSource.ReadTotalMatches(model.AppliedMatchFilter);
+            if (model.AppliedMatchFilter.Paging.IsBeyondLastPage)
+            {
+                return NotFound();
+            }
+
             model.Matches = await _matchesDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.MatchDateEarliestFirst);
 
             var userFilter = _matchFilterHumanizer.MatchingFilter(model.AppliedMatchFilter);

@@ -35,7 +35,7 @@ namespace Stoolball.Data.SqlServer
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
             sql = sql.Replace("<<WHERE>>", $"WHERE PlayerInningsId IS NOT NULL {where}");
 
-            parameters.Add("PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+            parameters.Add("PageOffset", filter.Paging.PageOffset);
             parameters.Add("PageSize", filter.Paging.PageSize);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())

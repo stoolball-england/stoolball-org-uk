@@ -62,7 +62,7 @@ namespace Stoolball.Data.SqlServer
                             ORDER BY CASE WHEN cv2.UntilDate IS NULL THEN 0
                                           WHEN cv2.UntilDate IS NOT NULL THEN 1 END, s2.FromYear DESC, s2.UntilYear DESC, cv2.ComparableName";
 
-                parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+                parameters.Add("@PageOffset", filter.Paging.PageOffset);
                 parameters.Add("@PageSize", filter.Paging.PageSize);
 
                 var seasons = await connection.QueryAsync<Season, Competition, Season>(sql,

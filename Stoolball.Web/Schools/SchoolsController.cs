@@ -43,6 +43,11 @@ namespace Stoolball.Web.Schools
                 new Uri(Request.GetEncodedUrl()),
                 Request.QueryString.Value);
 
+            if (model.Filter.Paging.IsBeyondLastPage)
+            {
+                return NotFound();
+            }
+
             model.Breadcrumbs.RemoveAt(model.Breadcrumbs.Count - 1);
             model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Schools, Url = new Uri(Constants.Pages.SchoolsUrl, UriKind.Relative) });
 

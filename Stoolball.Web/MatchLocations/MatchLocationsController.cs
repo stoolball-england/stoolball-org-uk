@@ -51,6 +51,11 @@ namespace Stoolball.Web.MatchLocations
             Request.QueryString.Value
             );
 
+            if (model.Filter.Paging.IsBeyondLastPage)
+            {
+                return NotFound();
+            }
+
             return CurrentTemplate(model);
         }
     }

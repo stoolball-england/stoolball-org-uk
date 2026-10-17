@@ -152,7 +152,7 @@ namespace Stoolball.Data.SqlServer
                                 AND (ctn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR ctn.TeamVersionId IS NULL)
                                 ORDER BY Active DESC, ComparableName";
 
-                parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+                parameters.Add("@PageOffset", filter.Paging.PageOffset);
                 parameters.Add("@PageSize", filter.Paging.PageSize);
 
                 var teamListings = await connection.QueryAsync<TeamListing, string, MatchLocation, TeamListing>(outerQuery,

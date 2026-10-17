@@ -5,6 +5,7 @@ using Moq;
 using Stoolball.Data.Abstractions;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Matches.Models;
 using Xunit;
@@ -72,6 +73,31 @@ namespace Stoolball.Web.UnitTests.Matches
                 var result = await controller.Index();
 
                 Assert.Equal("matches matching filter", ((MatchListingViewModel)((ViewResult)result).Model).Metadata.PageTitle);
+            }
+        }
+
+        [Theory]
+        [InlineData(51, false)]
+        [InlineData(50, true)]
+        public async Task Page_beyond_last_page_returns_NotFound_without_reading_matches(int totalMatches, bool expectNotFound)
+        {
+            var filter = new MatchFilter { Paging = new Paging { PageNumber = 2, PageSize = 50 } };
+            _matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<string>())).Returns(filter);
+            _matchesDataSource.Setup(x => x.ReadTotalMatches(filter)).Returns(Task.FromResult(totalMatches));
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                if (expectNotFound)
+                {
+                    Assert.IsType<NotFoundResult>(result);
+                    _matchesDataSource.Verify(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), It.IsAny<MatchSortOrder>()), Times.Never);
+                }
+                else
+                {
+                    Assert.IsType<MatchListingViewModel>(((ViewResult)result).Model);
+                }
             }
         }
     }

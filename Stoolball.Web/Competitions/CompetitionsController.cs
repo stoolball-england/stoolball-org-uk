@@ -43,6 +43,11 @@ namespace Stoolball.Web.Competitions
                 new Uri(Request.GetEncodedUrl()),
                 Request.QueryString.Value).ConfigureAwait(false);
 
+            if (model.Filter.Paging.IsBeyondLastPage)
+            {
+                return NotFound();
+            }
+
             return CurrentTemplate(model);
         }
     }

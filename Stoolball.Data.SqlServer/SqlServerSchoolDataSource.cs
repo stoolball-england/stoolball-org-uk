@@ -83,7 +83,7 @@ namespace Stoolball.Data.SqlServer
                             AND (tv2.TeamVersionId IS NULL OR tv2.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t2.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC))
                             ORDER BY CASE WHEN sv2.UntilDate IS NULL THEN 0 ELSE 1 END, sv2.ComparableName";
 
-                parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+                parameters.Add("@PageOffset", filter.Paging.PageOffset);
                 parameters.Add("@PageSize", filter.Paging.PageSize);
 
                 var schools = await connection.QueryAsync<School, Team, School>(sql,

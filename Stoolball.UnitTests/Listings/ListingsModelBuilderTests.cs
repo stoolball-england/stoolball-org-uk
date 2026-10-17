@@ -376,5 +376,27 @@ namespace Stoolball.UnitTests.Listings
             Assert.Contains("example", result.Metadata.PageTitle, StringComparison.Ordinal);
         }
 
+        [Theory]
+        [InlineData("page=2", 51, false)]
+        [InlineData("page=2", 50, true)]
+        [InlineData("page=2147483647", 50, true)]
+        public async Task Listings_not_read_for_page_beyond_last_page(string queryString, int totalListings, bool expectBeyondLastPage)
+        {
+            var listingsBuilder = new ListingsModelBuilder<StubModel, StubFilter, StubViewModel>();
+            var listingsRead = false;
+
+            var result = await listingsBuilder.BuildModel(
+                () => new StubViewModel { Filter = new StubFilter() },
+                x => Task.FromResult(totalListings),
+                x => { listingsRead = true; return Task.FromResult(new List<StubModel> { new StubModel() }); },
+                PAGE_TITLE,
+                PAGE_URL,
+                queryString
+                ).ConfigureAwait(false);
+
+            Assert.Equal(expectBeyondLastPage, result.Filter.Paging.IsBeyondLastPage);
+            Assert.Equal(!expectBeyondLastPage, listingsRead);
+            Assert.Equal(expectBeyondLastPage, result.Listings.Count == 0);
+        }
     }
 }

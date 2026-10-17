@@ -140,7 +140,7 @@ namespace Stoolball.Data.SqlServer
                          ORDER BY Average {sortOrder}, TotalInnings DESC, TotalMatches DESC";
 
             parameters.Add("@MinimumQualifyingInnings", filter.MinimumQualifyingInnings ?? 1);
-            parameters.Add("@PageOffset", clonedFilter.Paging.PageSize * (clonedFilter.Paging.PageNumber - 1));
+            parameters.Add("@PageOffset", clonedFilter.Paging.PageOffset);
             parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())

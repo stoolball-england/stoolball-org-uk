@@ -94,7 +94,7 @@ namespace Stoolball.Data.SqlServer
                                  ORDER BY COUNT(DISTINCT(MatchId)) DESC, TotalMatches ASC 
                                  OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
-            parameters.Add("@PageOffset", clonedFilter.Paging.PageSize * (clonedFilter.Paging.PageNumber - 1));
+            parameters.Add("@PageOffset", clonedFilter.Paging.PageOffset);
             parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
 
             return await ReadResults(sql, parameters, clonedFilter).ConfigureAwait(false);
@@ -181,7 +181,7 @@ namespace Stoolball.Data.SqlServer
             else
             {
                 offsetPaging = $"ORDER BY SUM({fieldName}) DESC, TotalInnings ASC, TotalMatches ASC OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
-                parameters.Add("@PageOffset", clonedFilter.Paging.PageSize * (clonedFilter.Paging.PageNumber - 1));
+                parameters.Add("@PageOffset", clonedFilter.Paging.PageOffset);
                 parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
             }
 
@@ -237,7 +237,7 @@ namespace Stoolball.Data.SqlServer
                          ORDER BY COUNT({fieldName}) DESC
                          OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
-            parameters.Add("@PageOffset", filter.Paging.PageSize * (filter.Paging.PageNumber - 1));
+            parameters.Add("@PageOffset", filter.Paging.PageOffset);
             parameters.Add("@PageSize", filter.Paging.PageSize);
 
             return await ReadResults(sql, parameters, filter).ConfigureAwait(false);

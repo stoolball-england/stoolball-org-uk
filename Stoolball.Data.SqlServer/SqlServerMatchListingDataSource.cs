@@ -207,7 +207,7 @@ namespace Stoolball.Data.SqlServer
                                   ) 
                                   ORDER BY {string.Join(", ", orderBy.ToArray())}";
 
-                parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+                parameters.Add("@PageOffset", filter.Paging.PageOffset);
                 parameters.Add("@PageSize", filter.Paging.PageSize);
 
                 var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchLocation, MatchListing>(pagedSql,

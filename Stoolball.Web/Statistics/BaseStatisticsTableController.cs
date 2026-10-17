@@ -112,10 +112,14 @@ namespace Stoolball.Web.Statistics
                 return NotFound();
             }
 
-            model.Results = (await _readResults(model.AppliedFilter)).ToList();
-
             model.AppliedFilter.Paging.PageUrl = new Uri(Request.GetEncodedUrl());
             model.AppliedFilter.Paging.Total = await _readTotalResults(model.AppliedFilter);
+            if (model.AppliedFilter.Paging.IsBeyondLastPage)
+            {
+                return NotFound();
+            }
+
+            model.Results = (await _readResults(model.AppliedFilter)).ToList();
 
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.DefaultFilter);
 

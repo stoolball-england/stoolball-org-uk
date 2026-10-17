@@ -49,6 +49,11 @@ namespace Stoolball.Web.Teams
             new Uri(Request.GetEncodedUrl()),
             Request.QueryString.Value);
 
+            if (model.Filter.Paging.IsBeyondLastPage)
+            {
+                return NotFound();
+            }
+
             return CurrentTemplate(model);
         }
     }
