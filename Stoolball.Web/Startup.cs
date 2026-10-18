@@ -98,6 +98,7 @@ namespace Stoolball.Web
                 opt.EnableHeartbeat = false;
                 opt.EnableEventCounterCollectionModule = false;
             });
+            services.AddApplicationInsightsTelemetryProcessor<TelemetryCostFilterProcessor>();
 
             // Utility classes
             services.AddTransient<IAddMatchMenuViewModelFactory, AddMatchMenuViewModelFactory>();
