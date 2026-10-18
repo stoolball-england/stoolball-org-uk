@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "azure": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@azure/mcp@latest", "server", "start", "--namespace", "monitor", "--read-only"]
+    }
+  }
+}
