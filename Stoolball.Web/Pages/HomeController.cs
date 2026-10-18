@@ -24,12 +24,13 @@ namespace Stoolball.Web.Pages
         }
 
         [HttpGet]
+        [HttpHead] // Umbraco Cloud's health check does a HEAD request to /
         [ContentSecurityPolicy]
         public override IActionResult Index()
         {
             var model = new Home(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor))
             {
-                Metadata = new ViewMetadata { PageTitle = CurrentPage.Name }
+                Metadata = new ViewMetadata { PageTitle = CurrentPage!.Name }
             };
 
             return CurrentTemplate(model);
