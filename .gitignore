@@ -437,6 +437,7 @@ appsettings-schema.*.json
 appsettings.*.json
 umbraco-cloud.json
 
-# Cypress 
-**/cypress/videos
-cypress.env.json
+# Playwright
+Playwright/test-results/
+Playwright/playwright-report/
+Playwright/.env

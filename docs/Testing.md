@@ -46,20 +46,46 @@ npm install
 npx jest
 ```
 
-## UI testing with Cypress
+## UI testing with Playwright
 
-You can run [Cypress](https://www.cypress.io/) from the root of the repository using:
+End-to-end tests use [Playwright](https://playwright.dev/) and are written in TypeScript. They live in the `Playwright` folder, and check that pages render valid HTML, pass [axe](https://github.com/dequelabs/axe-core) accessibility checks and behave as expected. See `Playwright/CLAUDE.md` for how tests should be written.
+
+The tests run against a copy of the website that must already be running at `https://localhost:44343`. Start it from Visual Studio using the IIS Express profile, or from the command line using:
 
 ```pwsh
-npx cypress open
+dotnet run --project Stoolball.Web --no-launch-profile --environment Development --urls "https://localhost:44343"
 ```
 
-To ensure all tests pass create a `cypress.env.json` file in the root of this repository with the following format. It will be ignored by git.
+To test a different URL, set the `BASE_URL` environment variable.
 
-```json
-{
-    "CsvExportApiKey": "xxx"
-}
+The first time, install the npm packages and the browser used by Playwright from the root of the repository:
+
+```pwsh
+npm install
+npx playwright install chromium
+```
+
+To ensure all tests pass create a `Playwright/.env` file with the following format. It will be ignored by git.
+
+```
+CSV_EXPORT_API_KEY=xxx
 ```
 
 Make sure `xxx` is the same as the API key specified in `Stoolball.Web/appsettings.Development.json`. See [configuration](Configuration.md).
+
+Run all the tests from the root of the repository using:
+
+```pwsh
+npm run test:e2e
+```
+
+Other useful commands:
+
+```pwsh
+npx playwright test -c Playwright Club.spec.ts   # run one spec file
+npx playwright test -c Playwright -g "Passes AXE" # run tests whose title matches
+npm run test:e2e:ui                               # open the interactive UI mode
+npx playwright show-report Playwright/playwright-report # view the HTML report of the last run
+```
+
+In Visual Studio Code, the [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) extension lets you run and debug individual tests from the editor.
