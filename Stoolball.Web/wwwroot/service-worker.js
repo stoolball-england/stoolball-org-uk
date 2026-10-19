@@ -6,19 +6,20 @@ const cacheIDs = [coreCache];
 self.addEventListener("install", function (event) {
   event.waitUntil(
     caches.open(coreCache).then(function (cache) {
-      cache.add(new Request("/status/offline.html"));
-      cache.add(new Request("/css/base.min.css"));
-      cache.add(new Request("/css/status.min.css"));
-      cache.add(new Request("/favicon.ico"));
-      cache.add(new Request("/images/logos/stoolball-england-icon.svg"));
-      cache.add(new Request("/images/logos/stoolball-england.svg"));
-      cache.add(new Request("/images/photos/duck.jpg"));
-      cache.add(new Request("/fonts/mada-v9-latin-regular.woff2"));
-      cache.add(new Request("/fonts/mada-v9-latin-700.woff2"));
-      cache.add(new Request("/fonts/assistant-v6-latin-600.woff2"));
-      cache.add(new Request("/fonts/assistant-v6-latin-700.woff2"));
-      cache.add(new Request("/fonts/assistant-v6-latin-800.woff2"));
-      return;
+      return cache.addAll([
+        "/status/offline.html",
+        "/css/base.min.css",
+        "/css/status.min.css",
+        "/favicon.ico",
+        "/images/logos/stoolball-england-icon.svg",
+        "/images/logos/stoolball-england.svg",
+        "/images/photos/duck.jpg",
+        "/fonts/mada-v9-latin-regular.woff2",
+        "/fonts/mada-v9-latin-700.woff2",
+        "/fonts/assistant-v6-latin-600.woff2",
+        "/fonts/assistant-v6-latin-700.woff2",
+        "/fonts/assistant-v6-latin-800.woff2",
+      ]);
     })
   );
 });
@@ -58,15 +59,24 @@ self.addEventListener("fetch", function (event) {
 
   // HTML files
   // Network-first
-  if (request.headers.get("Accept").includes("text/html")) {
+  if ((request.headers.get("Accept") || "").includes("text/html")) {
     event.respondWith(
-      fetch(request)
-        .then(function (response) {
-          return response;
-        })
-        .catch(function (error) {
-          return caches.match("/status/offline.html");
-        })
+      fetch(request).catch(function () {
+        return caches.match("/status/offline.html");
+      })
+    );
+    return;
+  }
+
+  // Other files, such as the CSS, images and fonts used by the offline page
+  // Network-first, falling back to the cache
+  if (request.method === "GET") {
+    event.respondWith(
+      fetch(request).catch(function (error) {
+        return caches.match(request).then(function (response) {
+          return response || Promise.reject(error);
+        });
+      })
     );
   }
 });
