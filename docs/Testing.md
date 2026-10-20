@@ -53,8 +53,11 @@ End-to-end tests use [Playwright](https://playwright.dev/) and are written in Ty
 The tests run against a copy of the website that must already be running at `https://localhost:44343`. Start it from Visual Studio using the IIS Express profile, or from the command line using:
 
 ```pwsh
-dotnet run --project Stoolball.Web --no-launch-profile --environment Development --urls "https://localhost:44343"
+$env:ASPNETCORE_ENVIRONMENT = "Development"
+dotnet run --project Stoolball.Web --no-launch-profile --urls "https://localhost:44343"
 ```
+
+Always run the site in the `Development` environment. See [running the project from the command line](GettingStarted.md#running-the-project-from-the-command-line).
 
 To test a different URL, set the `BASE_URL` environment variable.
 

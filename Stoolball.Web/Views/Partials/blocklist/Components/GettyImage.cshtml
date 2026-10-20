@@ -6,7 +6,7 @@
 @if (content != null && content.GettyImageUrl != null)
 {
     @:<figure class="block__getty">
-        <iframe src="@content.GettyImageUrl" width="594" height="459"></iframe>
+        <iframe src="@content.GettyImageUrl" width="594" height="459" title="@content.Caption"></iframe>
         <figcaption>@content.Caption</figcaption>
     @:</figure>
 }

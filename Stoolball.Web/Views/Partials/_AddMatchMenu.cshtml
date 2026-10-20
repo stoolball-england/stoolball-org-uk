@@ -53,16 +53,17 @@
         var listItemClasses = CreateClassList(AddMatchMenuButtonType.MatchType);
         if (!Model.TrainingIsInMenuAtMedium && !Model.MatchIsInMenuAtMedium && !Model.TournamentIsInMenuAtMedium) { listItemClasses.Add("d-md-none"); }
         if (!Model.MatchIsInMenuAtLarge) { listItemClasses.Add("d-lg-none"); }
+        var uniqueButtonId = "add-match-menu__button-" + Guid.NewGuid();
 
         var trainingClass = Model.TrainingIsInMenuAtSmall ? Model.TrainingIsInMenuAtMedium ? Model.TrainingIsInMenuAtLarge ? string.Empty : "d-lg-none" : "d-md-none" : string.Empty;
         var tournamentsClass = Model.TournamentIsInMenuAtSmall ? Model.TournamentIsInMenuAtMedium ? "d-lg-none" : "d-md-none" : string.Empty;
 
         <li class="nav-item nav-item-admin nav-item-admin-sm-last @(string.Join(' ', listItemClasses.ToArray()))">
             <div class="dropdown">
-                <button class="btn nav-link nav-link-add" type="button" id="add-match-menu__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn nav-link nav-link-add" type="button" id="@uniqueButtonId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Add match
                 </button>
-                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="add-match-menu__button">
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="@uniqueButtonId">
                      @if (Model.TrainingIsInMenuAtSmall) {
                         <li class="dropdown-item @trainingClass">
                             <a href="@Model.BaseRoute/matches/add/training">Add training session</a>

@@ -13,9 +13,9 @@ test.describe("Logout member", () => {
     test("Validates", async ({ page }) => {
       await expectValidHtml(page);
     });
-  });
 
-  test("Passes AXE", async ({ page }) => {
-    await expectNoAccessibilityViolations(page);
+    test("Passes AXE", async ({ page }) => {
+      await expectNoAccessibilityViolations(page);
+    });
   });
 });

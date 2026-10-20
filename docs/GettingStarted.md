@@ -48,6 +48,19 @@ You need to run Visual Studio (or the equivalent MSBuild command) at least once 
 
 You can now use `View > Command Palette > IIS Express: Start Website` to open the Umbraco back office.
 
+### Running the project from the command line
+
+Local development should always run the site in the `Development` environment, whether you, a script or an AI assistant starts it. In any other environment the site does not load `appsettings.Development.json`, so it uses a different database and settings. Running it like that can change local files such as the Umbraco Deploy `.uda` files and ModelsBuilder models to match the wrong database.
+
+Visual Studio's IIS Express profile already sets `ASPNETCORE_ENVIRONMENT` to `Development`. From the command line, set the environment variable yourself, then run the site from the root of the repository:
+
+```pwsh
+$env:ASPNETCORE_ENVIRONMENT = "Development"
+dotnet run --project Stoolball.Web --no-launch-profile --urls "https://localhost:44343"
+```
+
+Don't rely on `dotnet run --environment Development`, which does not set the environment in all versions of the .NET SDK. Check that the console output shows `Hosting environment: Development`.
+
 ## Managing redirects
 
 Redirects are managed using the [Skybrud.Umbraco.Redirects](https://github.com/skybrud/Skybrud.Umbraco.Redirects) package, which appears as a dashboard named 'Redirects' in the Content section of the Umbraco back office.

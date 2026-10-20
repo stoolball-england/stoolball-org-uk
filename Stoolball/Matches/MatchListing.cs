@@ -95,6 +95,7 @@ namespace Stoolball.Matches
 
         public DateTimeOffset? FirstAuditDate { get; set; }
         public DateTimeOffset? LastAuditDate { get; set; }
+        public bool MatchNameContainsPlayerType() => (MatchName ?? "").Replace("'", string.Empty).ToUpperInvariant().Contains(PlayerType.ToString().Replace("'", string.Empty).ToUpperInvariant());
 
         /// <summary>
         /// Gets a description of the match suitable for metadata or search results

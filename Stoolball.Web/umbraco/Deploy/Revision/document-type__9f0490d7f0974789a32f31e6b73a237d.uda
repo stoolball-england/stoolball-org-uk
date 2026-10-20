@@ -23,7 +23,15 @@
           "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
           "Mandatory": true,
           "Name": "Video URL",
+          "SortOrder": 1,
           "Validation": "https?://[a-zA-Z0-9-.]+.[a-zA-Z]{2,}"
+        },
+        {
+          "Key": "fa7cc6f9-23d4-46a0-ba2c-484c1ace7000",
+          "Alias": "videoTitle",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Mandatory": true,
+          "Name": "Video title"
         }
       ]
     }

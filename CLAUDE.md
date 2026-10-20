@@ -5,6 +5,11 @@ example `Stoolball.Data.SqlServer.IntegrationTests/CLAUDE.md`, which requires ru
 affected tests locally after any change there, before reporting the work as done — a
 successful build is not enough).
 
+When running the site locally, always run it in the `Development` environment by setting
+`ASPNETCORE_ENVIRONMENT=Development`, and check that the output shows
+`Hosting environment: Development`. `dotnet run --environment Development` is not enough. See
+`docs/GettingStarted.md`.
+
 Before editing files in a directory for the first time in a session, check for a
 `CLAUDE.md` in that directory and in each parent directory up to the repository root
 (for example, editing a file in `Stoolball.Testing/Factories/` means checking both

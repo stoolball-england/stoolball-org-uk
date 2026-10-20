@@ -65,8 +65,10 @@ npx -p typescript tsc -p Playwright
   `expectValidHtml(page, { rules: { "input-missing-label": "off" } }) // reason`. Only turn
   off rules site-wide in `support/assertions.ts` if they are wrong for every page.
 - `expectNoAccessibilityViolations` runs axe-core. To skip rules for one page, pass an
-  array of axe rule ids, each with a comment explaining why. Don't skip rules to hide
-  problems in markup we control — fix the markup instead.
+  array of axe rule ids, each with a comment explaining why. To leave third-party markup we
+  don't control (eg a YouTube iframe) out of the scan, pass CSS selectors as the third
+  argument, with a comment. Don't skip rules to hide problems in markup we control — fix
+  the markup instead.
 - Pages that require authentication should check they are showing the sign-in form:
   `await expect(page.locator("body")).toContainText("Sign in");`
 - For endpoints that don't return a page (feeds, CSV, headers, status codes) use the

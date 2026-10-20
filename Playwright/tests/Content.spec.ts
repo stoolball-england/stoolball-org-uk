@@ -14,6 +14,10 @@ test.describe("Content page", () => {
   });
 
   test("Passes AXE", async ({ page }) => {
-    await expectNoAccessibilityViolations(page);
+    await expectNoAccessibilityViolations(
+      page,
+      [],
+      ["iframe.block__youtube"], // the YouTube player's own markup has ARIA errors we can't fix
+    );
   });
 });

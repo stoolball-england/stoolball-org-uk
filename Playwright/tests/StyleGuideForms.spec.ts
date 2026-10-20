@@ -20,11 +20,17 @@ test.describe("Style guide - forms section", () => {
   });
 
   test("Passes AXE", async ({ page }) => {
-    await expectNoAccessibilityViolations(page, [
-      "aria-allowed-role", // picks up TinyMCE
-      "button-name", // picks up TinyMCE
-      "nested-interactive", // picks up TinyMCE
-      "presentation-role-conflict", // picks up TinyMCE
-    ]);
+    await expectNoAccessibilityViolations(
+      page,
+      [
+        "aria-allowed-role", // picks up TinyMCE
+        "button-name", // picks up TinyMCE
+        "nested-interactive", // picks up TinyMCE
+        "presentation-role-conflict", // picks up TinyMCE
+      ],
+      [
+        "iframe.tox-edit-area__iframe", // TinyMCE's editable area puts aria-label on <body>, which axe flags (aria-prohibited-attr)
+      ],
+    );
   });
 });

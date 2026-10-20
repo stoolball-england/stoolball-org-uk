@@ -50,6 +50,14 @@ namespace Stoolball.Web.Models
 		// properties
 
 		///<summary>
+		/// Video title
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("videoTitle")]
+		public virtual string VideoTitle => this.Value<string>(_publishedValueFallback, "videoTitle");
+
+		///<summary>
 		/// Video URL
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
