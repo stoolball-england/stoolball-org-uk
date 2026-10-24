@@ -386,6 +386,7 @@ namespace Stoolball.Web
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseFeedExtensionRewrite();
             app.UseHttpsRedirection();
             app.UseBareDomainRedirect();
             app.UseSecurityHeaders();

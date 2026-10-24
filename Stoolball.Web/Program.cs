@@ -16,6 +16,7 @@ namespace Stoolball.Web
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStaticWebAssets();
+                    webBuilder.ConfigureKestrel(options => options.AddServerHeader = false); // IIS removes it using web.config
                     webBuilder.UseStartup<Startup>();
                 });
     }
