@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test:e2e": "playwright test -c Playwright",
-    "test:e2e:ui": "playwright test -c Playwright --ui"
+    "test:e2e:ui": "playwright test -c Playwright --ui",
+    "typecheck:e2e": "tsc -p Playwright"
   },
   "author": "",
   "license": "MIT",
@@ -22,7 +23,8 @@
     "@types/node": "^22.20.5",
     "html-validate": "^9.7.1",
     "jest": "^28.1.1",
-    "jest-environment-jsdom": "^28.1.1"
+    "jest-environment-jsdom": "^28.1.1",
+    "typescript": "^7.0.2"
   },
   "jest": {
     "testEnvironment": "jsdom",

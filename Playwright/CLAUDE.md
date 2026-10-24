@@ -17,7 +17,7 @@ Playwright runs TypeScript without type-checking it, so also check types using
 `Playwright/tsconfig.json`:
 
 ```pwsh
-npx -p typescript tsc -p Playwright
+npm run typecheck:e2e
 ```
 
 ## Layout
