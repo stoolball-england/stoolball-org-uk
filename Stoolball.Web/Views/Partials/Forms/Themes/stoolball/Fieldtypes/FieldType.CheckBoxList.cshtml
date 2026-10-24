@@ -1,21 +1,22 @@
 @model Umbraco.Forms.Web.Models.FieldViewModel
+@inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
 @using Umbraco.Forms.Web
 
 @{ var i = 0; }
           
-<span class="checkboxlist" id="@Model.Id">
+<div class="checkboxlist" id="@labeller.ElementId(Model.Id)">
 @foreach (Umbraco.Forms.Web.Models.PrevalueViewModel pv in Model.PreValues)  
 {
     <div class="custom-control custom-checkbox">
         <input type="checkbox"
                class="@Html.GetFormFieldClass(Model.FieldTypeName) custom-control-input"
-               name="@Model.Name" id="@string.Concat(Model.Id,"_",i)" value="@pv.Value"
+               name="@Model.Name" id="@string.Concat(labeller.ElementId(Model.Id),"_",i)" value="@pv.Value"
                @if (Model.Mandatory) { <text> data-val="true" data-rule-required="true" data-msg-required="@Model.RequiredErrorMessage" </text> }
                @if (Model.ContainsValue(pv.Value)) { <text> checked="checked" </text> } />
 
-        <label for="@string.Concat(Model.Id,"_",i)" class="custom-control-label">@pv.Value</label>
+        <label for="@string.Concat(labeller.ElementId(Model.Id),"_",i)" class="custom-control-label">@pv.Value</label>
     </div>
 
     i++;
 }
-</span>
+</div>

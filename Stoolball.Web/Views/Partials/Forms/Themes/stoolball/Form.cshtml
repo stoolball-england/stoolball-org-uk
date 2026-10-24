@@ -7,6 +7,7 @@
 @model Umbraco.Forms.Web.Models.FormViewModel
 
 @inject IFormThemeResolver FormThemeResolver
+@inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
 
 <div class="umbraco-forms-page">
 
@@ -26,12 +27,12 @@
 
             if (!string.IsNullOrEmpty(fs.Caption))
             {
-                @:<section class="umbraco-forms-fieldset" id="@fs.Id" aria-labelledby="@fs.Id-label">
-                <p class="h3" id="@fs.Id-label">@fs.Caption</p>
+                @:<section class="umbraco-forms-fieldset" id="@labeller.ElementId(fs.Id)" aria-labelledby="@labeller.ElementId(fs.Id)-label">
+                <p class="h3" id="@labeller.ElementId(fs.Id)-label">@fs.Caption</p>
             }
             else
             {
-                @:<div class="umbraco-forms-fieldset" id="@fs.Id">
+                @:<div class="umbraco-forms-fieldset" id="@labeller.ElementId(fs.Id)">
             }
 
             <div class="row">
@@ -50,7 +51,7 @@
                             {
                                 if (!f.HideLabel)
                                 {
-                                    <label for="@f.Id" id="@f.Id-label" class="umbraco-forms-label">
+                                    <label for="@labeller.ElementId(f.Id)" id="@labeller.ElementId(f.Id)-label" class="umbraco-forms-label">
                                         @f.Caption @if (f.ShowIndicator)
                                         {
                                             <span class="umbraco-forms-indicator">@Model.Indicator</span>
@@ -60,7 +61,7 @@
 
                                 if (!string.IsNullOrEmpty(f.ToolTip) && f.FieldType.GetType() != typeof(DataConsent))
                                 {
-                                    <p class="form-text" id="@f.Id-tooltip"><small>@f.ToolTip</small></p>
+                                    <p class="form-text" id="@labeller.ElementId(f.Id)-tooltip"><small>@f.ToolTip</small></p>
                                 }
                             }
                             @if (f.FieldType.GetType() == typeof(RadioButtonList) || f.FieldType.GetType() == typeof(CheckBoxList))
@@ -68,20 +69,20 @@
                                 @:<fieldset>
                                 if (!f.HideLabel || !string.IsNullOrEmpty(f.ToolTip))
                                 {
-                                    <legend id="@f.Id-label" class="umbraco-forms-label">
+                                    <legend id="@labeller.ElementId(f.Id)-label" class="umbraco-forms-label">
                                     @if (!f.HideLabel)
                                     {
-                                        <p class="@(string.IsNullOrEmpty(f.ToolTip) ? "mb-0" : "mb-2")">
+                                        <span class="d-block @(string.IsNullOrEmpty(f.ToolTip) ? "mb-0" : "mb-2")">
                                             @f.Caption
                                             @if (f.ShowIndicator)
                                             {
                                             <span class="umbraco-forms-indicator">@Model.Indicator</span>
                                             }
-                                        </p>
+                                        </span>
                                     }
                                     @if (!string.IsNullOrEmpty(f.ToolTip))
                                     {
-                                        <p class="form-text" id="@f.Id-tooltip"><small>@f.ToolTip</small></p>
+                                        <span class="form-text" id="@labeller.ElementId(f.Id)-tooltip"><small>@f.ToolTip</small></span>
                                     }
                                     </legend>
                                 }
@@ -135,7 +136,7 @@
 
                 if (!Model.IsLastPage)
                 {
-                    <button class="btn btn-secondary next" name="__next" type="button">@Model.NextCaption</button>
+                    <button class="btn btn-secondary next" name="__next" type="submit">@Model.NextCaption</button>
                 }
 
                 if (Model.IsLastPage)

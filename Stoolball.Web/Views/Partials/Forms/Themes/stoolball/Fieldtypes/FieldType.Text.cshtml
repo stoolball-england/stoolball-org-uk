@@ -1,0 +1,19 @@
+@model Umbraco.Forms.Web.Models.FieldViewModel
+@using Umbraco.Forms.Web
+@inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
+@* "Title and description" field. Replaces the built-in view only to prefix the id, which must not start with a digit. *@
+@{
+    var caption = Model.GetSettingValue<string>("Caption", string.Empty);
+    var captionTag = Model.GetSettingValue<string>("CaptionTag", "h2");
+    var bodyText = Model.GetSettingValue<string>("BodyText", string.Empty);
+}
+<div id="@labeller.ElementId(Model.Id)" data-umb="@Model.Id" class="@Html.GetFormFieldClass(Model.FieldTypeName)">
+    @if (!string.IsNullOrEmpty(caption))
+    {
+        @Html.Raw($"<{captionTag}>")@caption@Html.Raw($"</{captionTag}>")
+    }
+    @if (!string.IsNullOrEmpty(bodyText))
+    {
+        <p>@Html.Raw(bodyText.ReplaceLineEndings("<br />"))</p>
+    }
+</div>

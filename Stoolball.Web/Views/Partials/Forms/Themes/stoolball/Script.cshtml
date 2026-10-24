@@ -2,6 +2,7 @@
 
 @using Newtonsoft.Json
 @using Umbraco.Forms.Web
+@inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
 
 @{
     var formJsObj = new
@@ -10,7 +11,8 @@
         pageButtonConditions = Model.PageButtonConditions,
         fieldSetConditions = Model.FieldsetConditions,
         fieldConditions = Model.FieldConditions,
-        recordValues = Model.GetFieldsNotDisplayed()
+        recordValues = Model.GetFieldsNotDisplayed(),
+        formElementHtmlIdPrefix = labeller.ElementIdPrefix
     };
 
     Html.AddFormThemeScriptFile("~/App_Plugins/UmbracoForms/Assets/Themes/Default/umbracoforms.js");

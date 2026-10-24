@@ -1,7 +1,7 @@
 @model Umbraco.Forms.Web.Models.FieldViewModel
 @using Umbraco.Forms.Web
 @inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
-<select class="form-control @Html.GetFormFieldClass(Model.FieldTypeName)" name="@Model.Name" id="@Model.Id" aria-describedby="@labeller.DescribedBy(Model)"
+<select class="form-control @Html.GetFormFieldClass(Model.FieldTypeName)" name="@Model.Name" id="@labeller.ElementId(Model.Id)" aria-describedby="@labeller.DescribedBy(Model)"
         @if (Model.Mandatory) {
  <text> data-val="true" data-val-required="@Model.RequiredErrorMessage" </text>
  }>

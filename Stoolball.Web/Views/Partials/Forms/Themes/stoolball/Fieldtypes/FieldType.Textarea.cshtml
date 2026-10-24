@@ -3,7 +3,7 @@
 @inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
 <textarea class="@Html.GetFormFieldClass(Model.FieldTypeName)"
           name="@Model.Name"
-          id="@Model.Id"
+          id="@labeller.ElementId(Model.Id)"
           aria-describedby="@labeller.DescribedBy(Model)"
           @{if (string.IsNullOrEmpty(Model.PlaceholderText) == false) { <text> placeholder="@Model.PlaceholderText" </text> }}
           @{if (Model.Mandatory || Model.Validate) { <text> data-val="true" </text> }}

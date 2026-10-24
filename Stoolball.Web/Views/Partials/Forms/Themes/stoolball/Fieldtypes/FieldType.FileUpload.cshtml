@@ -1,22 +1,23 @@
 @model Umbraco.Forms.Web.Models.FieldViewModel
+@inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
 
 @{
     var isValid = (Model.Mandatory && Model.Values != null && Model.Values.Any()) || (!Model.Mandatory);
     var hasFiles = Model.Values != null && Model.Values.Any();
-    var describedBy = string.IsNullOrEmpty(Model.ToolTip) ? string.Empty : Model.Id + "-tooltip";
+    var describedBy = string.IsNullOrEmpty(Model.ToolTip) ? string.Empty : labeller.ElementId(Model.Id) + "-tooltip";
     if (hasFiles) {
         if (!string.IsNullOrEmpty(describedBy)) { describedBy += " "; }
-        describedBy += Model.Id + "-files";
+        describedBy += labeller.ElementId(Model.Id) + "-files";
     }
 }
-<input type="file" name="@Model.Name" id="@Model.Id" multiple class="form-control-file"
+<input type="file" name="@Model.Name" id="@labeller.ElementId(Model.Id)" multiple class="form-control-file"
        data-val="@(isValid == false ? "true" : null)"
        data-val-required="@(isValid == false ? Model.RequiredErrorMessage : null)"
        @{if (!string.IsNullOrEmpty(describedBy)) { <text>aria-describedby="@describedBy"</text> } }/>
 
 @if (hasFiles)
            {
-    <div id="@Model.Id-files" class="umbraco-forms-files">
+    <div id="@labeller.ElementId(Model.Id)-files" class="umbraco-forms-files">
         <strong>Current files</strong>
         <ul>
         @foreach (string filePath in Model.Values!)

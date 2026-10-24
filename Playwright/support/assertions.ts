@@ -16,6 +16,10 @@ const htmlValidate = new HtmlValidate({
     "script-type": "off", // because it fails Smidge-generated <script type="text/javascript"> tags for including the type
     "require-sri": "off", // because it requires SRI for local resources (even with the crossorigin setting because the html-validate project admits detection isn't good enough)
     "long-title": "off", // some competition and team names are genuinely very long!
+    "form-dup-name": [
+      "error",
+      { shared: ["radio", "checkbox", "button", "reset", "submit"] }, // a group of checkboxes can share a name, eg Umbraco Forms checkbox lists
+    ],
   },
 });
 

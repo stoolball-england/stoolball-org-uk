@@ -17,4 +17,4 @@
     }
 }
 
-<input type="date" name="@Model.Name" id="@(Model.Id)" class="form-control" autocomplete="off" value="@val" aria-describedby="@labeller.DescribedBy(Model)" @{if (Model.Mandatory) { <text> data-val="true" data-val-required="@Model.RequiredErrorMessage" </text>  }} />
+<input type="date" name="@Model.Name" id="@labeller.ElementId(Model.Id)" class="form-control" autocomplete="off" value="@val" aria-describedby="@labeller.DescribedBy(Model)" @{if (Model.Mandatory) { <text> data-val="true" data-val-required="@Model.RequiredErrorMessage" </text>  }} />

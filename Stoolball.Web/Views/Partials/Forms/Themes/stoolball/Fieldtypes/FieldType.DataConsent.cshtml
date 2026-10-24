@@ -4,14 +4,14 @@
     Model.AdditionalSettings.TryGetValue("AcceptCopy", out var acceptCopy);
 }
 <div class="custom-control custom-checkbox">
-    <input type="checkbox" name="@Model.Id" id="@Model.Id" value="true" class="custom-control-input" aria-describedby="@labeller.DescribedBy(Model)"
+    <input type="checkbox" name="@Model.Id" id="@labeller.ElementId(Model.Id)" value="true" class="custom-control-input" aria-describedby="@labeller.DescribedBy(Model)"
            @if (Model.Mandatory) { <text> data-rule-required="true" data-val="true" data-msg-required="@Model.RequiredErrorMessage" </text> }
            @if (Model.ContainsValue(true) || Model.ContainsValue("true") || Model.ContainsValue("on")) { <text> checked="checked" </text> } />
     <input type="hidden" name="@Model.Id" value="false" />
 
-    <label class="custom-control-label" for="@Model.Id" id="@Model.Id-label2">@acceptCopy</label>
+    <label class="custom-control-label" for="@labeller.ElementId(Model.Id)" id="@labeller.ElementId(Model.Id)-label2">@acceptCopy</label>
     @if (!string.IsNullOrEmpty(Model.ToolTip))
     {
-        <p class="form-text" id="@Model.Id-tooltip"><small>@Model.ToolTip</small></p>
+        <p class="form-text" id="@labeller.ElementId(Model.Id)-tooltip"><small>@Model.ToolTip</small></p>
     }
 </div>

@@ -3,7 +3,7 @@
 @inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
 <input type="email"
        name="@Model.Name"
-       id="@Model.Id"
+       id="@labeller.ElementId(Model.Id)"
        class="@Html.GetFormFieldClass(Model.FieldTypeName) umbraco-forms-field__email form-control" aria-describedby="@labeller.DescribedBy(Model)"
        value="@Model.ValueAsHtmlString"
        @{if (string.IsNullOrEmpty(Model.PlaceholderText) == false) { <text> placeholder="@Model.PlaceholderText" </text> }}

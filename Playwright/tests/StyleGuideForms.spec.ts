@@ -15,6 +15,7 @@ test.describe("Style guide - forms section", () => {
         "prefer-native-element": "off", // picks up TinyMCE
         "no-deprecated-attr": "off", // picks up TinyMCE
         "input-missing-label": "off", // not smart enough to recognise aria-label
+        "form-dup-name": "off", // Umbraco Forms checkboxes need a hidden "false" input with the same name after the checkbox, because the first value posted is saved
       },
     });
   });
