@@ -16,11 +16,9 @@ namespace Stoolball.Web.Routing
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var domain = context.Request.Host.Host.ToUpperInvariant();
-            var path = UriHelper.GetEncodedPathAndQuery(context.Request);
-
-            if (domain == "STOOLBALL.ORG.UK" || domain == "STOOLBALL.CO.UK" || domain == "WWW.STOOLBALL.CO.UK")
+            if (PreferredDomain.IsAlternateDomain(context.Request.Host.Host))
             {
+                var path = UriHelper.GetEncodedPathAndQuery(context.Request);
                 context.Response.Redirect("https://www.stoolball.org.uk" + path, true);
                 return;
             }

@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
+using Stoolball.Web.Routing;
 
 namespace Stoolball.Web.Logging
 {
@@ -11,6 +12,8 @@ namespace Stoolball.Web.Logging
     /// </summary>
     /// <remarks>
     /// <para>Successful SQL dependencies are dropped because they are most of the volume. Failed ones are kept.</para>
+    /// <para>Requests to alternate domains are dropped, because they are always redirected and the redirected request is recorded
+    /// on the preferred domain.</para>
     /// <para>Requests for paths that only vulnerability scanners request are dropped. Each scanner request is recorded twice:
     /// once for the original 404, and again for /status/404.html, which serves the error page and has the original URL
     /// in its querystring after "404;".</para>
@@ -19,8 +22,11 @@ namespace Stoolball.Web.Logging
     {
         private const string ERROR_PAGE_PATH = "/status/404.html";
 
-        private static readonly string[] _scannerPathPrefixes = ["/.env", "/.git/", "/wp-admin/", "/wp-content/", "/wp-includes/", "/@fs/", "/__vite", "/ipfs/"];
+        private static readonly string[] _scannerPathPrefixes = ["/.git/", "/wp-admin/", "/wp-content/", "/wp-includes/", "/wp-json/", "/@fs/", "/__vite", "/ipfs/", "/.aws/", "/feed/"];
         private static readonly string[] _scannerPathSuffixes = [".php"];
+
+        // Scanners look for .env files in any folder, eg /api/.env or /media../.env
+        private static readonly string[] _scannerPathSegments = ["/.env"];
 
         private readonly ITelemetryProcessor _next;
 
@@ -36,7 +42,7 @@ namespace Stoolball.Web.Logging
                 return;
             }
 
-            if (item is RequestTelemetry request && IsScannerRequest(request))
+            if (item is RequestTelemetry request && (IsAlternateDomainRequest(request) || IsScannerRequest(request)))
             {
                 return;
             }
@@ -47,6 +53,11 @@ namespace Stoolball.Web.Logging
         private static bool IsSuccessfulSqlDependency(DependencyTelemetry dependency)
         {
             return dependency.Success == true && string.Equals(dependency.Type, "SQL", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsAlternateDomainRequest(RequestTelemetry request)
+        {
+            return request.Url is not null && PreferredDomain.IsAlternateDomain(request.Url.Host);
         }
 
         private static bool IsScannerRequest(RequestTelemetry request)
@@ -71,7 +82,8 @@ namespace Stoolball.Web.Logging
         private static bool IsScannerPath(string path)
         {
             return _scannerPathPrefixes.Any(prefix => path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                || _scannerPathSuffixes.Any(suffix => path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase));
+                || _scannerPathSuffixes.Any(suffix => path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                || _scannerPathSegments.Any(segment => path.Contains(segment, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
