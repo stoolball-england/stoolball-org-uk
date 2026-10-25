@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Logout member", () => {
+test.describe("Logout member", { tag: "@Production" }, () => {
   test.describe("When signed out", () => {
     test.beforeEach(async ({ page }) => {
       await page.goto("/account/sign-out/");

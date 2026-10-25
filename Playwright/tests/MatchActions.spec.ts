@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Match actions", () => {
+test.describe("Match actions", { tag: "@Production" }, () => {
   test.describe("When signed out", () => {
     test.beforeEach(async ({ page }) => {
       await page.goto(

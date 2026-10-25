@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Edit email address", () => {
+test.describe("Edit email address", { tag: "@Production" }, () => {
   test.describe("When signed out", () => {
     test.beforeEach(async ({ page }) => {
       await page.goto("/account/personal-details/");

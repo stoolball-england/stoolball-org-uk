@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Most catches", () => {
+test.describe("Most catches", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/play/statistics/most-catches");
   });

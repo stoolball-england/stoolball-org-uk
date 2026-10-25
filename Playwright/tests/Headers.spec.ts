@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Sitewide headers", () => {
+test.describe("Sitewide headers", { tag: "@Production" }, () => {
   test("Include security headers", async ({ request }) => {
     const response = await request.get("/");
     const headers = response.headers();
 
-    expect(headers).not.toHaveProperty("server");
+    expect([undefined, "cloudflare"]).toContain(headers["server"]); // Cloudflare adds its own server header in production
     expect(headers).not.toHaveProperty("x-powered-by");
     expect(headers["permissions-policy"]).toBe(
       "accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),cross-origin-isolated=(),display-capture=(),document-domain=(),encrypted-media=(),execution-while-not-rendered=(),execution-while-out-of-viewport=(),fullscreen=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),navigation-override=(),payment=(),picture-in-picture=(),publickey-credentials-get=(),screen-wake-lock=(),sync-xhr=(),usb=(),web-share=(),xr-spatial-tracking=()",
@@ -30,7 +30,9 @@ test.describe("Sitewide headers", () => {
     const response = await request.get("/umbraco");
     const headers = response.headers();
 
-    expect(headers).not.toHaveProperty("permissions-policy");
+    expect(headers["permissions-policy"]).toBe(
+      "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
+    );
     expect(headers).not.toHaveProperty("cross-origin-opener-policy");
   });
 

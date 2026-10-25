@@ -14,14 +14,10 @@ namespace Stoolball.Web.Logging
     /// <para>Successful SQL dependencies are dropped because they are most of the volume. Failed ones are kept.</para>
     /// <para>Requests to alternate domains are dropped, because they are always redirected and the redirected request is recorded
     /// on the preferred domain.</para>
-    /// <para>Requests for paths that only vulnerability scanners request are dropped. Each scanner request is recorded twice:
-    /// once for the original 404, and again for /status/404.html, which serves the error page and has the original URL
-    /// in its querystring after "404;".</para>
+    /// <para>Requests for paths that only vulnerability scanners request are dropped.</para>
     /// </remarks>
     public class TelemetryCostFilterProcessor : ITelemetryProcessor
     {
-        private const string ERROR_PAGE_PATH = "/status/404.html";
-
         private static readonly string[] _scannerPathPrefixes = ["/.git/", "/wp-admin/", "/wp-content/", "/wp-includes/", "/wp-json/", "/@fs/", "/__vite", "/ipfs/", "/.aws/", "/feed/"];
         private static readonly string[] _scannerPathSuffixes = [".php"];
 
@@ -65,14 +61,6 @@ namespace Stoolball.Web.Logging
             if (request.Url is null)
             {
                 return false;
-            }
-
-            if (request.Url.AbsolutePath.Equals(ERROR_PAGE_PATH, StringComparison.OrdinalIgnoreCase))
-            {
-                var marker = request.Url.Query.IndexOf("404;", StringComparison.Ordinal);
-                return marker > -1
-                    && Uri.TryCreate(request.Url.Query[(marker + 4)..], UriKind.Absolute, out var originalUrl)
-                    && IsScannerPath(originalUrl.AbsolutePath);
             }
 
             // Keep scanner paths that succeed, because that would be worth knowing about

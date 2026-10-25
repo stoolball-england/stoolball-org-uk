@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Edit transient team", () => {
+test.describe("Edit transient team", { tag: "@Production" }, () => {
   test.describe("When signed out", () => {
     test.beforeEach(async ({ page }) => {
       await page.goto("/teams/maresfield-mixed/edit/team");

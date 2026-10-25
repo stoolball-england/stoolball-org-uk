@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Delete season", () => {
+test.describe("Delete season", { tag: "@Production" }, () => {
   test.describe("When signed out", () => {
     test.beforeEach(async ({ page }) => {
       await page.goto("/competitions/mid-sussex-mixed-league/2021/delete");

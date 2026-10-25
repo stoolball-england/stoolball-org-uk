@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Request password reset", () => {
+test.describe("Request password reset", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/account/reset-password/");
   });

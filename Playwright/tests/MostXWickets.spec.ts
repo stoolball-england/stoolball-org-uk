@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Most times taking 5 or more wickets", () => {
+test.describe("Most times taking 5 or more wickets", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/play/statistics/most-5-wickets");
   });

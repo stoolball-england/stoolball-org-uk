@@ -91,4 +91,13 @@ npm run test:e2e:ui                               # open the interactive UI mode
 npx playwright show-report Playwright/playwright-report # view the HTML report of the last run
 ```
 
+Tests tagged `@Production` only read data, so they are safe to run against the live site. Run them using:
+
+```pwsh
+$env:BASE_URL = "https://www.stoolball.org.uk"
+npx playwright test -c Playwright --grep "@Production" --workers=2
+```
+
+For the CSV export test to pass, `CSV_EXPORT_API_KEY` in `Playwright/.env` must be the production API key.
+
 In Visual Studio Code, the [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) extension lets you run and debug individual tests from the editor.

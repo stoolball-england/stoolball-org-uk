@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("CSV export", () => {
+test.describe("CSV export", { tag: "@Production" }, () => {
   test("Should return onlysport.csv without a key", async ({ request }) => {
     const response = await request.get("/data/onlysport.csv");
     expect(response.ok()).toBe(true);

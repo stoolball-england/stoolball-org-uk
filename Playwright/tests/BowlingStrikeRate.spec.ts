@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Best bowling strike rate", () => {
+test.describe("Best bowling strike rate", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/play/statistics/bowling-strike-rate");
   });

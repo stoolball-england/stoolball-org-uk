@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Style guide - forms section", () => {
+test.describe("Style guide - forms section", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/style-guide/?alttemplate=styleguideforms");
   });

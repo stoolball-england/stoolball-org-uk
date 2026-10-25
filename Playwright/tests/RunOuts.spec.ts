@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Run-outs", () => {
+test.describe("Run-outs", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/players/rick-mason/run-outs");
   });

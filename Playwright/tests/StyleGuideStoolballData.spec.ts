@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Style guide - stoolball data section", () => {
+test.describe("Style guide - stoolball data section", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/style-guide/?alttemplate=styleguidestoolballdata");
   });

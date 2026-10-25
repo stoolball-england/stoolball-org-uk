@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Confirm email address", () => {
+test.describe("Confirm email address", { tag: "@Production" }, () => {
   test.describe("Without a key", () => {
     test.beforeEach(async ({ page }) => {
       await page.goto("/account/confirm-email/");

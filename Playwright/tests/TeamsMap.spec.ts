@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Clubs and teams map", () => {
+test.describe("Clubs and teams map", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/teams/map");
   });

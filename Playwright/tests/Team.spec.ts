@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Team", () => {
+test.describe("Team", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/teams/maresfield-mixed");
   });

@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Reset password complete", () => {
+test.describe("Reset password complete", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/account/reset-password/?token=invalid&successful=yes");
   });

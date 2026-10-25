@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Most player of the match awards", () => {
+test.describe("Most player of the match awards", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/play/statistics/most-player-of-match");
   });

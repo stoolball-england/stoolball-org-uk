@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Matches RSS feed", () => {
+test.describe("Matches RSS feed", { tag: "@Production" }, () => {
   test.describe("In standard format", () => {
     test("Loads", async ({ request }) => {
       const response = await request.get("/matches.rss");

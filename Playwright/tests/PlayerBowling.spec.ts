@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Player bowling", () => {
+test.describe("Player bowling", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/players/rick-mason/bowling");
   });

@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Most scores of 50 or more runs", () => {
+test.describe("Most scores of 50 or more runs", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/play/statistics/most-scores-of-50");
   });

@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Transient team", () => {
+test.describe("Transient team", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(
       "/tournaments/lewes-arms-tournament-7jul2013/teams/brighton-beachcombers/edit",

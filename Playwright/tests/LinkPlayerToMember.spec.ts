@@ -4,10 +4,10 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Link player to member", () => {
+test.describe("Link player to member", { tag: "@Production" }, () => {
   test.describe("When signed out", () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto("/players/rick-mason/add-to-my-statistics");
+      await page.goto("/players/abbie-newell/add-to-my-statistics");
     });
 
     test("Validates", async ({ page }) => {

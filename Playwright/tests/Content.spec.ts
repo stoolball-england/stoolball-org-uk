@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Content page", () => {
+test.describe("Content page", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/rules/what-is-stoolball");
   });

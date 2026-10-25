@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Match", () => {
+test.describe("Match", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/matches/maresfield-mixed-new-school-ninjas-22jul2021");
   });

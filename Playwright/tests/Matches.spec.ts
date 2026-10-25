@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Matches and tournaments", () => {
+test.describe("Matches and tournaments", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/matches");
   });

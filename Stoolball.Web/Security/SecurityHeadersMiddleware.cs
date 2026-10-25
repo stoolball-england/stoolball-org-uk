@@ -32,6 +32,11 @@ namespace Stoolball.Web.Security
                 context.Response.Headers.Append("Permissions-Policy", "accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),cross-origin-isolated=(),display-capture=(),document-domain=(),encrypted-media=(),execution-while-not-rendered=(),execution-while-out-of-viewport=(),fullscreen=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),navigation-override=(),payment=(),picture-in-picture=(),publickey-credentials-get=(),screen-wake-lock=(),sync-xhr=(),usb=(),web-share=(),xr-spatial-tracking=()");
                 context.Response.Headers.Append("Cross-Origin-Opener-Policy", "same-origin; report-to=\"default\"");
             }
+            else if (path.StartsWith("/umbraco"))
+            {
+                // A shorter policy that doesn't break the back office, matching the one production serves for /umbraco
+                context.Response.Headers.Append("Permissions-Policy", "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()");
+            }
 
             // Add a CORP header to all client-side resources to prevent embedding on any third-party site that enables COEP
             if (new List<string> { ".css", ".js", ".svg", ".gif", ".png", ".jpg", ".webp", ".avif", ".ico" }.Contains(path.GetFileExtension().ToLowerInvariant()))

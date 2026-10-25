@@ -96,42 +96,6 @@ namespace Stoolball.Web.UnitTests.Logging
             _next.Verify(x => x.Process(request), Times.Once);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Error_page_for_scanner_path_is_dropped(bool success)
-        {
-            var processor = new TelemetryCostFilterProcessor(_next.Object);
-
-            processor.Process(CreateRequest("https://83204419-7b64-43ae-b47b-bc4f6d81ef41-1.azurewebsites.net/status/404.html?404;https://83204419-7b64-43ae-b47b-bc4f6d81ef41-1:80/wp-login.php", success));
-
-            _next.Verify(x => x.Process(It.IsAny<ITelemetry>()), Times.Never);
-        }
-
-        [Fact]
-        public void Error_page_for_wp_json_is_dropped()
-        {
-            var processor = new TelemetryCostFilterProcessor(_next.Object);
-
-            processor.Process(CreateRequest("https://83204419-7b64-43ae-b47b-bc4f6d81ef41-1.azurewebsites.net/status/404.html?404;https://83204419-7b64-43ae-b47b-bc4f6d81ef41-1:80/wp-json/batch/v1", true));
-
-            _next.Verify(x => x.Process(It.IsAny<ITelemetry>()), Times.Never);
-        }
-
-        [Theory]
-        [InlineData("https://www.stoolball.org.uk/status/404.html?404;https://www.stoolball.org.uk:80/sitemap.xml")]
-        [InlineData("https://www.stoolball.org.uk/status/404.html")]
-        [InlineData("https://www.stoolball.org.uk/status/404.html?404;not-a-url")]
-        public void Error_page_for_other_path_is_kept(string url)
-        {
-            var processor = new TelemetryCostFilterProcessor(_next.Object);
-            var request = CreateRequest(url, true);
-
-            processor.Process(request);
-
-            _next.Verify(x => x.Process(request), Times.Once);
-        }
-
         [Fact]
         public void Request_without_url_is_kept()
         {

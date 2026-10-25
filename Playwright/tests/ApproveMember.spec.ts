@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Activate member", () => {
+test.describe("Activate member", { tag: "@Production" }, () => {
   test.describe("Without a key", () => {
     test.beforeEach(async ({ page }) => {
       await page.goto("/account/activate/");

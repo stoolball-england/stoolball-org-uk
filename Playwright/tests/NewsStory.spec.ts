@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("News story", () => {
+test.describe("News story", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/news/minutes-of-the-41st-annual-general-meeting/");
   });

@@ -60,6 +60,10 @@ npm run typecheck:e2e
   });
   ```
 
+- Tag the top-level `test.describe` with `{ tag: "@Production" }` if every test in it is
+  safe to run against the live site: signed out, only reading data and never submitting a
+  form that changes anything. Run them with `--grep @Production`. Leave the tag off a
+  `describe` that signs in or changes data, or move those tests into an untagged `describe`.
 - `expectValidHtml` runs html-validate over the rendered DOM. To turn off a rule for one
   page, pass html-validate config as the second argument, with a comment explaining why:
   `expectValidHtml(page, { rules: { "input-missing-label": "off" } }) // reason`. Only turn

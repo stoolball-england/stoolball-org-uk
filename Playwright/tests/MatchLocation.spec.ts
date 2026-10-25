@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Match location", () => {
+test.describe("Match location", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/locations/maresfield-recreation-ground");
   });

@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Season results table", () => {
+test.describe("Season results table", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/competitions/mid-sussex-mixed-league/2021/table");
   });

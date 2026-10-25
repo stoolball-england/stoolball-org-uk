@@ -4,7 +4,7 @@ import {
   expectNoAccessibilityViolations,
 } from "../support/assertions";
 
-test.describe("Tournament", () => {
+test.describe("Tournament", { tag: "@Production" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/tournaments/slsa-tournament-23jun2013");
   });
