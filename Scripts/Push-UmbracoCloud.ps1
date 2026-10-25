@@ -9,6 +9,15 @@ $cloudRoot = Resolve-Path "$projectRoot\.UmbracoCloud"
 
 $foldersToCopy = "Stoolball", "Stoolball.Data.SqlServer", "Stoolball.Data.Abstractions", "Stoolball.Data.MemoryCache", "Stoolball.Data.UmbracoMigrations", "Stoolball.Web"
 
+# The Playwright tests run against a copy of the site started by this script, so that they test the code being deployed.
+# A site that's already running would lock the files the build needs to replace, and might not be running this code.
+$siteUrl = "https://localhost:44343"
+$sitePort = ([Uri]$siteUrl).Port
+if (Get-NetTCPConnection -LocalPort $sitePort -State Listen -ErrorAction SilentlyContinue) {
+    Write-Error "Something is already listening on port $sitePort. Stop the local site before deploying, so the Playwright tests run against the code being deployed."
+    exit 1
+}
+
 # Get the path to the Umbraco project from the .umbraco Umbraco Cloud config file
 $projectConfig = Get-Content $projectRoot/.umbraco
 $configLine = $projectConfig | Where-Object { $_.StartsWith("csproj") } | Select-Object -First 1
@@ -32,9 +41,61 @@ foreach ($folder in $foldersToCopy) {
     if (Test-Path (Join-Path $folderPath -ChildPath $umbracoProjectFile)) {
         Push-Location $folderPath
         dotnet build
+        $buildExitCode = $LASTEXITCODE
         Pop-Location
+        if ($buildExitCode -ne 0) { exit $buildExitCode }
+        $webProjectPath = $folderPath
         break
     }
+}
+
+# Run the full Playwright test suite against the site that was just built, and stop if any tests fail
+$siteLog = Join-Path ([IO.Path]::GetTempPath()) "Push-UmbracoCloud-site.log"
+$previousEnvironment = $env:ASPNETCORE_ENVIRONMENT
+$env:ASPNETCORE_ENVIRONMENT = "Development"
+$site = Start-Process dotnet -ArgumentList "run", "--project", "`"$webProjectPath`"", "--no-build", "--no-launch-profile", "--urls", $siteUrl `
+    -NoNewWindow -PassThru -RedirectStandardOutput $siteLog -RedirectStandardError "$siteLog.err"
+$env:ASPNETCORE_ENVIRONMENT = $previousEnvironment
+
+try {
+    Write-Host "Waiting for the site to start at $siteUrl"
+    $siteStarted = $false
+    $deadline = (Get-Date).AddMinutes(10)
+    while (!$site.HasExited -and (Get-Date) -lt $deadline) {
+        $statusCode = curl.exe --silent --insecure --output NUL --write-out "%{http_code}" --max-time 60 $siteUrl
+        if ($statusCode -eq "200") { $siteStarted = $true; break }
+        Start-Sleep -Seconds 5
+    }
+    if (!$siteStarted) {
+        Write-Error "The site did not start. See $siteLog and $siteLog.err"
+        $testExitCode = 1
+    }
+    else {
+        # The first request to each area of a newly started site is slow. Make those requests one at a time before the
+        # tests run in parallel, so that they don't time out. Failures here are left for the tests to report.
+        $warmUpPaths = "/account/activate/", "/matches", "/play/statistics", "/players/rick-mason", "/teams/maresfield-mixed",
+            "/clubs/maresfield", "/locations/maresfield-recreation-ground", "/competitions/mid-sussex-mixed-league/2021",
+            "/tournaments/slsa-tournament-23jun2013", "/news"
+        foreach ($path in $warmUpPaths) {
+            Write-Host "Warming up $path"
+            curl.exe --silent --insecure --output NUL --max-time 120 "$siteUrl$path" | Out-Null
+        }
+
+        Push-Location $projectRoot
+        $env:BASE_URL = $siteUrl
+        npx playwright test -c Playwright
+        $testExitCode = $LASTEXITCODE
+        Remove-Item Env:BASE_URL
+        Pop-Location
+    }
+}
+finally {
+    # dotnet run starts the site as a child process, so stop the whole process tree
+    taskkill /PID $site.Id /T /F | Out-Null
+}
+if ($testExitCode -ne 0) {
+    Write-Error "Playwright tests failed, so the site has not been deployed."
+    exit $testExitCode
 }
 
 # Copy changes to the .UmbracoCloud deployment repository
