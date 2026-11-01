@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import {
   expectValidHtml,
   expectNoAccessibilityViolations,
@@ -18,6 +18,26 @@ test.describe("Style guide - forms section", { tag: "@Production" }, () => {
         "form-dup-name": "off", // Umbraco Forms checkboxes need a hidden "false" input with the same name after the checkbox, because the first value posted is saved
       },
     });
+  });
+
+  test("TinyMCE keeps links as typed rather than converting them to relative URLs", async ({
+    page,
+  }) => {
+    const links = [
+      "https://example.org/page1/page2",
+      "/page1/page2",
+      "../page2",
+    ];
+
+    for (const href of links) {
+      const content = await page.evaluate((href) => {
+        const editor = (window as any).tinymce.get("rich-text");
+        editor.setContent(`<p><a href="${href}">link</a></p>`);
+        return editor.getContent();
+      }, href);
+
+      expect(content).toBe(`<p><a href="${href}">link</a></p>`);
+    }
   });
 
   test("Passes AXE", async ({ page }) => {

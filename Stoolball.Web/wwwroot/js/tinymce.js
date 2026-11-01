@@ -23,6 +23,9 @@ tinymce.PluginManager.load(
     link_title: false,
     target_list: false,
 
+    // Keep links exactly as typed or pasted, rather than converting them to relative URLs
+    convert_urls: false,
+
     // Set appearance of text within editor
     content_css: "/css/tinymce.css",
   });
