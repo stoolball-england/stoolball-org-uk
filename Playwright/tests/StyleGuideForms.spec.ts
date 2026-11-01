@@ -23,6 +23,11 @@ test.describe("Style guide - forms section", { tag: "@Production" }, () => {
   test("TinyMCE keeps links as typed rather than converting them to relative URLs", async ({
     page,
   }) => {
+    // TinyMCE initialises asynchronously after DOMContentLoaded, so wait for the editor to exist
+    await page.waitForFunction(
+      () => (window as any).tinymce?.get("rich-text")?.initialized,
+    );
+
     const links = [
       "https://example.org/page1/page2",
       "/page1/page2",
