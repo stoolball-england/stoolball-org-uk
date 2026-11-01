@@ -134,10 +134,10 @@
     <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.21" />
     <PackageReference Include="Umbraco.Cloud.Identity.Cms" Version="13.2.9" />
     <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="13.0.1" />
-    <PackageReference Include="Umbraco.Cms" Version="13.16.2" />
+    <PackageReference Include="Umbraco.Cms" Version="13.16.4" />
     <PackageReference Include="Umbraco.Deploy.Cloud" Version="13.2.2" />
     <PackageReference Include="Umbraco.Deploy.Contrib" Version="13.2.0" />
-    <PackageReference Include="Umbraco.Forms" Version="13.9.11" />
+    <PackageReference Include="Umbraco.Forms" Version="13.9.12" />
     <PackageReference Include="Umbraco.Forms.Deploy" Version="13.1.0" />
     <PackageReference Include="uSync" Version="13.2.6" />
   </ItemGroup>
