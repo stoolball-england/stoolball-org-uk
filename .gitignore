@@ -440,4 +440,6 @@ umbraco-cloud.json
 # Playwright
 Playwright/test-results/
 Playwright/playwright-report/
+Playwright/test-results-production/
+Playwright/playwright-report-production/
 Playwright/.env

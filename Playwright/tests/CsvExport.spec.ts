@@ -18,12 +18,17 @@ test.describe("CSV export", { tag: "@Production" }, () => {
     expect(response.status()).toBe(404);
   });
 
-  test("Should return spogo.csv with a valid key", async ({ request }) => {
-    const apiKey = process.env.CSV_EXPORT_API_KEY;
-    expect(
-      apiKey,
-      "CSV_EXPORT_API_KEY must be set. See docs/Testing.md.",
-    ).toBeTruthy();
+  test("Should return spogo.csv with a valid key", async ({
+    request,
+    baseURL,
+  }) => {
+    // The production key is kept separately so one Playwright/.env file works for both local and production runs
+    const keyName =
+      new URL(baseURL!).hostname === "localhost"
+        ? "CSV_EXPORT_API_KEY"
+        : "PRODUCTION_CSV_EXPORT_API_KEY";
+    const apiKey = process.env[keyName];
+    expect(apiKey, `${keyName} must be set. See docs/Testing.md.`).toBeTruthy();
 
     const response = await request.get(`/data/spogo.csv?key=${apiKey}`);
     expect(response.ok()).toBe(true);

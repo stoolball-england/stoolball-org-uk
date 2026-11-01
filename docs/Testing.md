@@ -98,6 +98,12 @@ $env:BASE_URL = "https://www.stoolball.org.uk"
 npx playwright test -c Playwright --grep "@Production" --workers=2
 ```
 
-For the CSV export test to pass, `CSV_EXPORT_API_KEY` in `Playwright/.env` must be the production API key.
+For the CSV export test to pass against a site that is not `localhost`, add the production API key to `Playwright/.env` as `PRODUCTION_CSV_EXPORT_API_KEY`:
+
+```
+PRODUCTION_CSV_EXPORT_API_KEY=xxx
+```
+
+`Scripts/Push-UmbracoCloud.ps1` runs all the tests against a local copy of the site before deploying, then waits for the new version to appear on production and runs the `@Production` tests with 2 workers. The production run writes its report to `Playwright/playwright-report-production` so it does not replace the report from the local run. Use `-SkipPlaywright` to skip both runs.
 
 In Visual Studio Code, the [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) extension lets you run and debug individual tests from the editor.
