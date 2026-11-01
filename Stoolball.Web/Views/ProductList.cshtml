@@ -1,5 +1,10 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ProductList>
 @inject Stoolball.Email.IEmailProtector emailProtector
+@using System.Globalization
+@using System.Net
+@using System.Text.Json
+@using System.Text.RegularExpressions
+@using Umbraco.Cms.Core.Models.Blocks
 @using Umbraco.Forms.Web.Extensions
 @{
     @await Html.PartialAsync("_JQueryValidate")
@@ -29,6 +34,44 @@
         @await Umbraco.RenderMacroAsync("renderUmbracoForm", new { FormGuid = Model.EnquiryForm, FormTheme = "stoolball", ExcludeScripts = "1" })
     }
 </div>
+
+@section head {
+    @{
+        const string siteUrl = "https://www.stoolball.org.uk";
+        var shopUrl = siteUrl + Context.Request.Path.Value?.TrimEnd('/');
+        var products = new List<Dictionary<string, object>>();
+        foreach (var block in Model.Products ?? Enumerable.Empty<BlockListItem>())
+        {
+            if (block.Content is not ProductPreview product || string.IsNullOrWhiteSpace(product.ProductName)) { continue; }
+            if (!decimal.TryParse(product.Price?.Replace("£", string.Empty).Replace(",", string.Empty).Trim(), NumberStyles.Number, CultureInfo.InvariantCulture, out var price)) { continue; }
+
+            var item = new Dictionary<string, object>
+            {
+                ["@type"] = "Product",
+                ["name"] = product.ProductName
+            };
+            var description = WebUtility.HtmlDecode(Regex.Replace(product.Description?.ToHtmlString() ?? string.Empty, "<[^>]*>", " ")).Trim();
+            description = Regex.Replace(description, @"\s+", " ");
+            if (description.Length > 0) { item["description"] = description; }
+            if (product.Photo != null) { item["image"] = siteUrl + product.Photo.MediaUrl(); }
+            item["offers"] = new Dictionary<string, object>
+            {
+                ["@type"] = "Offer",
+                ["url"] = product.ProductPage != null ? siteUrl + product.ProductPage.Url() : shopUrl,
+                ["price"] = price.ToString("0.00", CultureInfo.InvariantCulture),
+                ["priceCurrency"] = "GBP",
+                ["availability"] = "https://schema.org/InStock",
+                ["seller"] = new Dictionary<string, object> { ["@type"] = "Organization", ["name"] = "Stoolball England" }
+            };
+            products.Add(item);
+        }
+    }
+    @if (products.Count > 0)
+    {
+        var graph = new Dictionary<string, object> { ["@context"] = "https://schema.org", ["@graph"] = products };
+        <script type="application/ld+json">@Html.Raw(JsonSerializer.Serialize(graph))</script>
+    }
+}
 
 @section umbracoforms {
     @if (TempData["UmbracoForms"] != null)
