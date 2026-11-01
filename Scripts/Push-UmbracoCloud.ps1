@@ -65,6 +65,18 @@ foreach ($folder in $foldersToCopy) {
     }
 }
 
+# Run the unit tests and stop if any fail. The integration tests need a database so they are not run here.
+foreach ($testProject in Get-ChildItem $projectRoot -Directory -Filter "*.UnitTests" | Where-Object { Test-Path "$($_.FullName)\*.csproj" }) {
+    Push-Location $testProject.FullName
+    dotnet test
+    $testExitCode = $LASTEXITCODE
+    Pop-Location
+    if ($testExitCode -ne 0) {
+        Write-Error "Unit tests failed in $($testProject.Name), so the site has not been deployed."
+        exit $testExitCode
+    }
+}
+
 # Run the full Playwright test suite against the site that was just built, and stop if any tests fail
 if (!$SkipPlaywright) {
     $siteLog = Join-Path ([IO.Path]::GetTempPath()) "Push-UmbracoCloud-site.log"

@@ -104,6 +104,6 @@ For the CSV export test to pass against a site that is not `localhost`, add the 
 PRODUCTION_CSV_EXPORT_API_KEY=xxx
 ```
 
-`Scripts/Push-UmbracoCloud.ps1` runs all the tests against a local copy of the site before deploying, then waits for the new version to appear on production and runs the `@Production` tests with 2 workers. The production run writes its report to `Playwright/playwright-report-production` so it does not replace the report from the local run. Use `-SkipPlaywright` to skip both runs.
+`Scripts/Push-UmbracoCloud.ps1` builds the site, runs the .NET unit tests (not the integration tests), then runs all the Playwright tests against a local copy of the site before deploying, then waits for the new version to appear on production and runs the `@Production` tests with 2 workers. The production run writes its report to `Playwright/playwright-report-production` so it does not replace the report from the local run. Use `-SkipPlaywright` to skip both runs.
 
 In Visual Studio Code, the [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) extension lets you run and debug individual tests from the editor.
