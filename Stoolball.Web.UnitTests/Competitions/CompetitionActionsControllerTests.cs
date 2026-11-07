@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -14,6 +15,7 @@ namespace Stoolball.Web.UnitTests.Competitions
     public class CompetitionActionsControllerTests : UmbracoBaseTest
     {
         private readonly Mock<ICompetitionDataSource> _competitionDataSource = new();
+        private readonly Mock<IAuthorizationPolicy<Competition>> _authorizationPolicy = new();
 
         private CompetitionActionsController CreateController()
         {
@@ -22,7 +24,7 @@ namespace Stoolball.Web.UnitTests.Competitions
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
                 _competitionDataSource.Object,
-                Mock.Of<IAuthorizationPolicy<Competition>>())
+                _authorizationPolicy.Object)
             {
                 ControllerContext = ControllerContext
             };
@@ -52,6 +54,55 @@ namespace Stoolball.Web.UnitTests.Competitions
 
                 Assert.IsType<CompetitionViewModel>(((ViewResult)result).Model);
             }
+        }
+        [Fact]
+        public async Task Model_has_competition_and_authorization()
+        {
+            var competition = new Competition { CompetitionName = "Example", CompetitionRoute = "/competitions/example" };
+            var authorization = new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditCompetition, true } };
+            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(competition);
+            _authorizationPolicy.Setup(x => x.IsAuthorized(competition)).ReturnsAsync(authorization);
+            _authorizationPolicy.Setup(x => x.AuthorizedMemberNames(competition)).ReturnsAsync(new List<string> { "Jo Bloggs" });
+            _authorizationPolicy.Setup(x => x.AuthorizedGroupNames(competition)).Returns(new List<string> { "Administrators" });
+
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            var model = Assert.IsType<CompetitionViewModel>(((ViewResult)result).Model);
+            Assert.Equal(competition, model.Competition);
+            Assert.Equal("Example", model.Authorization.AuthorizationFor);
+            Assert.Equal(authorization, model.Authorization.CurrentMemberIsAuthorized);
+            Assert.Equal(new[] { "Jo Bloggs" }, model.Authorization.AuthorizedMemberNames);
+            Assert.Equal(new[] { "Administrators" }, model.Authorization.AuthorizedGroupNames);
+        }
+
+        [Fact]
+        public async Task Model_has_page_title_and_breadcrumbs()
+        {
+            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example", CompetitionRoute = "/competitions/example" });
+
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            var model = Assert.IsType<CompetitionViewModel>(((ViewResult)result).Model);
+            Assert.Equal("Edit Example", model.Metadata.PageTitle);
+            Assert.Equal(Constants.Pages.Competitions, model.Breadcrumbs[^2].Name);
+            Assert.Equal("Example", model.Breadcrumbs[^1].Name);
+            Assert.Equal("/competitions/example", model.Breadcrumbs[^1].Url!.ToString());
+        }
+
+        [Fact]
+        public async Task Route_not_matching_competition_does_not_check_authorization()
+        {
+            _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition?>(null));
+
+            using var controller = CreateController();
+
+            await controller.Index();
+
+            _authorizationPolicy.Verify(x => x.IsAuthorized(It.IsAny<Competition>()), Times.Never);
         }
     }
 }
