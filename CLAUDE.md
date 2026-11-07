@@ -10,6 +10,12 @@ When running the site locally, always run it in the `Development` environment by
 `Hosting environment: Development`. `dotnet run --environment Development` is not enough. See
 `docs/GettingStarted.md`.
 
+## Build warnings
+
+When you write new code, resolve any build warnings it introduces (for example nullable
+reference warnings in new tests) rather than leaving them for later. Don't spend time fixing
+warnings in code you haven't touched.
+
 ## Playwright tests for pages
 
 The end-to-end tests in `Playwright/` cover every page on the site. See `Playwright/CLAUDE.md`
