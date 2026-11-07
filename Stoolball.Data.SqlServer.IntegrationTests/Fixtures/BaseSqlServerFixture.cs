@@ -2,9 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Xml.Linq;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Dac;
@@ -15,6 +16,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
     public abstract class BaseSqlServerFixture : IDisposable
     {
         private const string _localDbInstance = @"localhost\SqlExpress";
+        private static readonly Regex _identityLastValueAnnotation = new(@"<Annotation Type=""OnlinePropertyAnnotation"" Name=""\[LastValue\]"">.*?</Annotation>", RegexOptions.Singleline);
         private string? _sqlServerContainerInstance;
         private readonly string _testDatabaseName;
         private readonly string _siteDatabaseName = "Umbraco";
@@ -109,10 +111,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 var tempDacpacPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dacpac");
                 _dacServices.Extract(tempDacpacPath, _siteDatabaseName, _testDatabaseName, new Version(1, 0, 0));
 
-                var checksumBefore = ReadDacpacModelChecksum(_dacpacPath);
-                var checksumAfter = ReadDacpacModelChecksum(tempDacpacPath);
+                var hashBefore = HashDacpacModel(_dacpacPath);
+                var hashAfter = HashDacpacModel(tempDacpacPath);
 
-                if (checksumAfter != checksumBefore)
+                if (hashAfter != hashBefore)
                 {
                     File.Copy(tempDacpacPath, _dacpacPath, true);
                 }
@@ -125,18 +127,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             }
         }
 
-        private static string? ReadDacpacModelChecksum(string dacpacPath)
+        /// <summary>
+        /// Hashes the schema model inside a dacpac, ignoring the <c>[LastValue]</c> annotation recorded for each identity column. That value is the
+        /// current identity value in the source database, which changes whenever the site database inserts rows, even though the schema has not changed.
+        /// This means the checksum in the dacpac's Origin.xml can't be used, because it covers those values.
+        /// </summary>
+        private static string HashDacpacModel(string dacpacPath)
         {
-            var tempFolder = dacpacPath + "-extract";
-            ZipFile.ExtractToDirectory(dacpacPath, tempFolder);
+            using var archive = ZipFile.OpenRead(dacpacPath);
+            using var reader = new StreamReader(archive.GetEntry("model.xml")!.Open());
+            var model = _identityLastValueAnnotation.Replace(reader.ReadToEnd(), string.Empty);
 
-            var doc = XDocument.Load(Path.Join(tempFolder, "Origin.xml"));
-            var root = doc.Document?.Root;
-            var checksum = root?.Element("{" + root.GetDefaultNamespace() + "}Checksums")?.Element("{" + root.GetDefaultNamespace() + "}Checksum")?.Value;
-
-            Directory.Delete(tempFolder, true);
-
-            return checksum;
+            return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(model)));
         }
 
         private static string GetContainerIpAddress(string containerName)
