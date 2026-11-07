@@ -24,7 +24,7 @@ namespace Stoolball.Web.Statistics.Admin
         {
             if (await _memberManager.IsMemberAuthorizedAsync(null, new[] { Groups.Administrators }, null))
             {
-                return new JsonResult(new ProgressResult { percent = _taskTracker.ProgressPercentage(taskId), errors = _taskTracker.TotalErrors(taskId) });
+                return new JsonResult(new ProgressResult { percent = _taskTracker.ProgressPercentage(taskId), errors = _taskTracker.TotalErrors(taskId), total = _taskTracker.Target(taskId) });
             }
             return Unauthorized();
         }

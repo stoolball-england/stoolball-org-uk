@@ -98,7 +98,7 @@ namespace Stoolball.Web.Statistics.Admin
                     UntilDate = DateTime.UtcNow
                 }, MatchSortOrder.MatchDateEarliestFirst));
 
-                _taskTracker.SetTarget(taskId, matchListings.Sum(x => x.MatchInnings.Count) + matchListings.Count);
+                _taskTracker.SetTarget(taskId, matchListings.Count);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
@@ -124,7 +124,6 @@ namespace Stoolball.Web.Statistics.Admin
                                         await _statisticsRepository.DeleteBowlingFigures(innings.MatchInningsId!.Value, connection, transaction);
                                         innings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(innings);
                                         await _statisticsRepository.UpdateBowlingFigures(innings, memberKey, memberName, connection, transaction);
-                                        _taskTracker.IncrementCompletedBy(taskId, 1);
                                     }
 
                                     var hasPlayerData = _playerIdentityFinder.PlayerIdentitiesInMatch(match).Any();
@@ -133,10 +132,12 @@ namespace Stoolball.Web.Statistics.Admin
                                         var statisticsData = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(match);
                                         await _statisticsRepository.UpdatePlayerStatistics(statisticsData, connection, transaction);
                                     }
-                                    _taskTracker.IncrementCompletedBy(taskId, 1);
                                     transaction.Commit();
                                 }
                             }
+
+                            // Count each match once, whether or not it was found, so that progress always reaches 100%.
+                            _taskTracker.IncrementCompletedBy(taskId, 1);
                         }
                         catch (Exception ex)
                         {

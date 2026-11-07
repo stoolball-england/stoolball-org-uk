@@ -29,12 +29,14 @@
                 report.setAttribute("class", "alert alert-info");
                 report.setAttribute("role", "alert");
                 const errorReport = value.errors
-                  ? '<span class="text-danger"' +
+                  ? ' <span class="text-danger">' +
                     value.errors +
                     " errors.</span>"
                   : "";
                 report.innerHTML =
-                  "<strong>100% complete." + errorReport + "</strong>";
+                  value.total === 0
+                    ? "<strong>No matches to update.</strong>"
+                    : "<strong>100% complete." + errorReport + "</strong>";
                 progress.replaceWith(report);
               }
               progress.setAttribute("value", value.percent);

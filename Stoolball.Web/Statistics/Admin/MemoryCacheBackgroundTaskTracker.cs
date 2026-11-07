@@ -11,7 +11,7 @@ namespace Stoolball.Web.Statistics.Admin
         {
             public int Completed { get; set; }
             public int Errors { get; set; }
-            public int Target { get; set; }
+            public int? Target { get; set; }
         }
 
         private TaskProgress ReadFromCache(Guid taskId)
@@ -57,11 +57,14 @@ namespace Stoolball.Web.Statistics.Admin
         public int ProgressPercentage(Guid taskId)
         {
             var progress = ReadFromCache(taskId);
-            if (progress.Target > 0)
-            {
-                return (int)Math.Floor(((double)(progress.Completed + progress.Errors) / (double)progress.Target) * 100);
-            }
-            else return 0;
+            if (progress.Target is null) return 0;
+            if (progress.Target == 0) return 100;
+            return (int)Math.Floor(((double)(progress.Completed + progress.Errors) / (double)progress.Target) * 100);
+        }
+
+        public int? Target(Guid taskId)
+        {
+            return ReadFromCache(taskId).Target;
         }
 
         public int TotalErrors(Guid taskId)

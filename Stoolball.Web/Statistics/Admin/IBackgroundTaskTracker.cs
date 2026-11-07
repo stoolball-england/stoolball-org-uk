@@ -8,6 +8,7 @@ namespace Stoolball.Web.Statistics.Admin
         void IncrementErrorsBy(Guid taskId, int errors);
         int ProgressPercentage(Guid taskId);
         void SetTarget(Guid taskId, int target);
+        int? Target(Guid taskId);
         int TotalErrors(Guid taskId);
     }
 }

@@ -4,5 +4,6 @@
     {
         public int percent { get; set; }
         public int errors { get; set; }
+        public int? total { get; set; }
     }
 }
