@@ -54,7 +54,7 @@ namespace Stoolball.MatchLocations
         public double? Longitude { get; set; }
 
         [Display(Name = "How accurate is the map?")]
-        [Required]
+        [Required(ErrorMessage = "Select how accurate the map is.")]
         public GeoPrecision? GeoPrecision { get; set; }
 
         [Display(Name = "Notes")]

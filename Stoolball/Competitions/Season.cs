@@ -52,10 +52,10 @@ namespace Stoolball.Competitions
         public Competition? Competition { get; set; }
 
         [Display(Name = "What year does the season start?")]
-        [Required]
+        [Required(ErrorMessage = "Enter the year the season starts.")]
         public int FromYear { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Enter the year the season ends.")]
         [Display(Name = "What year does it end?")]
         public int UntilYear { get; set; }
 

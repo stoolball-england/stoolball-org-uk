@@ -83,7 +83,7 @@ namespace Stoolball.Teams
         [Display(Name = "Type of team")]
         public TeamType TeamType { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Select who can play.")]
         [Display(Name = "Who can play?")]
         public PlayerType PlayerType { get; set; }
 

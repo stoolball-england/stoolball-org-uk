@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import {
   expectValidHtml,
   expectNoAccessibilityViolations,
@@ -15,5 +15,13 @@ test.describe("Request password reset", { tag: "@Production" }, () => {
 
   test("Passes AXE", async ({ page }) => {
     await expectNoAccessibilityViolations(page);
+  });
+
+  test("Validation messages use sentence case", async ({ page }) => {
+    // The field name goes in the middle of the message, so is not capitalised
+    await expect(page.locator("input[type=email]")).toHaveAttribute(
+      "data-val-required",
+      "The email field is required.",
+    );
   });
 });

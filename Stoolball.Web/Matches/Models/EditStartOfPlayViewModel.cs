@@ -39,7 +39,7 @@ namespace Stoolball.Web.Matches.Models
         public string? MatchLocationName { get; set; }
         public Guid? MatchLocationId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Select whether the match went ahead.")]
         [Display(Name = "Did the match go ahead?")]
         public bool? MatchWentAhead { get; set; }
 

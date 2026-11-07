@@ -65,7 +65,7 @@ namespace Stoolball.Competitions
         [Display(Name = "If it's no longer played, when was the last year?")]
         public int? UntilYear { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Select who can play.")]
         [Display(Name = "Who can play?")]
         public PlayerType PlayerType { get; set; }
 

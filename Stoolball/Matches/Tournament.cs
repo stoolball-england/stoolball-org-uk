@@ -68,13 +68,13 @@ namespace Stoolball.Matches
         public bool StartTimeIsKnown { get; set; }
 
         [Display(Name = "Who can play?")]
-        [Required]
+        [Required(ErrorMessage = "Select who can play.")]
         public PlayerType PlayerType { get; set; }
 
         [Display(Name = "How many players per team?")]
         public int? PlayersPerTeam { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Select which teams can enter.")]
         [Display(Name = "Which teams can enter?")]
         public TournamentQualificationType? QualificationType { get; set; }
         public List<TeamInTournament> Teams { get; internal set; } = new List<TeamInTournament>();

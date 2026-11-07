@@ -109,7 +109,7 @@ namespace Stoolball.Web.Matches
                 // Validate this field as required, but conditionally based on whether the match went ahead
                 if (!model.MatchWentAhead.Value && !model.Match.MatchResultType.HasValue)
                 {
-                    ModelState.AddModelError("Match.MatchResultType", "The Why didn't the match go ahead? field is required");
+                    ModelState.AddModelError("Match.MatchResultType", "Select why the match didn't go ahead.");
                 }
             }
 

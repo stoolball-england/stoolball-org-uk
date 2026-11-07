@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,6 +44,7 @@ using Stoolball.Web.Statistics.Admin;
 using Stoolball.Web.Statistics.BackgroundTasks;
 using Stoolball.Web.Teams;
 using Stoolball.Web.Teams.Models;
+using Stoolball.Web.Validation;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
 using Umbraco.Extensions;
@@ -89,6 +91,8 @@ namespace Stoolball.Web
                 .AddNotificationHandler<MemberDeletingNotification, DisableMemberDeleteNotificationHandler>()
                 .Build();
 #pragma warning restore IDE0022 // Use expression body for methods
+
+            services.Configure<MvcOptions>(options => options.UseSentenceCaseValidationMessages());
 
             services.AddApplicationInsightsTelemetry(opt =>
             {
