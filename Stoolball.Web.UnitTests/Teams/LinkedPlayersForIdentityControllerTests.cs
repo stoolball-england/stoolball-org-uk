@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -113,6 +114,104 @@ namespace Stoolball.Web.UnitTests.Teams
 
                 Assert.Equal($"Link {identity.PlayerIdentityName} to the same player listed under another name", model.Metadata.PageTitle);
             }
+        }
+
+        [Fact]
+        public async Task Identity_without_team_route_returns_404()
+        {
+            var identity = SetupMocks();
+            identity.Team = new Team();
+
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Identity_without_player_route_returns_404()
+        {
+            var identity = SetupMocks();
+            identity.Player = new Player { PlayerId = Guid.NewGuid() };
+
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Team_not_found_returns_404()
+        {
+            var identity = SetupMocks();
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(identity.Team!.TeamRoute!, false)).Returns(Task.FromResult<Team?>(null));
+
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Model_has_current_member_key()
+        {
+            SetupMocks();
+            var member = new MemberIdentityUser { Key = Guid.NewGuid() };
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).ReturnsAsync(member);
+
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            var model = (LinkedPlayersViewModel)((ViewResult)result).Model;
+            Assert.Equal(member.Key, model.CurrentMemberKey);
+        }
+
+        [Fact]
+        public async Task Model_has_no_current_member_key_when_signed_out()
+        {
+            SetupMocks();
+            _memberManager.Setup(x => x.GetCurrentMemberAsync()).ReturnsAsync((MemberIdentityUser?)null);
+
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            var model = (LinkedPlayersViewModel)((ViewResult)result).Model;
+            Assert.Null(model.CurrentMemberKey);
+        }
+
+        [Fact]
+        public async Task Team_owner_has_team_role()
+        {
+            var identity = SetupMocks();
+            identity.Team!.MemberGroupName = "team/example";
+            _memberManager.Setup(x => x.IsMemberAuthorizedAsync(It.IsAny<IEnumerable<string>>(), It.Is<IEnumerable<string>>(g => g.Contains("team/example")), It.IsAny<IEnumerable<int>>())).ReturnsAsync(true);
+
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            var model = (LinkedPlayersViewModel)((ViewResult)result).Model;
+            Assert.Equal(PlayerIdentityLinkedBy.Team, model.CurrentMemberRole);
+        }
+
+        [Fact]
+        public async Task Other_members_have_Stoolball_England_role()
+        {
+            var identity = SetupMocks();
+            identity.Team!.MemberGroupName = "team/example";
+            _memberManager.Setup(x => x.IsMemberAuthorizedAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<int>>())).ReturnsAsync(false);
+
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            var model = (LinkedPlayersViewModel)((ViewResult)result).Model;
+            Assert.Equal(PlayerIdentityLinkedBy.StoolballEngland, model.CurrentMemberRole);
         }
 
         [Fact]

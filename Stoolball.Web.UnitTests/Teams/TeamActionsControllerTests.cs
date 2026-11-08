@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -32,30 +34,72 @@ namespace Stoolball.Web.UnitTests.Teams
             };
         }
 
+        private Team SetupTeam()
+        {
+            var team = new Team { TeamId = Guid.NewGuid(), TeamName = "Example team", TeamRoute = "/teams/example" };
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(team);
+            return team;
+        }
+
+        private async Task<TeamViewModel> ReadModel()
+        {
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            return Assert.IsType<TeamViewModel>(((ViewResult)result).Model);
+        }
+
         [Fact]
         public async Task Route_not_matching_team_returns_404()
         {
             _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team?>(null));
 
-            using (var controller = CreateController())
-            {
-                var result = await controller.Index();
+            using var controller = CreateController();
 
-                Assert.IsType<NotFoundResult>(result);
-            }
+            var result = await controller.Index();
+
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public async Task Route_matching_team_returns_TeamViewModel()
+        public async Task Route_matching_team_returns_TeamViewModel_with_team()
         {
-            _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamRoute = "/teams/example" });
+            var team = SetupTeam();
 
-            using (var controller = CreateController())
-            {
-                var result = await controller.Index();
+            var model = await ReadModel();
 
-                Assert.IsType<TeamViewModel>(((ViewResult)result).Model);
-            }
+            Assert.Equal(team, model.Team);
+        }
+
+        [Fact]
+        public async Task Model_has_authorization_for_team_including_groups_and_members()
+        {
+            var team = SetupTeam();
+            var authorization = new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditTeam, true } };
+            var groups = new List<string> { "Administrators" };
+            var members = new List<string> { "Jo Bloggs" };
+            _authorizationPolicy.Setup(x => x.IsAuthorized(team)).ReturnsAsync(authorization);
+            _authorizationPolicy.Setup(x => x.AuthorizedGroupNames(team)).Returns(groups);
+            _authorizationPolicy.Setup(x => x.AuthorizedMemberNames(team)).ReturnsAsync(members);
+
+            var model = await ReadModel();
+
+            Assert.Equal("Example team", model.Authorization.AuthorizationFor);
+            Assert.Equal(authorization, model.Authorization.CurrentMemberIsAuthorized);
+            Assert.Equal(groups, model.Authorization.AuthorizedGroupNames);
+            Assert.Equal(members, model.Authorization.AuthorizedMemberNames);
+        }
+
+        [Fact]
+        public async Task Model_has_page_title_and_breadcrumbs()
+        {
+            var team = SetupTeam();
+
+            var model = await ReadModel();
+
+            Assert.Equal("Edit Example team", model.Metadata.PageTitle);
+            _breadcrumbBuilder.Verify(x => x.BuildBreadcrumbsForTeam(model.Breadcrumbs, team, true), Times.Once);
         }
     }
 }
