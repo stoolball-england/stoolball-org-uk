@@ -99,6 +99,12 @@ namespace Stoolball.Web.Matches
                 {
                     model.TossWonBy = null;
                     model.BattedFirst = null;
+                    model.Match.InningsOrderIsKnown = false;
+                    foreach (var team in model.Match.Teams)
+                    {
+                        team.WonToss = null;
+                        team.BattedFirst = null;
+                    }
                 }
 
                 if (Request.Form.ContainsKey("HasScorecard") && bool.TryParse(Request.Form["HasScorecard"], out var hasScorecard))
