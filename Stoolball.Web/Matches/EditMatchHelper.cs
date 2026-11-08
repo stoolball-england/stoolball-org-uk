@@ -136,7 +136,7 @@ namespace Stoolball.Web.Matches
                 else
                 {
                     // If no start time specified, use a typical one but don't show it
-                    model.Match.StartTime.AddHours(19);
+                    model.Match.StartTime = model.Match.StartTime.AddHours(19);
                     model.Match.StartTimeIsKnown = false;
                 }
             }

@@ -96,7 +96,7 @@ namespace Stoolball.Web.Matches
                 else
                 {
                     // If no start time specified, use a typical one but don't show it
-                    model.Tournament.StartTime.AddHours(11);
+                    model.Tournament.StartTime = model.Tournament.StartTime.AddHours(11);
                     model.Tournament.StartTimeIsKnown = false;
                 }
             }
