@@ -62,18 +62,20 @@ namespace Stoolball.Web.Competitions
             season.Introduction = Request.Form["Season.Introduction"];
             season.Results = Request.Form["Season.Results"];
 
-            try
+            // parse this because there's no way to get it via the standard modelbinder without requiring JavaScript to change the field names on submit
+            var unparsedMatchTypes = Request.Form["Season.MatchTypes"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+            if (unparsedMatchTypes.Any())
             {
-                // parse this because there's no way to get it via the standard modelbinder without requiring JavaScript to change the field names on submit
-                var unparsedMatchTypes = Request.Form["Season.MatchTypes"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
-                if (unparsedMatchTypes.Any())
+                var matchTypes = new List<MatchType>();
+                foreach (var unparsed in unparsedMatchTypes)
                 {
-                    season.MatchTypes = unparsedMatchTypes.Select(x => (MatchType)Enum.Parse(typeof(MatchType), x)).ToList() ?? new List<MatchType>();
+                    if (!Enum.TryParse<MatchType>(unparsed, out var matchType) || !Enum.IsDefined(matchType))
+                    {
+                        return StatusCode(400);
+                    }
+                    matchTypes.Add(matchType);
                 }
-            }
-            catch (InvalidCastException)
-            {
-                return StatusCode(400);
+                season.MatchTypes = matchTypes;
             }
 
             if (!season.MatchTypes.Any() && !season.EnableTournaments)

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -38,41 +39,121 @@ namespace Stoolball.Web.UnitTests.Competitions
             };
         }
 
-        [Fact]
-        public async Task Route_not_matching_season_returns_404()
+        private Season SetupSeason(StatisticsFilter? queryStringFilter = null)
         {
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(Request.Object.Path, false)).Returns(Task.FromResult<Season?>(null));
-
-            using (var controller = CreateController())
+            var season = new Season
             {
-                var result = await controller.Index();
+                SeasonId = Guid.NewGuid(),
+                FromYear = 2026,
+                UntilYear = 2026,
+                Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example-competition" }
+            };
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(season);
+            _statisticsFilterFactory.Setup(x => x.FromQueryString(It.IsAny<string>())).ReturnsAsync(queryStringFilter ?? new StatisticsFilter());
+            return season;
+        }
 
-                Assert.IsType<NotFoundResult>(result);
-            }
+        private async Task<StatisticsSummaryViewModel<Season>> ReadModel()
+        {
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            return Assert.IsType<StatisticsSummaryViewModel<Season>>(((ViewResult)result).Model);
         }
 
         [Fact]
-        public async Task Route_matching_season_returns_StatisticsSummaryViewModel()
+        public async Task Route_not_matching_season_returns_404()
         {
-            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(Request.Object.Path, true)).ReturnsAsync(new Season
-            {
-                SeasonId = Guid.NewGuid(),
-                Competition = new Competition
-                {
-                    CompetitionName = "Example competition",
-                    CompetitionRoute = "/competitions/example-competition"
-                }
-            });
-            _statisticsFilterFactory.Setup(x => x.FromQueryString(Request.Object.QueryString.Value)).Returns(Task.FromResult(new StatisticsFilter()));
-            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst))
-                .Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season?>(null));
 
-            using (var controller = CreateController())
-            {
-                var result = await controller.Index();
+            using var controller = CreateController();
 
-                Assert.IsType<StatisticsSummaryViewModel<Season>>(((ViewResult)result).Model);
-            }
+            var result = await controller.Index();
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Route_matching_season_without_competition_returns_404()
+        {
+            _seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season { SeasonId = Guid.NewGuid() });
+
+            using var controller = CreateController();
+
+            var result = await controller.Index();
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Default_filter_is_limited_to_season_and_top_ten()
+        {
+            var season = SetupSeason();
+
+            var model = await ReadModel();
+
+            Assert.Equal(season, model.Context);
+            Assert.Equal(season, model.DefaultFilter.Season);
+            Assert.Equal(10, model.DefaultFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual);
+            Assert.Equal(season, model.AppliedFilter.Season);
+        }
+
+        [Fact]
+        public async Task Query_string_filter_is_merged_into_applied_filter_but_not_default_filter()
+        {
+            var from = new DateTimeOffset(2026, 5, 1, 0, 0, 0, TimeSpan.Zero);
+            SetupSeason(new StatisticsFilter { FromDate = from });
+
+            var model = await ReadModel();
+
+            Assert.Equal(from, model.AppliedFilter.FromDate);
+            Assert.Null(model.DefaultFilter.FromDate);
+        }
+
+        [Fact]
+        public async Task Statistics_are_read_using_applied_filter()
+        {
+            SetupSeason();
+            var innings = new List<StatisticsResult<PlayerInnings>> { new() };
+            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(innings);
+
+            var model = await ReadModel();
+
+            Assert.Equal(innings, model.PlayerInnings);
+            _bestPerformanceDataSource.Verify(x => x.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst), Times.Once);
+            _bestPerformanceDataSource.Verify(x => x.ReadBowlingFigures(model.AppliedFilter, StatisticsSortOrder.BestFirst), Times.Once);
+            _bestTotalDataSource.Verify(x => x.ReadMostRunsScored(model.AppliedFilter), Times.Once);
+            _bestTotalDataSource.Verify(x => x.ReadMostWickets(model.AppliedFilter), Times.Once);
+            _bestTotalDataSource.Verify(x => x.ReadMostCatches(model.AppliedFilter), Times.Once);
+        }
+
+        [Fact]
+        public async Task Filter_view_model_supports_team_filter()
+        {
+            SetupSeason(new StatisticsFilter { Team = new Stoolball.Teams.Team { TeamName = "Example team", TeamRoute = "/teams/example" } });
+            _statisticsFilterHumanizer.Setup(x => x.MatchingUserFilter(It.IsAny<StatisticsFilter>())).Returns(" for Example team");
+            _statisticsFilterHumanizer.Setup(x => x.EntitiesMatchingFilter("Statistics", " for Example team")).Returns("Statistics for Example team");
+
+            var model = await ReadModel();
+
+            Assert.Equal("Statistics for Example team", model.FilterViewModel.FilterDescription);
+            Assert.Equal("Statistics", model.FilterViewModel.FilteredItemTypePlural);
+            Assert.True(model.FilterViewModel.SupportsTeamFilter);
+            Assert.Equal("/teams/example", model.FilterViewModel.TeamRoute);
+            Assert.Equal("Example team", model.FilterViewModel.TeamName);
+        }
+
+        [Fact]
+        public async Task Model_has_metadata_and_breadcrumbs()
+        {
+            var season = SetupSeason();
+
+            var model = await ReadModel();
+
+            Assert.Equal($"Statistics for {season.SeasonFullNameAndPlayerType()}", model.Metadata.PageTitle);
+            Assert.Equal($"Statistics for stoolball matches played in the {season.SeasonFullName()}.", model.Metadata.Description);
+            Assert.Equal([Constants.Pages.Competitions, "Example competition"], model.Breadcrumbs.Select(x => x.Name).TakeLast(2));
         }
     }
 }
