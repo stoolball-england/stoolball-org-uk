@@ -80,6 +80,15 @@ namespace Stoolball.Web.Matches
             {
                 // Get the season, to support validation against season dates
                 model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId!.Value).ConfigureAwait(false);
+
+                // Only check a season which has been newly selected. A season's match types may have changed since this
+                // training session was added, and that shouldn't stop the rest of the training session being edited.
+                if (model.Match.Season != null &&
+                    model.Match.Season.SeasonId != beforeUpdate.Season?.SeasonId &&
+                    !model.Match.Season.MatchTypes.Contains(MatchType.TrainingSession))
+                {
+                    ModelState.AddModelError(nameof(model.SeasonFullName), $"{model.Match.Season.SeasonFullName()} does not allow training sessions.");
+                }
             }
 
             _matchValidator.DateIsValidForSqlServer(model.MatchDate, ModelState, "MatchDate", "match");
@@ -93,8 +102,7 @@ namespace Stoolball.Web.Matches
 
             model.Authorization.CurrentMemberIsAuthorized = await _authorizationPolicy.IsAuthorized(beforeUpdate);
 
-            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid &&
-               (model.Season == null || model.Season.MatchTypes.Contains(MatchType.TrainingSession)))
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid)
             {
                 if ((int?)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
 
