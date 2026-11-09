@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
+using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
 using Stoolball.Security;
@@ -25,6 +27,7 @@ namespace Stoolball.Web.Matches
     public class CreateLeagueMatchSurfaceController : SurfaceController
     {
         private readonly IMemberManager _memberManager;
+        private readonly IStoolballEntityRouteParser _routeParser;
         private readonly IMatchRepository _matchRepository;
         private readonly ITeamDataSource _teamDataSource;
         private readonly ISeasonDataSource _seasonDataSource;
@@ -34,13 +37,14 @@ namespace Stoolball.Web.Matches
         private readonly IMatchListingCacheInvalidator _cacheClearer;
 
         public CreateLeagueMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager,
+            AppCaches appCaches, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider, IMemberManager memberManager, IStoolballEntityRouteParser routeParser,
             IMatchRepository matchRepository, ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource,
             ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator,
             IMatchListingCacheInvalidator cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
+            _routeParser = routeParser ?? throw new ArgumentNullException(nameof(routeParser));
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
@@ -65,8 +69,9 @@ namespace Stoolball.Web.Matches
             model.Match.MatchType = MatchType.LeagueMatch;
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Form, ModelState);
 
-            var path = Request.Path.HasValue ? Request.Path.Value : string.Empty;
-            if (path!.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            var path = Request.Path.HasValue ? Request.Path.Value! : string.Empty;
+            var context = _routeParser.ParseRoute(path);
+            if (context == StoolballEntityType.Season)
             {
                 model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Path, true).ConfigureAwait(false);
             }
@@ -80,10 +85,27 @@ namespace Stoolball.Web.Matches
             _matchValidator.DateIsWithinTheSeason(model.MatchDate, model.Match.Season, ModelState, "MatchDate", "match");
             _matchValidator.TeamsMustBeDifferent(model, ModelState);
 
+            IList<Season>? possibleSeasons = null;
+            if (context == StoolballEntityType.Team)
+            {
+                model.Team = await _teamDataSource.ReadTeamByRoute(Request.Path, true).ConfigureAwait(false);
+                if (model.Team == null)
+                {
+                    return NotFound();
+                }
+
+                // The posted season must be one the team could add a league match to, which is the same list offered in the form
+                possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType);
+                var postedSeasonId = model.Match.Season?.SeasonId;
+                if (!possibleSeasons.Any(x => x.SeasonId == postedSeasonId))
+                {
+                    ModelState.AddModelError("Match.Season.SeasonId", $"Choose a season for the {MatchType.LeagueMatch.Humanize(LetterCasing.LowerCase)}.");
+                }
+            }
+
             model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch] = User.Identity?.IsAuthenticated ?? false;
 
             if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch] && ModelState.IsValid &&
-                (model.Team == null || (model.PossibleSeasons != null && model.PossibleSeasons.Any())) &&
                 (model.Season == null || model.Season.MatchTypes.Contains(MatchType.LeagueMatch)))
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
@@ -100,16 +122,17 @@ namespace Stoolball.Web.Matches
                 }
             }
 
-            if (path.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
+            if (model.Team != null)
             {
-                model.Team = await _teamDataSource.ReadTeamByRoute(Request.Path, true).ConfigureAwait(false);
-                var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType).ToList();
-                if (possibleSeasons.Count == 1)
+                if (possibleSeasons != null)
                 {
-                    model.Match.Season = possibleSeasons.First();
+                    if (possibleSeasons.Count == 1)
+                    {
+                        model.Match.Season = possibleSeasons.First();
+                    }
+                    model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
+                    await _editMatchHelper.ConfigureModelPossibleTeams(model, possibleSeasons);
                 }
-                model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
-                await _editMatchHelper.ConfigureModelPossibleTeams(model, possibleSeasons);
                 model.Metadata.PageTitle = $"Add a {MatchType.LeagueMatch.Humanize(LetterCasing.LowerCase)} for {model.Team.TeamName}";
             }
             else
