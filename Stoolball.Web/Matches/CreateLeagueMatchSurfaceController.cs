@@ -71,9 +71,18 @@ namespace Stoolball.Web.Matches
 
             var path = Request.Path.HasValue ? Request.Path.Value! : string.Empty;
             var context = _routeParser.ParseRoute(path);
+            if (context != StoolballEntityType.Team && context != StoolballEntityType.Season)
+            {
+                return NotFound();
+            }
+
             if (context == StoolballEntityType.Season)
             {
                 model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Path, true).ConfigureAwait(false);
+                if (model.Season == null || !model.Season.MatchTypes.Contains(MatchType.LeagueMatch))
+                {
+                    return NotFound();
+                }
             }
             else if (model.Match.Season != null && model.Match.Season.SeasonId.HasValue)
             {
@@ -105,8 +114,7 @@ namespace Stoolball.Web.Matches
 
             model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch] = User.Identity?.IsAuthenticated ?? false;
 
-            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch] && ModelState.IsValid &&
-                (model.Season == null || model.Season.MatchTypes.Contains(MatchType.LeagueMatch)))
+            if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.CreateMatch] && ModelState.IsValid)
             {
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
@@ -122,7 +130,7 @@ namespace Stoolball.Web.Matches
                 }
             }
 
-            if (model.Team != null)
+            if (context == StoolballEntityType.Team)
             {
                 if (possibleSeasons != null)
                 {
@@ -133,9 +141,9 @@ namespace Stoolball.Web.Matches
                     model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
                     await _editMatchHelper.ConfigureModelPossibleTeams(model, possibleSeasons);
                 }
-                model.Metadata.PageTitle = $"Add a {MatchType.LeagueMatch.Humanize(LetterCasing.LowerCase)} for {model.Team.TeamName}";
+                model.Metadata.PageTitle = $"Add a {MatchType.LeagueMatch.Humanize(LetterCasing.LowerCase)} for {model.Team!.TeamName}";
             }
-            else
+            else if (context == StoolballEntityType.Season)
             {
                 model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season! });
                 model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season!.Teams);
