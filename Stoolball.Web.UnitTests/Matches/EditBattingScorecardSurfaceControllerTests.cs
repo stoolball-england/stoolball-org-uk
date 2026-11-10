@@ -274,6 +274,62 @@ namespace Stoolball.Web.UnitTests.Matches
         }
 
         [Fact]
+        public async Task Players_per_team_is_increased_to_the_number_of_posted_batters()
+        {
+            _match.PlayersPerTeam = 2;
+
+            await UpdateMatch(PostedData(
+                new PlayerInningsViewModel { Batter = "Batter one" },
+                new PlayerInningsViewModel { Batter = "Batter two" },
+                new PlayerInningsViewModel { Batter = "Batter three" }));
+
+            Assert.Equal(3, _match.PlayersPerTeam);
+            _playerInningsScaffolder.Verify(x => x.ScaffoldPlayerInnings(FirstInnings.PlayerInnings, 3), Times.Once);
+        }
+
+        [Fact]
+        public async Task Batter_who_bats_twice_counts_twice_towards_players_per_team()
+        {
+            _match.PlayersPerTeam = 2;
+
+            await UpdateMatch(PostedData(
+                new PlayerInningsViewModel { Batter = "Batter one" },
+                new PlayerInningsViewModel { Batter = "Batter two" },
+                new PlayerInningsViewModel { Batter = "Batter one" }));
+
+            Assert.Equal(3, _match.PlayersPerTeam);
+            _playerInningsScaffolder.Verify(x => x.ScaffoldPlayerInnings(FirstInnings.PlayerInnings, 3), Times.Once);
+        }
+
+        [Fact]
+        public async Task Posted_rows_without_a_batter_count_towards_players_per_team_when_ModelState_is_valid()
+        {
+            _match.PlayersPerTeam = 1;
+
+            await UpdateMatch(PostedData(
+                new PlayerInningsViewModel { Batter = "Batter one" },
+                new PlayerInningsViewModel(),
+                new PlayerInningsViewModel()));
+
+            Assert.Equal(3, _match.PlayersPerTeam);
+            _playerInningsScaffolder.Verify(x => x.ScaffoldPlayerInnings(FirstInnings.PlayerInnings, 3), Times.Once);
+        }
+
+        [Fact]
+        public async Task Posted_rows_without_a_batter_count_towards_players_per_team_when_ModelState_is_invalid()
+        {
+            _match.PlayersPerTeam = 1;
+
+            await UpdateMatchExpectingView(PostedData(
+                new PlayerInningsViewModel { Batter = "Batter one" },
+                new PlayerInningsViewModel { RunsScored = 4 },
+                new PlayerInningsViewModel()),
+                c => c.ModelState.AddModelError("Any", "Any error"));
+
+            Assert.Equal(3, _match.PlayersPerTeam);
+        }
+
+        [Fact]
         public async Task Bowling_figures_are_calculated_for_the_current_innings()
         {
             await UpdateMatch(PostedData());

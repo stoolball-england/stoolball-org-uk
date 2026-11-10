@@ -127,9 +127,9 @@ namespace Stoolball.Web.Matches
             {
                 model.Match.PlayersPerTeam = model.Match.Tournament != null ? 8 : 11;
             }
-            if (model.Match.PlayersPerTeam.Value < postedData.MatchInnings.PlayerInnings.Count)
+            if (model.Match.PlayersPerTeam.Value < postedData.PlayerInningsSearch.Count)
             {
-                model.Match.PlayersPerTeam = postedData.MatchInnings.PlayerInnings.Count;
+                model.Match.PlayersPerTeam = postedData.PlayerInningsSearch.Count;
             }
             _playerInningsScaffolder.ScaffoldPlayerInnings(model.CurrentInnings.MatchInnings.PlayerInnings, model.Match.PlayersPerTeam.Value);
 
