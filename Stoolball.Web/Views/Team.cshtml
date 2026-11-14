@@ -10,6 +10,41 @@
     var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditTeam] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam];
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/show-all-competitions.js") { Order = 100 });
 }
+@section head {
+    @{
+        const string siteUrl = "https://www.stoolball.org.uk";
+        var team = Model.Team!;
+        var sportsTeam = new Dictionary<string, object>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "SportsTeam",
+            ["name"] = team.TeamNameLocationAndPlayerType(),
+            ["sport"] = "Stoolball"
+        };
+        if (!string.IsNullOrWhiteSpace(team.TeamRoute)) { sportsTeam["url"] = siteUrl + team.TeamRoute; }
+
+        var sameAs = new List<string>();
+        if (!string.IsNullOrWhiteSpace(team.Website)) { sameAs.Add(team.Website); }
+        if (!string.IsNullOrWhiteSpace(team.Facebook)) { sameAs.Add(team.Facebook); }
+        if (!string.IsNullOrWhiteSpace(team.Twitter)) { sameAs.Add("https://twitter.com/" + team.Twitter.TrimStart('@')); }
+        if (!string.IsNullOrWhiteSpace(team.Instagram)) { sameAs.Add("https://instagram.com/" + team.Instagram.TrimStart('@')); }
+        if (!string.IsNullOrWhiteSpace(team.YouTube)) { sameAs.Add(team.YouTube); }
+        if (sameAs.Count > 0) { sportsTeam["sameAs"] = sameAs; }
+
+        var homeLocation = team.MatchLocations.FirstOrDefault();
+        if (homeLocation != null)
+        {
+            var place = new Dictionary<string, object>
+            {
+                ["@type"] = "Place",
+                ["name"] = homeLocation.NameAndLocalityOrTownIfDifferent()
+            };
+            if (!string.IsNullOrWhiteSpace(homeLocation.MatchLocationRoute)) { place["url"] = siteUrl + homeLocation.MatchLocationRoute; }
+            sportsTeam["location"] = place;
+        }
+    }
+    <script type="application/ld+json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(sportsTeam))</script>
+}
 <div class="container-xl">
     <h1>@Model.Team!.TeamNameLocationAndPlayerType()</h1>
 
