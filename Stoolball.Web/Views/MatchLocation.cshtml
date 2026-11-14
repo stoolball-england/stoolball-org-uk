@@ -2,10 +2,46 @@
 @using System.Globalization
 @using Stoolball.MatchLocations
 @using Stoolball.Security
+@using System.Text.Json
 @{
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/show-all-teams.js"){Order = 100});
     var authorizedToEdit = Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.EditMatchLocation] || Model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteMatchLocation];
 }
+@section head {
+    @{
+        const string siteUrl = "https://www.stoolball.org.uk";
+        var location = Model.MatchLocation!;
+        var place = new Dictionary<string, object>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "Place",
+            ["name"] = location.NameAndLocalityOrTownIfDifferent()
+        };
+        if (!string.IsNullOrWhiteSpace(location.MatchLocationRoute)) { place["url"] = siteUrl + location.MatchLocationRoute; }
+
+        var address = new Dictionary<string, object> { ["@type"] = "PostalAddress" };
+        var streetAddress = string.Join(", ", new[] { location.SecondaryAddressableObjectName, location.PrimaryAddressableObjectName, location.StreetDescription }.Where(x => !string.IsNullOrWhiteSpace(x)));
+        if (streetAddress.Length > 0) { address["streetAddress"] = streetAddress; }
+        var addressLocality = string.IsNullOrWhiteSpace(location.Town) ? location.Locality : location.Town;
+        if (!string.IsNullOrWhiteSpace(addressLocality)) { address["addressLocality"] = addressLocality; }
+        if (!string.IsNullOrWhiteSpace(location.AdministrativeArea)) { address["addressRegion"] = location.AdministrativeArea; }
+        if (!string.IsNullOrWhiteSpace(location.Postcode)) { address["postalCode"] = location.Postcode.ToUpperInvariant(); }
+        address["addressCountry"] = "GB";
+        if (address.Count > 2) { place["address"] = address; }
+
+        if (location.Latitude.HasValue && location.Longitude.HasValue)
+        {
+            place["geo"] = new Dictionary<string, object>
+            {
+                ["@type"] = "GeoCoordinates",
+                ["latitude"] = location.Latitude.Value,
+                ["longitude"] = location.Longitude.Value
+            };
+        }
+    }
+    <script type="application/ld+json">@Html.Raw(JsonSerializer.Serialize(place))</script>
+}
+
 <div class="container-xl">
     <h1>@Model.MatchLocation!.NameAndLocalityOrTownIfDifferent()</h1>
 
