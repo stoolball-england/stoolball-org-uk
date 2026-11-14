@@ -41,6 +41,47 @@
         return description;
     }
 }
+@section head {
+    @{
+        const string siteUrl = "https://www.stoolball.org.uk";
+        var match = Model.Match!;
+        var sportsEvent = new Dictionary<string, object>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "SportsEvent",
+            ["name"] = match.MatchFullName(x => dateTimeFormatter.FormatDate(x, false)),
+            ["sport"] = "Stoolball",
+            ["startDate"] = match.StartTimeIsKnown
+                ? match.StartTime.ToString("yyyy-MM-dd'T'HH:mm:sszzz", System.Globalization.CultureInfo.InvariantCulture)
+                : match.StartTime.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)
+        };
+        if (!string.IsNullOrWhiteSpace(match.MatchRoute)) { sportsEvent["url"] = siteUrl + match.MatchRoute; }
+
+        Dictionary<string, object> TeamToSchema(Stoolball.Teams.Team team)
+        {
+            var schemaTeam = new Dictionary<string, object> { ["@type"] = "SportsTeam", ["name"] = team.TeamName };
+            if (!string.IsNullOrWhiteSpace(team.TeamRoute)) { schemaTeam["url"] = siteUrl + team.TeamRoute; }
+            return schemaTeam;
+        }
+
+        var homeTeam = match.Teams.FirstOrDefault(x => x.TeamRole == TeamRole.Home)?.Team;
+        var awayTeam = match.Teams.FirstOrDefault(x => x.TeamRole == TeamRole.Away)?.Team;
+        if (homeTeam != null) { sportsEvent["homeTeam"] = TeamToSchema(homeTeam); }
+        if (awayTeam != null) { sportsEvent["awayTeam"] = TeamToSchema(awayTeam); }
+
+        if (match.MatchLocation != null)
+        {
+            var place = new Dictionary<string, object>
+            {
+                ["@type"] = "Place",
+                ["name"] = match.MatchLocation.NameAndLocalityOrTownIfDifferent()
+            };
+            if (!string.IsNullOrWhiteSpace(match.MatchLocation.MatchLocationRoute)) { place["url"] = siteUrl + match.MatchLocation.MatchLocationRoute; }
+            sportsEvent["location"] = place;
+        }
+    }
+    <script type="application/ld+json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(sportsEvent))</script>
+}
 <div class="container-xl">
     <h1>@Html.MatchFullName(Model.Match!, x => dateTimeFormatter.FormatDate(x, false))</h1>
 

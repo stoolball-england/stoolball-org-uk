@@ -12,6 +12,43 @@
     SmidgeHelper.RequiresCss(new CssFile("~/css/match.min.css") { Order = 100 });
     SmidgeHelper.RequiresCss(new CssFile("~/css/comments.min.css") { Order = 100 });
 }
+@section head {
+    @{
+        const string siteUrl = "https://www.stoolball.org.uk";
+        var tournament = Model.Tournament!;
+        var sportsEvent = new Dictionary<string, object>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "SportsEvent",
+            ["name"] = tournament.TournamentFullNameAndPlayerType(x => dateTimeFormatter.FormatDate(x, false)),
+            ["sport"] = "Stoolball",
+            ["startDate"] = tournament.StartTimeIsKnown
+                ? tournament.StartTime.ToString("yyyy-MM-dd'T'HH:mm:sszzz", System.Globalization.CultureInfo.InvariantCulture)
+                : tournament.StartTime.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)
+        };
+        if (!string.IsNullOrWhiteSpace(tournament.TournamentRoute)) { sportsEvent["url"] = siteUrl + tournament.TournamentRoute; }
+
+        var competitors = tournament.Teams.Select(x => x.Team).Select(team =>
+        {
+            var schemaTeam = new Dictionary<string, object> { ["@type"] = "SportsTeam", ["name"] = team.TeamName };
+            if (!string.IsNullOrWhiteSpace(team.TeamRoute)) { schemaTeam["url"] = siteUrl + team.TeamRoute; }
+            return schemaTeam;
+        }).ToList();
+        if (competitors.Count > 0) { sportsEvent["competitor"] = competitors; }
+
+        if (tournament.TournamentLocation != null)
+        {
+            var place = new Dictionary<string, object>
+            {
+                ["@type"] = "Place",
+                ["name"] = tournament.TournamentLocation.NameAndLocalityOrTownIfDifferent()
+            };
+            if (!string.IsNullOrWhiteSpace(tournament.TournamentLocation.MatchLocationRoute)) { place["url"] = siteUrl + tournament.TournamentLocation.MatchLocationRoute; }
+            sportsEvent["location"] = place;
+        }
+    }
+    <script type="application/ld+json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(sportsEvent))</script>
+}
 <div class="container-xl">
     <h1>@Html.TournamentFullNameAndPlayerType(Model.Tournament!, x => dateTimeFormatter.FormatDate(x, false))</h1>
 
