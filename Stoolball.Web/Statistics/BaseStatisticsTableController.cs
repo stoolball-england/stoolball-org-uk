@@ -22,7 +22,7 @@ namespace Stoolball.Web.Statistics
         private readonly IStatisticsFilterFactory _statisticsFilterFactory;
         private readonly IStatisticsBreadcrumbBuilder _statisticsBreadcrumbBuilder;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
-        private readonly Func<StatisticsFilter, Task<IEnumerable<StatisticsResult<T>>>> _readResults;
+        private readonly Func<StatisticsFilter, Task<StatisticsResults<T>>> _readResults;
         private readonly Func<StatisticsFilter, Task<int>> _readTotalResults;
         private readonly Func<StatisticsFilter, string> _pageTitle;
         private readonly string _filterEntityPlural;
@@ -37,7 +37,7 @@ namespace Stoolball.Web.Statistics
             IStatisticsFilterFactory statisticsFilterFactory,
             IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
             IStatisticsFilterHumanizer statisticsFilterHumanizer,
-            Func<StatisticsFilter, Task<IEnumerable<StatisticsResult<T>>>> readResults,
+            Func<StatisticsFilter, Task<StatisticsResults<T>>> readResults,
             Func<StatisticsFilter, Task<int>> readTotalResults,
             Func<StatisticsFilter, string> pageTitle,
             string filterEntityPlural,
@@ -119,7 +119,9 @@ namespace Stoolball.Web.Statistics
                 return NotFound();
             }
 
-            model.Results = (await _readResults(model.AppliedFilter)).ToList();
+            var results = await _readResults(model.AppliedFilter);
+            model.Results = results.ToList();
+            model.PreviousResult = results.PreviousResult;
 
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.DefaultFilter);
 

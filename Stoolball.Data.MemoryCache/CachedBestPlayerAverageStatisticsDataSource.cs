@@ -20,7 +20,7 @@ namespace Stoolball.Data.MemoryCache
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBattingAverage(StatisticsFilter filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadBestBattingAverage(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadBestBattingAverage) + _statisticsFilterSerializer.Serialize(filter);
@@ -28,7 +28,7 @@ namespace Stoolball.Data.MemoryCache
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBattingStrikeRate(StatisticsFilter filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadBestBattingStrikeRate(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadBestBattingStrikeRate) + _statisticsFilterSerializer.Serialize(filter);
@@ -36,7 +36,7 @@ namespace Stoolball.Data.MemoryCache
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingAverage(StatisticsFilter filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadBestBowlingAverage(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadBestBowlingAverage) + _statisticsFilterSerializer.Serialize(filter);
@@ -44,7 +44,7 @@ namespace Stoolball.Data.MemoryCache
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingStrikeRate(StatisticsFilter filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadBestBowlingStrikeRate(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadBestBowlingStrikeRate) + _statisticsFilterSerializer.Serialize(filter);
@@ -53,7 +53,7 @@ namespace Stoolball.Data.MemoryCache
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestEconomyRate(StatisticsFilter filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadBestEconomyRate(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(ReadBestEconomyRate) + _statisticsFilterSerializer.Serialize(filter);

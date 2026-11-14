@@ -19,7 +19,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
         private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IPlayerSummaryStatisticsDataSource> _playerSummaryDataSource = new();
-        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
+        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>().WithEmptyResults();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumaniser = new();
 
         private PlayerBattingController CreateController()
@@ -203,7 +203,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(Request.Object.QueryString.Value)).Returns(appliedFilter);
             _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, null)).Returns(Task.FromResult<Player?>(new Player()));
             _playerSummaryDataSource.Setup(x => x.ReadBattingStatistics(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate))).Returns(Task.FromResult(battingStatistics));
-            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(playerInnings as IEnumerable<StatisticsResult<PlayerInnings>>));
+            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<PlayerInnings>(playerInnings));
 
             using (var controller = CreateController())
             {

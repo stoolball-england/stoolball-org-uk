@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 
@@ -54,7 +55,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        public async Task<IEnumerable<StatisticsResult<PlayerInnings>>> ReadPlayerInnings(StatisticsFilter? filter, StatisticsSortOrder sortOrder)
+        public async Task<StatisticsResults<PlayerInnings>> ReadPlayerInnings(StatisticsFilter? filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -76,7 +77,7 @@ namespace Stoolball.Data.SqlServer
             return await ReadBestFiguresInAMatch<PlayerInnings>("RunsScored", "PlayerWasDismissed", new[] { "PlayerInningsId", "DismissalType", "BallsFaced" }, orderByFields, null, filter).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<StatisticsResult<BowlingFigures>>> ReadBowlingFigures(StatisticsFilter? filter, StatisticsSortOrder sortOrder)
+        public async Task<StatisticsResults<BowlingFigures>> ReadBowlingFigures(StatisticsFilter? filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -106,7 +107,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary> 
         /// Gets best performances in a match based on the specified fields and filters
         /// </summary> 
-        private async Task<IEnumerable<StatisticsResult<T>>> ReadBestFiguresInAMatch<T>(string primaryFieldName, string secondaryFieldNameForMaxResults, IEnumerable<string> selectFields, IEnumerable<string> orderByFields, int? minimumValue, StatisticsFilter filter)
+        private async Task<StatisticsResults<T>> ReadBestFiguresInAMatch<T>(string primaryFieldName, string secondaryFieldNameForMaxResults, IEnumerable<string> selectFields, IEnumerable<string> orderByFields, int? minimumValue, StatisticsFilter filter)
         {
             var select = $@"SELECT PlayerId, PlayerRoute, PlayerIdentityId, PlayerIdentityName, TeamId, TeamName,
                 OppositionTeamId AS TeamId, OppositionTeamName AS TeamName, MatchRoute, MatchStartTime AS StartTime, MatchName, 
@@ -127,6 +128,7 @@ namespace Stoolball.Data.SqlServer
             var preQuery = string.Empty;
             var offsetWithExtraResults = string.Empty;
             var offsetPaging = string.Empty;
+            Paging? paging = null;
             if (filter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
             {
                 // Get the values from what should be the last row according to the maximum number of results.
@@ -140,16 +142,15 @@ namespace Stoolball.Data.SqlServer
             }
             else
             {
-                offsetPaging = $"OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
-                parameters.Add("@PageOffset", filter.Paging.PageOffset);
-                parameters.Add("@PageSize", filter.Paging.PageSize);
+                paging = filter.Paging;
+                offsetPaging = StatisticsPaging.OffsetClause(paging, parameters);
             }
 
             var sql = $"{preQuery} {select} FROM {Tables.PlayerInMatchStatistics} {where} {offsetWithExtraResults} {orderBy} {offsetPaging}";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.QueryAsync<Player, PlayerIdentity, Team, Team, MatchListing, T, StatisticsResult<T>>(sql,
+                var rows = await connection.QueryAsync<Player, PlayerIdentity, Team, Team, MatchListing, T, StatisticsResult<T>>(sql,
                     (player, playerIdentity, team, oppositionTeam, match, playerInnings) =>
                     {
                         player.PlayerIdentities.Add(playerIdentity);
@@ -165,6 +166,8 @@ namespace Stoolball.Data.SqlServer
                     parameters,
                     splitOn: $"PlayerIdentityId, TeamId, TeamId, MatchRoute, {primaryFieldName}",
                     commandTimeout: 60).ConfigureAwait(false);
+
+                return StatisticsPaging.ToStatisticsResults(rows, paging);
             }
         }
 

@@ -18,7 +18,7 @@ namespace Stoolball.Web.UnitTests.Statistics
         private readonly Mock<IPlayerDataSource> _playerDataSource = new();
         private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IPlayerSummaryStatisticsDataSource> _playerSummaryDataSource = new();
-        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
+        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>().WithEmptyResults();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumaniser = new();
 
         private PlayerBowlingController CreateController()
@@ -202,7 +202,7 @@ namespace Stoolball.Web.UnitTests.Statistics
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(Request.Object.QueryString.Value)).Returns(appliedFilter);
             _playerDataSource.Setup(x => x.ReadPlayerByRoute(Request.Object.Path, null)).Returns(Task.FromResult<Player?>(new Player()));
             _playerSummaryDataSource.Setup(x => x.ReadBowlingStatistics(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate))).Returns(Task.FromResult(bowlingStatistics));
-            _bestPerformanceDataSource.Setup(x => x.ReadBowlingFigures(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(bowlingFigures as IEnumerable<StatisticsResult<BowlingFigures>>));
+            _bestPerformanceDataSource.Setup(x => x.ReadBowlingFigures(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<BowlingFigures>(bowlingFigures));
 
             using (var controller = CreateController())
             {

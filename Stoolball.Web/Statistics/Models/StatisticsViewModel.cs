@@ -35,6 +35,11 @@ namespace Stoolball.Web.Statistics.Models
         }
         public List<StatisticsResult<T>> Results { get; internal set; } = new();
 
+        /// <summary>
+        /// Gets the result immediately before the first of the <see cref="Results"/>, if they are a page after the first page.
+        /// </summary>
+        public StatisticsResult<T>? PreviousResult { get; internal set; }
+
         public override bool HasResults() => Results.Any();
     }
 }

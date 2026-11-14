@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { HtmlValidate, type ConfigData } from "html-validate";
 
 const htmlValidate = new HtmlValidate({
@@ -54,24 +54,39 @@ export async function expectValidHtml(page: Page, config: ConfigData = {}) {
 }
 
 /**
+ * Reads the position and ranked value of each row in a statistics table.
+ * @param page The page containing the statistics table.
+ * @param columns The headings of the columns that decide whether two rows are equal. Defaults to the last column.
+ */
+async function readStatisticsRows(page: Page, columns?: string[]) {
+  return await page.locator("table.statistics").evaluate((table, columns) => {
+    const headings = [...table.querySelectorAll("thead th")].map((th) => th.textContent?.trim() ?? "");
+    const indexes = columns ? columns.map((column) => headings.indexOf(column)) : [headings.length - 1];
+    if (indexes.some((index) => index < 0)) {
+      throw new Error(`Columns ${JSON.stringify(columns)} not found in ${JSON.stringify(headings)}`);
+    }
+    return [...table.querySelectorAll("tbody tr")].map((row) => {
+      const cells = row.querySelectorAll("td");
+      const value = indexes
+        .map((index) => {
+          const cell = cells[index].cloneNode(true) as HTMLElement;
+          cell.querySelector(".table-as-cards__label")?.remove();
+          return cell.textContent?.trim() ?? "";
+        })
+        .join(" ");
+      return { position: cells[0].textContent?.trim() ?? "", value };
+    });
+  }, columns);
+}
+
+/**
  * Checks the positions in a statistics table: a row whose displayed value is the same as the
  * row above shows "=", and any other row shows its position number.
  * @param page The page containing the statistics table.
+ * @param columns The headings of the columns that decide whether two rows are equal. Defaults to the last column.
  */
-export async function expectEqualStatisticsShareAPosition(page: Page) {
-  const rows = await page
-    .locator("table.statistics tbody tr")
-    .evaluateAll((rows) =>
-      rows.map((row) => {
-        const cells = row.querySelectorAll("td");
-        const valueCell = cells[cells.length - 1].cloneNode(true) as HTMLElement;
-        valueCell.querySelector(".table-as-cards__label")?.remove();
-        return {
-          position: cells[0].textContent?.trim() ?? "",
-          value: valueCell.textContent?.trim() ?? "",
-        };
-      }),
-    );
+export async function expectEqualStatisticsShareAPosition(page: Page, columns?: string[]) {
+  const rows = await readStatisticsRows(page, columns);
 
   expect(rows.length, "statistics table has rows").toBeGreaterThan(0);
   rows.forEach((row, i) => {
@@ -81,6 +96,33 @@ export async function expectEqualStatisticsShareAPosition(page: Page) {
       expect(row.position, `row ${i + 1} differs from the row above`).toMatch(/^\d+$/);
     }
   });
+}
+
+/**
+ * Checks that positions in a statistics table continue from one page to the next: the first row
+ * on the next page shows "=" if its displayed value is the same as the last row on this page, and
+ * otherwise shows the next position number.
+ * @param page The first page of the statistics table. It navigates to the next page.
+ * @param columns The headings of the columns that decide whether two rows are equal. Defaults to the last column.
+ */
+export async function expectPositionsContinueOnNextPage(page: Page, columns?: string[]) {
+  const firstPage = await readStatisticsRows(page, columns);
+  const nextPage = page.getByRole("link", { name: "Next page" });
+  test.skip((await nextPage.count()) === 0, "There is only one page of results");
+
+  await nextPage.click();
+  await expect(page).toHaveURL(/[?&]page=2\b/);
+  const secondPage = await readStatisticsRows(page, columns);
+
+  const last = firstPage[firstPage.length - 1];
+  const first = secondPage[0];
+  if (first.value === last.value) {
+    expect(first.position, `first row equals last row of page 1 (${last.value})`).toBe("=");
+  } else {
+    expect(first.position, `first row differs from last row of page 1 (${last.value})`).toBe(
+      String(firstPage.length + 1),
+    );
+  }
 }
 
 /**

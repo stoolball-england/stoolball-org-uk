@@ -22,7 +22,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBattingAverage(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadBestBattingAverage(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -30,7 +30,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingAverage(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadBestBowlingAverage(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -38,7 +38,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestEconomyRate(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadBestEconomyRate(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -46,7 +46,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBattingStrikeRate(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadBestBattingStrikeRate(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -54,7 +54,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingStrikeRate(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadBestBowlingStrikeRate(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -118,7 +118,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerAverage(string divideThisField, string byThisField, int multiplier, string sortOrder, bool isFieldingStatistic, string inningsFilter, StatisticsFilter filter)
+        private async Task<StatisticsResults<BestStatistic>> ReadBestPlayerAverage(string divideThisField, string byThisField, int multiplier, string sortOrder, bool isFieldingStatistic, string inningsFilter, StatisticsFilter filter)
         {
             var clonedFilter = filter.Clone();
             clonedFilter.SwapBattingFirstFilter = isFieldingStatistic;
@@ -135,13 +135,11 @@ namespace Stoolball.Data.SqlServer
                                  HAVING SUM({byThisField}) > 0 
                                     AND (SELECT COUNT(PlayerInMatchStatisticsId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {inningsFilter} {where}) >= @MinimumQualifyingInnings
                                 ORDER BY CAST(SUM({divideThisField}) AS DECIMAL) / SUM({byThisField}) {sortOrder}, TotalInnings DESC, TotalMatches DESC 
-                                OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY
+                                {StatisticsPaging.OffsetClause(clonedFilter.Paging, parameters)}
                          ) AS BestAverage
                          ORDER BY Average {sortOrder}, TotalInnings DESC, TotalMatches DESC";
 
             parameters.Add("@MinimumQualifyingInnings", filter.MinimumQualifyingInnings ?? 1);
-            parameters.Add("@PageOffset", clonedFilter.Paging.PageOffset);
-            parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -166,7 +164,7 @@ namespace Stoolball.Data.SqlServer
                     result.Result.Player = players.Single(x => x.PlayerId == result.Result.Player.PlayerId);
                 }
 
-                return results;
+                return StatisticsPaging.ToStatisticsResults(results, clonedFilter.Paging);
             }
         }
     }

@@ -34,7 +34,7 @@ namespace Stoolball.Web.UnitTests.Statistics
 
         public interface IVerifiableMethodCalls<T>
         {
-            Task<IEnumerable<StatisticsResult<T>>> ReadResults(StatisticsFilter filter);
+            Task<StatisticsResults<T>> ReadResults(StatisticsFilter filter);
             Task<int> ReadTotalResults(StatisticsFilter filter);
         }
 
@@ -46,7 +46,7 @@ namespace Stoolball.Web.UnitTests.Statistics
                 IStatisticsFilterFactory statisticsFilterFactory,
                 IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
                 IStatisticsFilterHumanizer statisticsFilterHumanizer,
-                Func<StatisticsFilter, Task<IEnumerable<StatisticsResult<AnyClass>>>> readResults,
+                Func<StatisticsFilter, Task<StatisticsResults<AnyClass>>> readResults,
                 Func<StatisticsFilter, Task<int>> readTotalResults,
                 IHtmlContent minimumQualifyingInningsTemplate,
                 int? minimumQualifyingInningsUnfiltered,
@@ -136,12 +136,12 @@ namespace Stoolball.Web.UnitTests.Statistics
             };
         }
 
-        private void SetupMocks(StatisticsFilter defaultFilter, StatisticsFilter userFilter, List<StatisticsResult<AnyClass>> results)
+        private void SetupMocks(StatisticsFilter defaultFilter, StatisticsFilter userFilter, List<StatisticsResult<AnyClass>> results, StatisticsResult<AnyClass>? previousResult = null)
         {
             Request.Setup(x => x.Path).Returns("/play/statistics");
             _statisticsFilterFactory.Setup(x => x.FromRoute(Request.Object.Path)).Returns(Task.FromResult(defaultFilter));
             _statisticsFilterFactory.Setup(x => x.FromQueryString(Request.Object.QueryString.Value)).Returns(Task.FromResult(userFilter));
-            _statisticsQueryMethods.Setup(x => x.ReadResults(It.Is<StatisticsFilter>(x => x.FromDate == userFilter.FromDate))).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<AnyClass>>));
+            _statisticsQueryMethods.Setup(x => x.ReadResults(It.Is<StatisticsFilter>(x => x.FromDate == userFilter.FromDate))).ReturnsAsync(new StatisticsResults<AnyClass>(results, previousResult));
             _statisticsQueryMethods.Setup(x => x.ReadTotalResults(It.Is<StatisticsFilter>(x => x.FromDate == userFilter.FromDate))).Returns(Task.FromResult(results.Count));
         }
 
@@ -223,6 +223,28 @@ namespace Stoolball.Web.UnitTests.Statistics
                 _statisticsFilterFactory.Verify(x => x.FromRoute(Request.Object.Path), Times.Once);
                 _statisticsFilterFactory.Verify(x => x.FromQueryString(Request.Object.QueryString.Value), Times.Once);
                 _statisticsQueryMethods.Verify(x => x.ReadResults(It.Is<StatisticsFilter>(x => x.FromDate == appliedFilter.FromDate)), Times.Once);
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Sets_Results_and_PreviousResult_from_query(bool hasPreviousResult)
+        {
+            var defaultFilter = new StatisticsFilter();
+            var appliedFilter = defaultFilter.Clone();
+
+            List<StatisticsResult<AnyClass>> results = [CreateQueryResult(), CreateQueryResult()];
+            var previousResult = hasPreviousResult ? CreateQueryResult() : null;
+            SetupMocks(defaultFilter, appliedFilter, results, previousResult);
+
+            using (var controller = CreateController())
+            {
+                var result = await controller.Index();
+
+                var model = Assert.IsType<StatisticsViewModel<AnyClass>>(Assert.IsType<ViewResult>(result).Model);
+                Assert.Equal(results, model.Results);
+                Assert.Same(previousResult, model.PreviousResult);
             }
         }
 

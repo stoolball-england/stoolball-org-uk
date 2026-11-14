@@ -6,13 +6,13 @@ namespace Stoolball.Data.Abstractions
 {
     public interface IBestPlayerTotalStatisticsDataSource
     {
-        Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostPlayerInnings(StatisticsFilter filter);
-        Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunsScored(StatisticsFilter filter);
-        Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostWickets(StatisticsFilter filter);
-        Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostInningsWithBowling(StatisticsFilter filter);
-        Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostCatches(StatisticsFilter filter);
-        Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunOuts(StatisticsFilter filter);
-        Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostPlayerOfTheMatchAwards(StatisticsFilter filter);
+        Task<StatisticsResults<BestStatistic>> ReadMostPlayerInnings(StatisticsFilter filter);
+        Task<StatisticsResults<BestStatistic>> ReadMostRunsScored(StatisticsFilter filter);
+        Task<StatisticsResults<BestStatistic>> ReadMostWickets(StatisticsFilter filter);
+        Task<StatisticsResults<BestStatistic>> ReadMostInningsWithBowling(StatisticsFilter filter);
+        Task<StatisticsResults<BestStatistic>> ReadMostCatches(StatisticsFilter filter);
+        Task<StatisticsResults<BestStatistic>> ReadMostRunOuts(StatisticsFilter filter);
+        Task<StatisticsResults<BestStatistic>> ReadMostPlayerOfTheMatchAwards(StatisticsFilter filter);
 
         Task<int> ReadTotalPlayersWithRunsScored(StatisticsFilter filter);
         Task<int> ReadTotalPlayersWithWickets(StatisticsFilter filter);

@@ -30,8 +30,8 @@
         </thead>
         <tbody>
             @{
-                int? previousRunsScored = null;
-                bool? previousNotOut = null;
+                int? previousRunsScored = Model.PreviousResult?.Result?.RunsScored;
+                bool? previousNotOut = Model.PreviousResult?.Result is PlayerInnings previousInnings ? !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(previousInnings.DismissalType) : null;
                 for (var i = 0; i < Model.Results.Count(); i++)
                 {
                     var notOut = !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(Model.Results[i].Result.DismissalType);

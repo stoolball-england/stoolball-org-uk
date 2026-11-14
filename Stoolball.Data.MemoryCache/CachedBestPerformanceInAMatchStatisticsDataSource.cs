@@ -21,7 +21,7 @@ namespace Stoolball.Data.MemoryCache
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<StatisticsResult<PlayerInnings>>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder)
+        public async Task<StatisticsResults<PlayerInnings>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(IBestPerformanceInAMatchStatisticsDataSource) + nameof(ReadPlayerInnings) + _statisticsFilterSerializer.Serialize(filter) + sortOrder.ToString();
@@ -29,7 +29,7 @@ namespace Stoolball.Data.MemoryCache
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<StatisticsResult<BowlingFigures>>> ReadBowlingFigures(StatisticsFilter filter, StatisticsSortOrder sortOrder)
+        public async Task<StatisticsResults<BowlingFigures>> ReadBowlingFigures(StatisticsFilter filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
             var cacheKey = nameof(IBestPerformanceInAMatchStatisticsDataSource) + nameof(ReadBowlingFigures) + _statisticsFilterSerializer.Serialize(filter) + sortOrder.ToString();

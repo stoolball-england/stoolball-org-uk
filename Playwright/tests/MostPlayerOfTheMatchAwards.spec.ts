@@ -2,6 +2,7 @@ import { test } from "@playwright/test";
 import {
   expectValidHtml,
   expectNoAccessibilityViolations,
+  expectPositionsContinueOnNextPage,
 } from "../support/assertions";
 
 test.describe("Most player of the match awards", { tag: "@Production" }, () => {
@@ -15,5 +16,9 @@ test.describe("Most player of the match awards", { tag: "@Production" }, () => {
 
   test("Passes AXE", async ({ page }) => {
     await expectNoAccessibilityViolations(page);
+  });
+
+  test("Positions continue on the next page", async ({ page }) => {
+    await expectPositionsContinueOnNextPage(page, ["Awards"]);
   });
 });

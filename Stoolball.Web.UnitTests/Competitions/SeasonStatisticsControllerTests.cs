@@ -18,8 +18,8 @@ namespace Stoolball.Web.UnitTests.Competitions
     public class SeasonStatisticsControllerTests : UmbracoBaseTest
     {
         private readonly Mock<ISeasonDataSource> _seasonDataSource = new();
-        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
-        private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new();
+        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>().WithEmptyResults();
+        private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new Mock<IBestPlayerTotalStatisticsDataSource>().WithEmptyResults();
         private readonly Mock<IStatisticsFilterFactory> _statisticsFilterFactory = new();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumanizer = new();
 
@@ -116,7 +116,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         {
             SetupSeason();
             var innings = new List<StatisticsResult<PlayerInnings>> { new() };
-            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(innings);
+            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<PlayerInnings>(innings));
 
             var model = await ReadModel();
 

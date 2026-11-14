@@ -19,9 +19,9 @@ namespace Stoolball.Web.UnitTests.Clubs
     public class ClubStatisticsControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IClubDataSource> _clubDataSource = new();
-        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
+        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>().WithEmptyResults();
         private readonly Mock<IInningsStatisticsDataSource> _inningsDataSource = new();
-        private readonly Mock<IBestPlayerTotalStatisticsDataSource> _playerTotalDataSource = new();
+        private readonly Mock<IBestPlayerTotalStatisticsDataSource> _playerTotalDataSource = new Mock<IBestPlayerTotalStatisticsDataSource>().WithEmptyResults();
         private readonly Mock<IStatisticsFilterQueryStringParser> _statisticsFilterQueryStringParser = new();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumanizer = new();
         private readonly Club _club = new() { ClubId = Guid.NewGuid(), ClubName = "Example club" };
@@ -150,11 +150,11 @@ namespace Stoolball.Web.UnitTests.Clubs
         {
             var innings = new InningsStatistics();
             _inningsDataSource.Setup(x => x.ReadInningsStatistics(It.IsAny<StatisticsFilter>())).ReturnsAsync(innings);
-            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new[] { new StatisticsResult<PlayerInnings>() });
-            _bestPerformanceDataSource.Setup(x => x.ReadBowlingFigures(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new[] { new StatisticsResult<BowlingFigures>(), new StatisticsResult<BowlingFigures>() });
-            _playerTotalDataSource.Setup(x => x.ReadMostRunsScored(It.IsAny<StatisticsFilter>())).ReturnsAsync(new[] { new StatisticsResult<BestStatistic>() });
-            _playerTotalDataSource.Setup(x => x.ReadMostWickets(It.IsAny<StatisticsFilter>())).ReturnsAsync(new[] { new StatisticsResult<BestStatistic>(), new StatisticsResult<BestStatistic>() });
-            _playerTotalDataSource.Setup(x => x.ReadMostCatches(It.IsAny<StatisticsFilter>())).ReturnsAsync(new[] { new StatisticsResult<BestStatistic>(), new StatisticsResult<BestStatistic>(), new StatisticsResult<BestStatistic>() });
+            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<PlayerInnings>(new[] { new StatisticsResult<PlayerInnings>() }));
+            _bestPerformanceDataSource.Setup(x => x.ReadBowlingFigures(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<BowlingFigures>(new[] { new StatisticsResult<BowlingFigures>(), new StatisticsResult<BowlingFigures>() }));
+            _playerTotalDataSource.Setup(x => x.ReadMostRunsScored(It.IsAny<StatisticsFilter>())).ReturnsAsync(new StatisticsResults<BestStatistic>(new[] { new StatisticsResult<BestStatistic>() }));
+            _playerTotalDataSource.Setup(x => x.ReadMostWickets(It.IsAny<StatisticsFilter>())).ReturnsAsync(new StatisticsResults<BestStatistic>(new[] { new StatisticsResult<BestStatistic>(), new StatisticsResult<BestStatistic>() }));
+            _playerTotalDataSource.Setup(x => x.ReadMostCatches(It.IsAny<StatisticsFilter>())).ReturnsAsync(new StatisticsResults<BestStatistic>(new[] { new StatisticsResult<BestStatistic>(), new StatisticsResult<BestStatistic>(), new StatisticsResult<BestStatistic>() }));
 
             var model = await Run();
 

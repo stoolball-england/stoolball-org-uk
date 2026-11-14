@@ -18,8 +18,8 @@ namespace Stoolball.Web.UnitTests.Competitions
     {
         private readonly Mock<ICompetitionDataSource> _competitionDataSource = new();
         private readonly Mock<IStatisticsFilterFactory> _statisticsFilterFactory = new();
-        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
-        private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new();
+        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>().WithEmptyResults();
+        private readonly Mock<IBestPlayerTotalStatisticsDataSource> _bestTotalDataSource = new Mock<IBestPlayerTotalStatisticsDataSource>().WithEmptyResults();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumanizer = new();
 
         private CompetitionStatisticsController CreateController()
@@ -58,7 +58,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         {
             _statisticsFilterFactory.Setup(x => x.FromQueryString(It.IsAny<string>())).Returns(Task.FromResult(new StatisticsFilter()));
             _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionId = Guid.NewGuid() });
-            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
+            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<PlayerInnings>(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() }));
 
             using (var controller = CreateController())
             {
@@ -112,7 +112,7 @@ namespace Stoolball.Web.UnitTests.Competitions
         {
             SetupCompetition();
             var innings = new List<StatisticsResult<PlayerInnings>> { new() };
-            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(innings);
+            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<PlayerInnings>(innings));
 
             using var controller = CreateController();
 

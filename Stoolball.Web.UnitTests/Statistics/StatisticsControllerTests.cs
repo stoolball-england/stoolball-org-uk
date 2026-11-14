@@ -13,8 +13,8 @@ namespace Stoolball.Web.UnitTests.Statistics
 {
     public class StatisticsControllerTests : UmbracoBaseTest
     {
-        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new();
-        private readonly Mock<IBestPlayerTotalStatisticsDataSource> _totalStatisticsDataSource = new();
+        private readonly Mock<IBestPerformanceInAMatchStatisticsDataSource> _bestPerformanceDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>().WithEmptyResults();
+        private readonly Mock<IBestPlayerTotalStatisticsDataSource> _totalStatisticsDataSource = new Mock<IBestPlayerTotalStatisticsDataSource>().WithEmptyResults();
         private readonly Mock<IStatisticsFilterFactory> _statisticsFilterFactory = new();
         private readonly Mock<IStatisticsFilterHumanizer> _statisticsFilterHumanizer = new();
 

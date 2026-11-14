@@ -25,7 +25,7 @@ namespace Stoolball.Web.Statistics
                   statisticsFilterFactory,
                   statisticsBreadcrumbBuilder,
                   statisticsFilterHumanizer,
-                  filter => statisticsDataSource.ReadPlayerIdentityPerformances(filter),
+                  async filter => new StatisticsResults<PlayerIdentityPerformance>(await statisticsDataSource.ReadPlayerIdentityPerformances(filter)),
                   filter => statisticsDataSource.ReadTotalPlayerIdentityPerformances(filter),
                   filter => "Player performances",
                   "Performances"

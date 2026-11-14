@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Data.Abstractions;
+using Stoolball.Navigation;
 using Stoolball.Statistics;
 
 namespace Stoolball.Data.SqlServer
@@ -22,14 +23,14 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostPlayerInnings(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadMostPlayerInnings(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
             return await ReadBestPlayerCount("RunsScored", " AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunsScored(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadMostRunsScored(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -46,35 +47,35 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostInningsWithBowling(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadMostInningsWithBowling(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
             return await ReadBestPlayerCount("Wickets", " AND Wickets IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostWickets(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadMostWickets(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
             return await ReadBestPlayerSum("Wickets", false, true, null, null, "AND BowlingFiguresId IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostCatches(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadMostCatches(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
             return await ReadBestPlayerSum("Catches", false, true, null, null, string.Empty, filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunOuts(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadMostRunOuts(StatisticsFilter? filter)
         {
             filter = filter ?? new StatisticsFilter();
             return await ReadBestPlayerSum("RunOuts", false, true, null, null, string.Empty, filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
-        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostPlayerOfTheMatchAwards(StatisticsFilter? filter)
+        public async Task<StatisticsResults<BestStatistic>> ReadMostPlayerOfTheMatchAwards(StatisticsFilter? filter)
         {
             var clonedFilter = filter?.Clone() ?? new StatisticsFilter();
 
@@ -92,12 +93,9 @@ namespace Stoolball.Data.SqlServer
                                  WHERE CAST(PlayerOfTheMatch AS INT) > 0 {where}
                                  GROUP BY PlayerId
                                  ORDER BY COUNT(DISTINCT(MatchId)) DESC, TotalMatches ASC 
-                                 OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                                 {StatisticsPaging.OffsetClause(clonedFilter.Paging, parameters)}";
 
-            parameters.Add("@PageOffset", clonedFilter.Paging.PageOffset);
-            parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
-
-            return await ReadResults(sql, parameters, clonedFilter).ConfigureAwait(false);
+            return await ReadResults(sql, parameters, clonedFilter, clonedFilter.Paging).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -145,7 +143,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerSum(string fieldName, bool fieldValueCanBeNegative, bool isFieldingStatistic, string? extraSelectFields, string? outerQueryIncludingOrderBy, string totalInningsFilter, StatisticsFilter filter)
+        private async Task<StatisticsResults<BestStatistic>> ReadBestPlayerSum(string fieldName, bool fieldValueCanBeNegative, bool isFieldingStatistic, string? extraSelectFields, string? outerQueryIncludingOrderBy, string totalInningsFilter, StatisticsFilter filter)
         {
             var clonedFilter = filter.Clone();
             clonedFilter.SwapBattingFirstFilter = isFieldingStatistic;
@@ -161,6 +159,7 @@ namespace Stoolball.Data.SqlServer
             var preQuery = string.Empty;
             var offsetWithExtraResults = string.Empty;
             var offsetPaging = string.Empty;
+            Paging? paging = null;
             if (clonedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
             {
                 // Get the values from what should be the last row according to the maximum number of results.
@@ -180,9 +179,8 @@ namespace Stoolball.Data.SqlServer
             }
             else
             {
-                offsetPaging = $"ORDER BY SUM({fieldName}) DESC, TotalInnings ASC, TotalMatches ASC OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
-                parameters.Add("@PageOffset", clonedFilter.Paging.PageOffset);
-                parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
+                paging = clonedFilter.Paging;
+                offsetPaging = $"ORDER BY SUM({fieldName}) DESC, TotalInnings ASC, TotalMatches ASC {StatisticsPaging.OffsetClause(paging, parameters)}";
             }
 
             var totalInningsQuery = !string.IsNullOrEmpty(totalInningsFilter) ? $"SELECT COUNT(PlayerInMatchStatisticsId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {totalInningsFilter} {where}" : "NULL";
@@ -214,10 +212,10 @@ namespace Stoolball.Data.SqlServer
                 sql = outerQueryIncludingOrderBy.Replace("<<QUERY>>", sql);
             }
 
-            return await ReadResults($"{preQuery} {sql}", parameters, filter).ConfigureAwait(false);
+            return await ReadResults($"{preQuery} {sql}", parameters, filter, paging).ConfigureAwait(false);
         }
 
-        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerCount(string fieldName, string totalInningsFilter, StatisticsFilter filter)
+        private async Task<StatisticsResults<BestStatistic>> ReadBestPlayerCount(string fieldName, string totalInningsFilter, StatisticsFilter filter)
         {
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
 
@@ -235,15 +233,12 @@ namespace Stoolball.Data.SqlServer
                          WHERE {fieldName} IS NOT NULL {where}
                          GROUP BY PlayerId
                          ORDER BY COUNT({fieldName}) DESC
-                         OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                         {StatisticsPaging.OffsetClause(filter.Paging, parameters)}";
 
-            parameters.Add("@PageOffset", filter.Paging.PageOffset);
-            parameters.Add("@PageSize", filter.Paging.PageSize);
-
-            return await ReadResults(sql, parameters, filter).ConfigureAwait(false);
+            return await ReadResults(sql, parameters, filter, filter.Paging).ConfigureAwait(false);
         }
 
-        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadResults(string sql, Dictionary<string, object>? parameters, StatisticsFilter filter)
+        private async Task<StatisticsResults<BestStatistic>> ReadResults(string sql, Dictionary<string, object>? parameters, StatisticsFilter filter, Paging? paging)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -268,7 +263,7 @@ namespace Stoolball.Data.SqlServer
                     result.Result.Player = players.Single(x => x.PlayerId == result.Result.Player.PlayerId);
                 }
 
-                return results;
+                return StatisticsPaging.ToStatisticsResults(results, paging);
             }
         }
     }

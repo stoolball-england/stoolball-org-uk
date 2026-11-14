@@ -36,7 +36,7 @@ namespace Stoolball.Web.Statistics
                       catchesFilter.Player = null;
                       catchesFilter.SwapTeamAndOppositionFilters = true;
                       catchesFilter.CaughtByPlayerIdentityIds = filter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList();
-                      return (await playerPerformanceDataSource.ReadPlayerInnings(catchesFilter)).ToList();
+                      return new StatisticsResults<PlayerInnings>(await playerPerformanceDataSource.ReadPlayerInnings(catchesFilter));
                   },
                   async filter => (await playerSummaryStatisticsDataSource.ReadFieldingStatistics(filter)).TotalCatches,
                   filter => "Catches",

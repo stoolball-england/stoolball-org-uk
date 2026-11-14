@@ -30,8 +30,8 @@
         </thead>
         <tbody>
             @{
-                int? previousWickets = null;
-                int? previousRuns = null;
+                int? previousWickets = Model.PreviousResult?.Result?.Wickets;
+                int? previousRuns = Model.PreviousResult?.Result?.RunsConceded;
                 for (var i = 0; i < Model.Results.Count(); i++)
                 {
                     var equalToPrevious = Model.Results[i].Result.Wickets == previousWickets && Model.Results[i].Result.RunsConceded == previousRuns;

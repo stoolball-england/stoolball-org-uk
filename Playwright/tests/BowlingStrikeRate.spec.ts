@@ -2,6 +2,7 @@ import { test } from "@playwright/test";
 import {
   expectValidHtml,
   expectNoAccessibilityViolations,
+  expectPositionsContinueOnNextPage,
   expectEqualStatisticsShareAPosition,
 } from "../support/assertions";
 
@@ -20,5 +21,9 @@ test.describe("Best bowling strike rate", { tag: "@Production" }, () => {
 
   test("Shows equal values at the same position", async ({ page }) => {
     await expectEqualStatisticsShareAPosition(page);
+  });
+
+  test("Positions continue on the next page", async ({ page }) => {
+    await expectPositionsContinueOnNextPage(page);
   });
 });

@@ -31,7 +31,7 @@
         </thead>
         <tbody>
             @{
-                decimal? previous = null;
+                decimal? previous = Model.PreviousResult?.Result?.Average is decimal previousAverage ? Math.Round(previousAverage, 2) : null;
                 for (var i = 0; i < Model.Results.Count(); i++)
                 {
                     var average = Math.Round(Model.Results[i].Result.Average!.Value, 2);

@@ -2,6 +2,7 @@ import { test } from "@playwright/test";
 import {
   expectValidHtml,
   expectNoAccessibilityViolations,
+  expectPositionsContinueOnNextPage,
 } from "../support/assertions";
 
 test.describe("Most times taking 5 or more wickets", { tag: "@Production" }, () => {
@@ -15,5 +16,9 @@ test.describe("Most times taking 5 or more wickets", { tag: "@Production" }, () 
 
   test("Passes AXE", async ({ page }) => {
     await expectNoAccessibilityViolations(page);
+  });
+
+  test("Positions continue on the next page", async ({ page }) => {
+    await expectPositionsContinueOnNextPage(page, ["5+ wickets"]);
   });
 });

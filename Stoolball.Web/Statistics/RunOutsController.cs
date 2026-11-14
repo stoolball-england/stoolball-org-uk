@@ -36,7 +36,7 @@ namespace Stoolball.Web.Statistics
                       runOutsFilter.Player = null;
                       runOutsFilter.SwapTeamAndOppositionFilters = true;
                       runOutsFilter.RunOutByPlayerIdentityIds = filter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId!.Value).ToList();
-                      return (await playerPerformanceDataSource.ReadPlayerInnings(runOutsFilter)).ToList();
+                      return new StatisticsResults<PlayerInnings>(await playerPerformanceDataSource.ReadPlayerInnings(runOutsFilter));
                   },
                   async filter => (await playerSummaryStatisticsDataSource.ReadFieldingStatistics(filter)).TotalRunOuts,
                   filter => "Run-outs",

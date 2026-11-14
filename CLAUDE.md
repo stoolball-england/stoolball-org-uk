@@ -5,6 +5,9 @@ example `Stoolball.Data.SqlServer.IntegrationTests/CLAUDE.md`, which requires ru
 affected tests locally after any change there, before reporting the work as done — a
 successful build is not enough).
 
+Never touch the `.UmbracoCloud` folder in the repository root. Don't edit, add, delete or
+move anything in it, even when it holds a copy of code you are changing elsewhere.
+
 When running the site locally, always run it in the `Development` environment by setting
 `ASPNETCORE_ENVIRONMENT=Development`, and check that the output shows
 `Hosting environment: Development`. `dotnet run --environment Development` is not enough. See

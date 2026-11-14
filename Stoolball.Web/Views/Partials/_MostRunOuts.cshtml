@@ -30,7 +30,7 @@
         </thead>
         <tbody>
             @{
-                int? previousRunOuts = null;
+                int? previousRunOuts = Model.PreviousResult?.Result?.Total;
                 for (var i = 0; i < Model.Results.Count(); i++)
                 {
                     var equalToPrevious = Model.Results[i].Result.Total == previousRunOuts;

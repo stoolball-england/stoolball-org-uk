@@ -48,11 +48,11 @@ namespace Stoolball.Web.UnitTests.Teams
             var team = new Team { TeamId = Guid.NewGuid(), TeamName = "Example team", TeamRoute = "/teams/example" };
             _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(team);
             _statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<string?>())).Returns(queryStringFilter ?? new StatisticsFilter());
-            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new List<StatisticsResult<PlayerInnings>>() as IEnumerable<StatisticsResult<PlayerInnings>>);
-            _bestPerformanceDataSource.Setup(x => x.ReadBowlingFigures(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new List<StatisticsResult<BowlingFigures>>());
-            _bestPlayerTotalDataSource.Setup(x => x.ReadMostRunsScored(It.IsAny<StatisticsFilter>())).ReturnsAsync(new List<StatisticsResult<BestStatistic>>());
-            _bestPlayerTotalDataSource.Setup(x => x.ReadMostWickets(It.IsAny<StatisticsFilter>())).ReturnsAsync(new List<StatisticsResult<BestStatistic>>());
-            _bestPlayerTotalDataSource.Setup(x => x.ReadMostCatches(It.IsAny<StatisticsFilter>())).ReturnsAsync(new List<StatisticsResult<BestStatistic>>());
+            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<PlayerInnings>(new List<StatisticsResult<PlayerInnings>>()));
+            _bestPerformanceDataSource.Setup(x => x.ReadBowlingFigures(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<BowlingFigures>(new List<StatisticsResult<BowlingFigures>>()));
+            _bestPlayerTotalDataSource.Setup(x => x.ReadMostRunsScored(It.IsAny<StatisticsFilter>())).ReturnsAsync(new StatisticsResults<BestStatistic>(new List<StatisticsResult<BestStatistic>>()));
+            _bestPlayerTotalDataSource.Setup(x => x.ReadMostWickets(It.IsAny<StatisticsFilter>())).ReturnsAsync(new StatisticsResults<BestStatistic>(new List<StatisticsResult<BestStatistic>>()));
+            _bestPlayerTotalDataSource.Setup(x => x.ReadMostCatches(It.IsAny<StatisticsFilter>())).ReturnsAsync(new StatisticsResults<BestStatistic>(new List<StatisticsResult<BestStatistic>>()));
             return team;
         }
 
@@ -128,11 +128,11 @@ namespace Stoolball.Web.UnitTests.Teams
             var wickets = new List<StatisticsResult<BestStatistic>> { new() };
             var catches = new List<StatisticsResult<BestStatistic>> { new() };
             var inningsStatistics = new InningsStatistics();
-            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(innings);
-            _bestPerformanceDataSource.Setup(x => x.ReadBowlingFigures(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(bowling);
-            _bestPlayerTotalDataSource.Setup(x => x.ReadMostRunsScored(It.IsAny<StatisticsFilter>())).ReturnsAsync(runs);
-            _bestPlayerTotalDataSource.Setup(x => x.ReadMostWickets(It.IsAny<StatisticsFilter>())).ReturnsAsync(wickets);
-            _bestPlayerTotalDataSource.Setup(x => x.ReadMostCatches(It.IsAny<StatisticsFilter>())).ReturnsAsync(catches);
+            _bestPerformanceDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<PlayerInnings>(innings));
+            _bestPerformanceDataSource.Setup(x => x.ReadBowlingFigures(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).ReturnsAsync(new StatisticsResults<BowlingFigures>(bowling));
+            _bestPlayerTotalDataSource.Setup(x => x.ReadMostRunsScored(It.IsAny<StatisticsFilter>())).ReturnsAsync(new StatisticsResults<BestStatistic>(runs));
+            _bestPlayerTotalDataSource.Setup(x => x.ReadMostWickets(It.IsAny<StatisticsFilter>())).ReturnsAsync(new StatisticsResults<BestStatistic>(wickets));
+            _bestPlayerTotalDataSource.Setup(x => x.ReadMostCatches(It.IsAny<StatisticsFilter>())).ReturnsAsync(new StatisticsResults<BestStatistic>(catches));
             _inningsStatisticsDataSource.Setup(x => x.ReadInningsStatistics(It.IsAny<StatisticsFilter>())).ReturnsAsync(inningsStatistics);
 
             var model = await ReadModel();
