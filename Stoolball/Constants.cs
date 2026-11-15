@@ -46,6 +46,15 @@ namespace Stoolball
         }
 
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
+        public static class SocialMedia
+        {
+            public const string Facebook = "https://facebook.com/stoolball";
+            public const string Twitter = "@stoolball";
+            public const string Instagram = "@stoolball";
+            public const string YouTube = "https://youtube.com/stoolballengland";
+        }
+
+        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
         public static class Groups
         {
             public const string Administrators = "Administrators";

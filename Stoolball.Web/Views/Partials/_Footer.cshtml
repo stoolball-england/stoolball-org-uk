@@ -10,10 +10,10 @@
             </ul>
             @await Html.PartialAsync("_SocialMedia", new SocialMedia {
                DisplayName = "Stoolball England",
-               Facebook = "https://facebook.com/stoolball",
-               Twitter = "@stoolball",
-               Instagram = "@stoolball",
-               YouTube = "https://youtube.com/stoolballengland"
+               Facebook = Stoolball.Constants.SocialMedia.Facebook,
+               Twitter = Stoolball.Constants.SocialMedia.Twitter,
+               Instagram = Stoolball.Constants.SocialMedia.Instagram,
+               YouTube = Stoolball.Constants.SocialMedia.YouTube
            })
         </div>
         <div class="col-sm">

@@ -2,6 +2,29 @@
 @{
     SmidgeHelper.RequiresCss(new Smidge.Models.CssFile("~/css/home.min.css") { Order = 100 });
 }
+@section head {
+    @{
+        const string siteUrl = "https://www.stoolball.org.uk";
+        // Stoolball England has no official street address, so none is included.
+        var organisation = new Dictionary<string, object>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "NGO",
+            ["name"] = "Stoolball England",
+            ["url"] = siteUrl + "/",
+            ["logo"] = siteUrl + "/images/logos/stoolball-england.svg",
+            ["description"] = "The governing body for stoolball, a fast, exciting sport over 500 years old.",
+            ["sameAs"] = new[]
+            {
+                Stoolball.Constants.SocialMedia.Facebook,
+                "https://twitter.com/" + Stoolball.Constants.SocialMedia.Twitter.TrimStart('@'),
+                "https://instagram.com/" + Stoolball.Constants.SocialMedia.Instagram.TrimStart('@'),
+                Stoolball.Constants.SocialMedia.YouTube
+            }
+        };
+    }
+    <script type="application/ld+json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(organisation))</script>
+}
 <h1 class="sr-only">@Model.Name</h1>
 
 <div class="container-xl">
