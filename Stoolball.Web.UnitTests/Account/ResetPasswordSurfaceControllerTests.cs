@@ -497,6 +497,20 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
+        public async Task Valid_token_resets_failed_password_attempts()
+        {
+            using (var controller = CreateController())
+            {
+                SetupValidTokenScenario();
+
+                var result = await controller.UpdatePassword(new ResetPasswordFormData());
+
+                _currentMember.VerifySet(x => x.FailedPasswordAttempts = 0, Times.Once);
+                base.MemberService.Verify(x => x.Save(_currentMember.Object), Times.Once);
+            }
+        }
+
+        [Fact]
         public async Task Valid_token_resets_expiry()
         {
             using (var controller = CreateController())

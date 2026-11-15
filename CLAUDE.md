@@ -13,6 +13,10 @@ When running the site locally, always run it in the `Development` environment by
 `Hosting environment: Development`. `dotnet run --environment Development` is not enough. See
 `docs/GettingStarted.md`.
 
+It's always safe to stop and restart the site during development. If a running `Stoolball.Web`
+process locks DLLs and blocks a build or test run, stop it without asking. When you've finished
+your work, always restart it (in the `Development` environment, as above).
+
 ## Build warnings
 
 When you write new code, resolve any build warnings it introduces (for example nullable

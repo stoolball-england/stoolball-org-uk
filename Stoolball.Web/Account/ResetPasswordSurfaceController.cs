@@ -85,8 +85,9 @@ namespace Stoolball.Web.Account
                         !_verificationToken.HasExpired(member.GetValue<DateTime>("passwordResetTokenExpires")))
                     {
                         // If the user has tried repeatedly they might have locked their account
-                        // Remove the lockout, expire the token and reset the password
+                        // Remove the lockout, reset the count of failed attempts, expire the token and reset the password
                         member.IsLockedOut = false;
+                        member.FailedPasswordAttempts = 0;
                         member.SetValue("passwordResetTokenExpires", _verificationToken.ResetExpiryTo());
                         member.RawPasswordValue = _passwordHasher.HashPassword(model.NewPassword);
                         memberService.Save(member);
