@@ -4,7 +4,7 @@
 [![Coverage](https://app.codacy.com/project/badge/Coverage/853fda8557fb4c0c981ee022eb4c739e)](https://www.codacy.com/gh/stoolball-england/stoolball-org-uk/dashboard)
 [![Code quality](https://app.codacy.com/project/badge/Grade/853fda8557fb4c0c981ee022eb4c739e)](https://www.codacy.com/gh/stoolball-england/stoolball-org-uk/dashboard)
 
-This is a rebuild of the Stoolball England website at <www.stoolball.org.uk> using .NET Framework and Umbraco Cloud.
+This is a rebuild of the Stoolball England website at <www.stoolball.org.uk> using ASP.NET Core on .NET 10 and Umbraco 13, hosted on Umbraco Cloud.
 
 - [Getting started](docs/GettingStarted.md)
 - [Configuration](docs/Configuration.md)

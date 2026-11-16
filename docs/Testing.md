@@ -2,7 +2,7 @@
 
 ## .NET testing with xUnit.net
 
-Run xUnit tests using Test > Run All Tests in Visual Studio.
+Run xUnit tests using Test > Run All Tests in Visual Studio, or run `dotnet test` with the .NET 10 SDK from the root of the repository. The integration tests in `Stoolball.Data.SqlServer.IntegrationTests` need a SQL Server instance to run against.
 
 ## JavaScript testing with Jest
 

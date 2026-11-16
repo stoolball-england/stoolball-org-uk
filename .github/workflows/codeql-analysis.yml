@@ -50,9 +50,9 @@ jobs:
       # Need to build the code before running CodeQL
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 10.0.x
 
       - name: Restore npm dependencies
         run: npm ci

@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
   </PropertyGroup>
 
@@ -124,14 +124,11 @@
     <PackageReference Include="HtmlSanitizer" Version="9.2.995" />
     <PackageReference Include="MessagePack" Version="2.5.307" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.17" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.32" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="17.14.28" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
     <PackageReference Include="Skybrud.Umbraco.Redirects" Version="13.0.7" />
     <PackageReference Include="SolarCalculator" Version="3.1.0" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.13" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.21" />
     <PackageReference Include="Umbraco.Cloud.Identity.Cms" Version="13.2.9" />
     <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="13.0.1" />
     <PackageReference Include="Umbraco.Cms" Version="13.16.4" />
