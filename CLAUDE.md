@@ -5,6 +5,9 @@ example `Stoolball.Data.SqlServer.IntegrationTests/CLAUDE.md`, which requires ru
 affected tests locally after any change there, before reporting the work as done — a
 successful build is not enough).
 
+The default branch is `main`, not `master`. Base new branches and pull requests on `main`,
+whatever the git status snapshot at the start of a session says.
+
 Never touch the `.UmbracoCloud` folder in the repository root. Don't edit, add, delete or
 move anything in it, even when it holds a copy of code you are changing elsewhere.
 
