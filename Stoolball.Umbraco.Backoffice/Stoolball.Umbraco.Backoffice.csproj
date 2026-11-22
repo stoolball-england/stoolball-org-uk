@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <!-- Extensions for the Umbraco backoffice. The TypeScript project in the Backoffice folder is built by Vite into
+       wwwroot/App_Plugins/Stoolball.Umbraco.Backoffice, which is served at /App_Plugins/Stoolball.Umbraco.Backoffice as
+       static web assets of this Razor class library. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);Backoffice\node_modules\**</DefaultItemExcludes>
+    <BackofficeManifest>$(MSBuildProjectDirectory)\wwwroot\App_Plugins\Stoolball.Umbraco.Backoffice\manifest.js</BackofficeManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Backoffice\**" />
+    <None Include="Backoffice\package.json" />
+    <None Include="Backoffice\tsconfig.json" />
+    <None Include="Backoffice\vite.config.ts" />
+    <None Include="Backoffice\public\umbraco-package.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Umbraco.Cms.Core" Version="17.5.3" />
+  </ItemGroup>
+
+  <!-- The built extensions are not committed, so build them if they are missing, for example in a new clone of the repository.
+       After changing the TypeScript, run 'npm run build' (or 'npm run watch') in the Backoffice folder. -->
+  <Target Name="StoolballUmbracoBackoffice_BuildIfMissing" BeforeTargets="BeforeBuild" Condition="!Exists('$(BackofficeManifest)')">
+    <Message Text="Building the Umbraco backoffice extensions because $(BackofficeManifest) does not exist" Importance="high" />
+    <Exec Command="npm ci" WorkingDirectory="$(MSBuildProjectDirectory)\Backoffice" />
+    <Exec Command="npm run build" WorkingDirectory="$(MSBuildProjectDirectory)\Backoffice" />
+    <!-- wwwroot was evaluated before these files existed, so add them for this build -->
+    <ItemGroup>
+      <Content Include="wwwroot\App_Plugins\Stoolball.Umbraco.Backoffice\**" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

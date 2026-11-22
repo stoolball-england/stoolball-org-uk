@@ -1,3 +1,5 @@
+using Umbraco.Cms.Core.Services.OperationStatus;
+using Umbraco.Cms.Core;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -34,6 +36,8 @@ namespace Stoolball.Web.UnitTests.MatchLocations
 
         public CreateMatchLocationSurfaceControllerTests()
         {
+            _memberGroupService.Setup(x => x.CreateAsync(It.IsAny<IMemberGroup>()))
+                .ReturnsAsync((IMemberGroup group) => Attempt.SucceedWithStatus<IMemberGroup?, MemberGroupOperationStatus>(MemberGroupOperationStatus.Success, group));
             Request.SetupGet(x => x.Form).Returns(new FormCollection(new Dictionary<string, StringValues>
             {
                 { "MatchLocation.MatchLocationNotes", "<p>Some notes</p>" }
@@ -50,7 +54,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
             return new CreateMatchLocationSurfaceController(
                 UmbracoContextAccessor.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
-                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>(), localizationService: Mock.Of<ILocalizationService>()),
+                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>()),
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 Mock.Of<IPublishedUrlProvider>(),
@@ -95,7 +99,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
             var view = Assert.IsType<ViewResult>(result);
             Assert.Equal("CreateMatchLocation", view.ViewName);
             _matchLocationRepository.Verify(x => x.CreateMatchLocation(It.IsAny<MatchLocation>(), It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
-            _memberGroupService.Verify(x => x.Save(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.CreateAsync(It.IsAny<IMemberGroup>()), Times.Never);
         }
 
         [Fact]
@@ -128,7 +132,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
 
             await controller.CreateMatchLocation(location);
 
-            _memberGroupService.Verify(x => x.Save(It.Is<IMemberGroup>(g => g.Name == "location/example-ground")), Times.Once);
+            _memberGroupService.Verify(x => x.CreateAsync(It.Is<IMemberGroup>(g => g.Name == "location/example-ground")), Times.Once);
             Assert.Equal("location/example-ground", location.MemberGroupName);
             Assert.NotNull(location.MemberGroupKey);
         }
@@ -145,7 +149,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
 
             await controller.CreateMatchLocation(location);
 
-            _memberGroupService.Verify(x => x.Save(It.Is<IMemberGroup>(g => g.Name == "location/example-ground-1")), Times.Once);
+            _memberGroupService.Verify(x => x.CreateAsync(It.Is<IMemberGroup>(g => g.Name == "location/example-ground-1")), Times.Once);
             Assert.Equal("location/example-ground-1", location.MemberGroupName);
         }
 

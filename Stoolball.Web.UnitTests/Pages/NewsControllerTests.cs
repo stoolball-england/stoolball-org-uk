@@ -10,12 +10,16 @@ using Stoolball.Web.Models;
 using Stoolball.Web.Pages;
 using Stoolball.Web.Security;
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Services.Navigation;
 using Xunit;
 
 namespace Stoolball.Web.UnitTests.Pages
 {
     public class NewsControllerTests : UmbracoBaseTest
     {
+        private readonly Mock<IDocumentNavigationQueryService> _navigationQueryService = new();
+        private readonly Mock<IPublishedContentStatusFilteringService> _publishedStatusFilteringService = new();
+
         private NewsController CreateController()
         {
             SetupPropertyValue(CurrentPage, "description", string.Empty);
@@ -23,8 +27,9 @@ namespace Stoolball.Web.UnitTests.Pages
                 Mock.Of<ILogger<NewsController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
-                Mock.Of<IVariationContextAccessor>(),
-                ServiceContext)
+                PublishedValueFallback.Object,
+                _navigationQueryService.Object,
+                _publishedStatusFilteringService.Object)
             {
                 ControllerContext = ControllerContext
             };
@@ -41,13 +46,15 @@ namespace Stoolball.Web.UnitTests.Pages
             property.Setup(x => x.GetValue(null, null)).Returns(displayDate);
             property.Setup(x => x.HasValue(null, null)).Returns(true);
             story.Setup(x => x.GetProperty("displayDate")).Returns(property.Object);
-            return new NewsStory(story.Object, new PublishedValueFallback(ServiceContext, Mock.Of<IVariationContextAccessor>()));
+            return new NewsStory(story.Object, PublishedValueFallback.Object);
         }
 
         private void SetupStories(params IPublishedContent[] stories)
         {
-            CurrentPage.Setup(x => x.ChildrenForAllCultures).Returns(stories.ToList());
-            CurrentPage.Setup(x => x.Children).Returns(stories.ToList());
+            // Children are found by getting the keys of the child nodes, then the published content for those keys
+            IEnumerable<Guid> childKeys = stories.Select(_ => Guid.NewGuid()).ToList();
+            _navigationQueryService.Setup(x => x.TryGetChildrenKeys(It.IsAny<Guid>(), out childKeys)).Returns(true);
+            _publishedStatusFilteringService.Setup(x => x.FilterAvailable(childKeys, It.IsAny<string?>())).Returns(stories);
         }
 
         private void SetupPageQuery(string page)

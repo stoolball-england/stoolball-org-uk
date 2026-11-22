@@ -13,26 +13,23 @@ namespace Stoolball.Web.Account
 {
     public class PersonalDetailsController : RenderController
     {
-        private readonly IVariationContextAccessor _variationContextAccessor;
-        private readonly ServiceContext _serviceContext;
+        private readonly IPublishedValueFallback _publishedValueFallback;
 
         public PersonalDetailsController(
             ILogger<PersonalDetailsController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
-            IVariationContextAccessor variationContextAccessor,
-            ServiceContext context) :
+            IPublishedValueFallback publishedValueFallback) :
             base(logger, compositeViewEngine, umbracoContextAccessor)
         {
-            _variationContextAccessor = variationContextAccessor ?? throw new System.ArgumentNullException(nameof(variationContextAccessor));
-            _serviceContext = context ?? throw new System.ArgumentNullException(nameof(context));
+            _publishedValueFallback = publishedValueFallback ?? throw new System.ArgumentNullException(nameof(publishedValueFallback));
         }
 
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
         public override IActionResult Index()
         {
-            var model = new PersonalDetails(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor));
+            var model = new PersonalDetails(CurrentPage, _publishedValueFallback);
             model.Metadata = new ViewMetadata
             {
                 PageTitle = model.Name,

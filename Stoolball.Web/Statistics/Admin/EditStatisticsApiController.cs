@@ -2,12 +2,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Umbraco.Cms.Core.Security;
-using Umbraco.Cms.Web.Common.Controllers;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.Statistics.Admin
 {
-    public class EditStatisticsApiController : UmbracoApiController
+    public class EditStatisticsApiController : ControllerBase
     {
         private readonly IMemberManager _memberManager;
         private readonly IBackgroundTaskTracker _taskTracker;

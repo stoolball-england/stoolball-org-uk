@@ -27,7 +27,7 @@ namespace Stoolball.Web.Account
 {
     public class EmailAddressSurfaceController : SurfaceController
     {
-        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly IPublishedValueFallback _publishedValueFallback;
         private readonly ILogger<EmailAddressSurfaceController> _logger;
         private readonly IMemberManager _memberManager;
         private readonly IEmailFormatter _emailFormatter;
@@ -35,7 +35,7 @@ namespace Stoolball.Web.Account
         private readonly IVerificationToken _verificationToken;
 
         public EmailAddressSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
-            IVariationContextAccessor variationContextAccessor,
+            IPublishedValueFallback publishedValueFallback,
             IUmbracoDatabaseFactory databaseFactory,
             ServiceContext services,
             AppCaches appCaches,
@@ -48,7 +48,7 @@ namespace Stoolball.Web.Account
             IVerificationToken verificationToken)
         : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _variationContextAccessor = variationContextAccessor ?? throw new ArgumentNullException(nameof(variationContextAccessor));
+            _publishedValueFallback = publishedValueFallback ?? throw new ArgumentNullException(nameof(publishedValueFallback));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _memberManager = memberManager ?? throw new System.ArgumentNullException(nameof(memberManager));
             _emailFormatter = emailFormatter ?? throw new System.ArgumentNullException(nameof(emailFormatter));
@@ -90,17 +90,16 @@ namespace Stoolball.Web.Account
                 if (alreadyTaken != null && alreadyTaken.Key != member.Key)
                 {
                     // Send the address already in use email
-                    var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
                     var (subject, body) = _emailFormatter.FormatEmailContent(
-                        CurrentPage.Value<string>(publishedValueFallback, "emailTakenSubject"),
-                        CurrentPage.Value<string>(publishedValueFallback, "emailTakenBody"),
+                        CurrentPage.Value<string>(_publishedValueFallback, "emailTakenSubject"),
+                        CurrentPage.Value<string>(_publishedValueFallback, "emailTakenBody"),
                         new Dictionary<string, string>
                         {
                         {"name", alreadyTaken.Name},
                         {"email", postedData.Requested!},
                         {"domain", GetRequestUrlAuthority()}
                         });
-                    await _emailSender.SendAsync(new EmailMessage(null, postedData.Requested?.Trim(), subject, body, true), null);
+                    await _emailSender.SendAsync(new EmailMessage(null, postedData.Requested?.Trim(), subject, body, true), null, false, null);
 
                     _logger.Info(LoggingTemplates.MemberRequestedEmailAddressAlreadyInUse, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
                 }
@@ -108,10 +107,9 @@ namespace Stoolball.Web.Account
                 {
 
                     // Send the token by email
-                    var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
                     var (subject, body) = _emailFormatter.FormatEmailContent(
-                        CurrentPage.Value<string>(publishedValueFallback, "confirmEmailSubject"),
-                        CurrentPage.Value<string>(publishedValueFallback, "confirmEmailBody"),
+                        CurrentPage.Value<string>(_publishedValueFallback, "confirmEmailSubject"),
+                        CurrentPage.Value<string>(_publishedValueFallback, "confirmEmailBody"),
                         new Dictionary<string, string>
                         {
                         {"name", member.Name},
@@ -119,7 +117,7 @@ namespace Stoolball.Web.Account
                         {"domain", GetRequestUrlAuthority()},
                         {"token", token }
                         });
-                    await _emailSender.SendAsync(new EmailMessage(null, postedData.Requested?.Trim(), subject, body, true), null);
+                    await _emailSender.SendAsync(new EmailMessage(null, postedData.Requested?.Trim(), subject, body, true), null, false, null);
 
                     _logger.Info(LoggingTemplates.MemberRequestedEmailAddress, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
                 }
@@ -128,7 +126,7 @@ namespace Stoolball.Web.Account
             }
             else
             {
-                var model = new EmailAddress(CurrentPage, new PublishedValueFallback(Services, _variationContextAccessor)) { FormData = postedData! };
+                var model = new EmailAddress(CurrentPage, _publishedValueFallback) { FormData = postedData! };
                 model.Metadata = new ViewMetadata
                 {
                     PageTitle = model.Name,

@@ -13,21 +13,19 @@ namespace Stoolball.Web.Pages
 {
     public class ProductListController : RenderController
     {
-        private readonly IVariationContextAccessor _variationContextAccessor;
-        private readonly ServiceContext _serviceContext;
+        private readonly IPublishedValueFallback _publishedValueFallback;
 
-        public ProductListController(ILogger<ProductListController> logger, ICompositeViewEngine compositeViewEngine, IUmbracoContextAccessor umbracoContextAccessor, IVariationContextAccessor variationContextAccessor, ServiceContext context)
+        public ProductListController(ILogger<ProductListController> logger, ICompositeViewEngine compositeViewEngine, IUmbracoContextAccessor umbracoContextAccessor, IPublishedValueFallback publishedValueFallback)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
-            _variationContextAccessor = variationContextAccessor ?? throw new System.ArgumentNullException(nameof(variationContextAccessor));
-            _serviceContext = context ?? throw new System.ArgumentNullException(nameof(context));
+            _publishedValueFallback = publishedValueFallback ?? throw new System.ArgumentNullException(nameof(publishedValueFallback));
         }
 
         [HttpGet]
         [ContentSecurityPolicy(TinyMCE = true)]
         public override IActionResult Index()
         {
-            var model = new ProductList(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor));
+            var model = new ProductList(CurrentPage, _publishedValueFallback);
             model.Metadata = new ViewMetadata
             {
                 PageTitle = model.Name,

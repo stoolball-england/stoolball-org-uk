@@ -26,20 +26,24 @@ namespace Stoolball.Web.Security
             _memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
         }
 
-        public SecurityGroup CreateOrFindGroup(string groupNamePrefix, string suggestedGroupName, IEnumerable<string> noiseWords)
+        public async Task<SecurityGroup> CreateOrFindGroup(string groupNamePrefix, string suggestedGroupName, IEnumerable<string> noiseWords)
         {
             var groupName = _routeGenerator.GenerateRoute(groupNamePrefix, suggestedGroupName, noiseWords);
-            IMemberGroup group;
+            IMemberGroup? group;
             do
             {
-                group = _memberGroupService.GetByName(groupName);
+                group = await _memberGroupService.GetByNameAsync(groupName);
                 if (group == null)
                 {
                     group = new MemberGroup
                     {
                         Name = groupName
                     };
-                    _memberGroupService.Save(group);
+                    var result = await _memberGroupService.CreateAsync(group);
+                    if (!result.Success)
+                    {
+                        throw new InvalidOperationException($"Member group {groupName} was not created: {result.Status}");
+                    }
                     break;
                 }
                 else

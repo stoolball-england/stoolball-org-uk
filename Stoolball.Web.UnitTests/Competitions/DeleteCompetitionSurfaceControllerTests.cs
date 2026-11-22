@@ -1,3 +1,5 @@
+using Umbraco.Cms.Core.Services.OperationStatus;
+using Umbraco.Cms.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +53,6 @@ namespace Stoolball.Web.UnitTests.Competitions
             _competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(_competition);
             _authorizationPolicy.Setup(x => x.IsAuthorized(_competition)).ReturnsAsync(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.DeleteCompetition, true } });
             _memberManager.Setup(x => x.GetCurrentMemberAsync()).ReturnsAsync(_currentMember);
-            _memberGroupService.Setup(x => x.GetById(_competition.MemberGroupKey!.Value)).Returns(_memberGroup.Object);
             _matchDataSource.Setup(x => x.ReadTotalMatches(It.IsAny<MatchFilter>())).ReturnsAsync(3);
             _teamDataSource.Setup(x => x.ReadTotalTeams(It.IsAny<TeamFilter>())).ReturnsAsync(2);
         }
@@ -61,7 +62,7 @@ namespace Stoolball.Web.UnitTests.Competitions
             return new DeleteCompetitionSurfaceController(
                 UmbracoContextAccessor.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
-                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>(), localizationService: Mock.Of<ILocalizationService>()),
+                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>()),
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 Mock.Of<IPublishedUrlProvider>(),
@@ -107,7 +108,7 @@ namespace Stoolball.Web.UnitTests.Competitions
             _matchDataSource.Verify(x => x.ReadTotalMatches(It.Is<MatchFilter>(f => f.CompetitionIds.SequenceEqual(new[] { _competition.CompetitionId!.Value }) && f.IncludeTournamentMatches)), Times.Once);
             _teamDataSource.Verify(x => x.ReadTotalTeams(It.Is<TeamFilter>(f => f.CompetitionIds.SequenceEqual(new[] { _competition.CompetitionId!.Value }))), Times.Once);
             _competitionRepository.Verify(x => x.DeleteCompetition(It.IsAny<Competition>(), It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
-            _memberGroupService.Verify(x => x.Delete(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.DeleteAsync(It.IsAny<Guid>()), Times.Never);
             _competitionCacheClearer.Verify(x => x.InvalidateCache(), Times.Never);
             _matchListingCacheClearer.Verify(x => x.InvalidateCacheForSeason(It.IsAny<Guid>()), Times.Never);
         }
@@ -135,7 +136,7 @@ namespace Stoolball.Web.UnitTests.Competitions
 
             await controller.DeleteCompetition(new MatchingTextConfirmation());
 
-            _memberGroupService.Verify(x => x.Delete(_memberGroup.Object), Times.Once);
+            _memberGroupService.Verify(x => x.DeleteAsync(_competition.MemberGroupKey!.Value), Times.Once);
             _competitionRepository.Verify(x => x.DeleteCompetition(_competition, _currentMember.Key, _currentMember.Name!), Times.Once);
             _competitionCacheClearer.Verify(x => x.InvalidateCache(), Times.Once);
         }
@@ -156,13 +157,13 @@ namespace Stoolball.Web.UnitTests.Competitions
         [Fact]
         public async Task Valid_request_with_missing_member_group_still_deletes_competition()
         {
-            _memberGroupService.Setup(x => x.GetById(_competition.MemberGroupKey!.Value)).Returns((IMemberGroup?)null);
+            _memberGroupService.Setup(x => x.DeleteAsync(_competition.MemberGroupKey!.Value)).ReturnsAsync(Attempt.FailWithStatus<IMemberGroup?, MemberGroupOperationStatus>(MemberGroupOperationStatus.NotFound, null));
 
             using var controller = CreateController();
 
             await controller.DeleteCompetition(new MatchingTextConfirmation());
 
-            _memberGroupService.Verify(x => x.Delete(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.DeleteAsync(_competition.MemberGroupKey!.Value), Times.Once);
             _competitionRepository.Verify(x => x.DeleteCompetition(_competition, _currentMember.Key, _currentMember.Name!), Times.Once);
         }
 

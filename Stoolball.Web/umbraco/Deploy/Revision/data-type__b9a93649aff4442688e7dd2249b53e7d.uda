@@ -6,7 +6,6 @@
     "blocks": [
       {
         "contentElementTypeKey": "41914047-aec3-497f-a8bd-fd6b8fabb894",
-        "view": "~/App_Plugins/Stoolball.BlockEditors/FormattedText.html",
         "stylesheet": "~/css/base.min.css",
         "editorSize": "medium",
         "forceHideContentEditorInOverlay": false

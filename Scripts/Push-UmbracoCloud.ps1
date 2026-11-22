@@ -9,7 +9,7 @@ if (!$GitRemote) { $GitRemote = "origin" }
 $projectRoot = Resolve-Path "$PSScriptRoot\.."
 $cloudRoot = Resolve-Path "$projectRoot\.UmbracoCloud"
 
-$foldersToCopy = "Stoolball", "Stoolball.Data.SqlServer", "Stoolball.Data.Abstractions", "Stoolball.Data.MemoryCache", "Stoolball.Data.UmbracoMigrations", "Stoolball.Web"
+$foldersToCopy = "Stoolball", "Stoolball.Data.SqlServer", "Stoolball.Data.Abstractions", "Stoolball.Data.MemoryCache", "Stoolball.Data.UmbracoMigrations", "Stoolball.Umbraco.Backoffice", "Stoolball.Web"
 
 $productionUrl = "https://www.stoolball.org.uk"
 
@@ -50,6 +50,21 @@ Pop-Location
 # Umbraco Cloud upgrades packages in its own repository. Copying older .csproj files over those upgrades stops Umbraco booting.
 & "$PSScriptRoot\Assert-NoPackageDowngrade.ps1" -ProjectRoot $projectRoot -CloudRoot $cloudRoot -Folders $foldersToCopy
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+# Build the Umbraco backoffice extensions. The output is not committed to this repository, but it is copied to the
+# Umbraco Cloud repository below, because Umbraco Cloud cannot run npm.
+Push-Location (Join-Path $projectRoot -ChildPath "Stoolball.Umbraco.Backoffice\Backoffice")
+npm ci
+$npmExitCode = $LASTEXITCODE
+if ($npmExitCode -eq 0) {
+    npm run build
+    $npmExitCode = $LASTEXITCODE
+}
+Pop-Location
+if ($npmExitCode -ne 0) {
+    Write-Error "The Umbraco backoffice extensions did not build, so the site has not been deployed."
+    exit $npmExitCode
+}
 
 # Build the code - it gets built anyway during deploy but this validates it builds before pushing, and will execute any MSBuild steps
 foreach ($folder in $foldersToCopy) {
@@ -123,6 +138,34 @@ if (!$SkipPlaywright) {
 # Copy changes to the .UmbracoCloud deployment repository
 Copy-Item $projectRoot\.umbraco $cloudRoot
 
+# Delete files from the Umbraco Cloud repository that are obsolete since the upgrade from Umbraco 13 to Umbraco 17.
+# The copy below only adds and updates files, so it would leave these behind. Old views would override the ones that
+# Umbraco 17 packages compile in, and old App_Plugins files would conflict with the static web assets of the packages.
+# This section can be removed after a successful deployment of the Umbraco 17 upgrade.
+$obsoletePaths =
+    # AngularJS backoffice extensions, replaced by Stoolball.Umbraco.Backoffice
+    "src\Stoolball.Web\App_Plugins\Stoolball.BlockEditors",
+    "src\Stoolball.Web\App_Plugins\Stoolball.PropertyEditors",
+    "src\Stoolball.Web\App_Plugins\Stoolball.UmbracoForms\EmailField.html",
+    # Files copied into the project by Umbraco 13 packages, which Umbraco 17 packages serve or compile in themselves
+    "src\Stoolball.Web\App_Plugins\Skybrud.Umbraco.Redirects",
+    "src\Stoolball.Web\App_Plugins\uSync.Forms",
+    "src\Stoolball.Web\umbraco\UmbracoWebsite",
+    "src\Stoolball.Web\Views\Partials\Forms\Themes\default",
+    "src\Stoolball.Web\Views\Partials\Forms\Themes\bootstrap3-horizontal",
+    "src\Stoolball.Web\Views\Partials\Forms\Export",
+    "src\Stoolball.Web\Views\Partials\Forms\Emails\Example-Template.cshtml",
+    # Macros were removed in Umbraco 14
+    "src\Stoolball.Web\Views\MacroPartials",
+    "src\Stoolball.Web\umbraco\Deploy\Revision\macro__480075d73f9d4190935611978ddbb8cf.uda"
+foreach ($obsoletePath in $obsoletePaths) {
+    $fullPath = Join-Path $cloudRoot -ChildPath $obsoletePath
+    if (Test-Path $fullPath) {
+        Write-Host "Deleting obsolete $obsoletePath"
+        Remove-Item $fullPath -Recurse -Force
+    }
+}
+
 # The same version is used for every folder so that it can be found on production to show when the deployment has finished
 $version = (Get-Random).ToString()
 foreach ($folder in $foldersToCopy) {
@@ -131,10 +174,10 @@ foreach ($folder in $foldersToCopy) {
     Get-ChildItem -Recurse $cloudRoot\src\$folder\*.cs | Remove-Item
 
     robocopy $folderPath $cloudRoot\src\$folder `
-        /IF *.cs *.csproj *.cshtml *.uda *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 *.lic *.sql appsettings.json appsettings.Production.json compilerconfig.json web.release.config robots.txt `
+        /IF *.cs *.csproj *.cshtml *.uda *.css *.html *.js package.manifest umbraco-package.json en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 *.lic *.sql appsettings.json appsettings.Production.json compilerconfig.json web.release.config robots.txt `
         /XF member-group__*.uda *.test.js umbraco-cloud.json `
         /S `
-        /XD $folderPath\obj $folderPath\bin $folderPath\node_modules $folderPath\sass $folderPath\App_Data $folderPath\wwwroot\media `
+        /XD $folderPath\obj $folderPath\bin $folderPath\node_modules $folderPath\Backoffice $folderPath\sass $folderPath\App_Data $folderPath\wwwroot\media `
         $folderPath\App_Plugins\Deploy $folderPath\App_Plugins\UmbracoId $folderPath\App_Plugins\uSync `
         $folderPath\umbraco\config $folderPath\umbraco\Data $folderPath\umbraco\config\Logs $folderPath\Smidge
 

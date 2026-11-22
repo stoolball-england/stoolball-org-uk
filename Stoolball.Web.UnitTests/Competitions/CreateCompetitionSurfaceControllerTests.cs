@@ -1,3 +1,5 @@
+using Umbraco.Cms.Core.Services.OperationStatus;
+using Umbraco.Cms.Core;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,6 +37,8 @@ namespace Stoolball.Web.UnitTests.Competitions
 
         public CreateCompetitionSurfaceControllerTests()
         {
+            _memberGroupService.Setup(x => x.CreateAsync(It.IsAny<IMemberGroup>()))
+                .ReturnsAsync((IMemberGroup group) => Attempt.SucceedWithStatus<IMemberGroup?, MemberGroupOperationStatus>(MemberGroupOperationStatus.Success, group));
             Request.SetupGet(x => x.Form).Returns(new FormCollection(new Dictionary<string, StringValues>
             {
                 { "Competition.Introduction", "<p>Introduction</p>" },
@@ -53,7 +57,7 @@ namespace Stoolball.Web.UnitTests.Competitions
             return new CreateCompetitionSurfaceController(
                 UmbracoContextAccessor.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
-                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>(), localizationService: Mock.Of<ILocalizationService>()),
+                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>()),
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 Mock.Of<IPublishedUrlProvider>(),
@@ -101,7 +105,7 @@ namespace Stoolball.Web.UnitTests.Competitions
             var view = Assert.IsType<ViewResult>(result);
             Assert.Equal("CreateCompetition", view.ViewName);
             _competitionRepository.Verify(x => x.CreateCompetition(It.IsAny<Competition>(), It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
-            _memberGroupService.Verify(x => x.Save(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.CreateAsync(It.IsAny<IMemberGroup>()), Times.Never);
             _cacheClearer.Verify(x => x.InvalidateCache(), Times.Never);
         }
 
@@ -136,7 +140,7 @@ namespace Stoolball.Web.UnitTests.Competitions
 
             await controller.CreateCompetition(competition);
 
-            _memberGroupService.Verify(x => x.Save(It.Is<IMemberGroup>(g => g.Name == "competition/example-league")), Times.Once);
+            _memberGroupService.Verify(x => x.CreateAsync(It.Is<IMemberGroup>(g => g.Name == "competition/example-league")), Times.Once);
             Assert.Equal("competition/example-league", competition.MemberGroupName);
             Assert.NotNull(competition.MemberGroupKey);
         }
@@ -153,7 +157,7 @@ namespace Stoolball.Web.UnitTests.Competitions
 
             await controller.CreateCompetition(competition);
 
-            _memberGroupService.Verify(x => x.Save(It.Is<IMemberGroup>(g => g.Name == "competition/example-league-1")), Times.Once);
+            _memberGroupService.Verify(x => x.CreateAsync(It.Is<IMemberGroup>(g => g.Name == "competition/example-league-1")), Times.Once);
             Assert.Equal("competition/example-league-1", competition.MemberGroupName);
         }
 

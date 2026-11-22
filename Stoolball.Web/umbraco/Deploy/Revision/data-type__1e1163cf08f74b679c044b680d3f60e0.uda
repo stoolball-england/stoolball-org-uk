@@ -1,12 +1,17 @@
 {
   "Name": "Product Picker",
   "Alias": "",
-  "EditorAlias": "Umbraco.MediaPicker",
+  "EditorAlias": "Umbraco.MediaPicker3",
   "Configuration": {
-    "multiPicker": false,
-    "onlyImages": true,
-    "disableFolderSelect": true,
+    "filter": "Image",
+    "multiple": false,
+    "validationLimit": {
+      "min": 0,
+      "max": 1
+    },
     "startNodeId": "umb://media/f0cf6bcedfc74926abc93c33119036fc",
+    "enableLocalFocalPoint": false,
+    "crops": [],
     "ignoreUserStartNodes": false
   },
   "Udi": "umb://data-type/1e1163cf08f74b679c044b680d3f60e0",

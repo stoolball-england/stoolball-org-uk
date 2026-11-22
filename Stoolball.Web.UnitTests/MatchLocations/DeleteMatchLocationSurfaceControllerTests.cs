@@ -1,3 +1,5 @@
+using Umbraco.Cms.Core.Services.OperationStatus;
+using Umbraco.Cms.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +48,6 @@ namespace Stoolball.Web.UnitTests.MatchLocations
             _matchLocationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), true)).ReturnsAsync(_location);
             _authorizationPolicy.Setup(x => x.IsAuthorized(_location)).ReturnsAsync(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.DeleteMatchLocation, true } });
             _memberManager.Setup(x => x.GetCurrentMemberAsync()).ReturnsAsync(_currentMember);
-            _memberGroupService.Setup(x => x.GetById(_location.MemberGroupKey!.Value)).Returns(_memberGroup.Object);
             _matchDataSource.Setup(x => x.ReadTotalMatches(It.IsAny<MatchFilter>())).ReturnsAsync(3);
         }
 
@@ -55,7 +56,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
             return new DeleteMatchLocationSurfaceController(
                 UmbracoContextAccessor.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
-                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>(), localizationService: Mock.Of<ILocalizationService>()),
+                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>()),
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 Mock.Of<IPublishedUrlProvider>(),
@@ -96,7 +97,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
             Assert.Equal(_location.NameAndLocalityOrTownIfDifferent(), model.Breadcrumbs[^1].Name);
             _matchDataSource.Verify(x => x.ReadTotalMatches(It.Is<MatchFilter>(f => f.MatchLocationIds.SequenceEqual(new[] { _location.MatchLocationId!.Value }) && f.IncludeTournamentMatches)), Times.Once);
             _matchLocationRepository.Verify(x => x.DeleteMatchLocation(It.IsAny<MatchLocation>(), It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
-            _memberGroupService.Verify(x => x.Delete(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.DeleteAsync(It.IsAny<Guid>()), Times.Never);
             _matchLocationCacheClearer.Verify(x => x.InvalidateCache(), Times.Never);
             _matchListingCacheClearer.Verify(x => x.InvalidateCacheForMatchLocation(It.IsAny<Guid>()), Times.Never);
         }
@@ -123,7 +124,7 @@ namespace Stoolball.Web.UnitTests.MatchLocations
 
             await controller.DeleteMatchLocation(new MatchingTextConfirmation());
 
-            _memberGroupService.Verify(x => x.Delete(_memberGroup.Object), Times.Once);
+            _memberGroupService.Verify(x => x.DeleteAsync(_location.MemberGroupKey!.Value), Times.Once);
             _matchLocationRepository.Verify(x => x.DeleteMatchLocation(_location, _currentMember.Key, _currentMember.Name!), Times.Once);
             _matchLocationCacheClearer.Verify(x => x.InvalidateCache(), Times.Once);
             _matchListingCacheClearer.Verify(x => x.InvalidateCacheForMatchLocation(_location.MatchLocationId!.Value), Times.Once);
@@ -132,13 +133,13 @@ namespace Stoolball.Web.UnitTests.MatchLocations
         [Fact]
         public async Task Valid_request_with_missing_member_group_still_deletes_location()
         {
-            _memberGroupService.Setup(x => x.GetById(_location.MemberGroupKey!.Value)).Returns((IMemberGroup?)null);
+            _memberGroupService.Setup(x => x.DeleteAsync(_location.MemberGroupKey!.Value)).ReturnsAsync(Attempt.FailWithStatus<IMemberGroup?, MemberGroupOperationStatus>(MemberGroupOperationStatus.NotFound, null));
 
             using var controller = CreateController();
 
             await controller.DeleteMatchLocation(new MatchingTextConfirmation());
 
-            _memberGroupService.Verify(x => x.Delete(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.DeleteAsync(_location.MemberGroupKey!.Value), Times.Once);
             _matchLocationRepository.Verify(x => x.DeleteMatchLocation(_location, _currentMember.Key, _currentMember.Name!), Times.Once);
         }
 

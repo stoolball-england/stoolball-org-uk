@@ -133,7 +133,7 @@ namespace Stoolball.Data.SqlServer
             ).ConfigureAwait(false);
 
             // Create an owner group
-            var group = _memberGroupHelper.CreateOrFindGroup("team", auditableTeam.TeamName, NoiseWords.TeamRoute);
+            var group = await _memberGroupHelper.CreateOrFindGroup("team", auditableTeam.TeamName, NoiseWords.TeamRoute).ConfigureAwait(false);
             auditableTeam.MemberGroupKey = group.Key;
             auditableTeam.MemberGroupName = group.Name;
 

@@ -6,11 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Stoolball.Data.Abstractions;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
-using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.WebApi
 {
-    public class MatchLocationsApiController : UmbracoApiController
+    public class MatchLocationsApiController : ControllerBase
     {
         private readonly IMatchLocationDataSource _locationDataSource;
 

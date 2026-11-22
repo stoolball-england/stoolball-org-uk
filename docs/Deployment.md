@@ -1,11 +1,9 @@
 # Deployment
 
+The site is deployed to Umbraco Cloud using `Scripts/Push-UmbracoCloud.ps1`. The script builds and tests the code, then copies the source of each project into the `.UmbracoCloud` repository and pushes it. Umbraco Cloud builds the site from that source.
+
 ## Compiling views
 
-To detect compilation errors in Razor files early, and to avoid the delay on a production deployment that comes with view compilation, the [RazorGenerator.Mvc](https://github.com/RazorGenerator/RazorGenerator) NuGet package is used to pre-compile the views into .cs files which are included in Stoolball.Web.dll. This requires the [Razor Generator extension](https://marketplace.visualstudio.com/items?itemName=DavidEbbo.RazorGenerator) for Visual Studio to be installed.
+Razor views are compiled when the project is built, because `RazorCompileOnBuild` and `RazorCompileOnPublish` are set in `Stoolball.Web.csproj`. This finds errors in views early and avoids compiling them on production. ModelsBuilder runs in `SourceCodeAuto` mode, so the models are part of the compiled code.
 
-If a new view is added then the 'Custom Tool' option on its properties should be set to `RazorGenerator`. When the .cshtml file is saved a `{viewname}.generated.cs` file should appear nested below it in the Visual Studio Solution Explorer window.
-
-Normally pre-compiling views means that the .cshtml files would not need to be deployed to the production site. However, Umbraco Deploy checks for their existence and will not work unless they're there, so they must still be deployed even though they're not used at runtime.
-
-Razor Generator is used in favour of the `<MvcBuildViews>true</MvcBuildViews>` option which can be added to a .csproj file, because that only checks the views for errors at build time. It doesn't create pre-compiled code that can be deployed. It's used in favour of `aspnet_compiler.exe` because that works in a publish profile triggered from within Visual Studio, but it's very difficult to automate as part of a deployment script.
+Umbraco Deploy checks that the `.cshtml` files exist, so they are still deployed even though the compiled views are used at runtime.

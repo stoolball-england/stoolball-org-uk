@@ -1,7 +1,0 @@
-﻿{
-  "javascript": [
-    "~/App_Plugins/Stoolball.BlockEditors/IFrameElementType.controller.js",
-    "~/App_Plugins/Stoolball.BlockEditors/ImageElementType.controller.js",
-    "~/App_Plugins/Stoolball.BlockEditors/TipElementType.controller.js"
-  ]  
-}

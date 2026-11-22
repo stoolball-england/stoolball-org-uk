@@ -588,7 +588,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             _connection.Execute("SET IDENTITY_INSERT umbracoNode ON");
             _connection.Execute($"INSERT INTO umbracoNode (id, uniqueid, parentid, level, path, sortOrder, text, nodeObjectType) VALUES ({memberNodeId}, NEWID(), {memberNodeId}, 1, '-1,{memberNodeId}', 0, 'Member', '9B5416FB-E72F-45A9-A07B-5A9A2709CE43')");
             _connection.Execute("SET IDENTITY_INSERT umbracoNode OFF");
-            _connection.Execute($"INSERT INTO cmsContentType(nodeId, alias, icon, thumbnail, isContainer, isElement, allowAtRoot, variations) VALUES ({memberNodeId}, 'Member', 'icon-user', 'icon-user', 0, 0, 0, 0)");
+            _connection.Execute($"INSERT INTO cmsContentType(nodeId, alias, icon, thumbnail, isElement, allowAtRoot, variations) VALUES ({memberNodeId}, 'Member', 'icon-user', 'icon-user', 0, 0, 0)");
         }
 
         public void CreatePlayerIdentity(PlayerIdentity playerIdentity)

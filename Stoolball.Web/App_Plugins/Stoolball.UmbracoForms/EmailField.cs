@@ -31,9 +31,8 @@ namespace Stoolball.Web.App_Plugins.Stoolball.UmbracoForms
             SupportsPreValues = false;
             SupportsRegex = false;
             SortOrder = 25;
+            PreviewView = "Forms.FieldPreview.TextBox";
         }
-
-        public override string GetDesignView() => "~/App_Plugins/Stoolball.UmbracoForms/EmailField.html";
 
         /// <inheritdoc />
         public override IEnumerable<string> ValidateField(Form form, Field field, IEnumerable<object> postedValues, HttpContext context, IPlaceholderParsingService placeholderParsingService, IFieldTypeStorage fieldTypeStorage)

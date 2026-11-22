@@ -1,3 +1,5 @@
+using Umbraco.Cms.Core.Services.OperationStatus;
+using Umbraco.Cms.Core;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -33,6 +35,8 @@ namespace Stoolball.Web.UnitTests.Clubs
 
         public CreateClubSurfaceControllerTests()
         {
+            _memberGroupService.Setup(x => x.CreateAsync(It.IsAny<IMemberGroup>()))
+                .ReturnsAsync((IMemberGroup group) => Attempt.SucceedWithStatus<IMemberGroup?, MemberGroupOperationStatus>(MemberGroupOperationStatus.Success, group));
             _routeGenerator.Setup(x => x.GenerateRoute("club", It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).Returns("club/example-club");
             _authorizationPolicy.Setup(x => x.IsAuthorized(It.IsAny<Club>())).ReturnsAsync(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.CreateClub, true } });
             _memberManager.Setup(x => x.GetCurrentMemberAsync()).ReturnsAsync(_currentMember);
@@ -45,7 +49,7 @@ namespace Stoolball.Web.UnitTests.Clubs
             return new CreateClubSurfaceController(
                 UmbracoContextAccessor.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
-                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>(), localizationService: Mock.Of<ILocalizationService>()),
+                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>()),
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 Mock.Of<IPublishedUrlProvider>(),
@@ -122,7 +126,7 @@ namespace Stoolball.Web.UnitTests.Clubs
 
             await controller.CreateClub(club);
 
-            _memberGroupService.Verify(x => x.Save(It.Is<IMemberGroup>(g => g.Name == "club/example-club")), Times.Once);
+            _memberGroupService.Verify(x => x.CreateAsync(It.Is<IMemberGroup>(g => g.Name == "club/example-club")), Times.Once);
             Assert.Equal("club/example-club", club.MemberGroupName);
             Assert.NotNull(club.MemberGroupKey);
         }
@@ -139,7 +143,7 @@ namespace Stoolball.Web.UnitTests.Clubs
 
             await controller.CreateClub(club);
 
-            _memberGroupService.Verify(x => x.Save(It.Is<IMemberGroup>(g => g.Name == "club/example-club-1")), Times.Once);
+            _memberGroupService.Verify(x => x.CreateAsync(It.Is<IMemberGroup>(g => g.Name == "club/example-club-1")), Times.Once);
             Assert.Equal("club/example-club-1", club.MemberGroupName);
         }
 

@@ -14,6 +14,7 @@ using Umbraco.Cms.Core.Models.Email;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Services.Navigation;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Infrastructure.Persistence;
 using Umbraco.Cms.Web.Common.Filters;
@@ -29,22 +30,26 @@ namespace Stoolball.Web.Account
     {
         private readonly ILogger<LoginMemberSurfaceController> _logger;
         private readonly IEmailFormatter _emailFormatter;
-        private readonly Umbraco.Cms.Core.Mail.IEmailSender _emailSender;
+        private readonly global::Umbraco.Cms.Core.Mail.IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
         private readonly IStoolballRouterController _stoolballRouterController;
+        private readonly IDocumentUrlService _documentUrlService;
 
         public LoginMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services,
             AppCaches appCaches, ILogger<LoginMemberSurfaceController> logger, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider,
             IMemberSignInManager memberSignInManager, IMemberManager memberManager, ITwoFactorLoginService twoFactorLoginService,
-            IEmailFormatter emailFormatter, Umbraco.Cms.Core.Mail.IEmailSender emailSender,
-            IVerificationToken verificationToken, IStoolballRouterController stoolballRouterController)
-            : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider, memberSignInManager, memberManager, twoFactorLoginService)
+            IEmailFormatter emailFormatter, global::Umbraco.Cms.Core.Mail.IEmailSender emailSender,
+            IVerificationToken verificationToken, IStoolballRouterController stoolballRouterController, IDocumentNavigationQueryService navigationQueryService,
+            IPublishedContentStatusFilteringService publishedContentStatusFilteringService, IDocumentUrlService documentUrlService)
+            : base(umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider, memberSignInManager, memberManager, twoFactorLoginService,
+                  navigationQueryService, publishedContentStatusFilteringService)
         {
             _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
             _emailFormatter = emailFormatter ?? throw new System.ArgumentNullException(nameof(emailFormatter));
             _emailSender = emailSender ?? throw new System.ArgumentNullException(nameof(emailSender));
             _verificationToken = verificationToken ?? throw new System.ArgumentNullException(nameof(verificationToken));
             _stoolballRouterController = stoolballRouterController ?? throw new System.ArgumentNullException(nameof(stoolballRouterController));
+            _documentUrlService = documentUrlService ?? throw new System.ArgumentNullException(nameof(documentUrlService));
         }
 
         [HttpPost]
@@ -122,7 +127,7 @@ namespace Stoolball.Web.Account
         private async Task SendEmailIfNotActivatedOrLockedOut(IMember member)
         {
             string tokenField = string.Empty, tokenExpiryField = string.Empty, emailSubjectField = string.Empty, emailBodyField = string.Empty;
-            var loginPage = UmbracoContext.Content?.GetByRoute(Constants.Pages.SignInUrl);
+            var loginPage = UmbracoContext.Content?.GetByRoute(_documentUrlService, Constants.Pages.SignInUrl);
             if (loginPage == null)
             {
                 // We can't send emails if we don't have the content, so just return.
@@ -164,7 +169,7 @@ namespace Stoolball.Web.Account
                     {"domain", GetRequestUrlAuthority()}
                 });
 
-            await _emailSender.SendAsync(new EmailMessage(null, member.Email, subject, body, true), null);
+            await _emailSender.SendAsync(new EmailMessage(null, member.Email, subject, body, true), null, false, null);
 
             _logger.Info(LoggingTemplates.MemberNotActivatedOrLockedOut, member.Key, typeof(CreateMemberSurfaceController), nameof(CreateMember));
         }

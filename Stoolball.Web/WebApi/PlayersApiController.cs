@@ -7,11 +7,10 @@ using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Data.Abstractions;
 using Stoolball.Statistics;
-using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.WebApi
 {
-    public class PlayersApiController : UmbracoApiController
+    public class PlayersApiController : ControllerBase
     {
         private readonly IPlayerDataSource _playerDataSource;
 

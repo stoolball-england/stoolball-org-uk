@@ -38,7 +38,7 @@ namespace Stoolball.Web.Account
             {
                 var member = await _memberManager.GetCurrentMemberAsync();
 
-                var editableMember = Services.MemberService.GetByKey(member.Key);
+                var editableMember = Services.MemberService.GetById(member.Key);
                 editableMember.Name = model.Name;
 
                 Services.MemberService.Save(editableMember);

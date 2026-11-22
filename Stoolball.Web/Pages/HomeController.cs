@@ -13,14 +13,12 @@ namespace Stoolball.Web.Pages
 {
     public class HomeController : RenderController
     {
-        private readonly IVariationContextAccessor _variationContextAccessor;
-        private readonly ServiceContext _serviceContext;
+        private readonly IPublishedValueFallback _publishedValueFallback;
 
-        public HomeController(ILogger<HomeController> logger, ICompositeViewEngine compositeViewEngine, IUmbracoContextAccessor umbracoContextAccessor, IVariationContextAccessor variationContextAccessor, ServiceContext context)
+        public HomeController(ILogger<HomeController> logger, ICompositeViewEngine compositeViewEngine, IUmbracoContextAccessor umbracoContextAccessor, IPublishedValueFallback publishedValueFallback)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
-            _variationContextAccessor = variationContextAccessor ?? throw new System.ArgumentNullException(nameof(variationContextAccessor));
-            _serviceContext = context ?? throw new System.ArgumentNullException(nameof(context));
+            _publishedValueFallback = publishedValueFallback ?? throw new System.ArgumentNullException(nameof(publishedValueFallback));
         }
 
         [HttpGet]
@@ -28,7 +26,7 @@ namespace Stoolball.Web.Pages
         [ContentSecurityPolicy]
         public override IActionResult Index()
         {
-            var model = new Home(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor))
+            var model = new Home(CurrentPage, _publishedValueFallback)
             {
                 Metadata = new ViewMetadata { PageTitle = CurrentPage!.Name }
             };

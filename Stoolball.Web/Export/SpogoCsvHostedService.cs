@@ -40,7 +40,7 @@ namespace Stoolball.Web.Export
             IWebHostEnvironment webHostEnvironment,
             ITeamDataSource teamDataSource,
             IContactDetailsParser contactDetailsParser)
-            : base(logger, HowOftenWeRepeat, DelayBeforeWeStart)
+            : base(logger, HowOftenWeRepeat, DelayBeforeWeStart, TimeProvider.System)
         {
             _runtimeState = runtimeState ?? throw new ArgumentNullException(nameof(runtimeState));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

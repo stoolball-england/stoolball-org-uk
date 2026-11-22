@@ -19,6 +19,7 @@ using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Services.Navigation;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Infrastructure.Persistence;
 using Umbraco.Cms.Web.Common.Filters;
@@ -59,7 +60,10 @@ namespace Stoolball.Web.UnitTests.Account
                 Mock.Of<IEmailFormatter>(),
                 Mock.Of<IEmailSender>(),
                 Mock.Of<IVerificationToken>(),
-                stoolballRouterController)
+                stoolballRouterController,
+                Mock.Of<IDocumentNavigationQueryService>(),
+                Mock.Of<IPublishedContentStatusFilteringService>(),
+                Mock.Of<IDocumentUrlService>())
             {
                 _contentModel = contentModel;
                 _handleLogin = handleLogin;

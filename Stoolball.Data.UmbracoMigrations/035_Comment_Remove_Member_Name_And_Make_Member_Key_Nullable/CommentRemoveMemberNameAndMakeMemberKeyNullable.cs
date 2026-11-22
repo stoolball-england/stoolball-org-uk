@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Stoolball.Data.SqlServer;
 using Umbraco.Cms.Infrastructure.Migrations;
 
@@ -7,13 +8,13 @@ namespace Stoolball.Data.UmbracoMigrations
     /// <summary>
     /// Removes the MemberName field from the Comments table and make the MemberKey nullable, because it duplicates the Umbraco member data and a member can be deleted
     /// </summary>
-    public partial class CommentRemoveMemberNameAndMakeMemberKeyNullable : MigrationBase
+    public partial class CommentRemoveMemberNameAndMakeMemberKeyNullable : AsyncMigrationBase
     {
         public CommentRemoveMemberNameAndMakeMemberKeyNullable(IMigrationContext context) : base(context)
         {
         }
 
-        protected override void Migrate()
+        protected override Task MigrateAsync()
         {
             Logger.LogDebug("Running migration {MigrationStep}", typeof(CommentRemoveMemberNameAndMakeMemberKeyNullable).Name);
 
@@ -34,6 +35,8 @@ namespace Stoolball.Data.UmbracoMigrations
             {
                 Logger.LogDebug("The database table {DbTable} has no {Column} column, skipping", Tables.Comment, nameof(CommentTableInitialSchema.MemberKey));
             }
+
+            return Task.CompletedTask;
         }
     }
 }

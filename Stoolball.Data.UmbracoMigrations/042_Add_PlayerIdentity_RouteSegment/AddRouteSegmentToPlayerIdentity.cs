@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Stoolball.Data.SqlServer;
 using Umbraco.Cms.Infrastructure.Migrations;
 
@@ -7,13 +8,13 @@ namespace Stoolball.Data.UmbracoMigrations
     /// <summary>
     /// Adds a RouteSegment column to StoolballPlayerIdentity which is used for routes that edit a single identity rather than a player
     /// </summary>
-    public partial class AddRouteSegmentToPlayerIdentity : MigrationBase
+    public partial class AddRouteSegmentToPlayerIdentity : AsyncMigrationBase
     {
         public AddRouteSegmentToPlayerIdentity(IMigrationContext context) : base(context)
         {
         }
 
-        protected override void Migrate()
+        protected override Task MigrateAsync()
         {
             Logger.LogDebug("Running migration {MigrationStep}", typeof(AddRouteSegmentToPlayerIdentity).Name);
 
@@ -27,6 +28,8 @@ namespace Stoolball.Data.UmbracoMigrations
             {
                 Logger.LogDebug("The database column {DbTable}.{DbColumn} already exists, skipping", Tables.PlayerIdentity, "RouteSegment");
             }
+
+            return Task.CompletedTask;
         }
     }
 }

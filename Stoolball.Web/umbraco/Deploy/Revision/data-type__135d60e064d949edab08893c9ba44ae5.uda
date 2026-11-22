@@ -1,11 +1,15 @@
 {
   "Name": "Media Picker",
   "Alias": "",
-  "EditorAlias": "Umbraco.MediaPicker",
+  "EditorAlias": "Umbraco.MediaPicker3",
   "Configuration": {
-    "multiPicker": false,
-    "onlyImages": false,
-    "disableFolderSelect": false,
+    "multiple": false,
+    "validationLimit": {
+      "min": 0,
+      "max": 1
+    },
+    "enableLocalFocalPoint": false,
+    "crops": [],
     "ignoreUserStartNodes": false
   },
   "Udi": "umb://data-type/135d60e064d949edab08893c9ba44ae5",

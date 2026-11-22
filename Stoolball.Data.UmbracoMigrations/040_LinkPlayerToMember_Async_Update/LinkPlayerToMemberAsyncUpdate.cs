@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Stoolball.Data.SqlServer;
 using Umbraco.Cms.Infrastructure.Migrations;
 
@@ -9,13 +10,13 @@ namespace Stoolball.Data.UmbracoMigrations
     /// Adds a stored procedure to complete the process of linking/unlinking a player to a member account asynchronously.
     /// Adds an index to the StoolballPlayerInMatchStatistics.PlayerRoute column so that the query in the stored procedure does not need a table scan.
     /// </summary>
-    public partial class LinkPlayerToMemberAsyncUpdate : MigrationBase
+    public partial class LinkPlayerToMemberAsyncUpdate : AsyncMigrationBase
     {
         public LinkPlayerToMemberAsyncUpdate(IMigrationContext context) : base(context)
         {
         }
 
-        protected override void Migrate()
+        protected override Task MigrateAsync()
         {
             Logger.LogDebug("Running migration {MigrationStep}", typeof(LinkPlayerToMemberAsyncUpdate).Name);
 
@@ -29,6 +30,8 @@ namespace Stoolball.Data.UmbracoMigrations
             {
                 Logger.LogDebug("The database column {DbTable}.{DbColumn} already exists, skipping", Tables.Player, "ForAsyncDelete");
             }
+
+            return Task.CompletedTask;
         }
     }
 }

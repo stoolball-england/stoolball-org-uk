@@ -21,7 +21,7 @@ namespace Stoolball.Web.Statistics.BackgroundTasks
             ILogger<ProcessAsyncUpdatesForPlayersHostedService> logger,
             IPlayerRepository playerRepository
             )
-            : base(logger, HowOftenWeRepeat, DelayBeforeWeStart)
+            : base(logger, HowOftenWeRepeat, DelayBeforeWeStart, TimeProvider.System)
         {
             _runtimeState = runtimeState ?? throw new ArgumentNullException(nameof(runtimeState));
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));

@@ -54,7 +54,7 @@ namespace Stoolball.Web.UnitTests.Account
             var controller = new ResetPasswordController(_logger.Object,
                 Mock.Of<ICompositeViewEngine>(),
                 UmbracoContextAccessor.Object,
-                Mock.Of<IVariationContextAccessor>(),
+                PublishedValueFallback.Object,
                 ServiceContext,
                 _tokenReader.Object)
             {

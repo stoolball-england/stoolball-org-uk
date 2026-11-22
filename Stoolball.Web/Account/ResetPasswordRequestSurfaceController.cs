@@ -26,19 +26,19 @@ namespace Stoolball.Web.Account
 {
     public class ResetPasswordRequestSurfaceController : SurfaceController
     {
-        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly IPublishedValueFallback _publishedValueFallback;
         private readonly ILogger<ResetPasswordRequestSurfaceController> _logger;
         private readonly IEmailFormatter _emailFormatter;
         private readonly IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
 
-        public ResetPasswordRequestSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IVariationContextAccessor variationContextAccessor,
+        public ResetPasswordRequestSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IPublishedValueFallback publishedValueFallback,
             IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext, AppCaches appCaches,
             ILogger<ResetPasswordRequestSurfaceController> logger, IProfilingLogger profilingLogger,
             IPublishedUrlProvider publishedUrlProvider, IEmailFormatter emailFormatter, IEmailSender emailSender, IVerificationToken verificationToken)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _variationContextAccessor = variationContextAccessor ?? throw new ArgumentNullException(nameof(variationContextAccessor));
+            _publishedValueFallback = publishedValueFallback ?? throw new ArgumentNullException(nameof(publishedValueFallback));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _emailFormatter = emailFormatter ?? throw new ArgumentNullException(nameof(emailFormatter));
             _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
@@ -51,7 +51,7 @@ namespace Stoolball.Web.Account
         [ContentSecurityPolicy(Forms = true)]
         public async Task<IActionResult> RequestPasswordReset([Bind(Prefix = "resetPasswordRequest")] ResetPasswordRequestFormData? model)
         {
-            var contentModel = new ResetPassword(CurrentPage, new PublishedValueFallback(Services, _variationContextAccessor));
+            var contentModel = new ResetPassword(CurrentPage, _publishedValueFallback);
             contentModel.Metadata = new ViewMetadata
             {
                 PageTitle = contentModel.Name,
@@ -98,9 +98,8 @@ namespace Stoolball.Web.Account
                 memberService.Save(member);
 
                 // Send the password reset / member approval email
-                var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
-                var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(publishedValueFallback, emailSubjectField),
-                    CurrentPage.Value<string>(publishedValueFallback, emailBodyField),
+                var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(_publishedValueFallback, emailSubjectField),
+                    CurrentPage.Value<string>(_publishedValueFallback, emailBodyField),
                     new Dictionary<string, string>
                     {
                         {"name", member.Name},
@@ -108,7 +107,7 @@ namespace Stoolball.Web.Account
                         {"token", token},
                         {"domain", GetRequestUrlAuthority()}
                     });
-                await _emailSender.SendAsync(new EmailMessage(null, model.Email, subject, body, true), null);
+                await _emailSender.SendAsync(new EmailMessage(null, model.Email, subject, body, true), null, false, null);
 
                 _logger.Info(LoggingTemplates.MemberPasswordResetRequested, member.Username, member.Key, typeof(ResetPasswordRequestSurfaceController), nameof(RequestPasswordReset));
 
@@ -120,15 +119,14 @@ namespace Stoolball.Web.Account
                 // Same result as if a member was found, since password reset should not reveal a valid email address
                 // However we can prompt them to create an account. Since it sends an email either way this also guards
                 // against detecting the result by timing the response.
-                var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
-                var (sender, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(publishedValueFallback, "createMemberSubject"),
-                    CurrentPage.Value<string>(publishedValueFallback, "createMemberBody"),
+                var (sender, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(_publishedValueFallback, "createMemberSubject"),
+                    CurrentPage.Value<string>(_publishedValueFallback, "createMemberBody"),
                     new Dictionary<string, string>
                     {
                         {"email", model.Email!},
                         {"domain", GetRequestUrlAuthority()}
                     });
-                await _emailSender.SendAsync(new EmailMessage(null, model.Email, sender, body, true), null);
+                await _emailSender.SendAsync(new EmailMessage(null, model.Email, sender, body, true), null, false, null);
 
                 _logger.Info(LoggingTemplates.PasswordResetForNonMemberRequested, model.Email?.Length > 8 ? $"********{model.Email.Substring(8)}" : "********", typeof(ResetPasswordRequestSurfaceController), nameof(RequestPasswordReset));
 

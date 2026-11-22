@@ -14,11 +14,6 @@
 </div>
 
 @section umbracoforms {
-    @if (TempData["UmbracoForms"] != null)
-    {
-        foreach (var form in TempData.Get<List<Guid>>("UmbracoForms"))
-        {
-            @await Component.InvokeAsync("RenderFormScripts", new {formId = form, theme = "stoolball"})
-        }
-    }
+    @* Renders the scripts for every form rendered on this page, which Umbraco Forms tracks for the current request *@
+    <umb-forms-render-scripts theme="stoolball" />
 }

@@ -19,8 +19,7 @@ namespace Stoolball.Web.UnitTests.Pages
                 Mock.Of<ILogger<ProductListController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
-                Mock.Of<IVariationContextAccessor>(),
-                ServiceContext)
+                PublishedValueFallback.Object)
             {
                 ControllerContext = ControllerContext
             };

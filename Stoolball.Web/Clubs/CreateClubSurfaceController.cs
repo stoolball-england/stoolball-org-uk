@@ -77,7 +77,11 @@ namespace Stoolball.Web.Clubs
                         {
                             Name = groupName
                         };
-                        Services.MemberGroupService.Save(group);
+                        var result = await Services.MemberGroupService.CreateAsync(group);
+                        if (!result.Success)
+                        {
+                            throw new InvalidOperationException($"Member group {groupName} was not created: {result.Status}");
+                        }
                         club.MemberGroupKey = group.Key;
                         club.MemberGroupName = group.Name;
                         break;

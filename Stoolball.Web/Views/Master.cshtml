@@ -9,7 +9,7 @@
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/purify.min.js") { Order = 1 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/trusted-types-policy.js") { Order = 2 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/register-service-worker.js") { Order = 2 });
-    SmidgeHelper.RequiresJs(new JavaScriptFile("~/umbraco/lib/jquery/jquery.min.js") { Order = 3 }); // full jQuery rather than slim is required for jQuery autocomplete
+    SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/jquery/jquery.min.js") { Order = 3 }); // full jQuery rather than slim is required for jQuery autocomplete
     SmidgeHelper.CreateJsBundle("popper").RequiresJs(new JavaScriptFile("~/js/lib/bootstrap/popper.min.js") { Order = 4 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/bootstrap/util.js") { Order = 5 });
     SmidgeHelper.RequiresJs(new JavaScriptFile("~/js/lib/bootstrap/dropdown.js") { Order = 6 });
@@ -21,7 +21,7 @@
 
     if (Model.Breadcrumbs.Count() == 0)
     {
-        var breadcrumb = Umbraco.AssignedContentItem.Parent;
+        var breadcrumb = Umbraco.AssignedContentItem.Parent<IPublishedContent>();
         while (breadcrumb != null)
         {
             Model.Breadcrumbs.Insert(0, new Breadcrumb
@@ -29,7 +29,7 @@
                 Name = breadcrumb.Name,
                 Url = new Uri(breadcrumb.Url(), UriKind.Relative)
             });
-            breadcrumb = breadcrumb.Parent;
+            breadcrumb = breadcrumb.Parent<IPublishedContent>();
         }
     }
 }

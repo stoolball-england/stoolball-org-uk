@@ -1,3 +1,5 @@
+using Umbraco.Cms.Core.Services.OperationStatus;
+using Umbraco.Cms.Core;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -36,7 +38,6 @@ namespace Stoolball.Web.UnitTests.Clubs
             _clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(_club);
             _authorizationPolicy.Setup(x => x.IsAuthorized(_club)).ReturnsAsync(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.DeleteClub, true } });
             _memberManager.Setup(x => x.GetCurrentMemberAsync()).ReturnsAsync(_currentMember);
-            _memberGroupService.Setup(x => x.GetById(_club.MemberGroupKey!.Value)).Returns(_memberGroup.Object);
         }
 
         private DeleteClubSurfaceController CreateController()
@@ -44,7 +45,7 @@ namespace Stoolball.Web.UnitTests.Clubs
             return new DeleteClubSurfaceController(
                 UmbracoContextAccessor.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
-                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>(), localizationService: Mock.Of<ILocalizationService>()),
+                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>()),
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 Mock.Of<IPublishedUrlProvider>(),
@@ -81,7 +82,7 @@ namespace Stoolball.Web.UnitTests.Clubs
             Assert.False(model.Deleted);
             Assert.Equal(_club.ClubName, model.Breadcrumbs[^1].Name);
             _clubRepository.Verify(x => x.DeleteClub(It.IsAny<Club>(), It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
-            _memberGroupService.Verify(x => x.Delete(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.DeleteAsync(It.IsAny<Guid>()), Times.Never);
             _cacheClearer.Verify(x => x.InvalidateCache(), Times.Never);
         }
 
@@ -106,7 +107,7 @@ namespace Stoolball.Web.UnitTests.Clubs
 
             await controller.DeleteClub(new MatchingTextConfirmation());
 
-            _memberGroupService.Verify(x => x.Delete(_memberGroup.Object), Times.Once);
+            _memberGroupService.Verify(x => x.DeleteAsync(_club.MemberGroupKey!.Value), Times.Once);
             _clubRepository.Verify(x => x.DeleteClub(_club, _currentMember.Key, _currentMember.Name!), Times.Once);
             _cacheClearer.Verify(x => x.InvalidateCache(), Times.Once);
         }
@@ -114,13 +115,13 @@ namespace Stoolball.Web.UnitTests.Clubs
         [Fact]
         public async Task Valid_request_with_missing_member_group_still_deletes_club()
         {
-            _memberGroupService.Setup(x => x.GetById(_club.MemberGroupKey!.Value)).Returns((IMemberGroup?)null);
+            _memberGroupService.Setup(x => x.DeleteAsync(_club.MemberGroupKey!.Value)).ReturnsAsync(Attempt.FailWithStatus<IMemberGroup?, MemberGroupOperationStatus>(MemberGroupOperationStatus.NotFound, null));
 
             using var controller = CreateController();
 
             await controller.DeleteClub(new MatchingTextConfirmation());
 
-            _memberGroupService.Verify(x => x.Delete(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.DeleteAsync(_club.MemberGroupKey!.Value), Times.Once);
             _clubRepository.Verify(x => x.DeleteClub(_club, _currentMember.Key, _currentMember.Name!), Times.Once);
         }
 

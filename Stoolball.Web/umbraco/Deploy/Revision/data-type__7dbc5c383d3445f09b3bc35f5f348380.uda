@@ -7,7 +7,6 @@
       {
         "contentElementTypeKey": "41914047-aec3-497f-a8bd-fd6b8fabb894",
         "settingsElementTypeKey": "3b2b6ed4-da92-4aca-9262-fbfec272be72",
-        "view": "~/App_Plugins/Stoolball.BlockEditors/FormattedText.html",
         "stylesheet": "~/css/base.min.css",
         "editorSize": "medium",
         "forceHideContentEditorInOverlay": false
@@ -15,7 +14,6 @@
       {
         "contentElementTypeKey": "1e842305-259d-4448-b804-168859f39623",
         "settingsElementTypeKey": "3b2b6ed4-da92-4aca-9262-fbfec272be72",
-        "view": "~/App_Plugins/Stoolball.BlockEditors/FormattedTextWithImage.html",
         "stylesheet": "~/css/base.min.css",
         "editorSize": "medium",
         "forceHideContentEditorInOverlay": false
@@ -23,7 +21,6 @@
       {
         "contentElementTypeKey": "b87922c7-a6a3-460b-affb-306139789583",
         "settingsElementTypeKey": "3b2b6ed4-da92-4aca-9262-fbfec272be72",
-        "view": "~/App_Plugins/Stoolball.BlockEditors/ImageElementType.html",
         "stylesheet": "~/css/base.min.css",
         "editorSize": "medium",
         "forceHideContentEditorInOverlay": false
@@ -31,7 +28,6 @@
       {
         "contentElementTypeKey": "9f0490d7-f097-4789-a32f-31e6b73a237d",
         "settingsElementTypeKey": "3b2b6ed4-da92-4aca-9262-fbfec272be72",
-        "view": "~/App_Plugins/Stoolball.BlockEditors/YouTubeVideo.html",
         "stylesheet": "~/css/base.min.css",
         "editorSize": "medium",
         "forceHideContentEditorInOverlay": false

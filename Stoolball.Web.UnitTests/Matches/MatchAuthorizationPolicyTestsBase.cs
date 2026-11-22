@@ -162,7 +162,7 @@ namespace Stoolball.Web.UnitTests.Matches
 
             var creator = CreateMember("creator", "Entity Creator");
             MemberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult<MemberIdentityUser?>(currentMember));
-            MemberService.Setup(x => x.GetByKey(creatorKey)).Returns(creator);
+            MemberService.Setup(x => x.GetById(creatorKey)).Returns(creator);
 
             var result = await policy.AuthorizedMemberNames(entity);
 
@@ -207,7 +207,7 @@ namespace Stoolball.Web.UnitTests.Matches
 
             var creator = CreateMember("creator", "Entity Creator");
             MemberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult<MemberIdentityUser?>(null));
-            MemberService.Setup(x => x.GetByKey(creatorKey)).Returns(creator);
+            MemberService.Setup(x => x.GetById(creatorKey)).Returns(creator);
 
             var result = await policy.AuthorizedMemberNames(entity);
 
@@ -223,7 +223,7 @@ namespace Stoolball.Web.UnitTests.Matches
             var entity = CreateEntity(creatorKey);
 
             MemberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult<MemberIdentityUser?>(null));
-            MemberService.Setup(x => x.GetByKey(creatorKey)).Returns((IMember?)null);
+            MemberService.Setup(x => x.GetById(creatorKey)).Returns((IMember?)null);
 
             var result = await policy.AuthorizedMemberNames(entity);
 

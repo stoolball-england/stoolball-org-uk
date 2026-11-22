@@ -1,0 +1,14 @@
+{
+  "id": "Stoolball.Umbraco.Backoffice",
+  "name": "Stoolball.Umbraco.Backoffice",
+  "version": "1.0.0",
+  "allowTelemetry": false,
+  "extensions": [
+    {
+      "name": "Stoolball.Umbraco.Backoffice",
+      "alias": "Stoolball.Umbraco.Backoffice",
+      "type": "bundle",
+      "js": "/App_Plugins/Stoolball.Umbraco.Backoffice/manifest.js"
+    }
+  ]
+}

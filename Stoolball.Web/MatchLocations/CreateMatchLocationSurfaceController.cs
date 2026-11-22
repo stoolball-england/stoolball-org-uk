@@ -71,7 +71,11 @@ namespace Stoolball.Web.MatchLocations
                         {
                             Name = groupName
                         };
-                        Services.MemberGroupService.Save(group);
+                        var result = await Services.MemberGroupService.CreateAsync(group);
+                        if (!result.Success)
+                        {
+                            throw new InvalidOperationException($"Member group {groupName} was not created: {result.Status}");
+                        }
                         location.MemberGroupKey = group.Key;
                         location.MemberGroupName = group.Name;
                         break;

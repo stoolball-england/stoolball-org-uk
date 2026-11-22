@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
 	<Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -39,12 +39,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Umbraco.Cms.Core" Version="13.16.4" />
-    <PackageReference Include="Umbraco.Cms.Infrastructure" Version="13.16.4" />
+    <PackageReference Include="Umbraco.Cms.Core" Version="17.5.3" />
+    <PackageReference Include="Umbraco.Cms.Infrastructure" Version="17.5.3" />
+    <!-- Umbraco 13 asks for 8.x, but MailKit asks for 10.x when targeting .NET 10. Referencing it directly resolves the conflict. -->
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.15" />
   </ItemGroup>
 
   <ItemGroup>
