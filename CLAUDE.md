@@ -20,6 +20,33 @@ It's always safe to stop and restart the site during development. If a running `
 process locks DLLs and blocks a build or test run, stop it without asking. When you've finished
 your work, always restart it (in the `Development` environment, as above).
 
+## Running the SQL Server integration tests
+
+Any change to `Stoolball.Data.SqlServer`, `Stoolball.Data.SqlServer.IntegrationTests`,
+`Stoolball.Testing`, or SQL/repository code elsewhere should be checked by running the
+integration tests (see `Stoolball.Data.SqlServer.IntegrationTests/CLAUDE.md`).
+
+The tests need a SQL Server instance. Locally the fixture finds one itself. When
+`GITHUB_ACTIONS=true` (including a Claude session running in GitHub Actions) the fixture
+instead expects a Docker container named `integration-tests-sql` and the `SQL_SERVER_USERNAME`
+and `SQL_SERVER_PASSWORD` environment variables, which PR checks (`run-tests.yml`) set up but
+the Claude workflow does not. Docker is available on the Claude runner, so start it yourself.
+**Don't report that the tests can't be run just because the container or variables are
+missing:**
+
+```bash
+export SQL_SERVER_USERNAME=sa
+export SQL_SERVER_PASSWORD='Tmp-Passw0rd-'$RANDOM   # throwaway; meets SQL Server complexity rules
+docker run --name integration-tests-sql -e ACCEPT_EULA=Y -e "SA_PASSWORD=$SQL_SERVER_PASSWORD" \
+  -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+sleep 20   # let SQL Server start
+dotnet test ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj \
+  --filter "FullyQualifiedName~SqlServerClubRepositoryTests"   # narrow the filter to the affected tests
+```
+
+Remove the container afterwards with `docker rm -f integration-tests-sql`. Never commit the
+password.
+
 ## Build warnings
 
 When you write new code, resolve any build warnings it introduces (for example nullable

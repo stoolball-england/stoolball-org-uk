@@ -9,7 +9,9 @@ Bogus, so that dependency is kept out of production code).
 before reporting the work as done. Static review and a successful build are not enough:
 this suite depends on a real SQL Server database and on generated data whose shape can
 only be checked by actually executing the tests. If there's no way to run them (e.g. no
-database is reachable), say so explicitly rather than reporting success.
+database is reachable), say so explicitly rather than reporting success. In a GitHub Actions Claude session the database isn't
+there by default, but you can start one — see "Running the SQL Server integration tests" in the
+root `CLAUDE.md`.
 
 ## 1. Isolating each test with TransactionScope
 
