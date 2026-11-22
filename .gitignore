@@ -366,7 +366,6 @@ splashes
 !**/App_Data/Models
 **/App_Plugins/*
 !**/App_Plugins/Stoolball.*
-**/Views/Partials/BlockList/Default.cshtml
 **/Views/Partials/Forms/*
 !**/Views/Partials/Forms/Emails
 **/Views/Partials/Forms/Emails/Example-Template.cshtml
@@ -430,6 +429,7 @@ coverage
 ood.flag
 appsettings-schema.json
 appsettings-schema.*.json
+umbraco-package-schema.json
 
 # Work with Umbraco Cloud in a separate repo
 .UmbracoCloud
@@ -443,3 +443,5 @@ Playwright/playwright-report/
 Playwright/test-results-production/
 Playwright/playwright-report-production/
 Playwright/.env
+# Built by the TypeScript project in Stoolball.Umbraco.Backoffice/Backoffice. Push-UmbracoCloud.ps1 builds it and copies it to the Umbraco Cloud repository.
+Stoolball.Umbraco.Backoffice/wwwroot/

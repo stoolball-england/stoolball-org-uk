@@ -75,7 +75,7 @@ namespace Stoolball.Web.Matches
             {
                 if (memberKey != currentMember?.Key)
                 {
-                    var name = _memberService.GetByKey(memberKey)?.Name;
+                    var name = _memberService.GetById(memberKey)?.Name;
                     if (!string.IsNullOrEmpty(name) && !members.Contains(name))
                     {
                         members.Add(name);

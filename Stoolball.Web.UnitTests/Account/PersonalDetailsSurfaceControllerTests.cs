@@ -40,7 +40,7 @@ namespace Stoolball.Web.UnitTests.Account
             var memberManager = new Mock<IMemberManager>();
             memberManager.Setup(x => x.GetCurrentMemberAsync()).Returns(Task.FromResult(new MemberIdentityUser { Key = _currentMember.Object.Key }));
 
-            MemberService.Setup(x => x.GetByKey(_currentMember.Object.Key)).Returns(_currentMember.Object);
+            MemberService.Setup(x => x.GetById(_currentMember.Object.Key)).Returns(_currentMember.Object);
 
             return new PersonalDetailsSurfaceController(
                 UmbracoContextAccessor.Object,

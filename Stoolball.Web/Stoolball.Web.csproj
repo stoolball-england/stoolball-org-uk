@@ -68,75 +68,35 @@
     <Compile Include="App_Plugins\Stoolball.UmbracoForms\AntiSpamLongAnswerField.cs" />
     <Compile Include="App_Plugins\Stoolball.UmbracoForms\DependencyComposer.cs" />
     <Compile Include="App_Plugins\Stoolball.UmbracoForms\EmailField.cs" />
-    <Compile Include="App_Plugins\Stoolball.PropertyEditors\StylesheetPickerPropertyValueConverter.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedText.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedTextWithImage.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\GettyImage.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\IFrameElementType.controller.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.controller.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\package.manifest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\Tip.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\TipElementType.controller.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.BlockEditors\YouTubeVideo.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.PropertyEditors\package.manifest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Plugins\Stoolball.UmbracoForms\EmailField.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="C:\Users\rickm\Documents\Stoolball\stoolball-v9\.editorconfig" />
     <Content Include="Forms\RecreateUmbracoForms.sql" />
     <Content Include="Directory.Build.targets" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="27.2.1" />
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
     <PackageReference Include="HtmlSanitizer" Version="9.2.995" />
-    <PackageReference Include="MessagePack" Version="2.5.307" />
+    <PackageReference Include="MessagePack" Version="3.1.7" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="17.14.28" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
-    <PackageReference Include="Skybrud.Umbraco.Redirects" Version="13.0.7" />
+    <PackageReference Include="Skybrud.Umbraco.Redirects" Version="17.0.5" />
+    <PackageReference Include="Smidge" Version="5.1.0" />
     <PackageReference Include="SolarCalculator" Version="3.1.0" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.13" />
-    <PackageReference Include="Umbraco.Cloud.Identity.Cms" Version="13.2.9" />
-    <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="13.0.1" />
-    <PackageReference Include="Umbraco.Cms" Version="13.16.4" />
-    <PackageReference Include="Umbraco.Deploy.Cloud" Version="13.2.2" />
-    <PackageReference Include="Umbraco.Deploy.Contrib" Version="13.2.0" />
-    <PackageReference Include="Umbraco.Forms" Version="13.9.12" />
-    <PackageReference Include="Umbraco.Forms.Deploy" Version="13.1.0" />
-    <PackageReference Include="uSync" Version="13.2.6" />
+    <PackageReference Include="System.Runtime.Caching" Version="10.0.0" />
+    <PackageReference Include="TinyMCE.Umbraco" Version="17.5.0" />
+    <PackageReference Include="Umbraco.Cloud.Cms" Version="17.2.3" />
+    <PackageReference Include="Umbraco.Cloud.StorageProviders.AzureBlob" Version="17.1.0" />
+    <PackageReference Include="Umbraco.Cms" Version="17.5.3" />
+    <PackageReference Include="Umbraco.Deploy.Cloud" Version="17.4.0" />
+    <PackageReference Include="Umbraco.Deploy.Contrib" Version="17.0.0" />
+    <PackageReference Include="Umbraco.Forms" Version="17.5.2" />
+    <PackageReference Include="Umbraco.Forms.Deploy" Version="17.0.1" />
+    <PackageReference Include="uSync" Version="17.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -187,6 +147,7 @@
     <ProjectReference Include="..\Stoolball.Data.MemoryCache\Stoolball.Data.MemoryCache.csproj" />
     <ProjectReference Include="..\Stoolball.Data.UmbracoMigrations\Stoolball.Data.UmbracoMigrations.csproj" />
     <ProjectReference Include="..\Stoolball\Stoolball.csproj" />
+    <ProjectReference Include="..\Stoolball.Umbraco.Backoffice\Stoolball.Umbraco.Backoffice.csproj" />
   </ItemGroup>
 
   <ItemGroup>

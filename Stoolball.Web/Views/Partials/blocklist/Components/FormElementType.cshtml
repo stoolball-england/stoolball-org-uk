@@ -6,5 +6,5 @@
 }
 @if (content != null && content.Form != null)
 {
-    @await Umbraco.RenderMacroAsync("renderUmbracoForm", new { FormGuid = content.Form, FormTheme = "stoolball", ExcludeScripts = "1" })
+    @await Component.InvokeAsync("RenderForm", new { formId = content.Form.Value, theme = "stoolball", includeScripts = false })
 }

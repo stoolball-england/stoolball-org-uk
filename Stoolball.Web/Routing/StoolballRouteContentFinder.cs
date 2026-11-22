@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Extensions;
 
@@ -14,11 +15,13 @@ namespace Stoolball.Web.Routing
     {
         private readonly IUmbracoContextAccessor _umbracoContextAccessor;
         private readonly IStoolballRouteParser _routeParser;
+        private readonly IDocumentUrlService _documentUrlService;
 
-        public StoolballRouteContentFinder(IUmbracoContextAccessor umbracoContextAccessor, IStoolballRouteParser routeParser)
+        public StoolballRouteContentFinder(IUmbracoContextAccessor umbracoContextAccessor, IStoolballRouteParser routeParser, IDocumentUrlService documentUrlService)
         {
             _umbracoContextAccessor = umbracoContextAccessor ?? throw new ArgumentNullException(nameof(umbracoContextAccessor));
             _routeParser = routeParser ?? throw new ArgumentNullException(nameof(routeParser));
+            _documentUrlService = documentUrlService ?? throw new ArgumentNullException(nameof(documentUrlService));
         }
 
         Task<bool> IContentFinder.TryFindContent(IPublishedRequestBuilder request)
@@ -37,7 +40,7 @@ namespace Stoolball.Web.Routing
             if (matchedRouteType.HasValue)
             {
                 // Direct the response to the 'Stoolball router' document type to be handled by StoolballRouterController
-                var router = umbracoContext.Content!.GetByRoute("/stoolball-router");
+                var router = umbracoContext.Content!.GetByRoute(_documentUrlService, "/stoolball-router");
 
                 if (router != null)
                 {

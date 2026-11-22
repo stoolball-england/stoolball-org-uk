@@ -1,3 +1,5 @@
+using Umbraco.Cms.Core.Services.OperationStatus;
+using Umbraco.Cms.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +52,6 @@ namespace Stoolball.Web.UnitTests.Teams
             _teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(_team);
             _authorizationPolicy.Setup(x => x.IsAuthorized(_team)).ReturnsAsync(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.DeleteTeam, true } });
             _memberManager.Setup(x => x.GetCurrentMemberAsync()).ReturnsAsync(_currentMember);
-            _memberGroupService.Setup(x => x.GetById(_team.MemberGroupKey!.Value)).Returns(_memberGroup.Object);
             _matchDataSource.Setup(x => x.ReadTotalMatches(It.IsAny<MatchFilter>())).ReturnsAsync(3);
             _playerDataSource.Setup(x => x.ReadPlayerIdentities(It.IsAny<PlayerFilter>())).ReturnsAsync(new List<PlayerIdentity> { new() { PlayerIdentityName = "Player one" }, new() { PlayerIdentityName = "Player two" } });
         }
@@ -60,7 +61,7 @@ namespace Stoolball.Web.UnitTests.Teams
             return new DeleteTeamSurfaceController(
                 UmbracoContextAccessor.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
-                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>(), localizationService: Mock.Of<ILocalizationService>()),
+                ServiceContext.CreatePartial(memberService: MemberService.Object, memberGroupService: _memberGroupService.Object, userService: Mock.Of<IUserService>()),
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 Mock.Of<IPublishedUrlProvider>(),
@@ -106,7 +107,7 @@ namespace Stoolball.Web.UnitTests.Teams
             _playerDataSource.Verify(x => x.ReadPlayerIdentities(It.Is<PlayerFilter>(f => f.TeamIds.SequenceEqual(new[] { _team.TeamId!.Value }))), Times.Once);
             _breadcrumbBuilder.Verify(x => x.BuildBreadcrumbsForTeam(model.Breadcrumbs, _team, true), Times.Once);
             _teamRepository.Verify(x => x.DeleteTeam(It.IsAny<Team>(), It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
-            _memberGroupService.Verify(x => x.Delete(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.DeleteAsync(It.IsAny<Guid>()), Times.Never);
             _teamCacheClearer.Verify(x => x.InvalidateCache(), Times.Never);
             _matchListingCacheClearer.Verify(x => x.InvalidateCacheForTeam(It.IsAny<Guid>()), Times.Never);
         }
@@ -124,7 +125,7 @@ namespace Stoolball.Web.UnitTests.Teams
             Assert.Equal(3, model.TotalMatches);
             Assert.True(model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam]);
             _teamRepository.Verify(x => x.DeleteTeam(It.IsAny<Team>(), It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
-            _memberGroupService.Verify(x => x.Delete(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.DeleteAsync(It.IsAny<Guid>()), Times.Never);
         }
 
         [Fact]
@@ -134,7 +135,7 @@ namespace Stoolball.Web.UnitTests.Teams
 
             await controller.DeleteTeam(new MatchingTextConfirmation());
 
-            _memberGroupService.Verify(x => x.Delete(_memberGroup.Object), Times.Once);
+            _memberGroupService.Verify(x => x.DeleteAsync(_team.MemberGroupKey!.Value), Times.Once);
             _teamRepository.Verify(x => x.DeleteTeam(_team, _currentMember.Key, _currentMember.Name!), Times.Once);
             _teamCacheClearer.Verify(x => x.InvalidateCache(), Times.Once);
             _matchListingCacheClearer.Verify(x => x.InvalidateCacheForTeam(_team.TeamId!.Value), Times.Once);
@@ -143,13 +144,13 @@ namespace Stoolball.Web.UnitTests.Teams
         [Fact]
         public async Task Valid_request_with_missing_member_group_still_deletes_team()
         {
-            _memberGroupService.Setup(x => x.GetById(_team.MemberGroupKey!.Value)).Returns((IMemberGroup?)null);
+            _memberGroupService.Setup(x => x.DeleteAsync(_team.MemberGroupKey!.Value)).ReturnsAsync(Attempt.FailWithStatus<IMemberGroup?, MemberGroupOperationStatus>(MemberGroupOperationStatus.NotFound, null));
 
             using var controller = CreateController();
 
             await controller.DeleteTeam(new MatchingTextConfirmation());
 
-            _memberGroupService.Verify(x => x.Delete(It.IsAny<IMemberGroup>()), Times.Never);
+            _memberGroupService.Verify(x => x.DeleteAsync(_team.MemberGroupKey!.Value), Times.Once);
             _teamRepository.Verify(x => x.DeleteTeam(_team, _currentMember.Key, _currentMember.Name!), Times.Once);
         }
 

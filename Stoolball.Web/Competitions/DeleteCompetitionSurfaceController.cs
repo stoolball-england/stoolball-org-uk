@@ -68,11 +68,7 @@ namespace Stoolball.Web.Competitions
 
             if (viewModel.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
             {
-                var memberGroup = Services.MemberGroupService.GetById(viewModel.Competition.MemberGroupKey!.Value);
-                if (memberGroup != null)
-                {
-                    Services.MemberGroupService.Delete(memberGroup);
-                }
+                await Services.MemberGroupService.DeleteAsync(viewModel.Competition.MemberGroupKey!.Value);
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _competitionRepository.DeleteCompetition(viewModel.Competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);

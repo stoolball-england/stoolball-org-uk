@@ -1,13 +1,13 @@
 window.addEventListener("DOMContentLoaded", function () {
   // URLs are specified for plugins, theme and skin because it makes them work when bundled by Smidge
-tinymce.baseURL = "/umbraco/lib/tinymce";
+tinymce.baseURL = "/App_Plugins/TinyMCE.Umbraco/lib";
 tinymce.PluginManager.load(
     "link",
-    "/umbraco/lib/tinymce/plugins/link/plugin.min.js"
+    "/App_Plugins/TinyMCE.Umbraco/lib/plugins/link/plugin.min.js"
   );
   tinymce.PluginManager.load(
     "lists",
-    "/umbraco/lib/tinymce/plugins/lists/plugin.min.js"
+    "/App_Plugins/TinyMCE.Umbraco/lib/plugins/lists/plugin.min.js"
   );
   tinymce.init({
     selector: "textarea",

@@ -31,7 +31,7 @@
     @Html.Raw(emailProtector.ProtectEmailAddresses(Model.FurtherDetails?.ToHtmlString(), User.Identity?.IsAuthenticated ?? false))
     @if (Model.EnquiryForm != null)
     {
-        @await Umbraco.RenderMacroAsync("renderUmbracoForm", new { FormGuid = Model.EnquiryForm, FormTheme = "stoolball", ExcludeScripts = "1" })
+        @await Component.InvokeAsync("RenderForm", new { formId = Model.EnquiryForm.Value, theme = "stoolball", includeScripts = false })
     }
 </div>
 
@@ -74,11 +74,6 @@
 }
 
 @section umbracoforms {
-    @if (TempData["UmbracoForms"] != null)
-    {
-        foreach (var form in TempData.Get<List<Guid>>("UmbracoForms"))
-        {
-            @await Component.InvokeAsync("RenderFormScripts", new {formId = form, theme = "stoolball"})
-        }
-    }
+    @* Renders the scripts for every form rendered on this page, which Umbraco Forms tracks for the current request *@
+    <umb-forms-render-scripts theme="stoolball" />
 }

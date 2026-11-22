@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Data.Abstractions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Testing.UnitTests", "Stoolball.Testing.UnitTests\Stoolball.Testing.UnitTests.csproj", "{891C23EA-8A17-40E9-9831-47625553999D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Umbraco.Backoffice", "Stoolball.Umbraco.Backoffice\Stoolball.Umbraco.Backoffice.csproj", "{D3697549-9F00-4EED-9807-C4324E0CD744}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -201,6 +203,18 @@ Global
 		{891C23EA-8A17-40E9-9831-47625553999D}.Release|x64.Build.0 = Release|Any CPU
 		{891C23EA-8A17-40E9-9831-47625553999D}.Release|x86.ActiveCfg = Release|Any CPU
 		{891C23EA-8A17-40E9-9831-47625553999D}.Release|x86.Build.0 = Release|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Debug|x64.Build.0 = Debug|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Debug|x86.Build.0 = Debug|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Release|x64.ActiveCfg = Release|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Release|x64.Build.0 = Release|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Release|x86.ActiveCfg = Release|Any CPU
+		{D3697549-9F00-4EED-9807-C4324E0CD744}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

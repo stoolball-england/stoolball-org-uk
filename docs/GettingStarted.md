@@ -31,7 +31,7 @@ Follow these steps to clone and run the project. You will need the git repositor
 
 ### Running the project in Visual Studio Code
 
-Visual Studio is the best tool for editing the C# code of the project. However, Visual Studio Code is better for editing JavaScript, the AngularJS components of the Umbraco back office, and the Markdown documentation.
+Visual Studio is the best tool for editing the C# code of the project. However, Visual Studio Code is better for editing JavaScript, the TypeScript extensions for the Umbraco back office, and the Markdown documentation.
 
 You need to compile the SCSS files with the Web Compiler extension in Visual Studio at least once. After that you can build and run the project from a terminal in Visual Studio Code, as described in [running the project from the command line](#running-the-project-from-the-command-line).
 
@@ -47,6 +47,19 @@ dotnet run --project Stoolball.Web --no-launch-profile --urls "https://localhost
 ```
 
 Don't rely on `dotnet run --environment Development`, which does not set the environment in all versions of the .NET SDK. Check that the console output shows `Hosting environment: Development`.
+
+## Extending the Umbraco back office
+
+Custom views for blocks in the block list editor, and the stylesheet picker property editor, are in the `Stoolball.Umbraco.Backoffice` project. They are web components written in TypeScript, in the `Backoffice` folder of that project, and registered with the back office in `Backoffice/src/manifests.ts`.
+
+Vite builds them into `Stoolball.Umbraco.Backoffice/wwwroot/App_Plugins/Stoolball.Umbraco.Backoffice`, which the site serves at `/App_Plugins/Stoolball.Umbraco.Backoffice`. The built files are not committed. `dotnet build` builds them if they are missing, but after changing the TypeScript you need to build them yourself:
+
+```pwsh
+cd Stoolball.Umbraco.Backoffice/Backoffice
+npm run build   # or 'npm run watch' to rebuild on every change
+```
+
+`Scripts/Push-UmbracoCloud.ps1` builds them and copies the output to the `.UmbracoCloud` repository, because Umbraco Cloud cannot run npm.
 
 ## Managing redirects
 

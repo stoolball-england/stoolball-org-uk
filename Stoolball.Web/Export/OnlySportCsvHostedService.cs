@@ -34,7 +34,7 @@ namespace Stoolball.Web.Export
             ILogger<OnlySportCsvHostedService> logger,
             IWebHostEnvironment webHostEnvironment,
             IMatchListingDataSource matchListingDataSource)
-            : base(logger, HowOftenWeRepeat, DelayBeforeWeStart)
+            : base(logger, HowOftenWeRepeat, DelayBeforeWeStart, TimeProvider.System)
         {
             _runtimeState = runtimeState ?? throw new ArgumentNullException(nameof(runtimeState));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

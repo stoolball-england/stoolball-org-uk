@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Smidge;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
@@ -92,6 +93,9 @@ namespace Stoolball.Web
                 .Build();
 #pragma warning restore IDE0022 // Use expression body for methods
 
+            // Umbraco stopped registering Smidge in v14, so register it here to bundle and minify front-end assets
+            services.AddSmidge(_config.GetSection("Smidge"));
+
             services.Configure<MvcOptions>(options => options.UseSentenceCaseValidationMessages());
 
             services.AddApplicationInsightsTelemetry(opt =>
@@ -142,6 +146,7 @@ namespace Stoolball.Web
             services.AddTransient<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
             services.AddTransient<IUrlFormatter, UrlFormatter>();
             services.AddTransient<IVerificationToken, VerificationToken>();
+            services.AddTransient<IMemberPropertySearch, ExamineMemberPropertySearch>();
             services.AddTransient<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>();
 
             services.AddBreadcrumbBuilders();
@@ -405,10 +410,12 @@ namespace Stoolball.Web
                 {
                     u.UseBackOffice();
                     u.UseWebsite();
+
+                    // Smidge maps its bundle endpoints, so it must be added after Umbraco has added routing
+                    u.AppBuilder.UseSmidge();
                 })
                 .WithEndpoints(u =>
                 {
-                    u.UseInstallerEndpoints();
                     u.UseBackOfficeEndpoints();
                     u.UseWebsiteEndpoints();
                 });

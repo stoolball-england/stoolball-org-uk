@@ -13,21 +13,19 @@ namespace Stoolball.Web.Account
 {
     public class LoginMemberController : RenderController
     {
-        private readonly IVariationContextAccessor _variationContextAccessor;
-        private readonly ServiceContext _serviceContext;
+        private readonly IPublishedValueFallback _publishedValueFallback;
 
-        public LoginMemberController(ILogger<LoginMemberController> logger, ICompositeViewEngine compositeViewEngine, IUmbracoContextAccessor umbracoContextAccessor, IVariationContextAccessor variationContextAccessor, ServiceContext context)
+        public LoginMemberController(ILogger<LoginMemberController> logger, ICompositeViewEngine compositeViewEngine, IUmbracoContextAccessor umbracoContextAccessor, IPublishedValueFallback publishedValueFallback)
          : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
-            _variationContextAccessor = variationContextAccessor ?? throw new System.ArgumentNullException(nameof(variationContextAccessor));
-            _serviceContext = context ?? throw new System.ArgumentNullException(nameof(context));
+            _publishedValueFallback = publishedValueFallback ?? throw new System.ArgumentNullException(nameof(publishedValueFallback));
         }
 
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
         public override IActionResult Index()
         {
-            var model = new LoginMember(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor));
+            var model = new LoginMember(CurrentPage, _publishedValueFallback);
             model.Metadata = new ViewMetadata
             {
                 PageTitle = model.Name,

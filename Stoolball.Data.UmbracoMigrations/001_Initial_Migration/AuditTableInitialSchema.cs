@@ -1,4 +1,5 @@
 ﻿# nullable disable // Point-in-time snapshot should not be changed
+#pragma warning disable CS0618 // NTEXT is obsolete, but this snapshot must keep creating the ntext columns that existing databases have
 using System;
 using NPoco;
 using Stoolball.Data.SqlServer;

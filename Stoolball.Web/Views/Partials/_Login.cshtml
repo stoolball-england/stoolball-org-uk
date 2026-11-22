@@ -2,15 +2,17 @@
 @inject Stoolball.Email.IEmailProtector emailProtector
 @inject IMemberManager memberManager
 @inject IUmbracoContextAccessor contextAccessor
+@inject Umbraco.Cms.Core.Services.IDocumentUrlService documentUrlService
 @using Stoolball
 @using Umbraco.Cms.Core.Strings
 @using Umbraco.Cms.Core.Security
 @using Umbraco.Cms.Core.Web
 @using Umbraco.Cms.Web.Common.Models
 @using Stoolball.Web.Account
+@using Stoolball.Web.Routing
 @{
     if (!contextAccessor.TryGetUmbracoContext(out var umbracoContext)) { return; }
-    var loginPage = umbracoContext.Content?.GetByRoute(Constants.Pages.SignInUrl);
+    var loginPage = umbracoContext.Content?.GetByRoute(documentUrlService, Constants.Pages.SignInUrl);
     var loginModel = new LoginModel();
     loginModel.RedirectUrl = Context.Request.Query["ReturnUrl"].ToString();
     if (!loginModel.RedirectUrl.StartsWith("/"))

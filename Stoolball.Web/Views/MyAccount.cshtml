@@ -9,7 +9,7 @@
 @{
     SmidgeHelper.RequiresCss(new CssFile("~/css/account.min.css") { Order = 100 });
     var currentMember = await memberManager.GetCurrentMemberAsync();
-    var currentMemberBypassingCache = currentMember != null ? memberService.GetByKey(currentMember.Key) : null;
+    var currentMemberBypassingCache = currentMember != null ? memberService.GetById(currentMember.Key) : null;
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>

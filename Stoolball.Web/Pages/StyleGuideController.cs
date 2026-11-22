@@ -16,15 +16,13 @@ namespace Stoolball.Web.Pages
     {
         private readonly IApiKeyProvider _apiKeyProvider;
 
-        private readonly IVariationContextAccessor _variationContextAccessor;
-        private readonly ServiceContext _serviceContext;
+        private readonly IPublishedValueFallback _publishedValueFallback;
 
-        public StyleGuideController(ILogger<StyleGuideController> logger, ICompositeViewEngine compositeViewEngine, IUmbracoContextAccessor umbracoContextAccessor, IVariationContextAccessor variationContextAccessor, ServiceContext context,
+        public StyleGuideController(ILogger<StyleGuideController> logger, ICompositeViewEngine compositeViewEngine, IUmbracoContextAccessor umbracoContextAccessor, IPublishedValueFallback publishedValueFallback,
             IApiKeyProvider apiKeyProvider)
             : base(logger, compositeViewEngine, umbracoContextAccessor)
         {
-            _variationContextAccessor = variationContextAccessor ?? throw new System.ArgumentNullException(nameof(variationContextAccessor));
-            _serviceContext = context ?? throw new System.ArgumentNullException(nameof(context));
+            _publishedValueFallback = publishedValueFallback ?? throw new System.ArgumentNullException(nameof(publishedValueFallback));
             _apiKeyProvider = apiKeyProvider ?? throw new System.ArgumentNullException(nameof(apiKeyProvider));
         }
 
@@ -32,7 +30,7 @@ namespace Stoolball.Web.Pages
         [ContentSecurityPolicy(GoogleMaps = true, TinyMCE = true, Forms = true, GettyImages = true, YouTube = true)]
         public override IActionResult Index()
         {
-            var model = new StyleGuide(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor))
+            var model = new StyleGuide(CurrentPage, _publishedValueFallback)
             {
                 Metadata = new ViewMetadata { PageTitle = CurrentPage.Name },
                 GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")

@@ -39,11 +39,12 @@ namespace Stoolball.Web.Account
         private readonly IEmailFormatter _emailFormatter;
         private readonly IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
-        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly IPublishedValueFallback _publishedValueFallback;
+        private readonly IMemberPropertySearch _memberPropertySearch;
         private const string UMBRACO_ERROR_IF_MEMBER_EXISTS = "Username '{0}' is already taken";
 
         public CreateMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
-            IVariationContextAccessor variationContextAccessor,
+            IPublishedValueFallback publishedValueFallback,
             IUmbracoDatabaseFactory databaseFactory,
             ServiceContext services,
             AppCaches appCaches,
@@ -57,10 +58,11 @@ namespace Stoolball.Web.Account
             ICreateMemberExecuter createMemberExecuter,
             IEmailFormatter emailFormatter,
             IEmailSender emailSender,
-            IVerificationToken verificationToken)
+            IVerificationToken verificationToken,
+            IMemberPropertySearch memberPropertySearch)
             : base(memberManager, memberService, umbracoContextAccessor, databaseFactory, services, appCaches, profilingLogger, publishedUrlProvider, memberSignInManager, scopeProvider)
         {
-            _variationContextAccessor = variationContextAccessor ?? throw new ArgumentNullException(nameof(variationContextAccessor));
+            _publishedValueFallback = publishedValueFallback ?? throw new ArgumentNullException(nameof(publishedValueFallback));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _memberService = memberService ?? throw new ArgumentNullException(nameof(memberService));
             _memberSignInManager = memberSignInManager ?? throw new ArgumentNullException(nameof(memberSignInManager));
@@ -68,6 +70,7 @@ namespace Stoolball.Web.Account
             _emailFormatter = emailFormatter ?? throw new ArgumentNullException(nameof(emailFormatter));
             _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
             _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
+            _memberPropertySearch = memberPropertySearch ?? throw new ArgumentNullException(nameof(memberPropertySearch));
         }
 
         [HttpPost]
@@ -152,9 +155,8 @@ namespace Stoolball.Web.Account
         private async Task SendMemberAlreadyExistsEmail(string? name, string email)
         {
             // Send the 'member already exists' email
-            var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
-            var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(publishedValueFallback, "memberExistsSubject"),
-                CurrentPage.Value<string>(publishedValueFallback, "memberExistsBody"),
+            var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(_publishedValueFallback, "memberExistsSubject"),
+                CurrentPage.Value<string>(_publishedValueFallback, "memberExistsBody"),
                 new Dictionary<string, string>
                 {
                             {"name", name},
@@ -162,7 +164,7 @@ namespace Stoolball.Web.Account
                             {"domain", GetRequestUrlAuthority()}
                 });
 
-            await _emailSender.SendAsync(new EmailMessage(null, email, subject, body, true), null);
+            await _emailSender.SendAsync(new EmailMessage(null, email, subject, body, true), null, false, null);
         }
 
         private IActionResult WhatUmbracoDoesIfAMemberExistsWithThisEmail(string email)
@@ -176,7 +178,7 @@ namespace Stoolball.Web.Account
 
         private bool AnotherMemberHasRequestedThisEmailAddress(string email)
         {
-            var membersRequestingThisEmail = _memberService.GetMembersByPropertyValue("requestedEmail", email.Trim().ToLowerInvariant(), StringPropertyMatchType.Exact);
+            var membersRequestingThisEmail = _memberPropertySearch.FindMembersByPropertyValue("requestedEmail", email.Trim().ToLowerInvariant());
             return membersRequestingThisEmail.Any(x => !_verificationToken.HasExpired(x.GetValue<DateTime>("requestedEmailTokenExpires")));
         }
 
@@ -189,9 +191,8 @@ namespace Stoolball.Web.Account
 
         private async Task SendActivateNewMemberEmail(CreateMemberFormData model, string token)
         {
-            var publishedValueFallback = new PublishedValueFallback(Services, _variationContextAccessor);
-            var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(publishedValueFallback, "approveMemberSubject"),
-                CurrentPage.Value<string>(publishedValueFallback, "approveMemberBody"),
+            var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>(_publishedValueFallback, "approveMemberSubject"),
+                CurrentPage.Value<string>(_publishedValueFallback, "approveMemberBody"),
                 new Dictionary<string, string>
                 {
                         {"name", model.Name},
@@ -199,7 +200,7 @@ namespace Stoolball.Web.Account
                         {"token", token},
                         {"domain", GetRequestUrlAuthority()}
                 });
-            await _emailSender.SendAsync(new EmailMessage(null, model.Email, subject, body, true), null);
+            await _emailSender.SendAsync(new EmailMessage(null, model.Email, subject, body, true), null, false, null);
         }
 
         private async Task<string> NewMemberMustAwaitActivation(IMember member)

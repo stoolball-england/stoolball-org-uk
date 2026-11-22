@@ -47,7 +47,7 @@ namespace Stoolball.Web.UnitTests.Account
             return new ApproveMemberController(_logger.Object,
                                         Mock.Of<ICompositeViewEngine>(),
                                         UmbracoContextAccessor.Object,
-                                        Mock.Of<IVariationContextAccessor>(),
+                                        PublishedValueFallback.Object,
                                         ServiceContext,
                                         _tokenReader.Object)
             {

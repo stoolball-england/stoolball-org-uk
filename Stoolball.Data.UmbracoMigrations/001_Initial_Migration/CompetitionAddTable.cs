@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Stoolball.Data.SqlServer;
 using Umbraco.Cms.Infrastructure.Migrations;
 
@@ -7,13 +8,13 @@ namespace Stoolball.Data.UmbracoMigrations
     /// <summary>
     /// Adds a table for recording stoolball competitions
     /// </summary>
-    public partial class CompetitionAddTable : MigrationBase
+    public partial class CompetitionAddTable : AsyncMigrationBase
     {
         public CompetitionAddTable(IMigrationContext context) : base(context)
         {
         }
 
-        protected override void Migrate()
+        protected override Task MigrateAsync()
         {
             Logger.LogDebug("Running migration {MigrationStep}", typeof(CompetitionAddTable).Name);
 
@@ -25,6 +26,8 @@ namespace Stoolball.Data.UmbracoMigrations
             {
                 Logger.LogDebug("The database table {DbTable} already exists, skipping", Tables.Competition);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

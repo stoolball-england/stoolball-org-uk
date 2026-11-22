@@ -5,11 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Data.Abstractions;
 using Stoolball.Matches;
-using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Stoolball.Web.WebApi
 {
-    public class SeasonsApiController : UmbracoApiController
+    public class SeasonsApiController : ControllerBase
     {
         private readonly ISeasonDataSource _seasonDataSource;
 

@@ -1,7 +1,8 @@
 {
   "Name": "Page Stylesheet Picker",
   "Alias": "",
-  "EditorAlias": "Stoolball.StylesheetPicker",
+  "EditorAlias": "Umbraco.Plain.String",
+  "EditorUiAlias": "Stoolball.StylesheetPicker",
   "Configuration": {
     "filter": "\\.page$"
   },

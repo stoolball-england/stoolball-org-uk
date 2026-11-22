@@ -1,6 +1,7 @@
 @model Umbraco.Forms.Web.Models.FormViewModel
 
-@using Newtonsoft.Json
+@using System.Text.Json
+@using System.Text.Json.Serialization
 @using Umbraco.Forms.Web
 @inject Stoolball.Web.Forms.IUmbracoFormsLabeller labeller
 
@@ -11,14 +12,18 @@
         pageButtonConditions = Model.PageButtonConditions,
         fieldSetConditions = Model.FieldsetConditions,
         fieldConditions = Model.FieldConditions,
-        recordValues = Model.GetFieldsNotDisplayed(),
+        recordValues = Model.GetFieldsNotDisplayed(labeller.ElementIdPrefix),
         formElementHtmlIdPrefix = labeller.ElementIdPrefix
     };
 
-    Html.AddFormThemeScriptFile("~/App_Plugins/UmbracoForms/Assets/Themes/Default/umbracoforms.js");
+    // Umbraco Forms' scripts expect camelCase properties and enums serialised as strings, matching how Umbraco Forms serialises them itself
+    var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    jsonOptions.Converters.Add(new JsonStringEnumConverter());
+
+    Html.AddFormThemeScriptFile("~/App_Plugins/UmbracoForms/assets/themes/default/umbracoforms.js");
 }
 
-<script id="umbraco-forms-collection" data-forms="@Html.Raw(Uri.EscapeUriString(JsonConvert.SerializeObject(formJsObj)))" src="~/js/forms/umbraco-forms-collection.js"></script>
+<script id="umbraco-forms-collection" data-forms="@Html.Raw(Uri.EscapeUriString(JsonSerializer.Serialize(formJsObj, jsonOptions)))" src="~/js/forms/umbraco-forms-collection.js"></script>
 
 @* Only render out scripts on the page if the form has not been submitted yet *@
 @if (Model.SubmitHandled == false)

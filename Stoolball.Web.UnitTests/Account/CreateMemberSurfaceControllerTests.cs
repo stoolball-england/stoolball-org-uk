@@ -39,6 +39,7 @@ namespace Stoolball.Web.UnitTests.Account
         private readonly Mock<ICreateMemberExecuter> _createMemberExecuter = new Mock<ICreateMemberExecuter>();
         private readonly Mock<IVerificationToken> _tokenReader = new Mock<IVerificationToken>();
         private readonly Mock<IMemberSignInManager> _memberSignInManager = new Mock<IMemberSignInManager>();
+        private readonly Mock<IMemberPropertySearch> _memberPropertySearch = new Mock<IMemberPropertySearch>();
         private readonly IActionResult _createMemberSuccessResult = new StatusCodeResult(200);
         private const string APPROVE_MEMBER_EMAIL_SUBJECT = "Approve member";
         private const string APPROVE_MEMBER_EMAIL_BODY = "Approve member body";
@@ -48,7 +49,7 @@ namespace Stoolball.Web.UnitTests.Account
         private CreateMemberSurfaceController CreateController(CreateMemberFormData model, bool createMemberSucceeds = false, string? emailFieldError = null)
         {
             var controller = new CreateMemberSurfaceController(UmbracoContextAccessor.Object,
-                Mock.Of<IVariationContextAccessor>(),
+                PublishedValueFallback.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
                 ServiceContext,
                 AppCaches.NoCache,
@@ -62,7 +63,8 @@ namespace Stoolball.Web.UnitTests.Account
                 _createMemberExecuter.Object,
                 _emailFormatter.Object,
                 _emailSender.Object,
-                _tokenReader.Object)
+                _tokenReader.Object,
+                _memberPropertySearch.Object)
             {
                 ControllerContext = ControllerContext,
                 TempData = new TempDataDictionary(HttpContext.Object, Mock.Of<ITempDataProvider>())
@@ -261,9 +263,9 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 await controller.CreateMember(model);
 
-                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Once);
-                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null))
-                    .Callback<EmailMessage, string>((message, emailType) =>
+                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null), Times.Once);
+                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null))
+                    .Callback<EmailMessage, string, bool, TimeSpan?>((message, emailType, enableNotification, expires) =>
                     {
                         Assert.Single(message.To);
                         Assert.Equal(model.Email, message.To[0]);
@@ -334,9 +336,9 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 await controller.CreateMember(model);
 
-                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Once);
-                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null))
-                    .Callback<EmailMessage, string>((message, emailType) =>
+                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null), Times.Once);
+                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null))
+                    .Callback<EmailMessage, string, bool, TimeSpan?>((message, emailType, enableNotification, expires) =>
                 {
                     Assert.Single(message.To);
                     Assert.Equal(model.Email, message.To[0]);
@@ -390,7 +392,7 @@ namespace Stoolball.Web.UnitTests.Account
             var expiryDate = DateTime.Now.AddHours(12);
             otherMember.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
             _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(false);
-            base.MemberService.Setup(x => x.GetMembersByPropertyValue("requestedEmail", model.Email, StringPropertyMatchType.Exact)).Returns(new[] { otherMember.Object });
+            _memberPropertySearch.Setup(x => x.FindMembersByPropertyValue("requestedEmail", model.Email)).Returns(new[] { otherMember.Object });
 
             _emailFormatter.Setup(x => x.FormatEmailContent(MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY, It.IsAny<Dictionary<string, string>>()))
                .Callback<string, string, Dictionary<string, string>>((subject, body, tokens) =>
@@ -405,9 +407,9 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 await controller.CreateMember(model);
 
-                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Once);
-                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null))
-                    .Callback<EmailMessage, string>((message, emailType) =>
+                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null), Times.Once);
+                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null))
+                    .Callback<EmailMessage, string, bool, TimeSpan?>((message, emailType, enableNotification, expires) =>
                     {
                         Assert.Single(message.To);
                         Assert.Equal(model.Email, message.To[0]);
@@ -426,7 +428,7 @@ namespace Stoolball.Web.UnitTests.Account
             var expiryDate = DateTime.Now.AddHours(12);
             otherMember.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
             _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(false);
-            base.MemberService.Setup(x => x.GetMembersByPropertyValue("requestedEmail", model.Email, StringPropertyMatchType.Exact)).Returns(new[] { otherMember.Object });
+            _memberPropertySearch.Setup(x => x.FindMembersByPropertyValue("requestedEmail", model.Email)).Returns(new[] { otherMember.Object });
 
             _emailFormatter.Setup(x => x.FormatEmailContent(MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY, It.IsAny<Dictionary<string, string>>()))
                 .Returns((MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY));
@@ -448,7 +450,7 @@ namespace Stoolball.Web.UnitTests.Account
             var expiryDate = DateTime.Now.AddHours(12);
             otherMember.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
             _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(false);
-            base.MemberService.Setup(x => x.GetMembersByPropertyValue("requestedEmail", model.Email, StringPropertyMatchType.Exact)).Returns(new[] { otherMember.Object });
+            _memberPropertySearch.Setup(x => x.FindMembersByPropertyValue("requestedEmail", model.Email)).Returns(new[] { otherMember.Object });
 
             _emailFormatter.Setup(x => x.FormatEmailContent(MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY, It.IsAny<Dictionary<string, string>>()))
                 .Returns((MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY));
@@ -470,7 +472,7 @@ namespace Stoolball.Web.UnitTests.Account
             var expiryDate = DateTime.Now.AddHours(12);
             otherMember.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
             _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(false);
-            base.MemberService.Setup(x => x.GetMembersByPropertyValue("requestedEmail", model.Email, StringPropertyMatchType.Exact)).Returns(new[] { otherMember.Object });
+            _memberPropertySearch.Setup(x => x.FindMembersByPropertyValue("requestedEmail", model.Email)).Returns(new[] { otherMember.Object });
 
             _emailFormatter.Setup(x => x.FormatEmailContent(MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY, It.IsAny<Dictionary<string, string>>()))
                 .Returns((MEMBER_EXISTS_EMAIL_SUBJECT, MEMBER_EXISTS_EMAIL_BODY));
@@ -493,7 +495,7 @@ namespace Stoolball.Web.UnitTests.Account
             var expiryDate = DateTime.Now.AddHours(-12);
             otherMember.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
             _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(true);
-            base.MemberService.Setup(x => x.GetMembersByPropertyValue("requestedEmail", model.Email, StringPropertyMatchType.Exact)).Returns(new[] { otherMember.Object });
+            _memberPropertySearch.Setup(x => x.FindMembersByPropertyValue("requestedEmail", model.Email)).Returns(new[] { otherMember.Object });
 
             using (var controller = CreateController(model))
             {

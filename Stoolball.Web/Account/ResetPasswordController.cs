@@ -16,7 +16,7 @@ namespace Stoolball.Web.Account
 {
     public class ResetPasswordController : RenderController
     {
-        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly IPublishedValueFallback _publishedValueFallback;
         private readonly ServiceContext _serviceContext;
         private readonly ILogger<ResetPasswordController> _logger;
         private readonly IVerificationToken _verificationToken;
@@ -25,13 +25,13 @@ namespace Stoolball.Web.Account
             ILogger<ResetPasswordController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
-            IVariationContextAccessor variationContextAccessor,
+            IPublishedValueFallback publishedValueFallback,
             ServiceContext context,
             IVerificationToken verificationToken) :
             base(logger.Logger, compositeViewEngine, umbracoContextAccessor)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _variationContextAccessor = variationContextAccessor ?? throw new ArgumentNullException(nameof(variationContextAccessor));
+            _publishedValueFallback = publishedValueFallback ?? throw new ArgumentNullException(nameof(publishedValueFallback));
             _serviceContext = context ?? throw new ArgumentNullException(nameof(context));
             _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
         }
@@ -40,7 +40,7 @@ namespace Stoolball.Web.Account
         [ContentSecurityPolicy(Forms = true)]
         public override IActionResult Index()
         {
-            var model = new ResetPassword(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor));
+            var model = new ResetPassword(CurrentPage, _publishedValueFallback);
             model.Metadata = new ViewMetadata
             {
                 PageTitle = model.Name,

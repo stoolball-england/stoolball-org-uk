@@ -67,7 +67,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             return new ResetPasswordRequestSurfaceController(
                 UmbracoContextAccessor.Object,
-                Mock.Of<IVariationContextAccessor>(),
+                PublishedValueFallback.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
                 base.ServiceContext,
                 AppCaches.NoCache,
@@ -189,7 +189,7 @@ namespace Stoolball.Web.UnitTests.Account
                 await controller.RequestPasswordReset(new ResetPasswordRequestFormData { Email = "email@example.org" });
 
                 MemberService.Verify(x => x.Save(_currentMember.Object), Times.Never);
-                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Never);
+                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null), Times.Never);
             }
         }
 
@@ -236,7 +236,7 @@ namespace Stoolball.Web.UnitTests.Account
                 await controller.RequestPasswordReset(null);
 
                 MemberService.Verify(x => x.Save(_currentMember.Object), Times.Never);
-                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Never);
+                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null), Times.Never);
             }
         }
 
@@ -279,9 +279,9 @@ namespace Stoolball.Web.UnitTests.Account
 
                 await controller.RequestPasswordReset(formData);
 
-                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Once);
-                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null))
-                    .Callback<EmailMessage, string>((message, emailType) =>
+                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null), Times.Once);
+                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null))
+                    .Callback<EmailMessage, string, bool, TimeSpan?>((message, emailType, enableNotification, expires) =>
                     {
                         Assert.Single(message.To);
                         Assert.Equal(formData.Email, message.To[0]);
@@ -392,9 +392,9 @@ namespace Stoolball.Web.UnitTests.Account
 
                 await controller.RequestPasswordReset(formData);
 
-                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Once);
-                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null))
-                    .Callback<EmailMessage, string>((message, emailType) =>
+                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null), Times.Once);
+                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null))
+                    .Callback<EmailMessage, string, bool, TimeSpan?>((message, emailType, enableNotification, expires) =>
                     {
                         Assert.Single(message.To);
                         Assert.Equal(formData.Email, message.To[0]);
@@ -489,9 +489,9 @@ namespace Stoolball.Web.UnitTests.Account
 
                 await controller.RequestPasswordReset(formData);
 
-                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Once);
-                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null))
-                    .Callback<EmailMessage, string>((message, emailType) =>
+                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null), Times.Once);
+                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null))
+                    .Callback<EmailMessage, string, bool, TimeSpan?>((message, emailType, enableNotification, expires) =>
                     {
                         Assert.Single(message.To);
                         Assert.Equal(formData.Email, message.To[0]);

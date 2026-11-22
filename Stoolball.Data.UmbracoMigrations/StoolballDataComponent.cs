@@ -1,4 +1,6 @@
-﻿using Umbraco.Cms.Core;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Migrations;
 using Umbraco.Cms.Core.Scoping;
@@ -10,14 +12,14 @@ namespace Stoolball.Data.UmbracoMigrations
     /// <summary>
     /// Component which is loaded by <see cref="StoolballDataComposer"/> on startup, and kicks off the <see cref="StoolballDataMigrationPlan"/>
     /// </summary>
-    public class StoolballDataComponent : IComponent
+    public class StoolballDataComponent : IAsyncComponent
     {
-        private readonly IScopeProvider _scopeProvider;
+        private readonly ICoreScopeProvider _scopeProvider;
         private readonly IMigrationPlanExecutor _migrationPlanExecutor;
         private readonly IKeyValueService _keyValueService;
         private readonly IRuntimeState _runtimeState;
 
-        public StoolballDataComponent(IScopeProvider scopeProvider, IMigrationPlanExecutor migrationPlanExecutor, IKeyValueService keyValueService, IRuntimeState runtimeState)
+        public StoolballDataComponent(ICoreScopeProvider scopeProvider, IMigrationPlanExecutor migrationPlanExecutor, IKeyValueService keyValueService, IRuntimeState runtimeState)
         {
             _scopeProvider = scopeProvider;
             _migrationPlanExecutor = migrationPlanExecutor;
@@ -25,7 +27,7 @@ namespace Stoolball.Data.UmbracoMigrations
             _runtimeState = runtimeState;
         }
 
-        public void Initialize()
+        public async Task InitializeAsync(bool isRestarting, CancellationToken cancellationToken)
         {
             if (_runtimeState.Level < RuntimeLevel.Run)
             {
@@ -39,11 +41,9 @@ namespace Stoolball.Data.UmbracoMigrations
             // Go and upgrade our site (Will check if it needs to do the work or not)
             // Based on the current/latest step
             var upgrader = new Upgrader(migrationPlan);
-            upgrader.Execute(_migrationPlanExecutor, _scopeProvider, _keyValueService);
+            await upgrader.ExecuteAsync(_migrationPlanExecutor, _scopeProvider, _keyValueService);
         }
 
-        public void Terminate()
-        {
-        }
+        public Task TerminateAsync(bool isRestarting, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

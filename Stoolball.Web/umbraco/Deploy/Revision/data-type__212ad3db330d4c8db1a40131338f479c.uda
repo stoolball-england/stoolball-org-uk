@@ -6,7 +6,7 @@
     "blocks": [
       {
         "contentElementTypeKey": "94d3ec07-639e-433d-ac15-bc037fa2f6c4",
-        "label": "{{productName}}",
+        "label": "{umbValue: productName}",
         "editorSize": "medium",
         "forceHideContentEditorInOverlay": false
       }

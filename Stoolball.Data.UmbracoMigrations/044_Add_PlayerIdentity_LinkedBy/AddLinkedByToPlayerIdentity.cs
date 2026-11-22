@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Stoolball.Data.SqlServer;
 using Umbraco.Cms.Infrastructure.Migrations;
 
@@ -7,13 +8,13 @@ namespace Stoolball.Data.UmbracoMigrations
     /// <summary>
     /// Adds a LinkedBy column to StoolballPlayerIdentity which is used to track how a player identity was linked to its current player
     /// </summary>
-    public partial class AddLinkedByToPlayerIdentity : MigrationBase
+    public partial class AddLinkedByToPlayerIdentity : AsyncMigrationBase
     {
         public AddLinkedByToPlayerIdentity(IMigrationContext context) : base(context)
         {
         }
 
-        protected override void Migrate()
+        protected override Task MigrateAsync()
         {
             Logger.LogDebug("Running migration {MigrationStep}", typeof(AddLinkedByToPlayerIdentity).Name);
 
@@ -27,6 +28,8 @@ namespace Stoolball.Data.UmbracoMigrations
             {
                 Logger.LogDebug("The database column {DbTable}.{DbColumn} already exists, skipping", Tables.PlayerIdentity, "LinkedBy");
             }
+
+            return Task.CompletedTask;
         }
     }
 }

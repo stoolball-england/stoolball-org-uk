@@ -18,8 +18,7 @@ namespace Stoolball.Web.UnitTests.Account
             return new PersonalDetailsController(Mock.Of<ILogger<PersonalDetailsController>>(),
                 Mock.Of<ICompositeViewEngine>(),
                 UmbracoContextAccessor.Object,
-                Mock.Of<IVariationContextAccessor>(),
-                ServiceContext)
+                PublishedValueFallback.Object)
             {
                 ControllerContext = ControllerContext
             };

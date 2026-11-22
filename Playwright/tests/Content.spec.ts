@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import {
   expectValidHtml,
   expectNoAccessibilityViolations,
@@ -11,6 +11,14 @@ test.describe("Content page", { tag: "@Production" }, () => {
 
   test("Validates", async ({ page }) => {
     await expectValidHtml(page);
+  });
+
+  test("Shows the header photo", async ({ page }) => {
+    // The header photo is picked using Media Picker 3, which replaced the legacy media picker
+    await expect(page.locator("img.header__photo")).toHaveAttribute(
+      "src",
+      /^\/media\/.+\?cc=/,
+    );
   });
 
   test("Passes AXE", async ({ page }) => {

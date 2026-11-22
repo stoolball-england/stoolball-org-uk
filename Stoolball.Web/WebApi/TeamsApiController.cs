@@ -4,12 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stoolball.Data.Abstractions;
 using Stoolball.Teams;
-using Umbraco.Cms.Web.Common.Controllers;
 using Umbraco.Extensions;
 
 namespace Stoolball.Web.WebApi
 {
-    public class TeamsApiController : UmbracoApiController
+    public class TeamsApiController : ControllerBase
     {
         private readonly ITeamDataSource _teamDataSource;
 

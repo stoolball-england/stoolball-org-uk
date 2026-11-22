@@ -72,11 +72,7 @@ namespace Stoolball.Web.Teams
 
             if (model.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteTeam] && ModelState.IsValid)
             {
-                var memberGroup = Services.MemberGroupService.GetById(model.Team.MemberGroupKey!.Value);
-                if (memberGroup != null)
-                {
-                    Services.MemberGroupService.Delete(memberGroup);
-                }
+                await Services.MemberGroupService.DeleteAsync(model.Team.MemberGroupKey!.Value);
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _teamRepository.DeleteTeam(model.Team, currentMember.Key, currentMember.Name);

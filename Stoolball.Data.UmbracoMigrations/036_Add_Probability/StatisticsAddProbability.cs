@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Stoolball.Data.SqlServer;
 using Umbraco.Cms.Infrastructure.Migrations;
 
@@ -7,13 +8,13 @@ namespace Stoolball.Data.UmbracoMigrations
     /// <summary>
     /// Adds a probability column and a stored procedure to populate it. Probability is used to order player name suggestions.
     /// </summary>
-    public partial class StatisticsAddProbability : MigrationBase
+    public partial class StatisticsAddProbability : AsyncMigrationBase
     {
         public StatisticsAddProbability(IMigrationContext context) : base(context)
         {
         }
 
-        protected override void Migrate()
+        protected override Task MigrateAsync()
         {
             Logger.LogDebug("Running migration {MigrationStep}", typeof(StatisticsAddProbability).Name);
 
@@ -51,6 +52,8 @@ CREATE OR ALTER PROCEDURE usp_Statistics_UpdateProbability
             {
                 Logger.LogDebug("The database column {DbTable}.{DbColumn} already exists, skipping", Tables.PlayerInMatchStatistics, "Probability");
             }
+
+            return Task.CompletedTask;
         }
     }
 }

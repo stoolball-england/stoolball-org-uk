@@ -65,11 +65,7 @@ namespace Stoolball.Web.MatchLocations
 
             if (viewModel.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteMatchLocation] && ModelState.IsValid)
             {
-                var memberGroup = Services.MemberGroupService.GetById(viewModel.MatchLocation.MemberGroupKey!.Value);
-                if (memberGroup != null)
-                {
-                    Services.MemberGroupService.Delete(memberGroup);
-                }
+                await Services.MemberGroupService.DeleteAsync(viewModel.MatchLocation.MemberGroupKey!.Value);
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _matchLocationRepository.DeleteMatchLocation(viewModel.MatchLocation, currentMember.Key, currentMember.Name).ConfigureAwait(false);

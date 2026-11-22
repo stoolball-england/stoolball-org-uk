@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using System;
 using Microsoft.Extensions.Logging;
 using Umbraco.Cms.Infrastructure.Migrations;
 
@@ -8,13 +9,13 @@ namespace Stoolball.Data.UmbracoMigrations
     /// Makes the OppositionTeamId, OppositionTeamName, and OppositionTeamRoute columns in StoolballPlayerInMatchStatistics nullable,
     /// because when an opposition team is deleted the statistics for the match should still be retained, but the opposition team information will be lost.
     /// </summary>
-    public partial class NullableOppositionInStatistics : MigrationBase
+    public partial class NullableOppositionInStatistics : AsyncMigrationBase
     {
         public NullableOppositionInStatistics(IMigrationContext context) : base(context)
         {
         }
 
-        protected override void Migrate()
+        protected override Task MigrateAsync()
         {
             Logger.LogDebug("Running migration {MigrationStep}", typeof(NullableOppositionInStatistics).Name);
 
@@ -27,6 +28,8 @@ namespace Stoolball.Data.UmbracoMigrations
                 Logger.LogError(ex, "Migration failed");
                 if (ex.InnerException != null) { Logger.LogError(ex.InnerException, ex.InnerException.Message); }
             }
+
+            return Task.CompletedTask;
         }
     }
 }

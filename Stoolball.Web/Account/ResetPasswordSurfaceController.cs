@@ -25,19 +25,19 @@ namespace Stoolball.Web.Account
 {
     public class ResetPasswordSurfaceController : SurfaceController
     {
-        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly IPublishedValueFallback _publishedValueFallback;
         private readonly ILogger<ResetPasswordSurfaceController> _logger;
         private readonly IMemberSignInManager _memberSignInManager;
         private readonly IVerificationToken _verificationToken;
         private readonly IPasswordHasher _passwordHasher;
 
-        public ResetPasswordSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IVariationContextAccessor variationContextAccessor,
+        public ResetPasswordSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IPublishedValueFallback publishedValueFallback,
             IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext, AppCaches appCaches,
             ILogger<ResetPasswordSurfaceController> logger, IProfilingLogger profilingLogger, IPublishedUrlProvider publishedUrlProvider,
             IMemberSignInManager memberSignInManager, IVerificationToken verificationToken, IPasswordHasher passwordHasher)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, profilingLogger, publishedUrlProvider)
         {
-            _variationContextAccessor = variationContextAccessor ?? throw new ArgumentNullException(nameof(variationContextAccessor));
+            _publishedValueFallback = publishedValueFallback ?? throw new ArgumentNullException(nameof(publishedValueFallback));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _memberSignInManager = memberSignInManager ?? throw new ArgumentNullException(nameof(memberSignInManager));
             _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
@@ -50,7 +50,7 @@ namespace Stoolball.Web.Account
         [ContentSecurityPolicy(Forms = true)]
         public async Task<IActionResult> UpdatePassword([Bind(Prefix = "resetPasswordUpdate")] ResetPasswordFormData? model)
         {
-            var contentModel = new ResetPassword(CurrentPage, new PublishedValueFallback(Services, _variationContextAccessor));
+            var contentModel = new ResetPassword(CurrentPage, _publishedValueFallback);
             contentModel.Metadata = new ViewMetadata
             {
                 PageTitle = contentModel.Name,

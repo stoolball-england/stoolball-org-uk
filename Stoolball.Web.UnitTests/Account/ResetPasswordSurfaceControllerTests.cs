@@ -40,7 +40,7 @@ namespace Stoolball.Web.UnitTests.Account
         private class TestResetPasswordSurfaceController : ResetPasswordSurfaceController
         {
             public TestResetPasswordSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
-                IVariationContextAccessor variationContextAccessor,
+                IPublishedValueFallback publishedValueFallback,
                 IUmbracoDatabaseFactory databaseFactory,
                 ServiceContext services,
                 AppCaches appCaches,
@@ -50,7 +50,7 @@ namespace Stoolball.Web.UnitTests.Account
                 IMemberSignInManager memberSignInManager,
                 IVerificationToken verificationToken,
                 IPasswordHasher passwordHasher)
-            : base(umbracoContextAccessor, variationContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, publishedUrlProvider, memberSignInManager, verificationToken, passwordHasher)
+            : base(umbracoContextAccessor, publishedValueFallback, databaseFactory, services, appCaches, logger, profilingLogger, publishedUrlProvider, memberSignInManager, verificationToken, passwordHasher)
             {
             }
 
@@ -78,7 +78,7 @@ namespace Stoolball.Web.UnitTests.Account
         private TestResetPasswordSurfaceController CreateController()
         {
             var controller = new TestResetPasswordSurfaceController(UmbracoContextAccessor.Object,
-                Mock.Of<IVariationContextAccessor>(),
+                PublishedValueFallback.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
                 base.ServiceContext,
                 AppCaches.NoCache,

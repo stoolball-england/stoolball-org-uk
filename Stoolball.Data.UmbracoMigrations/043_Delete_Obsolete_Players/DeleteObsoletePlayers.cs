@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Stoolball.Data.SqlServer;
 using Umbraco.Cms.Infrastructure.Migrations;
 
@@ -8,13 +9,13 @@ namespace Stoolball.Data.UmbracoMigrations
     /// Adds a Deleted column to StoolballPlayerIdentity which is used to track identities which are obsolete, and can be deleted once statistics are up-to-date.
     /// Updates usp_Player_Async_Update to carry out that delete.
     /// </summary>
-    public partial class DeleteObsoletePlayers : MigrationBase
+    public partial class DeleteObsoletePlayers : AsyncMigrationBase
     {
         public DeleteObsoletePlayers(IMigrationContext context) : base(context)
         {
         }
 
-        protected override void Migrate()
+        protected override Task MigrateAsync()
         {
             Logger.LogDebug("Running migration {MigrationStep}", typeof(DeleteObsoletePlayers).Name);
 
@@ -30,6 +31,8 @@ namespace Stoolball.Data.UmbracoMigrations
             {
                 Logger.LogDebug("The database column {DbTable}.{DbColumn} already exists, skipping", Tables.PlayerIdentity, "Deleted");
             }
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -65,7 +65,7 @@ namespace Stoolball.Web.Matches
             var currentMember = await _memberManager.GetCurrentMemberAsync();
             if (tournament.MemberKey.HasValue && tournament.MemberKey != currentMember?.Key)
             {
-                var name = _memberService.GetByKey(tournament.MemberKey.Value)?.Name;
+                var name = _memberService.GetById(tournament.MemberKey.Value)?.Name;
                 if (!string.IsNullOrEmpty(name))
                 {
                     members.Add(name);

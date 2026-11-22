@@ -30,6 +30,7 @@ namespace Stoolball.Web.UnitTests
         protected ServiceContext ServiceContext { get; private set; }
         protected Mock<IMemberService> MemberService { get; private set; } = new();
         protected Mock<IPublishedContent> CurrentPage { get; private set; } = new();
+        protected Mock<IPublishedValueFallback> PublishedValueFallback { get; private set; } = new();
 
         protected UmbracoBaseTest()
         {
@@ -46,8 +47,7 @@ namespace Stoolball.Web.UnitTests
 
             ServiceContext = ServiceContext.CreatePartial(
                 memberService: MemberService.Object,
-                userService: Mock.Of<IUserService>(),
-                localizationService: Mock.Of<ILocalizationService>()
+                userService: Mock.Of<IUserService>()
             );
         }
 

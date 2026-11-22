@@ -18,20 +18,20 @@ namespace Stoolball.Web.Account
     {
         private readonly IVerificationToken _verificationToken;
         private readonly ILogger<ApproveMemberController> _logger;
-        private readonly IVariationContextAccessor _variationContextAccessor;
+        private readonly IPublishedValueFallback _publishedValueFallback;
         private readonly ServiceContext _serviceContext;
 
         public ApproveMemberController(
             ILogger<ApproveMemberController> logger,
             ICompositeViewEngine compositeViewEngine,
             IUmbracoContextAccessor umbracoContextAccessor,
-            IVariationContextAccessor variationContextAccessor,
+            IPublishedValueFallback publishedValueFallback,
             ServiceContext context,
             IVerificationToken verificationToken) :
             base(logger.Logger, compositeViewEngine, umbracoContextAccessor)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _variationContextAccessor = variationContextAccessor ?? throw new System.ArgumentNullException(nameof(variationContextAccessor));
+            _publishedValueFallback = publishedValueFallback ?? throw new System.ArgumentNullException(nameof(publishedValueFallback));
             _serviceContext = context ?? throw new System.ArgumentNullException(nameof(context));
             _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
         }
@@ -40,7 +40,7 @@ namespace Stoolball.Web.Account
         [ContentSecurityPolicy]
         public override IActionResult Index()
         {
-            var model = new ApproveMember(CurrentPage, new PublishedValueFallback(_serviceContext, _variationContextAccessor));
+            var model = new ApproveMember(CurrentPage, _publishedValueFallback);
             model.Metadata = new ViewMetadata
             {
                 PageTitle = model.Name,

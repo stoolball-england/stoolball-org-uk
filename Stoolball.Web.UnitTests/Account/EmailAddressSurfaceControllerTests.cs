@@ -75,7 +75,7 @@ namespace Stoolball.Web.UnitTests.Account
         private EmailAddressSurfaceController CreateController()
         {
             return new EmailAddressSurfaceController(UmbracoContextAccessor.Object,
-                Mock.Of<IVariationContextAccessor>(),
+                PublishedValueFallback.Object,
                 Mock.Of<IUmbracoDatabaseFactory>(),
                 base.ServiceContext,
                 AppCaches.NoCache,
@@ -141,9 +141,9 @@ namespace Stoolball.Web.UnitTests.Account
                 Assert.Equal(otherMember.Object.Name, receivedTokens!["name"]);
                 Assert.Equal(model.Requested, receivedTokens["email"]);
                 Assert.Equal(REQUEST_URL_AUTHORITY, receivedTokens["domain"]);
-                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Once);
-                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null))
-                    .Callback<EmailMessage, string>((message, emailType) =>
+                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null), Times.Once);
+                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null))
+                    .Callback<EmailMessage, string, bool, TimeSpan?>((message, emailType, enableNotification, expires) =>
                     {
                         Assert.Single(message.To);
                         Assert.Equal(model.Requested, message.To[0]);
@@ -249,9 +249,9 @@ namespace Stoolball.Web.UnitTests.Account
                 Assert.Equal(REQUEST_URL_AUTHORITY, receivedTokens["domain"]);
                 Assert.Equal(token, receivedTokens["token"]);
 
-                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null), Times.Once);
-                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null))
-                    .Callback<EmailMessage, string>((message, emailType) =>
+                _emailSender.Verify(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null), Times.Once);
+                _emailSender.Setup(x => x.SendAsync(It.IsAny<EmailMessage>(), null, false, null))
+                    .Callback<EmailMessage, string, bool, TimeSpan?>((message, emailType, enableNotification, expires) =>
                     {
                         Assert.Single(message.To);
                         Assert.Equal(model.Requested, message.To[0]);

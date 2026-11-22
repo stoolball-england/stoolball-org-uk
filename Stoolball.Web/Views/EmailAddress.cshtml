@@ -14,7 +14,7 @@
     {
         if (TempData["Success"] == null)
         {
-            var currentMemberBypassingCache = memberService.GetByKey((await memberManager.GetCurrentMemberAsync()).Key);
+            var currentMemberBypassingCache = memberService.GetById((await memberManager.GetCurrentMemberAsync()).Key);
             @await Html.PartialAsync("_ConfirmEmailAddress", currentMemberBypassingCache)
 
             using (Html.BeginUmbracoForm<EmailAddressSurfaceController>("UpdateEmailAddress", null, new { id = "calling-it-search-disables-contact-managers" }))

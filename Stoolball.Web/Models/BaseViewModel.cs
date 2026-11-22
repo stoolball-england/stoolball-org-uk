@@ -88,11 +88,11 @@ namespace Stoolball.Web.Models
 
         public PublishedItemType ItemType => _contentModel?.ItemType ?? PublishedItemType.Unknown;
 
+        [Obsolete("Required by IPublishedContent, which marks it obsolete. Use the IPublishedContent.Parent<>() extension method in the Umbraco.Extensions namespace instead.")]
         public IPublishedContent Parent => _contentModel != null ? _contentModel.Parent : ThrowMissingContentException<IPublishedContent>();
 
+        [Obsolete("Required by IPublishedContent, which marks it obsolete. Use the IPublishedContent.Children() extension method in the Umbraco.Extensions namespace instead.")]
         public IEnumerable<IPublishedContent> Children => _contentModel?.Children ?? Array.Empty<IPublishedContent>();
-
-        public IEnumerable<IPublishedContent> ChildrenForAllCultures => _contentModel?.ChildrenForAllCultures ?? Array.Empty<IPublishedContent>();
 
         public IPublishedContentType ContentType => _contentModel != null ? _contentModel.ContentType : ThrowMissingContentException<IPublishedContentType>();
 

@@ -9,7 +9,7 @@ using Umbraco.Forms.Core.Services;
 
 namespace Stoolball.Web.App_Plugins.Stoolball.UmbracoForms
 {
-    public class AntiSpamLongAnswerField : Umbraco.Forms.Core.FieldType
+    public class AntiSpamLongAnswerField : global::Umbraco.Forms.Core.FieldType
     {
         private const string _spammyWords = @"\b(PORN|PRON|PORNSTAR|SEX|SEXY|WEBSEX|SEXCHAT|SEXCAM|NAKED|NUDE|NUDES|SEXCAMS|TRANCE|SEO|CLICK HERE|ROBOT)\b";
         private const string _cyrillicCharacters = "(К|Д)";
@@ -24,9 +24,8 @@ namespace Stoolball.Web.App_Plugins.Stoolball.UmbracoForms
             SortOrder = 10;
             SupportsRegex = false;
             FieldTypeViewName = "FieldType.Textarea.cshtml";
+            PreviewView = "Forms.FieldPreview.TextArea";
         }
-
-        public override string GetDesignView() => "~/App_Plugins/UmbracoForms/backoffice/Common/FieldTypes/textarea.html";
 
         public override IEnumerable<string> ValidateField(Form form, Field field, IEnumerable<object> postedValues, HttpContext context, IPlaceholderParsingService placeholderParsingService, IFieldTypeStorage fieldTypeStorage)
         {

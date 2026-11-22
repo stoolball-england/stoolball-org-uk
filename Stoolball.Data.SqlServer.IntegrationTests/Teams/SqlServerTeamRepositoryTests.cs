@@ -147,7 +147,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var route = "/teams/" + Guid.NewGuid();
             _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).ReturnsAsync(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
 
             _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(team);
             _copier.Setup(x => x.CreateRedactedCopy(team)).Returns(team);
@@ -261,7 +261,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
             var group = new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" };
-            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).Returns(group);
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).ReturnsAsync(group);
 
             _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
 
@@ -372,7 +372,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", copyTeam.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/teams/" + Guid.NewGuid()));
 
-            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", copyTeam.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", copyTeam.TeamName, NoiseWords.TeamRoute)).ReturnsAsync(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
 
             _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(copyTeam);
 
@@ -403,7 +403,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", copyTeam.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/teams/" + Guid.NewGuid()));
 
-            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", copyTeam.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", copyTeam.TeamName, NoiseWords.TeamRoute)).ReturnsAsync(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
 
             _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(copyTeam);
 
@@ -451,7 +451,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var route = "/teams/" + Guid.NewGuid();
             _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", auditable.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", auditable.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", auditable.TeamName, NoiseWords.TeamRoute)).ReturnsAsync(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
 
             _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(auditable);
             _copier.Setup(x => x.CreateRedactedCopy(auditable)).Returns(redacted);
@@ -480,7 +480,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             var route = "/teams/" + Guid.NewGuid();
             _routeGenerator.Setup(x => x.GenerateUniqueRoute("/teams", team.TeamName, NoiseWords.TeamRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
 
-            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            _memberGroupHelper.Setup(x => x.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute)).ReturnsAsync(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
 
             _copier.Setup(x => x.CreateAuditableCopy(team)).Returns(team);
 

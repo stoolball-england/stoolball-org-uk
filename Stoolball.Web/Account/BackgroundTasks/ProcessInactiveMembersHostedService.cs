@@ -30,7 +30,7 @@ namespace Stoolball.Web.Account.BackgroundTasks
             IMemberService memberService,
             IVerificationToken verificationToken
             )
-            : base(logger, HowOftenWeRepeat, DelayBeforeWeStart)
+            : base(logger, HowOftenWeRepeat, DelayBeforeWeStart, TimeProvider.System)
         {
             _runtimeState = runtimeState ?? throw new ArgumentNullException(nameof(runtimeState));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

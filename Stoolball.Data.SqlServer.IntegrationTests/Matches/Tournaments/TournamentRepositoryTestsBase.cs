@@ -36,7 +36,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches.Tournaments
             MemberKey = DatabaseFixture.TestData.Members[0].Key;
             MemberName = DatabaseFixture.TestData.Members[0].Name;
             MemberUsername = DatabaseFixture.TestData.Members[0].Username();
-            MemberGroupHelper.Setup(x => x.CreateOrFindGroup("team", It.IsAny<string>(), NoiseWords.TeamRoute)).Returns(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
+            MemberGroupHelper.Setup(x => x.CreateOrFindGroup("team", It.IsAny<string>(), NoiseWords.TeamRoute)).ReturnsAsync(new SecurityGroup { Key = Guid.NewGuid(), Name = "Group name" });
         }
 
         private SqlServerTournamentRepository CreateRepository()

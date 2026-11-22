@@ -22,8 +22,7 @@ namespace Stoolball.Web.UnitTests.Pages
                 Mock.Of<ILogger<StyleGuideController>>(),
                 CompositeViewEngine.Object,
                 UmbracoContextAccessor.Object,
-                Mock.Of<IVariationContextAccessor>(),
-                ServiceContext,
+                PublishedValueFallback.Object,
                 _apiKeyProvider.Object)
             {
                 ControllerContext = ControllerContext

@@ -18,8 +18,7 @@ namespace Stoolball.Web.UnitTests.Account
             return new CreateMemberController(Mock.Of<ILogger<CreateMemberController>>(),
                             Mock.Of<ICompositeViewEngine>(),
                             UmbracoContextAccessor.Object,
-                            Mock.Of<IVariationContextAccessor>(),
-                            ServiceContext)
+                            PublishedValueFallback.Object)
             {
                 ControllerContext = ControllerContext
             };

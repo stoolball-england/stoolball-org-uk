@@ -13,7 +13,7 @@ namespace Stoolball.Web.Routing
     {
         public void Compose(IUmbracoBuilder builder)
         {
-            builder.ContentFinders().InsertBefore<ContentFinderByUrl, StoolballRouteContentFinder>();
+            builder.ContentFinders().InsertBefore<ContentFinderByUrlNew, StoolballRouteContentFinder>();
         }
     }
 }

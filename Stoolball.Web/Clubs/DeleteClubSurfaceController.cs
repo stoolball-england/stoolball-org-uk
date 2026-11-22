@@ -59,11 +59,7 @@ namespace Stoolball.Web.Clubs
 
             if (viewModel.Authorization.CurrentMemberIsAuthorized[AuthorizedAction.DeleteClub] && ModelState.IsValid)
             {
-                var memberGroup = Services.MemberGroupService.GetById(viewModel.Club.MemberGroupKey!.Value);
-                if (memberGroup != null)
-                {
-                    Services.MemberGroupService.Delete(memberGroup);
-                }
+                await Services.MemberGroupService.DeleteAsync(viewModel.Club.MemberGroupKey!.Value);
 
                 var currentMember = await _memberManager.GetCurrentMemberAsync();
                 await _clubRepository.DeleteClub(viewModel.Club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
