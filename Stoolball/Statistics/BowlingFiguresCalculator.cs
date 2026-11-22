@@ -68,7 +68,7 @@ namespace Stoolball.Statistics
                     {
                         var completedOvers = Math.Floor((decimal)(ballsBowled.Value / StatisticsConstants.BALLS_PER_OVER));
                         var additionalBalls = Math.Floor((decimal)(ballsBowled.Value % StatisticsConstants.BALLS_PER_OVER));
-                        overs = completedOvers + (additionalBalls * (decimal).1);
+                        overs = completedOvers + (additionalBalls * .1m);
                     }
 
                     // Any overs without balls bowled must be counted as a complete over
