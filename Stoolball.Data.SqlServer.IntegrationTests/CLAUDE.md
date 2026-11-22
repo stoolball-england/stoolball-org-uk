@@ -11,6 +11,25 @@ this suite depends on a real SQL Server database and on generated data whose sha
 only be checked by actually executing the tests. If there's no way to run them (e.g. no
 database is reachable), say so explicitly rather than reporting success.
 
+## Running the tests in a CI-hosted Claude session (GitHub Actions)
+
+The `claude.yml` workflow doesn't start SQL Server or set `SQL_SERVER_USERNAME` /
+`SQL_SERVER_PASSWORD` (only `run-tests.yml` does), but Docker is available on the runner, and
+`GITHUB_ACTIONS=true` makes the fixture look for a container named `integration-tests-sql`.
+So start one yourself, with a throwaway password, then run the tests. This has been verified to work:
+
+```bash
+docker run --name integration-tests-sql -e ACCEPT_EULA=Y -e "SA_PASSWORD=Test-Passw0rd!x9" \
+  -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+sleep 20   # wait for SQL Server to start
+export SQL_SERVER_USERNAME=sa SQL_SERVER_PASSWORD='Test-Passw0rd!x9'
+dotnet test Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj \
+  --filter "FullyQualifiedName~SqlServerClubRepositoryTests"
+```
+
+If the container already exists, `docker rm -f integration-tests-sql` first. Don't conclude
+that the tests can't be run just because those variables or the container are missing.
+
 ## 1. Isolating each test with TransactionScope
 
 Every test class (or a shared `*TestsBase` class for repositories split one-file-per-method)
